@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BNB Industry 계열사 GEO 현황 진단 보고서</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --navy: #0f1b2d;
+        --navy-mid: #172338;
+        --navy-light: #1e3050;
+        --accent: #3b82f6;
+        --accent-light: #60a5fa;
+        --gold: #f59e0b;
+        --red: #ef4444;
+        --orange: #f97316;
+        --yellow: #eab308;
+        --green: #22c55e;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+
+        /* brand colors */
+        --art: #6366f1;
+        --exam: #8b5cf6;
+        --kids: #06b6d4;
+        --teen: #ec4899;
+        --avenue: #f97316;
+
+        /* score colors */
+        --score-critical: #ef4444;
+        --score-poor: #f97316;
+        --score-fair: #eab308;
+        --score-good: #22c55e;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          'Noto Sans KR',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--gray-50);
+        color: var(--text);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      /* ───── COVER ───── */
+      .cover {
+        background: linear-gradient(160deg, #0f1b2d 0%, #1a2e50 100%);
+        color: white;
+        padding: 64px 60px 56px;
+        position: relative;
+        overflow: hidden;
+        page-break-after: always;
+      }
+      .cover .container {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .cover-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 820px;
+      }
+      .cover-badge {
+        display: inline-block;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: 3px;
+        margin-bottom: 28px;
+      }
+      .cover-title {
+        font-size: 38px;
+        font-weight: 800;
+        line-height: 1.25;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+      }
+      .cover-title span {
+        color: var(--accent-light);
+      }
+      .cover-sub {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 44px;
+        font-weight: 400;
+      }
+      .cover-meta {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        padding-top: 32px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .cover-meta-item {
+        display: flex;
+        flex-direction: column;
+      }
+      .cover-meta-label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: rgba(255, 255, 255, 0.35);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .cover-meta-value {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+      }
+      .cover-scores {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+      .cover-score-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 6px;
+        padding: 14px 18px;
+        min-width: 120px;
+      }
+      .cover-score-name {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.45);
+        margin-bottom: 6px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+      }
+      .cover-score-value {
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .cover-score-value.critical {
+        color: #fca5a5;
+      }
+      .cover-score-value.poor {
+        color: #fdba74;
+      }
+      .cover-score-value.fair {
+        color: #fde047;
+      }
+      .cover-score-denom {
+        font-size: 12px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* ───── LAYOUT ───── */
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+
+      /* ───── SECTION HEADER ───── */
+      .section-header {
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        /* border-bottom: 2px solid var(--border); */
+      }
+      .section-eyebrow {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gray-400);
+        margin-bottom: 8px;
+      }
+      .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--gray-900);
+        letter-spacing: -0.3px;
+      }
+      .section-desc {
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      /* ───── OVERVIEW GRID ───── */
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 48px;
+      }
+      .brand-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        padding: 20px 16px;
+        text-align: center;
+      }
+      .brand-color-bar {
+        height: 3px;
+        border-radius: 2px;
+        margin: 0 auto 14px;
+        width: 32px;
+      }
+      .brand-card-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gray-700);
+        margin-bottom: 4px;
+      }
+      .brand-card-url {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+      }
+      .brand-score-circle {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin: 0 auto 10px;
+        font-size: 21px;
+        font-weight: 800;
+        border: 2px solid transparent;
+      }
+      .brand-score-circle.critical {
+        background: #fef2f2;
+        color: var(--score-critical);
+        border-color: #fca5a5;
+      }
+      .brand-score-circle.poor {
+        background: #fff7ed;
+        color: var(--score-poor);
+        border-color: #fdba74;
+      }
+      .brand-score-denom2 {
+        font-size: 10px;
+        font-weight: 400;
+        color: var(--text-muted);
+      }
+      .brand-status-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .badge-critical {
+        background: #fee2e2;
+        color: var(--score-critical);
+      }
+      .badge-poor {
+        background: #ffedd5;
+        color: var(--score-poor);
+      }
+
+      /* ───── COMPARISON TABLE ───── */
+      .comparison-section {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        margin-bottom: 48px;
+      }
+      .comparison-section table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .comparison-section thead tr {
+        background: var(--navy);
+        color: white;
+      }
+      .comparison-section thead th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .comparison-section thead th.brand-col {
+        text-align: center;
+      }
+      .comparison-section tbody tr:nth-child(even) {
+        background: var(--gray-50);
+      }
+      .comparison-section tbody tr:hover {
+        background: #f0f7ff;
+      }
+      .comparison-section tbody td {
+        padding: 11px 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--gray-700);
+      }
+      .comparison-section tbody td.label-col {
+        font-weight: 600;
+        color: var(--gray-800);
+        font-size: 12px;
+      }
+      .comparison-section tbody td.center {
+        text-align: center;
+      }
+
+      /* 테이블 상태 배지 */
+      .tbl-ok {
+        display: inline-block;
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 3px;
+      }
+      .tbl-nok {
+        display: inline-block;
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 3px;
+      }
+      .tbl-warn {
+        display: inline-block;
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 3px;
+      }
+
+      .score-chip {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 4px;
+      }
+      .chip-critical {
+        background: #fee2e2;
+        color: var(--score-critical);
+      }
+      .chip-poor {
+        background: #ffedd5;
+        color: var(--score-poor);
+      }
+      .chip-fair {
+        background: #fefce8;
+        color: var(--score-fair);
+      }
+      .chip-ok {
+        background: #f0fdf4;
+        color: var(--score-good);
+      }
+
+      /* ───── BRAND DETAIL SECTION ───── */
+      .brand-section {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        margin-bottom: 36px;
+        page-break-inside: avoid;
+      }
+      .brand-header {
+        padding: 28px 32px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .brand-header-left {
+        flex: 1;
+      }
+      .brand-name-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+      .brand-badge {
+        width: 28px;
+        height: 28px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        color: white;
+        flex-shrink: 0;
+      }
+      .brand-section-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--gray-900);
+      }
+      .brand-section-url {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+      .brand-summary {
+        font-size: 13px;
+        color: var(--gray-600);
+        line-height: 1.65;
+        max-width: 560px;
+      }
+      .brand-score-block {
+        flex-shrink: 0;
+        text-align: right;
+      }
+      .big-score {
+        font-size: 48px;
+        font-weight: 900;
+        line-height: 1;
+      }
+      .big-score-denom {
+        font-size: 18px;
+        font-weight: 400;
+        color: var(--text-muted);
+      }
+      .big-score-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 6px;
+      }
+
+      /* score bar row */
+      .score-bars {
+        padding: 20px 32px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--gray-50);
+      }
+      .score-bar-item {
+        min-width: 0;
+      }
+      .score-bar-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .score-bar-track {
+        height: 5px;
+        background: var(--gray-200);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .score-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+      }
+      .fill-critical {
+        background: var(--score-critical);
+      }
+      .fill-poor {
+        background: var(--score-poor);
+      }
+      .fill-fair {
+        background: var(--score-fair);
+      }
+      .fill-good {
+        background: var(--score-good);
+      }
+
+      /* ───── ISSUE ITEMS ───── */
+      .issues-grid {
+        padding: 24px 32px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .issue-item {
+        padding: 14px 16px 14px 14px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        border-left-width: 3px;
+      }
+      .issue-item.sev-critical {
+        background: #fff5f5;
+        border-color: #fecaca;
+        border-left-color: var(--score-critical);
+      }
+      .issue-item.sev-high {
+        background: #fff8f0;
+        border-color: #fed7aa;
+        border-left-color: var(--score-poor);
+      }
+      .sev-badge {
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 2px;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+      .sev-badge.critical {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .sev-badge.high {
+        background: #ffedd5;
+        color: #c2410c;
+      }
+      .issue-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 3px;
+      }
+      .issue-desc {
+        font-size: 11px;
+        color: var(--gray-500);
+        line-height: 1.55;
+      }
+
+      /* ───── INSIGHT BOX ───── */
+      .insight-box {
+        background: #f8faff;
+        border: 1px solid #dbeafe;
+        border-left: 4px solid var(--accent);
+        border-radius: 6px;
+        padding: 24px 28px;
+        margin-bottom: 48px;
+      }
+      .insight-box-header {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .insight-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .insight-list li {
+        display: block;
+        position: relative;
+        padding-left: 20px;
+        font-size: 13px;
+        color: var(--gray-700);
+        line-height: 1.6;
+      }
+      .insight-list li::before {
+        content: '→';
+        color: var(--accent);
+        font-weight: 700;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+
+      /* ───── ALERT BOX ───── */
+      .alert-box {
+        border-radius: 6px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .alert-box.danger {
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        border-left: 3px solid #dc2626;
+      }
+      .alert-box.warning {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 3px solid #d97706;
+      }
+      .alert-label {
+        flex-shrink: 0;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 3px 7px;
+        border-radius: 3px;
+        margin-top: 1px;
+        line-height: 1.4;
+      }
+      .alert-label.danger-label {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .alert-label.warning-label {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .alert-content h4 {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 4px;
+      }
+      .alert-content p {
+        font-size: 12px;
+        color: var(--gray-600);
+        line-height: 1.55;
+      }
+
+      /* ───── COMMON ISSUES ───── */
+      .common-issues {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        margin-bottom: 48px;
+      }
+      .common-issues-header {
+        padding: 18px 28px;
+        background: var(--navy);
+        color: white;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .common-issues-header-badge {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: #dc2626;
+        color: white;
+        padding: 3px 7px;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+      .common-issues-header-text h3 {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .common-issues-header-text p {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 2px;
+      }
+      .issue-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 28px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .issue-row:last-child {
+        border-bottom: none;
+      }
+      .issue-row-num {
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--gray-100);
+        color: var(--gray-500);
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .issue-row-content {
+        flex: 1;
+      }
+      .issue-row-title {
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+      .issue-row-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 1px;
+      }
+      .issue-row-count {
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--gray-100);
+        color: var(--gray-600);
+        padding: 3px 10px;
+        border-radius: 3px;
+        white-space: nowrap;
+      }
+
+      /* ───── FOOTER ───── */
+      .report-footer {
+        border-top: 1px solid var(--border);
+        padding: 28px 0;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+      .report-footer strong {
+        color: var(--gray-700);
+      }
+
+      /* ───── DIVIDER ───── */
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 40px 0;
+      }
+
+      /* ───── PAGE BREAK ───── */
+      @media print {
+        .cover {
+          page-break-after: always;
+        }
+        .brand-section {
+          page-break-inside: avoid;
+        }
+        .container {
+          padding: 24px;
+        }
+        body {
+          background: white;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════════════ COVER -->
+    <div class="cover">
+      <div class="container">
+        <div class="cover-rule"></div>
+        <div class="cover-inner">
+          <div class="cover-badge">GEO Audit Report · 2026.03.19</div>
+          <h1 class="cover-title">BNB Industry<br /><span>5개 계열사</span><br />웹사이트 현황 진단</h1>
+          <p class="cover-sub">GEO (Generative Engine Optimization) 기반 종합 분석</p>
+
+          <div class="cover-scores">
+            <div class="cover-score-card">
+              <div class="cover-score-name">아트센터</div>
+              <div class="cover-score-value poor">36<span class="cover-score-denom">/100</span></div>
+            </div>
+            <div class="cover-score-card">
+              <div class="cover-score-name">입시센터</div>
+              <div class="cover-score-value critical">32<span class="cover-score-denom">/100</span></div>
+            </div>
+            <div class="cover-score-card">
+              <div class="cover-score-name">키즈센터</div>
+              <div class="cover-score-value critical">34<span class="cover-score-denom">/100</span></div>
+            </div>
+            <div class="cover-score-card">
+              <div class="cover-score-name">하이틴센터</div>
+              <div class="cover-score-value critical">20<span class="cover-score-denom">/100</span></div>
+            </div>
+            <div class="cover-score-card">
+              <div class="cover-score-name">애비뉴센터</div>
+              <div class="cover-score-value critical">25<span class="cover-score-denom">/100</span></div>
+            </div>
+          </div>
+
+          <div class="cover-meta" style="margin-top: 40px">
+            <div class="cover-meta-item">
+              <div class="cover-meta-label">감사 일자</div>
+              <div class="cover-meta-value">2026년 3월 19일</div>
+            </div>
+            <div class="cover-meta-item">
+              <div class="cover-meta-label">분석 대상</div>
+              <div class="cover-meta-value">5개 사이트 · 약 66개 페이지</div>
+            </div>
+            <div class="cover-meta-item">
+              <div class="cover-meta-label">분석 방법론</div>
+              <div class="cover-meta-value">GEO Audit v2.0 · 6개 카테고리</div>
+            </div>
+            <div class="cover-meta-item">
+              <div class="cover-meta-label">계열사 그룹</div>
+              <div class="cover-meta-value">BNB Industry</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ BODY -->
+    <div class="container">
+      <!-- ── SECTION 1: 종합 현황 요약 ── -->
+      <div class="section-header">
+        <div class="section-eyebrow">Section 01</div>
+        <div class="section-title">종합 현황 요약</div>
+        <div class="section-desc">GEO(AI 검색 최적화) 관점에서 5개 계열사 사이트의 현재 상태를 한눈에 비교합니다.</div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="brand-card">
+          <div class="brand-color-bar" style="background: var(--art)"></div>
+          <div class="brand-card-name">아트센터</div>
+          <div class="brand-card-url">baewoo.co.kr</div>
+          <div class="brand-score-circle poor">
+            36
+            <div class="brand-score-denom2">/100</div>
+          </div>
+          <span class="brand-status-badge badge-poor">경고</span>
+        </div>
+        <div class="brand-card">
+          <div class="brand-color-bar" style="background: var(--exam)"></div>
+          <div class="brand-card-name">입시센터</div>
+          <div class="brand-card-url">baewoo.kr</div>
+          <div class="brand-score-circle critical">
+            32
+            <div class="brand-score-denom2">/100</div>
+          </div>
+          <span class="brand-status-badge badge-critical">위험</span>
+        </div>
+        <div class="brand-card">
+          <div class="brand-color-bar" style="background: var(--kids)"></div>
+          <div class="brand-card-name">키즈센터</div>
+          <div class="brand-card-url">baewoo.net</div>
+          <div class="brand-score-circle critical">
+            34
+            <div class="brand-score-denom2">/100</div>
+          </div>
+          <span class="brand-status-badge badge-critical">위험</span>
+        </div>
+        <div class="brand-card">
+          <div class="brand-color-bar" style="background: var(--teen)"></div>
+          <div class="brand-card-name">하이틴센터</div>
+          <div class="brand-card-url">baewoo.me</div>
+          <div class="brand-score-circle critical">
+            20
+            <div class="brand-score-denom2">/100</div>
+          </div>
+          <span class="brand-status-badge badge-critical">위험</span>
+        </div>
+        <div class="brand-card">
+          <div class="brand-color-bar" style="background: var(--avenue)"></div>
+          <div class="brand-card-name">애비뉴센터</div>
+          <div class="brand-card-url">baewoorun.co.kr</div>
+          <div class="brand-score-circle critical">
+            25
+            <div class="brand-score-denom2">/100</div>
+          </div>
+          <span class="brand-status-badge badge-critical">위험</span>
+        </div>
+      </div>
+
+      <!-- comparison table -->
+      <div class="comparison-section">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width: 160px">진단 항목</th>
+              <th class="brand-col">아트센터</th>
+              <th class="brand-col">입시센터</th>
+              <th class="brand-col">키즈센터</th>
+              <th class="brand-col">하이틴센터</th>
+              <th class="brand-col">애비뉴센터</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label-col">종합 GEO 점수</td>
+              <td class="center"><span class="score-chip chip-poor">36/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">32/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">34/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">20/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">25/100</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">AI 인용 가능성</td>
+              <td class="center"><span class="score-chip chip-poor">41/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">28/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">36/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">18/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">32/100</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">구조화 데이터 (Schema)</td>
+              <td class="center"><span class="score-chip chip-critical">11/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">11/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">18/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">0/100</span></td>
+              <td class="center"><span class="score-chip chip-critical">3/100</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">SSL / HTTPS</td>
+              <td class="center"><span class="tbl-ok">정상</span></td>
+              <td class="center"><span class="tbl-ok">정상</span></td>
+              <td class="center"><span class="tbl-ok">정상</span></td>
+              <td class="center"><span class="tbl-ok">정상</span></td>
+              <td class="center"><span class="tbl-nok">오류</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">sitemap.xml</td>
+              <td class="center"><span class="tbl-warn">부분 — 2021년</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-warn">오류</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">llms.txt</td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">스키마 오류 유형</td>
+              <td class="center" style="font-size: 11px">URL 프로토콜 오류</td>
+              <td class="center" style="font-size: 11px">@type:Person 오류</td>
+              <td class="center" style="font-size: 11px">@type:Person 오류</td>
+              <td class="center" style="font-size: 11px; color: var(--score-critical)">Schema 전무</td>
+              <td class="center" style="font-size: 11px; color: var(--score-critical)">Schema 전무</td>
+            </tr>
+
+            <tr>
+              <td class="label-col">OG 태그 (소셜 미리보기)</td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-warn">일부</span></td>
+              <td class="center"><span class="tbl-nok">없음</span></td>
+              <td class="center"><span class="tbl-warn">일부</span></td>
+            </tr>
+            <tr>
+              <td class="label-col">Google Analytics</td>
+              <td class="center"><span class="tbl-ok">설치</span></td>
+              <td class="center"><span class="tbl-ok">설치</span></td>
+              <td class="center"><span class="tbl-ok">설치</span></td>
+              <td class="center"><span class="tbl-ok">설치</span></td>
+              <td class="center"><span class="tbl-nok">미설치</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── SECTION 2: 공통 발견사항 ── -->
+      <div class="section-header">
+        <div class="section-eyebrow">Section 02</div>
+        <div class="section-title">5개 사이트 공통 발견사항</div>
+        <div class="section-desc">계열사 전반에 걸쳐 공통적으로 발견된 GEO 취약점입니다.</div>
+      </div>
+
+      <div class="common-issues">
+        <div class="common-issues-header">
+          <div class="common-issues-header-badge">Critical</div>
+          <div class="common-issues-header-text">
+            <h3>전 계열사 공통 긴급 이슈</h3>
+            <p>아래 항목은 5개 사이트 모두에 동일하게 존재하는 문제입니다.</p>
+          </div>
+        </div>
+        <div class="issue-row">
+          <div class="issue-row-num">01</div>
+          <div class="issue-row-content">
+            <div class="issue-row-title">llms.txt 파일 전무</div>
+            <div class="issue-row-sub">ChatGPT, Perplexity, Claude 등 AI 검색엔진이 사이트 맥락을 파악할 수 없어 브랜드 정보 인용 정확도 저하</div>
+          </div>
+          <span class="issue-row-count">5/5 사이트</span>
+        </div>
+        <div class="issue-row">
+          <div class="issue-row-num">02</div>
+          <div class="issue-row-content">
+            <div class="issue-row-title">FAQ 페이지에 FAQPage 스키마 미적용</div>
+            <div class="issue-row-sub">FAQ 콘텐츠가 있음에도 구조화 데이터 없어 Google 리치 결과(아코디언) 및 AI 오버뷰 직접 인용 불가</div>
+          </div>
+          <span class="issue-row-count">5/5 사이트</span>
+        </div>
+        <div class="issue-row">
+          <div class="issue-row-num">03</div>
+          <div class="issue-row-content">
+            <div class="issue-row-title">AI 크롤러 명시적 허용 지시어 없음</div>
+            <div class="issue-row-sub">robots.txt에 GPTBot, ClaudeBot, PerplexityBot, Google-Extended 전용 허용 선언 부재</div>
+          </div>
+          <span class="issue-row-count">5/5 사이트</span>
+        </div>
+        <div class="issue-row">
+          <div class="issue-row-num">04</div>
+          <div class="issue-row-content">
+            <div class="issue-row-title">콘텐츠 작성일/수정일 미표시</div>
+            <div class="issue-row-sub">모든 페이지에서 날짜 정보 없음 — AI 신선도 신호 부재, 콘텐츠 최신성 판단 불가</div>
+          </div>
+          <span class="issue-row-count">5/5 사이트</span>
+        </div>
+        <div class="issue-row">
+          <div class="issue-row-num">05</div>
+          <div class="issue-row-content">
+            <div class="issue-row-title">제3자 언론 보도 사실상 전무</div>
+            <div class="issue-row-sub">네이버 뉴스, 연예 매체, 나무위키/위키백과 등 AI 학습 데이터 핵심 소스에 브랜드 언급 없음</div>
+          </div>
+          <span class="issue-row-count">5/5 사이트</span>
+        </div>
+        <div class="issue-row">
+          <div class="issue-row-num">06</div>
+          <div class="issue-row-content">
+            <div class="issue-row-title">계열사 간 sameAs 상호 연결 없음</div>
+            <div class="issue-row-sub">6개 이상 도메인이 별도로 운영되며 AI 엔티티 그래프에서 동일 기업 그룹으로 인식되지 않음</div>
+          </div>
+          <span class="issue-row-count">5/5 사이트</span>
+        </div>
+      </div>
+
+      <!-- insight box -->
+      <div class="insight-box">
+        <div class="insight-box-header">분석 결과 핵심 시사점</div>
+        <ul class="insight-list">
+          <li>
+            5개 계열사의 GEO 평균 점수는 <strong>29.4점</strong>으로, AI 검색 환경에서 사실상 '보이지 않는 상태'에 해당합니다. Perplexity, ChatGPT 등 AI 검색이 급성장 중인 현 시점에서 경쟁사 대비 큰
+            기회 손실이 발생하고 있습니다.
+          </li>
+          <li>
+            콘텐츠 자산(강사진, FAQ, 합격 실적 등) 자체는 충분하지만, AI가 읽고 인용할 수 있는 <strong>구조화된 형태로 노출되지 않고 있는 것</strong>이 핵심 문제입니다. 새로운 콘텐츠 제작보다 기존
+            자산의 구조화가 우선입니다.
+          </li>
+          <li>
+            애비뉴센터(25점)와 하이틴센터(20점)는 각각 <strong>SSL 인증서 오류</strong>와 <strong>Schema 완전 부재</strong>라는 즉각 수정 가능한 기술적 문제가 점수를 심각하게 끌어내리고 있습니다.
+          </li>
+          <li>입시센터와 키즈센터는 Schema의 <strong>@type이 'Person'으로 잘못 설정</strong>되어 있어 — 학원이 사람으로 인식되는 치명적 오류가 존재하며, 수십 분 내 수정 가능합니다.</li>
+        </ul>
+      </div>
+
+      <!-- divider -->
+      <div class="divider"></div>
+
+      <!-- ── SECTION 3: 개별 브랜드 현황 ── -->
+      <div class="section-header">
+        <div class="section-eyebrow">Section 03</div>
+        <div class="section-title">브랜드별 상세 진단</div>
+        <div class="section-desc">각 계열사 사이트의 GEO 현황을 카테고리별로 상세 분석한 결과입니다.</div>
+      </div>
+
+      <!-- ─────────────── 아트센터 ─────────────── -->
+      <div class="brand-section">
+        <div class="brand-header">
+          <div class="brand-header-left">
+            <div class="brand-name-row">
+              <div class="brand-badge" style="background: var(--art)">A</div>
+              <div class="brand-section-name">배우앤배움 아트센터</div>
+            </div>
+            <div class="brand-section-url">https://www.baewoo.co.kr · 연기 전문 아카데미 · 분석 페이지 25개</div>
+            <div class="brand-summary">
+              5단계 IRUDA 등급제와 캐스팅·매니지먼트 통합 운영이 강점이지만, AI 엔진이 신뢰·인용하는 데 필요한 구조화 데이터와 기술 기반이 부재합니다. 콘텐츠 자산(FAQ, 강사진)은 풍부하나 AI가 추출
+              가능한 형태로 노출되지 않고 있습니다.
+            </div>
+          </div>
+          <div class="brand-score-block">
+            <div class="big-score" style="color: var(--score-poor)">36<span class="big-score-denom">/100</span></div>
+            <div class="big-score-label" style="color: var(--score-poor)">경고 (Warning)</div>
+          </div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>AI 인용 가능성</span><span>41/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-poor" style="width: 41%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>브랜드 권위</span><span>31/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 31%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>콘텐츠 E-E-A-T</span><span>61/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-fair" style="width: 61%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>기술 GEO</span><span>28/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 28%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>구조화 데이터</span><span>11/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 11%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>플랫폼 최적화</span><span>25/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 25%"></div></div>
+          </div>
+        </div>
+        <div class="issues-grid">
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">sitemap.xml 2021년 이후 미갱신</div>
+            <div class="issue-desc">사이트맵 전체가 2021년 6월로 고정되어 있어 AI 크롤러가 신규 콘텐츠를 발견하지 못합니다. 모든 URL이 HTTP로 기재되어 크롤 효율도 저하됩니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">핵심 페이지 다수 404 / 빈 콘텐츠</div>
+            <div class="issue-desc">등급제, 커리큘럼, 환불정책 등 핵심 페이지가 "등록된 내용이 없습니다" 상태입니다. AI가 학원의 핵심 정보를 읽을 수 없습니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">Schema URL 유효성 오류</div>
+            <div class="issue-desc">구조화 데이터 내 URL이 "www.baewoo.co.kr" (프로토콜 없음)로 기재되어 스키마 유효성 검사에 실패합니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">6개 도메인 분산 운영, sameAs 미연결</div>
+            <div class="issue-desc">baewoo.co.kr, baewoo.tv, baewoo.me, baewoo.net 등 6개 도메인이 상호 연결 없이 운영되어 AI 엔티티 매핑에 혼란을 유발합니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">17개 FAQ Q&amp;A에 FAQPage 스키마 없음</div>
+            <div class="issue-desc">수강료, 데뷔 기간, 연령 등 구체적 수치를 포함한 FAQ가 존재하나 구조화 데이터 미적용으로 Google 아코디언 및 AI 직접 인용 불가입니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">플랫폼 핸들 3종 불일치</div>
+            <div class="issue-desc">YouTube @BNB_ENM / Instagram @bnbartcenter / Facebook baewoobaewoom — 플랫폼별 다른 핸들로 AI 교차 엔티티 매핑이 실패합니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────────── 입시센터 ─────────────── -->
+      <div class="brand-section">
+        <div class="brand-header">
+          <div class="brand-header-left">
+            <div class="brand-name-row">
+              <div class="brand-badge" style="background: var(--exam)">E</div>
+              <div class="brand-section-name">배우앤배움 입시센터</div>
+            </div>
+            <div class="brand-section-url">https://www.baewoo.kr · 예술대학 입시 전문 (연기·무용·뮤지컬) · 분석 페이지 15개</div>
+            <div class="brand-summary">
+              Netflix 오징어 게임 배우 출신 고문, 21개 연습실 24시간 운영 등 강점이 있지만 스키마 @type이 'Person'(사람)으로 잘못 설정되어 있고, 합격현황 페이지가 공백 상태입니다.
+            </div>
+          </div>
+          <div class="brand-score-block">
+            <div class="big-score" style="color: var(--score-critical)">32<span class="big-score-denom">/100</span></div>
+            <div class="big-score-label" style="color: var(--score-critical)">위험 (Critical)</div>
+          </div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>AI 인용 가능성</span><span>28/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 28%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>브랜드 권위</span><span>34/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 34%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>콘텐츠 E-E-A-T</span><span>52/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-poor" style="width: 52%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>기술 GEO</span><span>31/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 31%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>구조화 데이터</span><span>11/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 11%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>플랫폼 최적화</span><span>25/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 25%"></div></div>
+          </div>
+        </div>
+        <div class="issues-grid">
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">Schema @type이 "Person"으로 잘못 설정</div>
+            <div class="issue-desc">학원(Organization)임에도 "Person"(사람)으로 설정되어 있어 Google Knowledge Panel 생성 불가, 로컬 팩 노출 불가 상태입니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">합격현황 페이지 데이터 완전 공백</div>
+            <div class="issue-desc">"합격현황" 메뉴가 존재하나 본문이 "게시물이 없습니다" 상태입니다. "최다합격" 주장과 공백 데이터의 공존이 신뢰도를 심각하게 훼손합니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">sitemap.xml 완전 부재 (404)</div>
+            <div class="issue-desc">사이트맵이 전혀 없어 AI 크롤러가 사이트 콘텐츠를 탐색할 방법이 없습니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">수강료·환불정책 완전 미공개</div>
+            <div class="issue-desc">월 수강료, 패키지 가격 일체가 공개되지 않아 학원법상 의무 고지 미충족 리스크가 있으며, AI 인용 가능성도 낮습니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">강사 정보가 다른 도메인에만 존재</div>
+            <div class="issue-desc">강사진 페이지가 baewoo.co.kr에만 있고 입시센터 도메인(baewoo.kr)에는 없어, 이 사이트만 방문하는 크롤러는 전문성 신호를 전혀 확인할 수 없습니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">24건 합격 후기 날짜 전무</div>
+            <div class="issue-desc">실제 합격 후기가 존재하지만 연도·날짜 표시가 없어 콘텐츠 최신성을 알 수 없습니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────────── 키즈센터 ─────────────── -->
+      <div class="brand-section">
+        <div class="brand-header">
+          <div class="brand-header-left">
+            <div class="brand-name-row">
+              <div class="brand-badge" style="background: var(--kids)">K</div>
+              <div class="brand-section-name">배우앤배움 키즈센터</div>
+            </div>
+            <div class="brand-section-url">https://baewoo.net · 아역배우 교육·캐스팅·매니지먼트 · 분석 페이지 약 15개</div>
+            <div class="brand-summary">
+              인스타그램 팔로워 9,372명, 네이버 블로그 활발 운영으로 SNS 활동은 양호하지만 Schema @type 오류와 sitemap 부재로 AI 검색 최적화가 전혀 되어 있지 않습니다. 강사 이름과 자격 정보가 사이트에
+              전무합니다.
+            </div>
+          </div>
+          <div class="brand-score-block">
+            <div class="big-score" style="color: var(--score-critical)">34<span class="big-score-denom">/100</span></div>
+            <div class="big-score-label" style="color: var(--score-critical)">위험 (Critical)</div>
+          </div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>AI 인용 가능성</span><span>36/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 36%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>브랜드 권위</span><span>32/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 32%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>콘텐츠 E-E-A-T</span><span>38/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 38%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>기술 GEO</span><span>39/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-poor" style="width: 39%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>구조화 데이터</span><span>18/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 18%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>플랫폼 최적화</span><span>28/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 28%"></div></div>
+          </div>
+        </div>
+        <div class="issues-grid">
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">Schema @type이 "Person"으로 잘못 설정</div>
+            <div class="issue-desc">입시센터와 동일한 오류. 학원 조직이 '개인'으로 분류되어 검색엔진과 AI의 엔티티 인식이 완전히 실패하고 있습니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">sitemap.xml 완전 부재 (모든 경로 404)</div>
+            <div class="issue-desc">사이트맵이 없어 검색엔진이 페이지를 발견할 경로가 없습니다. canonical URL도 없어 중복 콘텐츠 위험이 높습니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">강사 이름·자격 정보 전무</div>
+            <div class="issue-desc">E-E-A-T에서 가장 취약한 부분입니다. 강사 이름 0명, 자격·학력 정보 없음으로 전문성 신호가 완전히 부재합니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">canonical URL 없음 — 중복 콘텐츠 위험</div>
+            <div class="issue-desc">쿼리 파라미터 기반 URL과 canonical 태그 부재로 동일 콘텐츠가 여러 URL로 색인될 수 있습니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">홈페이지가 이미지 위주 — AI 읽기 불가</div>
+            <div class="issue-desc">홈페이지가 프로필 썸네일 위주로 텍스트가 매우 적습니다. AI가 추출할 수 있는 텍스트 콘텐츠가 부족합니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">개인정보처리방침, 이용약관 없음</div>
+            <div class="issue-desc">신뢰 지표에서 치명적 약점입니다. 아동 대상 서비스임에도 관련 정책 페이지가 존재하지 않습니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────────── 하이틴센터 ─────────────── -->
+      <div class="brand-section">
+        <div class="brand-header">
+          <div class="brand-header-left">
+            <div class="brand-name-row">
+              <div class="brand-badge" style="background: var(--teen)">H</div>
+              <div class="brand-section-name">배우앤배움 하이틴센터</div>
+            </div>
+            <div class="brand-section-url">https://baewoo.me · 청소년 연기 교육·캐스팅·매니지먼트 · 분석 페이지 약 15개</div>
+            <div class="brand-summary">
+              5개 계열사 중 최저 점수(20점)입니다. 구조화 데이터(Schema)가 완전히 부재하고, sitemap이 잘못된 도메인(baewoo.co.kr)을 참조하고 있어 검색엔진이 이 사이트를 사실상 인식하지 못하는
+              상태입니다. 콘텐츠 대부분이 이미지 기반입니다.
+            </div>
+          </div>
+          <div class="brand-score-block">
+            <div class="big-score" style="color: var(--score-critical)">20<span class="big-score-denom">/100</span></div>
+            <div class="big-score-label" style="color: var(--score-critical)">위험 (Critical)</div>
+          </div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>AI 인용 가능성</span><span>18/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 18%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>브랜드 권위</span><span>12/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 12%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>콘텐츠 E-E-A-T</span><span>28/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 28%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>기술 GEO</span><span>32/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 32%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>구조화 데이터</span><span style="color: var(--score-critical); font-weight: 800">0/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 2%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>플랫폼 최적화</span><span>24/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 24%"></div></div>
+          </div>
+        </div>
+        <div style="padding: 16px 32px 0; background: #fff1f2">
+          <div class="alert-box danger" style="margin-bottom: 16px">
+            <div class="alert-label danger-label">긴급</div>
+            <div class="alert-content">
+              <h4>구조화 데이터(Schema) 0점 — 5개 계열사 중 유일</h4>
+              <p>JSON-LD, Microdata, RDFa 어떤 형식의 구조화 데이터도 존재하지 않습니다. 검색엔진과 AI가 이 사이트의 사업 정체성, 위치, 서비스에 대한 기계 판독 정보를 전혀 가지고 있지 않습니다.</p>
+            </div>
+          </div>
+        </div>
+        <div class="issues-grid">
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">구조화 데이터 완전 부재 (Schema 0점)</div>
+            <div class="issue-desc">JSON-LD, Microdata, RDFa 모두 없습니다. 5개 계열사 중 유일하게 스키마 자체가 전무합니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">sitemap이 잘못된 도메인 참조</div>
+            <div class="issue-desc">sitemap.xml이 baewoo.me가 아닌 baewoo.co.kr 도메인을 참조하고 있으며, 형식 오류(sitemapindex 오용)와 2021년 날짜 고정 문제도 있습니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">이미지 기반 콘텐츠 — AI 읽기 불가</div>
+            <div class="issue-desc">홈페이지 콘텐츠 대부분이 이미지와 JavaScript 슬라이더로 구성되어 AI 크롤러가 읽을 수 있는 텍스트가 극히 적습니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">OG 태그 오류 — 소셜 미리보기 깨짐</div>
+            <div class="issue-desc">og:image가 실제 이미지 URL이 아닌 도메인 URL을 가리키고, og:url에 프로토콜이 누락되어 있습니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">개인정보처리방침·이용약관 없음</div>
+            <div class="issue-desc">청소년 대상 서비스임에도 개인정보 관련 정책 페이지가 존재하지 않아 신뢰도와 법적 리스크 모두 문제입니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">jQuery 1.8.3 사용 (2012년 버전)</div>
+            <div class="issue-desc">보안 취약점이 알려진 오래된 라이브러리가 사용 중입니다. 보안 헤더도 전무합니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────────── 애비뉴센터 ─────────────── -->
+      <div class="brand-section">
+        <div class="brand-header">
+          <div class="brand-header-left">
+            <div class="brand-name-row">
+              <div class="brand-badge" style="background: var(--avenue)">V</div>
+              <div class="brand-section-name">배우앤배움 애비뉴센터</div>
+            </div>
+            <div class="brand-section-url">https://www.baewoorun.co.kr · 40세 이상 성인 연기 전문 · 분석 페이지 1개 (단일 페이지)</div>
+            <div class="brand-summary">
+              "국내 유일 40세 이상 전문 트레이닝"이라는 독보적 포지셔닝과 한국예술종합학교 출신 현직 배우 강사진을 보유하지만, SSL 인증서 오류로 모든 AI 크롤러 접근이 차단된 상태입니다. Schema,
+              sitemap, meta description 모두 없어 5개 계열사 중 두 번째로 낮은 점수입니다.
+            </div>
+          </div>
+          <div class="brand-score-block">
+            <div class="big-score" style="color: var(--score-critical)">25<span class="big-score-denom">/100</span></div>
+            <div class="big-score-label" style="color: var(--score-critical)">위험 (Critical)</div>
+          </div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>AI 인용 가능성</span><span>32/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 32%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>브랜드 권위</span><span>22/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 22%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>콘텐츠 E-E-A-T</span><span>44/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 44%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>기술 GEO</span><span style="color: var(--score-critical); font-weight: 800">12/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 12%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>구조화 데이터</span><span>3/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 3%"></div></div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-label"><span>플랫폼 최적화</span><span>18/100</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill fill-critical" style="width: 18%"></div></div>
+          </div>
+        </div>
+        <div style="padding: 16px 32px 0; background: #fff1f2">
+          <div class="alert-box danger" style="margin-bottom: 16px">
+            <div class="alert-label danger-label">긴급</div>
+            <div class="alert-content">
+              <h4>SSL 인증서 오류 — AI 크롤러 완전 차단 상태</h4>
+              <p>
+                HTTPS 접근 시 SSL 인증서 검증 실패가 발생합니다. GPTBot, ClaudeBot, Googlebot 등 모든 주요 크롤러가 이 사이트에 접근할 수 없으며, 방문자에게도 보안 경고가 표시됩니다. Let's Encrypt 등
+                무료 인증서로 즉시 수정 가능합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="issues-grid">
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">SSL 인증서 오류 — 크롤러 접근 완전 차단</div>
+            <div class="issue-desc">가장 시급한 문제입니다. 수정 즉시 모든 AI 크롤러가 사이트에 접근 가능해지며, 단독으로 20점 이상 점수 향상이 예상됩니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">Schema.org 마크업 완전 부재</div>
+            <div class="issue-desc">5개 계열사 중 유일하게 Schema 자체가 없습니다 (하이틴센터도 동일). Google Knowledge Graph가 이 사이트를 엔티티로 인식하지 못합니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">단일 페이지(SPA) 구조 — 크롤 불가</div>
+            <div class="issue-desc">전체 사이트가 단일 HTML 페이지로, 크롤러가 이동할 수 있는 내부 링크가 2개(파비콘)뿐입니다. 사실상 페이지가 1개인 사이트입니다.</div>
+          </div>
+          <div class="issue-item sev-critical">
+            <div class="sev-badge critical">Critical</div>
+            <div class="issue-title">meta description, OG 태그 공백</div>
+            <div class="issue-desc">모든 메타 설명과 OG 태그가 공백("")으로 설정되어 검색 결과와 소셜 미리보기에 제목·설명이 표시되지 않습니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">사업자번호·주소·수강료 미공개</div>
+            <div class="issue-desc">타 계열사는 공개하는 사업자등록번호, 학원등록번호, 주소가 없습니다. 수강료도 완전히 비공개 상태입니다.</div>
+          </div>
+          <div class="issue-item sev-high">
+            <div class="sev-badge high">High</div>
+            <div class="issue-title">Google Analytics 미설치</div>
+            <div class="issue-desc">타 계열사는 모두 GTM + GA가 설치되어 있지만 애비뉴센터에서는 감지되지 않아 성과 측정이 불가능합니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: 분석 방법론 ── -->
+      <div class="section-header" style="margin-top: 48px">
+        <div class="section-eyebrow">Appendix</div>
+        <div class="section-title">GEO 분석 방법론</div>
+      </div>
+
+      <div style="background: white; border-radius: 8px; border: 1px solid var(--border); padding: 28px 32px; margin-bottom: 24px">
+        <p style="font-size: 13px; color: var(--gray-600); line-height: 1.8; margin-bottom: 20px">
+          본 보고서는 <strong>GEO(Generative Engine Optimization)</strong> 프레임워크를 기반으로 작성되었습니다. GEO는 Google, Naver 등 전통적 검색엔진 최적화(SEO)를 포함하면서,
+          ChatGPT·Perplexity·Google AI Overviews·Bing Copilot 등 <strong>AI 기반 검색엔진에서의 인용 가능성과 가시성</strong>을 중점 분석합니다.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px">
+          <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px">
+            <div style="font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px">AI 인용 가능성 25%</div>
+            <div style="font-size: 12px; color: var(--gray-600)">AI가 사이트 콘텐츠를 직접 인용할 수 있는 형태인지 평가</div>
+          </div>
+          <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px">
+            <div style="font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px">브랜드 권위 20%</div>
+            <div style="font-size: 12px; color: var(--gray-600)">제3자 언급, 언론 보도, 플랫폼 존재 등 외부 신뢰 신호</div>
+          </div>
+          <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px">
+            <div style="font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px">E-E-A-T 콘텐츠 20%</div>
+            <div style="font-size: 12px; color: var(--gray-600)">경험·전문성·권위·신뢰 기반 콘텐츠 품질 평가</div>
+          </div>
+          <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px">
+            <div style="font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px">기술 GEO 15%</div>
+            <div style="font-size: 12px; color: var(--gray-600)">SSL, sitemap, robots.txt, llms.txt, URL 구조 등 기술적 기반</div>
+          </div>
+          <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px">
+            <div style="font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px">구조화 데이터 10%</div>
+            <div style="font-size: 12px; color: var(--gray-600)">Schema.org JSON-LD 마크업의 정확성과 완성도</div>
+          </div>
+          <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px">
+            <div style="font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px">플랫폼 최적화 10%</div>
+            <div style="font-size: 12px; color: var(--gray-600)">SNS, 나무위키, 네이버 생태계 등 멀티플랫폼 존재감</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="report-footer">
+        <p><strong>BNB Industry 5개 계열사 GEO 현황 진단 보고서</strong></p>
+        <p style="margin-top: 6px">감사일: 2026년 3월 19일 &nbsp;|&nbsp; GEO Audit Tool v2.0 &nbsp;|&nbsp; 본 보고서의 무단 배포를 금합니다.</p>
+      </div>
+    </div>
+  </body>
+</html>
