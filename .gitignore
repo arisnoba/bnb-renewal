@@ -1,1 +1,10 @@
 .DS_Store
+
+# 로컬 원본 덤프
+data/baewoo.sql
+data/baewoo.sql.gz
+
+# 로컬 생성 SQL 산출물
+data/baewoo-split/_global.sql
+data/baewoo-split/tables/*.sql
+data/baewoo-curated/*/*.sql
