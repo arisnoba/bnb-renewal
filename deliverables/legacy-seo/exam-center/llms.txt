@@ -1,0 +1,36 @@
+# 배우앤배움 입시센터
+
+> 배우앤배움 입시센터는 서울 서초구 반포동에 위치한 예술대학 입시 전문 아카데미입니다.
+> 연기, 뮤지컬, 무용 트랙과 예술고 입시반을 운영하며 소수정예 실기 지도를 제공합니다.
+> BNB Exam Center is an arts university entrance exam prep academy in Seocho-gu, Seoul, Korea.
+
+## 기관 정보
+- 정식 명칭: 배우앤배움 입시센터
+- 운영 법인: (주)비앤비 인더스트리
+- 학원등록번호: 제14053호
+- 주소: 서울특별시 서초구 사평대로53길 107
+- 전화: 1577-9929
+
+## 교육 과정
+- 연기 입시반: 실기, 면접, 오디션 준비
+- 뮤지컬 입시반: 연기와 노래 중심 입시 준비
+- 무용 입시반: 무용 실기 중심 입시 준비
+- 예고 입시반: 예술고등학교 진학 대비
+- 주말반: 금요일부터 일요일까지 3일 운영 과정
+
+## 수업 특징
+- 최대 8인 소수정예 수업
+- 21개 연습실, 24시간 개방 홀 운영
+- 자유연기, 당일대사, 지정희곡, 즉흥연기, 특기, 질의응답 대비
+
+## 주요 페이지
+- 사이트 홈: https://www.baewoo.kr/web/
+- 학원 소개: https://www.baewoo.kr/web/bbs/content.php?co_id=company
+- 강사 소개: https://www.baewoo.kr/web/html/teacher_list.php?mid=teacher
+- 합격 현황: https://www.baewoo.kr/web/bbs/board.php?bo_table=victory10
+- 후기: https://www.baewoo.kr/web/bbs/board.php?bo_table=new_hoogi
+- FAQ: https://www.baewoo.kr/web/bbs/content.php?co_id=faq
+- 상담 신청: https://www.baewoo.kr/web/bbs/content.php?co_id=cs_call
+
+## 사이트맵
+https://www.baewoo.kr/sitemap.xml

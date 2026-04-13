@@ -1,0 +1,30 @@
+# 배우앤배움 아트센터
+
+> 배우앤배움 아트센터는 서울 서초구 반포동에 위치한 연기 전문 아카데미입니다.
+> IRUDA 5단계 등급제와 캐스팅, 매니지먼트, 위탁교육을 함께 운영합니다.
+> BNB Art Center is a professional acting academy in Seocho-gu, Seoul, Korea.
+
+## 기관 정보
+- 정식 명칭: 배우앤배움 아트센터
+- 운영 법인: (주)비앤비 인더스트리
+- 학원등록번호: 제10617호
+- 주소: 서울특별시 서초구 사평대로55길 126, 대솔빌딩 1-5층
+- 전화: 1577-9929
+
+## 교육 프로그램
+- I반: 입문자 대상 기초 연기 트레이닝
+- R반: 카메라 연기와 감정 표현 강화
+- U반: 캐릭터 구축과 실전 표현 심화
+- D반: 오디션 준비와 업계 연결 훈련
+- A반: 현직 배우 단계 지속 개발
+
+## 주요 페이지
+- 사이트 홈: https://www.baewoo.co.kr/web/
+- 기관 소개: https://www.baewoo.co.kr/web/bbs/content.php?co_id=company
+- 강사진: https://www.baewoo.co.kr/web/html/teacher_list.php?mid=teacher
+- 캐스팅: https://www.baewoo.co.kr/web/bbs/board.php?bo_table=new_casting
+- FAQ: https://www.baewoo.co.kr/web/bbs/content.php?co_id=faq
+- 상담 신청: https://www.baewoo.co.kr/web/bbs/content.php?co_id=cs_call
+
+## 사이트맵
+https://www.baewoo.co.kr/sitemap.xml

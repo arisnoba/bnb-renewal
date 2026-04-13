@@ -1,0 +1,30 @@
+# 배우앤배움 키즈센터
+
+> 배우앤배움 키즈센터는 서울 서초구에서 아역배우 교육, 캐스팅, 매니지먼트를 함께 운영하는 전문 기관입니다.
+> 드라마, 영화, 광고 오디션 준비와 캐스팅 연계 정보를 제공하며 아역배우 중심 교육 과정을 운영합니다.
+> BNB Kids Center provides child actor training and casting programs in Seocho-gu, Seoul, Korea.
+
+## 기관 정보
+- 정식 명칭: 배우앤배움 키즈센터
+- 운영 법인: (주)비앤비 인더스트리
+- 주소: 서울특별시 서초구 사평대로57길 135
+- 전화: 1577-9929
+
+## 서비스 범위
+- 아역 연기 트레이닝
+- 드라마, 영화, 광고 오디션 대비
+- 캐스팅 및 엔터테인먼트 연계
+- 프로필 제작 및 활동 관리
+
+## 주요 페이지
+- 사이트 홈: https://baewoo.net/web/
+- 기관 소개: https://baewoo.net/web/bbs/content.php?co_id=company
+- 교육 소개: https://baewoo.net/web/bbs/content.php?co_id=edu01
+- 강사진: https://baewoo.net/web/html/teacher_list.php?mid=teacher
+- 캐스팅: https://baewoo.net/web/bbs/board.php?bo_table=new_casting_enm
+- 출연 소식: https://baewoo.net/web/bbs/board.php?bo_table=new_appear
+- FAQ: https://baewoo.net/web/bbs/content.php?co_id=faq
+- 상담 신청: https://baewoo.net/web/bbs/content.php?co_id=cs_call
+
+## 사이트맵
+https://baewoo.net/sitemap.xml

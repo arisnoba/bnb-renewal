@@ -1,0 +1,31 @@
+# 배우앤배움 하이틴센터
+
+> 배우앤배움 하이틴센터는 서울 서초구에서 청소년 전문 연기 교육, 캐스팅, 매니지먼트를 운영하는 기관입니다.
+> 방송연기 트레이닝, 실전 오디션, 캐스팅 연계 정보를 제공하며 하이틴 연령대에 맞춘 수업을 운영합니다.
+> BNB High Teen Center provides acting and casting programs for teenagers in Seocho-gu, Seoul, Korea.
+
+## 기관 정보
+- 정식 명칭: 배우앤배움 하이틴센터
+- 운영 법인: (주)비앤비 인더스트리
+- 학원 인가번호: 14504
+- 주소: 서울특별시 서초구 사평대로53길 107
+- 전화: 1577-9929
+
+## 교육 및 활동
+- 청소년 방송연기 트레이닝
+- 기획사 및 작품 오디션 대비
+- 드라마, 광고, 콘텐츠 출연 연계
+- 프로필 제작 및 활동 관리
+
+## 주요 페이지
+- 사이트 홈: https://baewoo.me/web/
+- 기관 소개: https://baewoo.me/web/bbs/content.php?co_id=company
+- 수업 커리큘럼: https://baewoo.me/web/html/class_curriculum.php
+- 강사진: https://baewoo.me/web/html/teacher_list.php?mid=teacher
+- 캐스팅: https://baewoo.me/web/bbs/board.php?bo_table=new_casting_enm
+- 출연 소식: https://baewoo.me/web/bbs/board.php?bo_table=new_appear
+- FAQ: https://baewoo.me/web/bbs/content.php?co_id=faq
+- 상담 신청: https://baewoo.me/web/bbs/content.php?co_id=cs_call
+
+## 사이트맵
+https://baewoo.me/sitemap.xml
