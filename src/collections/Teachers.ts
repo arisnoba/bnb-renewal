@@ -12,8 +12,12 @@ const centerOptions = [
   { label: '미분류', value: 'unknown' },
 ]
 
-export const Faculty: CollectionConfig = {
-  slug: 'faculty',
+export const Teachers: CollectionConfig = {
+  slug: 'teachers',
+  labels: {
+    plural: 'Teachers',
+    singular: 'Teacher',
+  },
   access: {
     create: loggedInOnly,
     delete: loggedInOnly,
@@ -22,10 +26,6 @@ export const Faculty: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'center', 'displayOrder', 'updatedAt'],
-    labels: {
-      plural: 'Teachers',
-      singular: 'Teacher',
-    },
     useAsTitle: 'name',
   },
   defaultSort: 'displayOrder',

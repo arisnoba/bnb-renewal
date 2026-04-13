@@ -12,6 +12,9 @@ import {
 } from './legacy-sql'
 
 type SeedOptions = {
+  agencyLimit: 'all' | number
+  collections: Set<'agencies' | 'castings' | 'profiles'>
+  dryRun: boolean
   limit: number
 }
 
@@ -83,46 +86,68 @@ async function main() {
   )
   const agencyRows = await parseInsertFile(path.join(p1Dir, 'g5_agency.sql'))
 
-  const profiles = ensureUniqueSlugs(
-    profileRows
-      .filter((row) => Number(row.wr_is_comment ?? 0) === 0)
-      .sort(compareLegacyDateDesc('wr_datetime'))
-      .slice(0, options.limit)
-      .map(mapProfileRow),
-  )
+  const profiles = options.collections.has('profiles')
+    ? ensureUniqueSlugs(
+        profileRows
+          .filter((row) => Number(row.wr_is_comment ?? 0) === 0)
+          .sort(compareLegacyDateDesc('wr_datetime'))
+          .slice(0, options.limit)
+          .map(mapProfileRow),
+      )
+    : []
 
-  const castings = ensureUniqueSlugs(
-    castingRows
-      .filter(({ row }) => Number(row.wr_is_comment ?? 0) === 0)
-      .sort((left, right) => {
-        const leftDate = normalizeDateTime(left.row.wr_datetime) ?? ''
-        const rightDate = normalizeDateTime(right.row.wr_datetime) ?? ''
+  const castings = options.collections.has('castings')
+    ? ensureUniqueSlugs(
+        castingRows
+          .filter(({ row }) => Number(row.wr_is_comment ?? 0) === 0)
+          .sort((left, right) => {
+            const leftDate = normalizeDateTime(left.row.wr_datetime) ?? ''
+            const rightDate = normalizeDateTime(right.row.wr_datetime) ?? ''
 
-        return rightDate.localeCompare(leftDate)
-      })
-      .slice(0, options.limit)
-      .map(({ row, sourceTable }) => mapCastingRow(row, sourceTable)),
-  )
+            return rightDate.localeCompare(leftDate)
+          })
+          .slice(0, options.limit)
+          .map(({ row, sourceTable }) => mapCastingRow(row, sourceTable)),
+      )
+    : []
 
-  const agencies = ensureUniqueSlugs(
-    agencyRows
-      .slice()
-      .sort((left, right) => Number(right.bn_id ?? 0) - Number(left.bn_id ?? 0))
-      .slice(0, options.limit)
-      .map(mapAgencyRow),
-  )
+  const agencies = options.collections.has('agencies')
+    ? ensureUniqueSlugs(
+        agencyRows
+          .slice()
+          .sort((left, right) => Number(right.bn_id ?? 0) - Number(left.bn_id ?? 0))
+          .slice(0, options.agencyLimit === 'all' ? agencyRows.length : options.agencyLimit)
+          .map(mapAgencyRow),
+      )
+    : []
+
+  if (options.dryRun) {
+    printDryRun({ agencies, castings, options, profiles })
+    return
+  }
 
   const payload = await getPayload({ config })
 
-  await upsertProfiles(payload, profiles)
-  await upsertCastings(payload, castings)
-  await upsertAgencies(payload, agencies)
+  if (profiles.length > 0) {
+    await upsertProfiles(payload, profiles)
+  }
+
+  if (castings.length > 0) {
+    await upsertCastings(payload, castings)
+  }
+
+  if (agencies.length > 0) {
+    await upsertAgencies(payload, agencies)
+  }
 
   console.log(
     JSON.stringify(
       {
         agencies: agencies.length,
+        agencyLimit: options.agencyLimit,
         castings: castings.length,
+        collections: [...options.collections],
+        dryRun: false,
         limitPerCollection: options.limit,
         profiles: profiles.length,
       },
@@ -133,26 +158,90 @@ async function main() {
 }
 
 function parseArgs(args: string[]): SeedOptions {
+  const collections = new Set<'agencies' | 'castings' | 'profiles'>([
+    'profiles',
+    'castings',
+    'agencies',
+  ])
+  let agencyLimit: 'all' | number = 10
+  let dryRun = false
   let limit = 10
+  let hasExplicitAgencyLimit = false
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
 
-    if (arg !== '--limit') {
+    if (arg === '--dry-run') {
+      dryRun = true
       continue
     }
 
-    const next = Number(args[index + 1])
+    if (arg === '--limit') {
+      const next = Number(args[index + 1])
 
-    if (!Number.isFinite(next) || next <= 0) {
-      throw new Error(`잘못된 --limit 값입니다: ${args[index + 1]}`)
+      if (!Number.isFinite(next) || next <= 0) {
+        throw new Error(`잘못된 --limit 값입니다: ${args[index + 1]}`)
+      }
+
+      limit = next
+      if (!hasExplicitAgencyLimit) {
+        agencyLimit = next
+      }
+      index += 1
+      continue
     }
 
-    limit = next
-    index += 1
+    if (arg === '--agency-limit') {
+      const nextArg = args[index + 1]
+
+      if (nextArg === 'all') {
+        hasExplicitAgencyLimit = true
+        agencyLimit = 'all'
+        index += 1
+        continue
+      }
+
+      const next = Number(nextArg)
+
+      if (!Number.isFinite(next) || next <= 0) {
+        throw new Error(`잘못된 --agency-limit 값입니다: ${nextArg}`)
+      }
+
+      hasExplicitAgencyLimit = true
+      agencyLimit = next
+      index += 1
+      continue
+    }
+
+    if (arg === '--only') {
+      const nextArg = args[index + 1]
+      const requestedCollections = new Set<'agencies' | 'castings' | 'profiles'>()
+
+      for (const value of String(nextArg ?? '')
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)) {
+        if (value !== 'agencies' && value !== 'castings' && value !== 'profiles') {
+          throw new Error(`잘못된 --only 값입니다: ${value}`)
+        }
+
+        requestedCollections.add(value)
+      }
+
+      if (requestedCollections.size === 0) {
+        throw new Error('`--only`에는 최소 1개 컬렉션이 필요합니다.')
+      }
+
+      collections.clear()
+      for (const collection of requestedCollections) {
+        collections.add(collection)
+      }
+
+      index += 1
+    }
   }
 
-  return { limit }
+  return { agencyLimit, collections, dryRun, limit }
 }
 
 function mapProfileRow(row: LegacyRow): ProfileRecord {
@@ -358,4 +447,35 @@ async function upsertAgencies(payload: Payload, records: AgencyRecord[]) {
   }
 }
 
-void main()
+function printDryRun({
+  agencies,
+  castings,
+  options,
+  profiles,
+}: {
+  agencies: AgencyRecord[]
+  castings: CastingRecord[]
+  options: SeedOptions
+  profiles: ProfileRecord[]
+}) {
+  console.log(
+    JSON.stringify(
+      {
+        agencies,
+        agencyLimit: options.agencyLimit,
+        castings,
+        collections: [...options.collections],
+        dryRun: true,
+        limitPerCollection: options.limit,
+        profiles,
+      },
+      null,
+      2,
+    ),
+  )
+}
+
+void main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})

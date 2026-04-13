@@ -12,8 +12,10 @@ import {
 } from './legacy-sql'
 
 type SeedOptions = {
+  collections: Set<'news' | 'pages' | 'teachers'>
   dryRun: boolean
   limit: number
+  teacherLimit: 'all' | number
 }
 
 type CenterValue = 'all' | 'art' | 'exam' | 'kids' | 'highteen' | 'avenue' | 'unknown'
@@ -42,7 +44,7 @@ type PageRecord = {
   title: string
 }
 
-type FacultyRecord = {
+type TeacherRecord = {
   bioHtml: string
   center: CenterValue
   displayOrder: number
@@ -94,7 +96,7 @@ async function main() {
       sourceTable: 'g5_content2',
     })),
   ]
-  const facultyRows = [
+  const teacherRows = [
     ...(await parseInsertFile(path.join(p0Dir, 'g5_teacher.sql'))).map((row) => ({
       row,
       sourceTable: 'g5_teacher',
@@ -106,38 +108,57 @@ async function main() {
   ]
   const newsRows = await parseInsertFile(path.join(p0Dir, 'g5_write_new_notice.sql'))
 
-  const pages = ensureUniquePageSlugs(
-    pageRows
-      .slice(0, options.limit)
-      .map(({ row, sourceTable }) => mapPageRow(row, sourceTable)),
-  )
-  const faculty = facultyRows.slice(0, options.limit).map(({ row, sourceTable }) =>
-    mapFacultyRow(row, sourceTable),
-  )
-  const news = newsRows
-    .filter((row) => Number(row.wr_is_comment ?? 0) === 0)
-    .slice(0, options.limit)
-    .map(mapNewsRow)
+  const pages = options.collections.has('pages')
+    ? ensureUniquePageSlugs(
+        pageRows
+          .slice(0, options.limit)
+          .map(({ row, sourceTable }) => mapPageRow(row, sourceTable)),
+      )
+    : []
+  const teachers = options.collections.has('teachers')
+    ? teacherRows
+        .slice(
+          0,
+          options.teacherLimit === 'all' ? teacherRows.length : options.teacherLimit,
+        )
+        .map(({ row, sourceTable }) => mapTeacherRow(row, sourceTable))
+    : []
+  const news = options.collections.has('news')
+    ? newsRows
+        .filter((row) => Number(row.wr_is_comment ?? 0) === 0)
+        .slice(0, options.limit)
+        .map(mapNewsRow)
+    : []
 
   if (options.dryRun) {
-    printDryRun({ faculty, news, options, pages })
+    printDryRun({ news, options, pages, teachers })
     return
   }
 
   const payload = await getPayload({ config })
 
-  await upsertPages(payload, pages)
-  await upsertFaculty(payload, faculty)
-  await upsertNews(payload, news)
+  if (pages.length > 0) {
+    await upsertPages(payload, pages)
+  }
+
+  if (teachers.length > 0) {
+    await upsertTeachers(payload, teachers)
+  }
+
+  if (news.length > 0) {
+    await upsertNews(payload, news)
+  }
 
   console.log(
     JSON.stringify(
       {
+        collections: [...options.collections],
         dryRun: false,
-        faculty: faculty.length,
+        teachers: teachers.length,
         limitPerTable: options.limit,
         news: news.length,
         pages: pages.length,
+        teacherLimit: options.teacherLimit,
       },
       null,
       2,
@@ -146,8 +167,11 @@ async function main() {
 }
 
 function parseArgs(args: string[]): SeedOptions {
+  const collections = new Set<'news' | 'pages' | 'teachers'>(['pages', 'teachers', 'news'])
   let dryRun = false
   let limit = 3
+  let hasExplicitTeacherLimit = false
+  let teacherLimit: 'all' | number = limit
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
@@ -165,11 +189,64 @@ function parseArgs(args: string[]): SeedOptions {
       }
 
       limit = next
+      if (!hasExplicitTeacherLimit) {
+        teacherLimit = next
+      }
+      index += 1
+      continue
+    }
+
+    if (arg === '--teacher-limit') {
+      const nextArg = args[index + 1]
+
+      if (nextArg === 'all') {
+        hasExplicitTeacherLimit = true
+        teacherLimit = 'all'
+        index += 1
+        continue
+      }
+
+      const next = Number(nextArg)
+
+      if (!Number.isFinite(next) || next <= 0) {
+        throw new Error(`잘못된 --teacher-limit 값입니다: ${nextArg}`)
+      }
+
+      hasExplicitTeacherLimit = true
+      teacherLimit = next
+      index += 1
+      continue
+    }
+
+    if (arg === '--only') {
+      const nextArg = args[index + 1]
+      const requestedCollections = new Set<'news' | 'pages' | 'teachers'>()
+
+      for (const value of String(nextArg ?? '')
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)) {
+        if (value !== 'news' && value !== 'pages' && value !== 'teachers') {
+          throw new Error(`잘못된 --only 값입니다: ${value}`)
+        }
+
+        requestedCollections.add(value)
+      }
+
+      if (requestedCollections.size === 0) {
+        throw new Error('`--only`에는 최소 1개 컬렉션이 필요합니다.')
+      }
+
+      collections.clear()
+      for (const collection of requestedCollections) {
+        collections.add(collection)
+      }
+
       index += 1
     }
   }
 
-  return { dryRun, limit }
+  return { collections, dryRun, limit, teacherLimit }
 }
 
 function mapPageRow(row: LegacyRow, sourceTable: string): PageRecord {
@@ -200,7 +277,7 @@ function mapPageRow(row: LegacyRow, sourceTable: string): PageRecord {
   }
 }
 
-function mapFacultyRow(row: LegacyRow, sourceTable: string): FacultyRecord {
+function mapTeacherRow(row: LegacyRow, sourceTable: string): TeacherRecord {
   const sourceId = Number(row.bn_id ?? 0)
   const gallery = Array.from({ length: 8 }, (_, offset) => {
     const index = offset + 1
@@ -218,7 +295,7 @@ function mapFacultyRow(row: LegacyRow, sourceTable: string): FacultyRecord {
       path: imagePath,
       title: title || undefined,
     }
-  }).filter(Boolean) as FacultyRecord['gallery']
+  }).filter(Boolean) as TeacherRecord['gallery']
 
   return {
     bioHtml: String(row.message ?? ''),
@@ -229,15 +306,24 @@ function mapFacultyRow(row: LegacyRow, sourceTable: string): FacultyRecord {
       piece: row.piece,
       pr: Array.from({ length: 9 }, (_, offset) => row[`pr_${offset + 1}`]).filter(Boolean),
     },
-    name: String(row.name ?? '').trim() || `faculty-${sourceId}`,
+    name: String(row.name ?? '').trim() || `teacher-${sourceId}`,
     profileImagePath: String(row.bn_bimg ?? '').trim() || undefined,
     role: String(row.subject ?? '').trim() || undefined,
-    slug: `faculty-${sourceId}`,
+    slug: buildTeacherSlug(sourceId, sourceTable),
     sourceId,
     sourceTable,
     status: 'published',
     summary: String(row.summary ?? '').trim() || undefined,
   }
+}
+
+function buildTeacherSlug(sourceId: number, sourceTable: string): string {
+  if (sourceTable === 'g5_teacher') {
+    return `teacher-${sourceId}`
+  }
+
+  const sourceSuffix = sourceTable.replace(/^g5_/, '').replaceAll('_', '-')
+  return `teacher-${sourceId}-${sourceSuffix}`
 }
 
 function mapNewsRow(row: LegacyRow): NewsRecord {
@@ -378,10 +464,10 @@ async function upsertPages(payload: Payload, records: PageRecord[]) {
   }
 }
 
-async function upsertFaculty(payload: Payload, records: FacultyRecord[]) {
+async function upsertTeachers(payload: Payload, records: TeacherRecord[]) {
   for (const record of records) {
     const existing = await payload.find({
-      collection: 'faculty',
+      collection: 'teachers',
       depth: 0,
       limit: 1,
       pagination: false,
@@ -403,7 +489,7 @@ async function upsertFaculty(payload: Payload, records: FacultyRecord[]) {
 
     if (existing.docs[0]) {
       await payload.update({
-        collection: 'faculty',
+        collection: 'teachers',
         data: record,
         id: existing.docs[0].id,
       })
@@ -411,7 +497,7 @@ async function upsertFaculty(payload: Payload, records: FacultyRecord[]) {
     }
 
     await payload.create({
-      collection: 'faculty',
+      collection: 'teachers',
       data: record,
     })
   }
@@ -457,24 +543,26 @@ async function upsertNews(payload: Payload, records: NewsRecord[]) {
 }
 
 function printDryRun({
-  faculty,
+  teachers,
   news,
   options,
   pages,
 }: {
-  faculty: FacultyRecord[]
   news: NewsRecord[]
   options: SeedOptions
   pages: PageRecord[]
+  teachers: TeacherRecord[]
 }) {
   console.log(
     JSON.stringify(
       {
+        collections: [...options.collections],
         dryRun: true,
-        faculty,
         limitPerTable: options.limit,
         news,
         pages,
+        teacherLimit: options.teacherLimit,
+        teachers,
       },
       null,
       2,

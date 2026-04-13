@@ -1,6 +1,6 @@
 # 배우앤배움 통합 사이트 SEO URL 전략
 
-> **작성 배경:** `docs/통합-사이트-메뉴-구조도.md`의 쿼리 파라미터 URL 설계(`/faculty?center=art`)는 SEO 위험을 내포하고 있어 이를 경로 기반 URL로 대체하는 전략을 정의한다.
+> **작성 배경:** `docs/통합-사이트-메뉴-구조도.md`의 쿼리 파라미터 URL 설계(`/faculty?center=art`)는 SEO 위험을 내포하고 있어 이를 SEO 안전한 독립 URL 구조로 대체하는 전략을 정의한다.
 > **연관 문서:** `docs/IA-대안-비교안-v2.md` (대안 2 GNB 구조 기준)
 
 ---
@@ -20,19 +20,62 @@
 - 구글이 canonical을 임의로 선택해 의도하지 않은 페이지가 인덱싱됨
 - 센터별 브랜드 검색(예: "아트센터 강사진")에서 독립적인 랜딩 페이지 역할 불가
 
-### 해결 방향: 경로 기반 URL + 단일 템플릿 공유
+### 해결 방향: SEO 안전한 독립 URL + 단일 템플릿 공유
 
 ```
 ✅ /art/faculty      (아트센터 강사진)
 ✅ /highteen/faculty (하이틴센터 강사진)
 ✅ /kids/programs    (키즈센터 프로그램)
+✅ art.domain.com/faculty
+✅ highteen.domain.com/faculty
 ```
 
-**핵심 포인트:** URL 구조는 다르지만 Next.js 컴포넌트는 하나를 공유한다. `app/[center]/faculty/page.tsx` 파일 하나가 `params.center` 값에 따라 5개 센터 페이지를 모두 처리한다. 관리 비용은 동일하게 통합된다.
+핵심은 `센터별로 독립 인덱싱 가능한 URL`을 만드는 것이다. 이 조건만 만족하면 외부 노출 URL은 아래 2가지 모두 가능하다.
+
+- 경로형: `domain.com/<center>/...`
+- 서브도메인형: `<center>.domain.com/...`
+
+### 1-1. 운영 옵션 상태
+
+현재 단계에서는 아래처럼 본다.
+
+- 기본 권장안: `domain.com/<center>/...`
+- 선택 가능 옵션: `<center>.domain.com/...`
+- 비권장안: `?center=art` 같은 쿼리 파라미터 필터형 URL
+
+경로형을 기본 권장안으로 두는 이유는 아래와 같다.
+
+- 현재 Next.js 라우팅 구조가 `app/[center]/...` 기준으로 이미 설계되어 있다.
+- 구현/운영 복잡도가 가장 낮다.
+- 하나의 루트 도메인 권한으로 SEO를 집중하기 쉽다.
+
+서브도메인형도 충분히 가능하다. 다만 이것은 `현재 즉시 확정안`이 아니라 `클라이언트 선택 시 전환 가능한 운영 옵션`으로 관리한다.
+
+### 1-2. 옵션 비교표
+
+| 항목 | 경로형 `domain.com/<center>` | 서브도메인형 `<center>.domain.com` |
+|------|-----------------------------|----------------------------------|
+| SEO 독립 URL 조건 | 충족 | 충족 |
+| 현재 코드 구조와 적합성 | 높음 | 중간 |
+| 구현 복잡도 | 낮음 | 중간 |
+| canonical/sitemap 관리 | 단순 | 더 주의 필요 |
+| 브랜드 분리 체감 | 중간 | 높음 |
+| 운영 기본안 여부 | 기본안 | 선택 옵션 |
+
+### 1-3. 전환 원칙
+
+클라이언트가 서브도메인형을 선택하더라도 아래 원칙은 유지한다.
+
+- 내부 IA는 동일하게 유지한다.
+- `center slug` 체계 `art`, `exam`, `kids`, `highteen`, `avenue`는 그대로 쓴다.
+- Next.js 템플릿은 최대한 공유한다.
+- canonical, sitemap, 301 기준만 선택된 공개 URL 방식에 맞춘다.
 
 ---
 
 ## 2. URL 구조 전체 정의
+
+이 섹션의 예시는 `경로형 기본안` 기준으로 적는다. 서브도메인형을 선택하면 `호스트명만 달라지고 페이지 구조와 섹션 체계는 동일`하다.
 
 ### 센터 슬러그 매핑
 
@@ -89,6 +132,16 @@
 /avenue/about
 ```
 
+서브도메인형 선택 시 같은 페이지는 아래처럼 노출된다.
+
+```
+art.domain.com/faculty
+exam.domain.com/programs
+kids.domain.com/casting
+highteen.domain.com/results
+avenue.domain.com/about
+```
+
 ### 통합(크로스센터) 페이지
 
 통합 페이지는 모든 센터의 콘텐츠를 한눈에 보는 별도 기능 페이지다. 센터별 페이지와 경쟁하지 않으며 서로 다른 검색 인텐트를 가진다.
@@ -109,6 +162,8 @@
 ---
 
 ## 3. Next.js App Router 구조
+
+현재 구현 기준 내부 라우팅 골격은 `app/[center]/...`를 유지하는 것이 가장 안전하다.
 
 ```
 app/
@@ -182,6 +237,18 @@ export async function generateStaticParams() {
 
 `/unknown-center` 같은 경로는 404 처리된다.
 
+### 서브도메인형 선택 시 구현 원칙
+
+서브도메인형을 선택하더라도 내부 구현은 `app/[center]/...` 구조를 유지할 수 있다.
+
+권장 방식:
+
+- 외부 URL: `art.domain.com/faculty`
+- 내부 rewrite: `/art/faculty`
+- 센터 판별 기준: `hostname`
+
+즉, 호스트명을 읽어 `center slug`로 변환한 뒤 내부 경로로 rewrite하면 된다. 이렇게 하면 현재 경로형 코드와 템플릿을 대부분 재사용할 수 있다.
+
 ---
 
 ## 4. 센터별 고유 SEO 메타데이터
@@ -194,21 +261,27 @@ export async function generateStaticParams() {
 // app/[center]/faculty/page.tsx (개념 예시)
 export async function generateMetadata({ params }) {
   const center = await getCenterData(params.center) // Payload CMS 조회
+  const publicBaseUrl = getPublicBaseUrl(center.slug) // URL 전략별 분기
   return {
     title: `강사진 - ${center.name} | 배우앤배움`,
     description: center.seo.facultyDescription,
     openGraph: {
       title: `강사진 - ${center.name} | 배우앤배움`,
       description: center.seo.facultyDescription,
-      url: `https://bnb.co.kr/${params.center}/faculty`,
+      url: `${publicBaseUrl}/faculty`,
       images: [center.seo.facultyOgImage],
     },
     alternates: {
-      canonical: `https://bnb.co.kr/${params.center}/faculty`,
+      canonical: `${publicBaseUrl}/faculty`,
     },
   }
 }
 ```
+
+`getPublicBaseUrl(center.slug)`는 선택된 공개 URL 전략에 따라 아래처럼 달라진다.
+
+- 경로형: `https://domain.com/art`
+- 서브도메인형: `https://art.domain.com`
 
 ### 센터 x 섹션 메타데이터 조합 (35개)
 
@@ -236,6 +309,10 @@ export async function generateMetadata({ params }) {
 ---
 
 ## 5. Schema.org 전략
+
+Schema의 `url`, `@id`, `mainEntityOfPage`도 선택된 공개 URL 전략과 반드시 일치해야 한다.
+
+아래 JSON 예시는 이해를 돕기 위한 샘플이며, 실제 배포 시에는 확정된 운영 도메인과 URL 전략에 맞춰 교체한다.
 
 ### 조직 계층 구조
 
@@ -286,6 +363,8 @@ export async function generateMetadata({ params }) {
 
 ## 6. Canonical URL 정책
 
+canonical은 반드시 `현재 선택된 공개 URL 1개 방식만` 사용한다. 경로형과 서브도메인형을 동시에 canonical 후보로 두지 않는다.
+
 | 상황 | Canonical 처리 |
 |------|---------------|
 | `/art/faculty` | self-canonical (자기 자신) |
@@ -299,11 +378,20 @@ export async function generateMetadata({ params }) {
 - UI 상태(정렬, 필터, 페이지)를 나타내는 쿼리 파라미터는 canonical에서 제외한다.
 - 항상 HTTPS + 슬래시 없는 경로 사용.
 
+### URL 전략별 canonical 예시
+
+| 전략 | 아트센터 강사진 canonical |
+|------|--------------------------|
+| 경로형 | `https://domain.com/art/faculty` |
+| 서브도메인형 | `https://art.domain.com/faculty` |
+
 ---
 
 ## 7. Sitemap 구조
 
-동적 sitemap을 Next.js에서 센터별로 분리 생성한다.
+동적 sitemap은 선택된 공개 URL 전략을 기준으로 생성한다.
+
+경로형 기본안 예시:
 
 ```
 /sitemap.xml              sitemap index
@@ -316,12 +404,25 @@ export async function generateMetadata({ params }) {
   /sitemap-aggregate.xml  통합 페이지 (/programs, /faculty 등)
 ```
 
+서브도메인형 선택 시에는 아래 2가지 방식 중 하나를 택한다.
+
+- 단일 sitemap index에서 `art.domain.com`, `exam.domain.com` 등 각 호스트 URL을 함께 나열
+- 센터별 서브도메인마다 자체 sitemap을 두고 루트 index에서 연결
+
+중요한 것은 형식보다 아래 원칙이다.
+
+- sitemap의 `<loc>`는 canonical과 완전히 일치해야 한다.
+- 경로형과 서브도메인형 URL을 혼합 기재하지 않는다.
+- 운영 중간에 URL 전략을 바꾸면 sitemap도 즉시 함께 바꾼다.
+
 각 URL 항목:
 - `<loc>`: 절대 경로 canonical URL
 - `<lastmod>`: Payload CMS `updatedAt` 자동 연동
 - `<priority>`: 센터 랜딩 0.9 → 섹션 목록 0.8 → 상세 0.6
 
 ### robots.txt
+
+아래 예시의 `Sitemap` 값도 최종 선택된 공개 URL 전략에 맞춰 바뀌어야 한다.
 
 ```
 User-agent: *
@@ -347,15 +448,19 @@ Sitemap: https://bnb.co.kr/sitemap.xml
 
 ## 8. 301 리다이렉트 매핑
 
+기존 레거시 도메인에서 새 통합 서비스로 옮길 때의 301 대상은 `최종 선택된 공개 URL 전략`에 맞춰 결정한다.
+
 ### 도메인 레벨 리다이렉트
 
-| 구 도메인 | 신규 도메인 매핑 |
-|---------|--------------|
-| `baewoo.co.kr/*` | `https://bnb.co.kr/art/*` |
-| `baewoo.kr/*` | `https://bnb.co.kr/exam/*` |
-| `baewoo.net/*` | `https://bnb.co.kr/kids/*` |
-| `baewoo.me/*` | `https://bnb.co.kr/highteen/*` |
-| `baewoorun.co.kr` | `https://bnb.co.kr/avenue` |
+| 구 도메인 | 경로형 기본안 | 서브도메인형 선택 시 |
+|---------|--------------|---------------------|
+| `baewoo.co.kr/*` | `https://domain.com/art/*` | `https://art.domain.com/*` |
+| `baewoo.kr/*` | `https://domain.com/exam/*` | `https://exam.domain.com/*` |
+| `baewoo.net/*` | `https://domain.com/kids/*` | `https://kids.domain.com/*` |
+| `baewoo.me/*` | `https://domain.com/highteen/*` | `https://highteen.domain.com/*` |
+| `baewoorun.co.kr/*` | `https://domain.com/avenue/*` | `https://avenue.domain.com/*` |
+
+아래 세부 매핑표는 `경로형 기본안` 기준으로 작성한다. 서브도메인형을 선택하면 `/<center>` prefix를 제거하고 해당 센터 서브도메인으로 치환하면 된다.
 
 ### 아트센터 (baewoo.co.kr) URL 매핑
 
@@ -475,6 +580,12 @@ Next.js middleware 사용
 - 구 도메인에서의 진입은 DNS 레벨에서 신규 도메인으로 라우팅 후 middleware 처리
 ```
 
+서브도메인형 선택 시 추가 원칙:
+
+- `*.domain.com` 와일드카드 DNS/SSL 구성이 필요하다.
+- `hostname -> center slug` 매핑이 필요하다.
+- 공개 접근 URL은 서브도메인형으로 통일하고, 내부 구현은 rewrite 기반으로 `/<center>` 경로를 재사용할 수 있다.
+
 구 도메인 유지 기간: **최소 12개월** (Google Search Console 인덱스 전환 완료까지)
 
 ---
@@ -520,7 +631,7 @@ const navItems = [
 
 | Codex 지적 | 해소 방법 |
 |-----------|---------|
-| [HIGH] 필터 URL 중복 콘텐츠 위험 | 경로 기반 URL(`/art/faculty`)로 전환. 각 URL에 고유 title·description·H1·canonical·Schema 적용. 구글이 5개를 독립 브랜드 페이지로 인식. |
+| [HIGH] 필터 URL 중복 콘텐츠 위험 | 쿼리 파라미터 대신 독립 URL로 전환. 기본안은 경로형(`/art/faculty`), 선택 옵션은 서브도메인형(`art.domain.com/faculty`). 각 URL에 고유 title·description·H1·canonical·Schema 적용. |
 | [MEDIUM] 얇은 센터 도어웨이 페이지 위험 | ① 애비뉴센터 풀스케일 리뉴얼로 콘텐츠 확보. ② CMS 콘텐츠 게이팅으로 콘텐츠 없는 섹션은 URL 미생성 + sitemap 미포함. 도어웨이 구조 원천 차단. |
 
 ---

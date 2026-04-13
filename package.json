@@ -16,7 +16,11 @@
     "db:migrate:create": "node --env-file=.env.local ./node_modules/payload/bin.js migrate:create",
     "db:seed:p0-dry-run": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --dry-run",
     "db:seed:p0-sample": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --limit 3",
-    "db:seed:p1-sample": "node --env-file=.env.local --import tsx scripts/seed-p1.ts --limit 10"
+    "db:seed:p0-teachers": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --only teachers --teacher-limit all",
+    "db:seed:p0-teachers:dry-run": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --dry-run --only teachers --teacher-limit all",
+    "db:seed:p1-sample": "node --env-file=.env.local --import tsx scripts/seed-p1.ts --limit 10",
+    "db:seed:p1-agencies": "node --env-file=.env.local --import tsx scripts/seed-p1.ts --only agencies --agency-limit all",
+    "db:seed:p1-agencies:dry-run": "node --env-file=.env.local --import tsx scripts/seed-p1.ts --dry-run --only agencies --agency-limit all"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.82.1",

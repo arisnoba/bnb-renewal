@@ -45,7 +45,7 @@ export default function HomePage() {
         <article className="surface card">
           <h3>P0 컬렉션</h3>
           <p>
-            <code>pages</code>, <code>faculty</code>(Teacher), <code>news</code> 3개 컬렉션을
+            <code>pages</code>, <code>teachers</code>, <code>news</code> 3개 컬렉션을
             먼저 구성했습니다.
           </p>
         </article>
