@@ -1,0 +1,42 @@
+{
+  "name": "bnb-renewal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "payload": "node --env-file=.env.local ./node_modules/payload/bin.js",
+    "payload:generate-types": "node --env-file=.env.local ./node_modules/payload/bin.js generate:types",
+    "payload:generate-importmap": "node --env-file=.env.local ./node_modules/payload/bin.js generate:importmap",
+    "db:migrate": "node --env-file=.env.local ./node_modules/payload/bin.js migrate",
+    "db:migrate:create": "node --env-file=.env.local ./node_modules/payload/bin.js migrate:create",
+    "db:seed:p0-dry-run": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --dry-run",
+    "db:seed:p0-sample": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --limit 3"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "^3.82.1",
+    "@payloadcms/next": "^3.82.1",
+    "@payloadcms/richtext-lexical": "^3.82.1",
+    "graphql": "^16.13.2",
+    "next": "^16.2.3",
+    "payload": "^3.82.1",
+    "pg": "^8.20.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "sass": "^1.99.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
