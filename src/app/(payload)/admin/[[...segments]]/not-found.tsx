@@ -7,10 +7,17 @@ export default function PayloadAdminNotFound({
   params,
   searchParams,
 }: {
-  params: Promise<{ segments: string[] }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  params:
+    | Promise<{ segments: string[] }>
+    | { segments: string[] }
+    | undefined
+  searchParams:
+    | Promise<{ [key: string]: string | string[] | undefined }>
+    | { [key: string]: string | string[] | undefined }
+    | undefined
 }) {
-  const normalizedSearchParams = searchParams.then((value) =>
+  const normalizedParams = Promise.resolve(params ?? { segments: [] })
+  const normalizedSearchParams = Promise.resolve(searchParams ?? {}).then((value) =>
     Object.fromEntries(
       Object.entries(value).filter(([, entryValue]) => entryValue !== undefined),
     ) as { [key: string]: string | string[] },
@@ -19,7 +26,7 @@ export default function PayloadAdminNotFound({
   return NotFoundPage({
     config,
     importMap,
-    params,
+    params: normalizedParams,
     searchParams: normalizedSearchParams,
   })
 }

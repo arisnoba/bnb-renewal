@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import type { ServerFunctionClient } from 'payload'
 
+import '@payloadcms/next/css'
 import { RootLayout, handleServerFunctions } from '@payloadcms/next/layouts'
 
 import config from '../../../payload.config'
@@ -16,12 +17,15 @@ export default function PayloadLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const serverFunction: ServerFunctionClient = (args) =>
-    handleServerFunctions({
+  const serverFunction: ServerFunctionClient = async (args) => {
+    'use server'
+
+    return handleServerFunctions({
       ...args,
       config,
       importMap,
     })
+  }
 
   return (
     <RootLayout

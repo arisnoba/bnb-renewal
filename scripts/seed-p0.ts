@@ -106,8 +106,10 @@ async function main() {
   ]
   const newsRows = await parseInsertFile(path.join(p0Dir, 'g5_write_new_notice.sql'))
 
-  const pages = pageRows.slice(0, options.limit).map(({ row, sourceTable }) =>
-    mapPageRow(row, sourceTable),
+  const pages = ensureUniquePageSlugs(
+    pageRows
+      .slice(0, options.limit)
+      .map(({ row, sourceTable }) => mapPageRow(row, sourceTable)),
   )
   const faculty = facultyRows.slice(0, options.limit).map(({ row, sourceTable }) =>
     mapFacultyRow(row, sourceTable),
@@ -316,6 +318,25 @@ function inferPageCenter(sourceKey: string): CenterValue {
   }
 
   return 'unknown'
+}
+
+function ensureUniquePageSlugs(records: PageRecord[]): PageRecord[] {
+  const slugCounts = new Map<string, number>()
+
+  return records.map((record) => {
+    const duplicateIndex = slugCounts.get(record.slug) ?? 0
+
+    slugCounts.set(record.slug, duplicateIndex + 1)
+
+    if (duplicateIndex === 0) {
+      return record
+    }
+
+    return {
+      ...record,
+      slug: `${record.slug}-${record.sourceTable}-${record.sourceKey}`,
+    }
+  })
 }
 
 async function upsertPages(payload: Payload, records: PageRecord[]) {

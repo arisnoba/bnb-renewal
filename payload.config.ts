@@ -4,9 +4,12 @@ import { fileURLToPath } from 'node:url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 
+import { Agencies } from './src/collections/Agencies'
+import { Castings } from './src/collections/Castings'
 import { Faculty } from './src/collections/Faculty'
 import { News } from './src/collections/News'
 import { Pages } from './src/collections/Pages'
+import { Profiles } from './src/collections/Profiles'
 import { Users } from './src/collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -30,7 +33,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Pages, Faculty, News],
+  collections: [Users, Pages, Faculty, News, Profiles, Castings, Agencies],
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {

@@ -22,6 +22,10 @@ export const Faculty: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'center', 'displayOrder', 'updatedAt'],
+    labels: {
+      plural: 'Teachers',
+      singular: 'Teacher',
+    },
     useAsTitle: 'name',
   },
   defaultSort: 'displayOrder',
