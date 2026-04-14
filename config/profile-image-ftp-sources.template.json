@@ -1,0 +1,71 @@
+{
+	"version": 1,
+	"downloadRoot": "public/legacy/profiles",
+	"reportPath": "tmp/profile-image-download-report.json",
+	"successStatePath": "tmp/profile-image-download-success.json",
+	"defaults": {
+		"port": 21,
+		"passive": true,
+		"useTls": false,
+		"timeoutSeconds": 30,
+		"candidateDirs": ["/web/data/file/new_profile", "/data/file/new_profile", "/new_profile"]
+	},
+	"sources": [
+		{
+			"name": "art",
+			"enabled": true,
+			"host": "www.baewoo.co.kr",
+			"port": 21,
+			"username": "baewoo",
+			"passwordEnv": "PROFILE_IMAGE_FTP_ART_PASSWORD",
+			"rootDir": "/www/web/",
+			"candidateDirs": ["/web/data/file/new_profile", "/data/file/new_profile", "/new_profile"],
+			"passive": true,
+			"useTls": false,
+			"timeoutSeconds": 30,
+			"notes": "아트센터 FTP"
+		},
+		{
+			"name": "exam",
+			"enabled": true,
+			"host": "www.baewoo.kr",
+			"port": 21,
+			"username": "bnbuniv",
+			"passwordEnv": "PROFILE_IMAGE_FTP_EXAM_PASSWORD",
+			"rootDir": "/www/web/",
+			"candidateDirs": ["/web/data/file/new_profile", "/data/file/new_profile", "/new_profile"],
+			"passive": true,
+			"useTls": false,
+			"timeoutSeconds": 30,
+			"notes": "입시센터 FTP"
+		},
+		{
+			"name": "kids",
+			"enabled": true,
+			"host": "www.baewoo.net",
+			"port": 21,
+			"username": "kidscenter",
+			"passwordEnv": "PROFILE_IMAGE_FTP_KIDS_PASSWORD",
+			"rootDir": "/www/web/",
+			"candidateDirs": ["/web/data/file/new_profile", "/data/file/new_profile", "/new_profile"],
+			"passive": true,
+			"useTls": false,
+			"timeoutSeconds": 30,
+			"notes": "키즈센터 FTP"
+		},
+		{
+			"name": "highteen",
+			"enabled": true,
+			"host": "www.baewoo.me",
+			"port": 21,
+			"username": "bnbhighteen",
+			"passwordEnv": "PROFILE_IMAGE_FTP_HIGHTEEN_PASSWORD",
+			"rootDir": "/www/web/",
+			"candidateDirs": ["/web/data/file/new_profile", "/data/file/new_profile", "/new_profile"],
+			"passive": true,
+			"useTls": false,
+			"timeoutSeconds": 30,
+			"notes": "하이틴센터 FTP"
+		}
+	]
+}

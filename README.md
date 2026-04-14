@@ -138,6 +138,7 @@ npm run db:seed:p0-dry-run
 - [docs/통합-사이트-메뉴-구조도.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/통합-사이트-메뉴-구조도.md:1): 통합 IA 방향
 - [docs/SEO-URL-전략.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/SEO-URL-전략.md:1): URL, SEO, 이전 전략
 - [docs/DB-마이그레이션-우선순위-계획.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/DB-마이그레이션-우선순위-계획.md:1): 단계별 데이터 이관 원칙
+- [docs/프로필-이미지-FTP-수집-가이드.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/프로필-이미지-FTP-수집-가이드.md:1): 프로필 이미지 FTP 수집 및 반영 절차
 - [docs/배포-운영-전략.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/배포-운영-전략.md:1): 배포 구조와 비용/운영 판단
 
 ## 7. 지금 먼저 보면 좋은 순서

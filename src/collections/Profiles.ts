@@ -47,6 +47,10 @@ export const Profiles: CollectionConfig = {
       required: true,
     },
     {
+      name: 'profileImagePath',
+      type: 'text',
+    },
+    {
       name: 'excerpt',
       type: 'textarea',
     },

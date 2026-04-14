@@ -10,6 +10,7 @@ import {
   parseInsertFile,
   type LegacyRow,
 } from './legacy-sql'
+import { loadLegacyProfileImageUrlMap } from './profile-images'
 
 type SeedOptions = {
   agencyLimit: 'all' | number
@@ -27,6 +28,7 @@ type ProfileRecord = {
   legacyMeta: Record<string, unknown>
   name: string
   publishedAt?: string
+  profileImagePath?: string
   slug: string
   sourceId: number
   sourceTable: string
@@ -65,6 +67,9 @@ async function main() {
   const p1Dir = path.join(projectRoot, 'data/baewoo-curated/p1')
 
   const profileRows = await parseInsertFile(path.join(p1Dir, 'g5_write_new_profile.sql'))
+  const legacyProfileImageUrlMap = options.collections.has('profiles')
+    ? await loadLegacyProfileImageUrlMap(projectRoot)
+    : new Map<number, string>()
   const castingRows = (
     await Promise.all(
       [
@@ -92,7 +97,7 @@ async function main() {
           .filter((row) => Number(row.wr_is_comment ?? 0) === 0)
           .sort(compareLegacyDateDesc('wr_datetime'))
           .slice(0, options.limit)
-          .map(mapProfileRow),
+          .map((row) => mapProfileRow(row, legacyProfileImageUrlMap)),
       )
     : []
 
@@ -244,7 +249,10 @@ function parseArgs(args: string[]): SeedOptions {
   return { agencyLimit, collections, dryRun, limit }
 }
 
-function mapProfileRow(row: LegacyRow): ProfileRecord {
+function mapProfileRow(
+  row: LegacyRow,
+  legacyProfileImageUrlMap: Map<number, string>,
+): ProfileRecord {
   const sourceId = Number(row.wr_id ?? 0)
   const bodyHtml = String(row.wr_content ?? '')
 
@@ -257,6 +265,7 @@ function mapProfileRow(row: LegacyRow): ProfileRecord {
     legacyMeta: pickLegacyFields(row),
     name: String(row.wr_subject ?? '').trim() || `profile-${sourceId}`,
     publishedAt: normalizeDateTime(row.wr_datetime) ?? undefined,
+    profileImagePath: legacyProfileImageUrlMap.get(sourceId),
     slug: `profile-${sourceId}`,
     sourceId,
     sourceTable: 'g5_write_new_profile',

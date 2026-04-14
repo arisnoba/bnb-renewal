@@ -7,38 +7,56 @@ export type LegacyRow = Record<string, LegacyScalar>
 export async function parseInsertFile(filePath: string): Promise<LegacyRow[]> {
   const absolutePath = path.resolve(filePath)
   const sql = await fs.readFile(absolutePath, 'utf8')
-  const insertStatement = extractInsertStatement(sql)
-  const insertMatch = insertStatement.match(
-    /INSERT INTO\s+`[^`]+`\s+\(([\s\S]*?)\)\s+VALUES\s+([\s\S]*)$/m,
-  )
+  const insertStatements = extractInsertStatements(sql)
 
-  if (!insertMatch) {
+  if (insertStatements.length === 0) {
     throw new Error(`INSERT 구문을 찾지 못했습니다: ${filePath}`)
   }
 
-  const [, columnBlock, valuesBlock] = insertMatch
-  const columns = [...columnBlock.matchAll(/`([^`]+)`/g)].map((match) => match[1])
-  const tuples = splitTuples(valuesBlock)
+  return insertStatements.flatMap((insertStatement) => {
+    const insertMatch = insertStatement.match(
+      /INSERT INTO\s+`[^`]+`\s+\(([\s\S]*?)\)\s+VALUES\s+([\s\S]*)$/m,
+    )
 
-  return tuples.map((tuple) => {
-    const fields = splitFields(tuple)
-    const row: LegacyRow = {}
-
-    for (const [index, column] of columns.entries()) {
-      row[column] = parseToken(fields[index] ?? 'NULL')
+    if (!insertMatch) {
+      throw new Error(`INSERT 구문을 파싱하지 못했습니다: ${filePath}`)
     }
 
-    return row
+    const [, columnBlock, valuesBlock] = insertMatch
+    const columns = [...columnBlock.matchAll(/`([^`]+)`/g)].map((match) => match[1])
+    const tuples = splitTuples(valuesBlock)
+
+    return tuples.map((tuple) => {
+      const fields = splitFields(tuple)
+      const row: LegacyRow = {}
+
+      for (const [index, column] of columns.entries()) {
+        row[column] = parseToken(fields[index] ?? 'NULL')
+      }
+
+      return row
+    })
   })
 }
 
-function extractInsertStatement(sql: string): string {
-  const startIndex = sql.indexOf('INSERT INTO')
+function extractInsertStatements(sql: string): string[] {
+  const statements: string[] = []
+  let searchFromIndex = 0
 
-  if (startIndex === -1) {
-    throw new Error('INSERT 구문이 없습니다.')
+  while (true) {
+    const startIndex = sql.indexOf('INSERT INTO', searchFromIndex)
+
+    if (startIndex === -1) {
+      return statements
+    }
+
+    const statement = extractInsertStatementFromIndex(sql, startIndex)
+    statements.push(statement.statement)
+    searchFromIndex = statement.nextIndex
   }
+}
 
+function extractInsertStatementFromIndex(sql: string, startIndex: number) {
   let inString = false
   let escaping = false
 
@@ -69,7 +87,10 @@ function extractInsertStatement(sql: string): string {
     }
 
     if (char === ';') {
-      return sql.slice(startIndex, index)
+      return {
+        nextIndex: index + 1,
+        statement: sql.slice(startIndex, index),
+      }
     }
   }
 

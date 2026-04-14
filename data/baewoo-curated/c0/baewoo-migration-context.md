@@ -1,0 +1,358 @@
+# 배우앤배움(BaewooArtCenter) 마이그레이션 프로젝트 컨텍스트
+
+> 작성일: 2026-04-14  
+> 목적: 다음 에이전트에게 프로젝트 현황 전달용
+
+---
+
+## 1. 프로젝트 개요
+
+- **현재 스택**: 그누보드5(PHP) + MariaDB 10.1 / Hostment 공유호스팅
+- **목표 스택**: Next.js + Payload CMS + Neon(PostgreSQL) + Vercel Blob
+- **배포**: Vercel Pro (상업용)
+- **작업 성격**: 브랜드 4개 통합 리뉴얼 + DB 마이그레이션
+
+---
+
+## 2. 현재 환경
+
+### 호스팅
+- 공유호스팅: Hostment Auto7 (`auto7.baewoo.hostment.org`)
+- MySQL 직접 접근 불가 → phpMyAdmin 경유만 가능
+- phpMyAdmin 버전 4.6.0 / MariaDB 10.1.17
+
+### 관련 도메인 (4개 브랜드)
+- `baewoo.co.kr` / `baewoo.kr` / `baewoo.me` / `baewoo.net`
+- `baewoorun.baewoo.co.kr` (배우앤배움런)
+- `academy.baewoo.co.kr`
+- `bnbplay.baewoo.co.kr`
+
+### DB
+- DB명: `baewoo`
+- 전체 덤프 용량: 약 200MB
+- 미디어 파일: 약 5~10GB (FTP 기준)
+
+---
+
+## 3. 목표 인프라 스택
+
+```
+Vercel Pro          ← Next.js 배포
+Neon                ← PostgreSQL DB
+Vercel Blob         ← 미디어 스토리지 (5~10GB 초과 시 Cloudflare R2 전환 고려)
+Payload CMS         ← Admin (self-hosted, Vercel 배포)
+```
+
+### 판단 근거
+- pgloader 사용 불가 (MySQL 직접 접근 불가 환경)
+- .sql 덤프 파일 → Python 변환 스크립트 → Neon 임포트 방식 채택
+- Vercel Pro 결제 예정이므로 Blob + Neon 네이티브 통합이 운영 효율적
+
+---
+
+## 4. 마이그레이션 대상 테이블 (커스텀 테이블 10개)
+
+> 그누보드 기본 테이블(g5_member, g5_board 등)은 제외하고 커스텀 테이블만 마이그레이션
+
+| 테이블 | 용도 | 레코드 수 | 비고 |
+|---|---|---|---|
+| `g5_agency` | 제휴 엔터테인먼트사 | ~63 | wr_1~43 배우페어 |
+| `g5_banner` | 배너 관리 | - | 기간/디바이스/포지션 |
+| `g5_casting` | 캐스팅 영상 | - | YouTube URL 포함 |
+| `g5_class` | 강좌 (메인) | ~50+ | wr_1~38 범용필드 |
+| `g5_class2` | 강좌 (서브) | - | class 간소화 버전 |
+| `g5_lesson_teacher` | 강좌별 강사 매핑 | - | class ↔ teacher 연결 |
+| `g5_plan` | 커리큘럼 계획 | - | ps/pc_1~10 주차별 |
+| `g5_teacher` | 강사 (메인) | - | bn_bimg, it_img1~8 |
+| `g5_teacher2` | 강사 (서브/확장) | - | + photo_img1~6 추가 |
+| `g5_teacher_file` | 강사 첨부파일 | ~1010 | bn_id FK → teacher |
+
+---
+
+## 5. 각 테이블 상세 구조
+
+### g5_agency (제휴 엔터사)
+```sql
+bn_id           INT PK AUTO_INCREMENT
+name            VARCHAR(255)        -- 회사 한글명
+subject         VARCHAR(255)        -- 회사 영문명 또는 브랜드명
+wr_1~wr_43      VARCHAR(255)        -- 소속 배우 이름/기수 페어 (wr_홀수=이름, wr_짝수=기수)
+summary         TEXT                -- 회사 소개 HTML
+message         TEXT                -- 상세 HTML (프로필 카드 포함)
+piece           TEXT
+pr_1~pr_9       VARCHAR(255)        -- 배우 프로필 이미지 (icon_boy.png / icon_girl.png)
+bn_bimg         VARCHAR(255)        -- 대표 이미지 경로: "{bn_id}/파일명.png"
+it_img1~8       VARCHAR(255)        -- 추가 이미지
+it_img_title1~8 VARCHAR(255)
+it_img_desc1~8  VARCHAR(255)
+bn_order        INT                 -- 정렬 순서
+```
+
+**이미지 경로 패턴**: `bn_bimg` = `"69/파일명.png"` → 실제 서버 경로 추정: `/data/g5_agency/69/파일명.png`
+
+### g5_banner (배너)
+```sql
+bn_id           INT PK AUTO_INCREMENT
+bn_alt          VARCHAR(255)
+bn_url          VARCHAR(255)
+bn_device       VARCHAR(10)         -- 'pc' / 'mobile' 등
+bn_position     VARCHAR(255)        -- 배너 위치 식별자
+bn_border       TINYINT
+bn_new_win      TINYINT
+bn_begin_time   DATETIME
+bn_end_time     DATETIME
+bn_time         DATETIME
+bn_hit          INT
+bn_order        INT
+```
+> 이미지 경로 컬럼 없음 — 별도 파일 테이블 또는 파일명 규칙 확인 필요
+
+### g5_casting (캐스팅 영상)
+```sql
+bn_id           INT PK AUTO_INCREMENT
+subject         VARCHAR(255)        -- 제목
+youtube         VARCHAR(255)        -- YouTube URL
+message         TEXT                -- 설명 HTML
+pr_1~pr_9       VARCHAR(255)        -- 관련 이미지
+bn_order        INT
+```
+
+### g5_class (강좌 메인)
+```sql
+wr_id           INT PK AUTO_INCREMENT
+wr_subject      VARCHAR(255)        -- 강좌 코드명 (예: U1, R1, I1, S1, D1...)
+wr_subject2     VARCHAR(255)        -- 부제목
+wr_count2       VARCHAR(255)
+category        CHAR(1)             -- 카테고리 코드 (1=기초, 2=중급, 3=심화, 4=전문, 7=특강 등)
+wr_view         CHAR(1)             -- 'Y'/'N' 노출 여부
+wr_date         VARCHAR(255)        -- 개강일 (예: "2026.03.06")
+wr_count        VARCHAR(255)        -- 수업 횟수 (예: "8")
+wr_time         VARCHAR(255)        -- 수업 시간대 (예: "10:00(U1)")
+it_img1~10      VARCHAR(255)        -- 이미지 파일명 (예: "201.png")
+wr_1            VARCHAR(255)        -- 수업 시간 (예: "오전 10:00 ~ 오후 13:00")
+wr_2            VARCHAR(255)        -- 총 수업 횟수
+wr_3            VARCHAR(255)        -- (미상)
+wr_4            VARCHAR(255)        -- 강사명
+wr_5            VARCHAR(255)        -- 수강료 (예: "550000")
+wr_6            VARCHAR(255)        -- 노출여부 ('1'=노출)
+wr_7            VARCHAR(255)        -- (미상)
+wr_9~wr_38      VARCHAR(255)        -- 기타 범용필드 (일부 이미지 파일명)
+wr_content      LONGTEXT            -- 상세 설명 HTML
+regDate         VARCHAR(255)        -- 등록일시
+updateDate      VARCHAR(255)        -- 수정일시
+wr_sort         INT                 -- 정렬 순서
+wr_jang         VARCHAR(255)        -- 주 강사명
+wr_bujang       VARCHAR(255)        -- 부 강사명
+curr_title01    VARCHAR(255)        -- 커리큘럼 섹션1 제목
+curr_title02    VARCHAR(255)        -- 커리큘럼 섹션2 제목
+curr_subject1   TEXT                -- 커리큘럼 섹션1 주차별 제목 (파이프 구분자)
+curr_content1   TEXT                -- 커리큘럼 섹션1 주차별 내용 (파이프 구분자)
+curr_subject2   TEXT                -- 커리큘럼 섹션2 주차별 제목
+curr_content2   TEXT                -- 커리큘럼 섹션2 주차별 내용
+```
+
+**커리큘럼 데이터 파싱 예시**:
+```
+curr_subject1 = "|즉흥연기 1|즉흥연기 2|관찰과 모방|자극과 반응|..."
+curr_content1 = "|상상력을 키우고...|생각보다 충동으로...|..."
+→ split('|').filter(Boolean) 으로 배열화
+```
+
+**category 코드 추정**:
+- `1` = 기초(Intro)
+- `2` = R클래스
+- `3` = U클래스
+- `4` = D클래스
+- `7` = S클래스(특강)
+- 추가 코드 확인 필요
+
+### g5_class2 (강좌 서브)
+```sql
+-- g5_class에서 curr_*, wr_jang, wr_bujang 등 일부 컬럼 제외한 간소화 버전
+wr_id, wr_subject, category, wr_view, wr_date, wr_count, wr_time
+it_img1~10, wr_1~7, wr_content, regDate, updateDate, wr_sort
+```
+
+### g5_lesson_teacher (강좌-강사 매핑)
+```sql
+lt_idx          INT PK AUTO_INCREMENT
+lt_category     CHAR(1)             -- g5_class.category 와 연결
+lt_name         VARCHAR(255)        -- 강사명
+lt_subject      VARCHAR(255)        -- 강좌명
+lt_title        TEXT                -- 강좌 제목
+lt_content      TEXT                -- 강좌 설명
+```
+
+### g5_plan (커리큘럼 계획)
+```sql
+bn_id           INT PK AUTO_INCREMENT
+category        VARCHAR(255)
+subject         VARCHAR(255)        -- 강좌명
+teacher         VARCHAR(255)        -- 주 강사
+s_teacher       VARCHAR(255)        -- 부 강사
+period          VARCHAR(255)        -- 기간
+ps_1~ps_10      VARCHAR(255)        -- 주차 제목 (plan subject)
+pc_1~pc_10      TEXT                -- 주차 내용 (plan content)
+notice_title    VARCHAR(255)
+notice_cont     TEXT
+is_view         CHAR(1)
+regdate         VARCHAR(255)
+```
+
+### g5_teacher (강사 메인)
+```sql
+bn_id           INT PK AUTO_INCREMENT
+name            VARCHAR(255)        -- 강사명
+subject         VARCHAR(255)        -- 전공/분야
+summary         TEXT                -- 한줄 소개
+message         TEXT                -- 상세 소개 HTML
+piece           TEXT                -- 필모그래피 등
+pr_1~pr_9       VARCHAR(255)        -- 프로필 이미지
+bn_bimg         VARCHAR(255)        -- 대표 이미지 경로
+it_img1~8       VARCHAR(255)        -- 추가 이미지
+it_img_title1~8 VARCHAR(255)
+it_img_desc1~8  VARCHAR(255)
+bn_order        INT
+```
+
+### g5_teacher2 (강사 서브/확장)
+```sql
+-- g5_teacher 와 동일 구조 +
+photo_img1~6    VARCHAR(255)        -- 추가 포토 이미지
+it_img_sort     VARCHAR(255)        -- 이미지 정렬 순서
+```
+
+### g5_teacher_file (강사 첨부파일)
+```sql
+wr_id           INT PK AUTO_INCREMENT
+wr_file         VARCHAR(255)        -- 파일 경로
+wr_subject      VARCHAR(255)        -- 파일명/제목
+wr_desc         VARCHAR(255)        -- 설명
+bn_id           INT                 -- FK → g5_teacher.bn_id
+wr_sort         INT
+```
+
+---
+
+## 6. 이미지 경로 패턴 및 마이그레이션 전략
+
+### 현재 서버 이미지 경로 (추정)
+```
+/data/g5_agency/{bn_id}/파일명.png
+/data/g5_teacher/{bn_id}/파일명.png
+/data/g5_class/파일명.png         (예: "201.png", "101.png")
+/web/img/icon_boy.png
+/web/img/icon_girl.png
+```
+
+### Vercel Blob 이후 경로
+```
+https://{blob-store}.public.blob.vercel-storage.com/agency/{bn_id}/파일명.png
+https://{blob-store}.public.blob.vercel-storage.com/teacher/{bn_id}/파일명.png
+https://{blob-store}.public.blob.vercel-storage.com/class/파일명.png
+```
+
+### DB 경로 치환 전략
+- 변환 스크립트에서 이미지 경로 컬럼값 일괄 업데이트
+- `bn_bimg`, `it_img1~10`, `pr_1~9` 컬럼 대상
+- HTML 본문(`message`, `wr_content`)의 `/data/`, `/web/img/` 경로도 치환 필요
+
+---
+
+## 7. Payload CMS 컬렉션 설계 (초안)
+
+### 정규화 방향
+
+```
+g5_teacher + g5_teacher2  →  Teacher 컬렉션 (통합)
+g5_class + g5_class2      →  Course 컬렉션 (통합)
+g5_plan                   →  Course.curriculum (배열로 내장 or 별도 컬렉션)
+g5_lesson_teacher         →  Course.teachers (관계 필드)
+g5_teacher_file           →  Teacher.files (배열로 내장)
+g5_agency                 →  Agency 컬렉션
+g5_casting                →  Casting 컬렉션
+g5_banner                 →  Banner 컬렉션
+```
+
+### 핵심 정규화 포인트
+
+**1. wr_N 범용필드 → 명시적 필드로 변환**
+```
+g5_agency: wr_1~43 → actors: [{ name, generation }]
+g5_class:  wr_1 → timeSlot, wr_2 → lessonCount, wr_4 → teacherName, wr_5 → price
+```
+
+**2. 커리큘럼 파이프 구분자 → 배열로 변환**
+```
+curr_subject1 = "|1주차|2주차|3주차|"
+→ curriculum: [{ week: 1, title: "1주차", content: "..." }]
+```
+
+**3. it_img1~10 → 이미지 배열로 변환**
+```
+it_img1, it_img2, ... → images: [{ url, title, description }]
+```
+
+### Payload 컬렉션 코드 (작성 예정)
+> 다음 에이전트가 `/collections` 디렉토리에 아래 파일 생성 필요:
+> - `Teachers.ts`
+> - `Courses.ts`
+> - `Agency.ts`
+> - `Casting.ts`
+> - `Banners.ts`
+> - `Media.ts` (Vercel Blob 연동)
+
+---
+
+## 8. MySQL → PostgreSQL 변환 시 처리 사항
+
+### SQL 문법 변환
+| MySQL/MariaDB | PostgreSQL |
+|---|---|
+| 백틱 `` ` `` | 큰따옴표 `"` 또는 제거 |
+| `AUTO_INCREMENT` | `SERIAL` 또는 `GENERATED ALWAYS AS IDENTITY` |
+| `INT(11)` | `INTEGER` |
+| `TINYINT(1)` | `BOOLEAN` |
+| `CHAR(1)` | `CHAR(1)` (동일) |
+| `LONGTEXT` | `TEXT` |
+| `DATETIME` | `TIMESTAMP` |
+| `ENGINE=MyISAM` | 제거 |
+| `DEFAULT CHARSET=utf8` | 제거 |
+| `SET FOREIGN_KEY_CHECKS` | 제거 (MySQL 전용) |
+| `/*!40101 ... */` 주석 | 제거 |
+| `0000-00-00 00:00:00` | `NULL` 또는 `1970-01-01 00:00:00` |
+
+### 변환 스크립트 실행 순서
+```
+1. phpMyAdmin에서 전체 DB 덤프 (구조+데이터, 압축없음, 트랜잭션포함)
+2. Python 변환 스크립트 실행 → PostgreSQL 호환 .sql 생성
+3. 이미지 경로 치환 (DB 내 경로값 업데이트)
+4. Neon DB에 임포트
+5. FTP에서 미디어 파일 다운로드
+6. Vercel Blob에 미디어 업로드 (스크립트 자동화)
+7. Payload CMS 컬렉션 연결 확인
+```
+
+---
+
+## 9. 현재 진행 상태
+
+- [x] 기존 DB 구조 분석 완료 (10개 커스텀 테이블)
+- [x] 목표 스택 결정 (Vercel Pro + Neon + Vercel Blob + Payload)
+- [x] 이미지 경로 패턴 파악
+- [ ] Payload 컬렉션 코드 작성
+- [ ] MySQL → PostgreSQL 변환 Python 스크립트 작성
+- [ ] 미디어 파일 Blob 업로드 스크립트 작성
+- [ ] 전체 DB 덤프 재시도 (서버 복구 후 — phpMyAdmin 오류로 중단됨)
+- [ ] Neon DB 임포트 테스트
+- [ ] Next.js 프로젝트 세팅
+
+---
+
+## 10. 기타 메모
+
+- phpMyAdmin 현재 오류: `Fatal error: Cannot redeclare __()` — 호스팅 서버 재시작 필요, 내일 재시도
+- `g5_banner` 테이블에 이미지 경로 컬럼 없음 → 별도 파일 저장 방식 또는 규칙 확인 필요
+- `g5_class`의 `category` 코드 전체 값 확인 필요 (현재 1,2,3,4,7 확인됨)
+- `g5_teacher` vs `g5_teacher2` 실제 사용 구분 기준 확인 필요
+- HTML 본문(`message`, `wr_content`)에 인라인 스타일 및 구 그누보드 HTML 패턴 다수 → Payload rich text 마이그레이션 시 정제 필요
