@@ -1,44 +1,101 @@
-# C0 기준 마이그레이션 재계획
+# C0 기준 마이그레이션 진행판
 
-## 현재 판단
+> 기준 문서: [plan/c0-migration-plan.md](./c0-migration-plan.md)  
+> 마지막 갱신: 2026-04-16  
+> 현재 진행 기준: **Phase 0 완료, Phase 1 대기**
 
-- `data/baewoo-curated/c0/baewoo-migration-context.md`는 새 기준 문서다.
-- `data/baewoo-curated/c0/*.sql`은 `data/baewoo-split/tables`로 분리하기 이전에 사용한 원본 SQL 기준이다.
-- 현재 구현된 `p0~p2` 기반 시드와 `profiles` FTP 복원은 `c0` 기준과 범위가 다르다.
-- `p0~p2`의 테이블 선별 기준은 현재 사용자가 원하는 마이그레이션 범위와 다르다.
-- 특히 `g5_write_new_profile` 기반 `profiles` 작업은 현재 `c0` 기본 목록에는 없고, 필요하면 사용자가 이후 추가할 수 있다.
-- `p0~p2`를 지금 바로 삭제하면 [scripts/seed-p0.ts](/Users/arisnoba/Documents/GitHub/bnb-renewal/scripts/seed-p0.ts:1), [scripts/seed-p1.ts](/Users/arisnoba/Documents/GitHub/bnb-renewal/scripts/seed-p1.ts:1), [scripts/profile-images.ts](/Users/arisnoba/Documents/GitHub/bnb-renewal/scripts/profile-images.ts:1) 입력이 사라져 재현성과 비교 근거도 함께 없어진다.
+## 현재 상태
 
-## 결정
+- 새 정본 입력은 `data/baewoo-curated/c0/*.sql` 23개다.
+- Phase 0에서 먼저 `Pages` 컬렉션 제거와 c0 공통 파서/스키마 문서화를 끝낸다.
+- `p0~p2` 기반 시드는 아직 비교 근거로 남겨두되, `seed-p0.ts`는 pages 없는 deprecated 상태로 축소했다.
 
-- [x] `c0`와 현행 `p0~p2`/FTP 계획 차이 분석
-- [x] `c0` 기준 재계획 문서 작성
-- [x] `c0`를 새 기준으로 사용하기로 합의
-- [ ] 사용자가 `c0`에 추가할 테이블 반영
-- [ ] 최종 `c0` 테이블 목록 확정
-- [ ] `c0` SQL 기준 변환 스크립트 작성
-- [ ] `c0` 기준 컬렉션/필드 매핑표 작성
-- [ ] 이미지 경로 규칙을 `c0` 기준으로 다시 검증
-- [ ] 필요 시 `new_profile` FTP 복원 절차를 별도 phase로 편입
-- [ ] `seed-p0.ts`, `seed-p1.ts`, `profile-images.ts` 등 `p0~p2` 의존 코드 정리 계획 수립
-- [ ] `c0` 실행 경로가 준비된 뒤 `p0~p2` 폴더 제거
+## 전체 체크리스트
 
-## 삭제 전 선행조건
+### Phase 0 — 철거 및 c0 스키마 분석
 
-- `c0` 기준 실제 입력 SQL 또는 source manifest가 준비돼 있어야 한다.
-- `p0~p2`를 참조하는 스크립트와 문서를 먼저 대체하거나 폐기해야 한다.
-- `배우 리스트`를 어디서 복원할지 결정돼야 한다.
+- [x] `plan/c0-migration-plan.md`를 현재 저장소 기준으로 보완
+- [x] `payload.config.ts`에서 `Pages` 컬렉션 제거
+- [x] `src/collections/Pages.ts` 삭제
+- [x] 홈 화면의 `pages`/`p0` 안내 문구 제거
+- [x] `.gitignore`에 `tmp/c0/` runtime 산출물 경로 추가
+- [x] `scripts/seed-p0.ts`를 pages 없는 deprecated 상태로 축소
+- [x] `scripts/c0/parse.ts` 추가
+- [x] `data/baewoo-curated/c0/SCHEMA.md` 작성
+- [x] Pages 제거 기준 migration 생성
+- [x] `seed-p1.ts` / `profile-images.ts` deprecated 표기
+- [x] `npm run payload:generate-types`로 타입 재생성
+- [x] `rg -n 'pages|Pages' payload.config.ts src scripts` 기준 잔존 참조 최종 확인
+- [x] `npm run typecheck`
+- [x] `npm run lint`
 
-## 내일 시작 순서
+### Phase 1 — Clean Slate + Teachers / Agencies
 
-- [ ] 사용자가 `c0`에 추가한 테이블 확인
-- [ ] 추가된 테이블 포함 전체 `c0` SQL 구조 재검토
-- [ ] 변환 스크립트 대상 테이블과 출력 형식 확정
-- [ ] 1차 변환 스크립트 구현
-- [ ] 샘플 테이블로 변환 결과 검증
+- [ ] `tmp/c0/snapshot-pre-c0.json` 생성
+- [ ] `tmp/c0/backup/pre-c0.sql` 생성
+- [ ] `tmp/c0/castings-pre-c0.json` 생성
+- [ ] destructive guard 설계 반영
+- [ ] `scripts/c0/seed-teachers.ts`
+- [ ] `scripts/c0/seed-agencies.ts`
+- [ ] Teachers / Agencies dry-run 검증
+- [ ] Teachers / Agencies 실시드
 
-## 메모
+### Phase 2 — Profiles / Castings / News
 
-- 현재 FTP 복원은 `new_profile` 게시판 첨부파일만 대상으로 하며, 이는 `c0`의 `/data/g5_teacher`, `/data/g5_agency`, `/data/g5_class` 이미지 전략과 다르다.
-- 따라서 `profiles` FTP 작업은 재사용 가능한 하위 절차로 보관하되, `c0` 1차 범위에서는 기본 축이 아니다.
-- `c0` 기준 작업의 핵심은 `p0~p2`를 고치는 것이 아니라, `c0` 원본 SQL 세트를 기준으로 새 변환 경로를 만드는 것이다.
+- [ ] `scripts/c0/seed-profiles.ts`
+- [ ] `scripts/c0/diff-castings.ts`
+- [ ] `data/baewoo-curated/c0/castings-diff-report.md`
+- [ ] Castings 승인 게이트 통과 여부 기록
+- [ ] `scripts/c0/seed-castings.ts`
+- [ ] `scripts/c0/seed-news.ts`
+- [ ] News 대용량 파싱 시간/메모리 기록
+
+### Phase 3 — 신규 컬렉션 12개
+
+- [ ] Batch 3A 완료
+- [ ] Batch 3B 완료
+- [ ] Batch 3C 완료
+- [ ] 신규 컬렉션 12개 admin 그룹화 확인
+
+### Phase 4 — 이미지 업로드 및 URL 치환
+
+- [ ] `scripts/c0/scan-legacy-urls.ts`
+- [ ] `data/baewoo-curated/c0/legacy-urls.json`
+- [ ] 이미지 다운로드 / 업로드 매니페스트
+- [ ] `scripts/c0/replace-image-paths.ts`
+- [ ] 잔존 legacy URL 0건 확인
+
+### Phase 5 — 검증 및 정리
+
+- [ ] `scripts/c0/verify.ts`
+- [ ] `data/baewoo-curated/c0/verify-report.md`
+- [ ] `p0~p2` 의존 스크립트 제거
+- [ ] `data/baewoo-curated/p0`, `p1`, `p2` 제거
+- [ ] `data/baewoo-curated/README.md`, `summary.json` 갱신
+- [ ] `npm run build`
+
+## 이번 세션에서 바뀐 것
+
+- `Pages` 컬렉션 제거 시작
+- `scripts/c0/parse.ts` 추가
+- `data/baewoo-curated/c0/SCHEMA.md` 추가
+- `src/migrations/20260416_111020_c0_phase0_baseline.ts` 생성
+- 진행판을 phase 단위 체크리스트로 재작성
+
+## 다음 작업 우선순위
+
+1. `tmp/c0/` 하위 backup / snapshot / castings baseline 산출물 경로 준비
+2. destructive guard 요구사항을 Phase 1 스크립트 설계에 반영
+3. `scripts/c0/seed-teachers.ts`
+4. `scripts/c0/seed-agencies.ts`
+
+## 검증 메모
+
+- 완료:
+  - `npm run payload:generate-types`
+  - `npm run typecheck`
+  - `npm run lint`
+  - `rg -n 'pages|Pages' payload.config.ts src scripts` → 잔존 참조 없음
+- 참고:
+  - 생성된 migration은 `pages`만 drop하는 diff가 아니라, **현재 컬렉션 기준 첫 베이스라인 스냅샷**이다.
+  - admin 부팅 수동 확인은 이번 세션에서 실행하지 않았다.

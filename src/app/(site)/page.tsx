@@ -11,7 +11,8 @@ const nextSteps = [
   '환경변수를 `.env.local`로 복사하고 `DATABASE_URL`, `PAYLOAD_SECRET`를 채운다.',
   '로컬 Postgres가 없으면 `docker compose up -d`로 개발 DB를 띄운다.',
   '`npm run db:migrate`로 Payload 스키마 마이그레이션을 적용한다.',
-  '`npm run db:seed:p0-dry-run`으로 레거시 P0 변환 결과를 먼저 확인한다.',
+  '`npm run payload:generate-types`로 컬렉션 타입을 다시 생성한다.',
+  '`npm run db:seed:p0-dry-run`으로 남아 있는 레거시 시드 경로를 점검한다.',
 ]
 
 export default function HomePage() {
@@ -22,8 +23,8 @@ export default function HomePage() {
         <h1>BNB Renewal</h1>
         <p>
           Next.js App Router, Payload CMS, Postgres 기준으로 초기 골격을 올렸습니다.
-          현재 단계는 공개 사이트의 최소 라우트와 Payload 관리자, 그리고 P0 마이그레이션
-          dry-run 경로를 먼저 검증하는 목적입니다.
+          현재 단계는 공개 사이트의 최소 라우트와 Payload 관리자, 그리고 C0 기준
+          마이그레이션 준비 상태를 먼저 검증하는 목적입니다.
         </p>
         <div className="route-list">
           {publicRoutes.map((route) => (
@@ -43,17 +44,17 @@ export default function HomePage() {
           </p>
         </article>
         <article className="surface card">
-          <h3>P0 컬렉션</h3>
+          <h3>현재 컬렉션</h3>
           <p>
-            <code>pages</code>, <code>teachers</code>, <code>news</code> 3개 컬렉션을
-            먼저 구성했습니다.
+            <code>teachers</code>, <code>news</code>, <code>profiles</code>,{' '}
+            <code>castings</code>, <code>agencies</code> 기준으로 C0 전환을 준비 중입니다.
           </p>
         </article>
         <article className="surface card">
           <h3>마이그레이션</h3>
           <p>
-            레거시 MySQL dump 전체 직이관이 아니라, <code>data/baewoo-curated/p0</code>{' '}
-            샘플 변환부터 검증합니다.
+            레거시 MySQL dump 전체 직이관이 아니라, <code>data/baewoo-curated/c0</code>{' '}
+            SQL 정본 기준으로 새 시드 파이프라인을 단계적으로 정리합니다.
           </p>
         </article>
       </section>

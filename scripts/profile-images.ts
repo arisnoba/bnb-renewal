@@ -1,3 +1,4 @@
+/** @deprecated C0 이미지 단계와 분리된 legacy profile 복원 유틸리티. 새 작업은 scripts/c0/ 하위로 이동한다. */
 import path from 'node:path'
 
 import { parseInsertFile, type LegacyRow } from './legacy-sql'

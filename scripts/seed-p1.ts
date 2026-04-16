@@ -1,3 +1,4 @@
+/** @deprecated Phase 0 기준 legacy seed 유지용. 새 작업은 scripts/c0/ 하위로 이동한다. */
 import path from 'node:path'
 
 import type { Payload } from 'payload'

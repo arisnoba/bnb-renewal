@@ -16,6 +16,7 @@ config/profile-image-ftp-sources.json
 tmp/profile-image-manifest.json
 tmp/profile-image-download-report.json
 tmp/profile-image-download-success.json
+tmp/c0/
 
 # 로컬 원본 덤프
 data/baewoo.sql
