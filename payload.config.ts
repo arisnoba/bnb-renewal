@@ -4,12 +4,20 @@ import { fileURLToPath } from 'node:url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 
+import { Appearances } from './src/collections/Appearances'
+import { AppearancesExtra } from './src/collections/AppearancesExtra'
 import { Agencies } from './src/collections/Agencies'
+import { Banners } from './src/collections/Banners'
 import { Castings } from './src/collections/Castings'
+import { Lineups } from './src/collections/Lineups'
+import { Movies } from './src/collections/Movies'
 import { News } from './src/collections/News'
 import { Profiles } from './src/collections/Profiles'
+import { StarCards } from './src/collections/StarCards'
+import { TeacherFiles } from './src/collections/TeacherFiles'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
+import { VideoCastings } from './src/collections/VideoCastings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,7 +40,22 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Teachers, News, Profiles, Castings, Agencies],
+  collections: [
+    Users,
+    Teachers,
+    News,
+    Profiles,
+    Castings,
+    Agencies,
+    VideoCastings,
+    Banners,
+    TeacherFiles,
+    Lineups,
+    Movies,
+    Appearances,
+    AppearancesExtra,
+    StarCards,
+  ],
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {

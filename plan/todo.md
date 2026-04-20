@@ -52,8 +52,8 @@
 
 ### Phase 3 — 신규 컬렉션 12개
 
-- [ ] Batch 3A 완료
-- [ ] Batch 3B 완료
+- [x] Batch 3A 완료
+- [x] Batch 3B 완료
 - [ ] Batch 3C 완료
 - [ ] 신규 컬렉션 12개 admin 그룹화 확인
 
@@ -88,6 +88,24 @@
 - `tmp/c0/snapshot-pre-c0.json`, `tmp/c0/castings-pre-c0.json`, `tmp/c0/backup/pre-c0.json` 생성
 - `data/baewoo-curated/c0/castings-diff-report.md` 생성
 - Neon DB Phase 2 실시드 완료 (`profiles=660`, `news=2908`, `castings=22`)
+- Phase 3 Batch 3A 스캐폴딩 추가
+  - `video-castings`, `banners`, `teacher-files`, `lineups` 컬렉션 정의
+  - `scripts/c0/seed-video-castings.ts`, `seed-banners.ts`, `seed-teacher-files.ts`, `seed-lineups.ts`
+  - `src/migrations/20260420_190000_c0_phase3_batch3a.ts` 생성
+- Phase 3 Batch 3A dry-run 검증 완료 (`video-castings=71`, `banners=74`, `teacher-files=577`, `lineups=53`)
+- Neon DB Phase 3 Batch 3A 적용 완료
+  - migration 기록: `20260420_190000_c0_phase3_batch3a`
+  - 실제 카운트: `video-castings=71`, `banners=74`, `teacher-files=577`, `lineups=53`
+  - slug 중복: `0 / 0 / 0 / 0`
+- Phase 3 Batch 3B 스캐폴딩 추가
+  - `movies`, `appearances`, `appearances-extra`, `star-cards` 컬렉션 정의
+  - `scripts/c0/seed-movies.ts`, `seed-appearances.ts`, `seed-appearances-extra.ts`, `seed-star-cards.ts`
+  - `src/migrations/20260420_200000_c0_phase3_batch3b.ts` 생성
+- Phase 3 Batch 3B dry-run 검증 완료 (`movies=107`, `appearances=153`, `appearances-extra=38`, `star-cards=35`)
+- Neon DB Phase 3 Batch 3B 적용 완료
+  - migration 기록: `20260420_200000_c0_phase3_batch3b`
+  - 실제 카운트: `movies=107`, `appearances=153`, `appearances-extra=38`, `star-cards=35`
+  - slug 중복: `0 / 0 / 0 / 0`
 - 진행판을 phase 단위 체크리스트로 재작성
 
 ## 다음 작업 우선순위
@@ -107,9 +125,14 @@
   - `npm run db:c0:diff-castings` → baseline `10`, candidate `22`, exact match `10`, new only `12`
   - `npm run db:seed:c0-castings:dry-run` → `22`
   - `npm run db:seed:c0-news:dry-run` → `2908`, parse 약 `1470ms`, RSS delta 약 `554.6MB`
+  - `npm run db:seed:c0-movies:dry-run` → `107`
+  - `npm run db:seed:c0-appearances:dry-run` → `153`
+  - `npm run db:seed:c0-appearances-extra:dry-run` → `38`
+  - `npm run db:seed:c0-star-cards:dry-run` → `35`
   - Neon 실시드 후 카운트 검증 → `teachers=109`, `agencies=63`, `agencies_actors=185`, `profiles=660`, `news=2908`, `castings=22`
+  - Neon Phase 3 Batch 3B 후 카운트 검증 → `movies=107`, `appearances=153`, `appearances_extra=38`, `star_cards=35`
   - `castings` source 분포 → `g5_write_new_casting=5`, `g5_write_new_casting2=4`, `g5_write_new_casting3=5`, `g5_write_new_casting_abio=6`, `g5_write_new_casting_bx=2`
-  - slug 중복 검사 → `profiles=0`, `news=0`, `castings=0`
+  - slug 중복 검사 → `profiles=0`, `news=0`, `castings=0`, `movies=0`, `appearances=0`, `appearances_extra=0`, `star_cards=0`
 - 참고:
   - 생성된 migration은 `pages`만 drop하는 diff가 아니라, **현재 컬렉션 기준 첫 베이스라인 스냅샷**이다.
   - admin 부팅 수동 확인은 이번 세션에서 실행하지 않았다.
@@ -117,3 +140,8 @@
   - `pg_dump`는 로컬 설치 버전(14)과 Neon 서버 버전(17) 불일치로 사용할 수 없어, backup은 `pg` 직접 조회 기반 JSON export(`tmp/c0/backup/pre-c0.json`)로 대체했다.
   - `news.body_html`에는 아직 legacy URL이 남아 있다. 현재 잔존 카운트는 `/data/=2869`, `/web/img/=3`, `http://www.baewoo.co.kr/=810`, `http://baewoobaewoo.cafe24.com/=27`, `https://baewoo.co.kr:443/=1274` 이다.
   - 사용자가 원하면 `2020년 이전 데이터 제외`는 rollback이 아니라 별도 정리 phase로 다루는 편이 안전하다.
+  - `npm run db:migrate`는 현재 Neon 대상에서 Payload의 dev-mode 경고로 중단된다. 메시지는 "If you'd like to run migrations, data loss will occur." 이며, 명시적 승인 없이 진행하지 않았다.
+  - 위 dev-mode 경고는 승인 후 진행했고, Neon에는 3A 스키마가 일부 선반영된 상태라 migration을 idempotent하게 수정한 뒤 기록을 정상화했다.
+  - 이번 세션의 3B도 dev 서버 동적 반영으로 테이블이 먼저 생성된 상태였고, read-only 확인 후 `20260420_200000_c0_phase3_batch3b` migration 기록을 정상화했다.
+  - `appearances` / `appearances_extra`는 초기 스캐폴딩에서 남은 빈 컬럼 `extra_notes`를 `cast_list_label`로 안전하게 rename한 뒤 seed를 진행했다.
+  - `video-castings`, `banners`, `teacher-files`, `lineups`의 admin 그룹/화면 렌더링 수동 확인은 이번 세션에서 아직 하지 않았다.
