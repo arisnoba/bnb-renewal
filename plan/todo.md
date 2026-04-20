@@ -1,8 +1,8 @@
 # C0 기준 마이그레이션 진행판
 
 > 기준 문서: [plan/c0-migration-plan.md](./c0-migration-plan.md)  
-> 마지막 갱신: 2026-04-16  
-> 현재 진행 기준: **Phase 0 완료, Phase 1 대기**
+> 마지막 갱신: 2026-04-20  
+> 현재 진행 기준: **Phase 0 완료, Phase 1 완료, Phase 2 대기**
 
 ## 현재 상태
 
@@ -31,14 +31,14 @@
 
 ### Phase 1 — Clean Slate + Teachers / Agencies
 
-- [ ] `tmp/c0/snapshot-pre-c0.json` 생성
-- [ ] `tmp/c0/backup/pre-c0.sql` 생성
-- [ ] `tmp/c0/castings-pre-c0.json` 생성
-- [ ] destructive guard 설계 반영
-- [ ] `scripts/c0/seed-teachers.ts`
-- [ ] `scripts/c0/seed-agencies.ts`
-- [ ] Teachers / Agencies dry-run 검증
-- [ ] Teachers / Agencies 실시드
+- [x] `tmp/c0/snapshot-pre-c0.json` 생성
+- [x] `tmp/c0/backup/pre-c0.json` 생성
+- [x] `tmp/c0/castings-pre-c0.json` 생성
+- [x] destructive guard 설계 반영
+- [x] `scripts/c0/seed-teachers.ts`
+- [x] `scripts/c0/seed-agencies.ts`
+- [x] Teachers / Agencies dry-run 검증
+- [x] Teachers / Agencies 실시드
 
 ### Phase 2 — Profiles / Castings / News
 
@@ -80,14 +80,20 @@
 - `scripts/c0/parse.ts` 추가
 - `data/baewoo-curated/c0/SCHEMA.md` 추가
 - `src/migrations/20260416_111020_c0_phase0_baseline.ts` 생성
+- `scripts/c0/runtime.ts` 추가
+- `scripts/c0/snapshot-pre-c0.ts`, `backup-pre-c0.ts`, `export-castings-pre-c0.ts` 추가
+- `scripts/c0/seed-teachers.ts`, `scripts/c0/seed-agencies.ts` 추가
+- `src/migrations/20260420_090000_c0_phase1_core_reset.ts` 추가
+- `tmp/c0/snapshot-pre-c0.json`, `tmp/c0/castings-pre-c0.json`, `tmp/c0/backup/pre-c0.json` 생성
 - 진행판을 phase 단위 체크리스트로 재작성
 
 ## 다음 작업 우선순위
 
-1. `tmp/c0/` 하위 backup / snapshot / castings baseline 산출물 경로 준비
-2. destructive guard 요구사항을 Phase 1 스크립트 설계에 반영
-3. `scripts/c0/seed-teachers.ts`
-4. `scripts/c0/seed-agencies.ts`
+1. Phase 2용 `profiles/news/castings` 파서 및 seed 스크립트 구현
+2. castings diff 리포트 생성 및 승인 게이트 기록
+3. `npm run db:seed:c0-profiles`
+4. `npm run db:seed:c0-castings`
+5. `npm run db:seed:c0-news`
 
 ## 검증 메모
 
@@ -99,3 +105,6 @@
 - 참고:
   - 생성된 migration은 `pages`만 drop하는 diff가 아니라, **현재 컬렉션 기준 첫 베이스라인 스냅샷**이다.
   - admin 부팅 수동 확인은 이번 세션에서 실행하지 않았다.
+  - `.env.local`의 기본 `DATABASE_URL`은 현재 Neon 원격 DB를 가리킨다. Phase 1 destructive migration은 로컬 DB 또는 `ALLOW_DESTRUCTIVE_C0=1` 명시 시에만 통과하도록 막아두었다.
+  - `pg_dump`는 로컬 설치 버전(14)과 Neon 서버 버전(17) 불일치로 사용할 수 없어, backup은 `pg` 직접 조회 기반 JSON export(`tmp/c0/backup/pre-c0.json`)로 대체했다.
+  - 2026-04-20 기준 Phase 1 실시드 후 DB 카운트는 `teachers=109`, `agencies=63`, `agencies_actors=185`, `profiles=0`, `news=0`, `castings=10`이다.

@@ -15,7 +15,7 @@ export async function parseInsertFile(filePath: string): Promise<LegacyRow[]> {
 
   return insertStatements.flatMap((insertStatement) => {
     const insertMatch = insertStatement.match(
-      /INSERT INTO\s+`[^`]+`\s+\(([\s\S]*?)\)\s+VALUES\s+([\s\S]*)$/m,
+      /INSERT INTO\s+`[^`]+`\s+\(([\s\S]*?)\)\s+VALUES\s*([\s\S]*)$/m,
     )
 
     if (!insertMatch) {

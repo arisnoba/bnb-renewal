@@ -76,6 +76,30 @@ export const Teachers: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'photoImage1',
+      type: 'text',
+    },
+    {
+      name: 'photoImage2',
+      type: 'text',
+    },
+    {
+      name: 'photoImage3',
+      type: 'text',
+    },
+    {
+      name: 'photoImage4',
+      type: 'text',
+    },
+    {
+      name: 'photoImage5',
+      type: 'text',
+    },
+    {
+      name: 'photoImage6',
+      type: 'text',
+    },
+    {
       name: 'gallery',
       type: 'array',
       fields: [

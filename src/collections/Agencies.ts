@@ -54,6 +54,25 @@ export const Agencies: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'actors',
+      type: 'array',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'generation',
+          type: 'text',
+        },
+        {
+          name: 'profileImagePath',
+          type: 'text',
+        },
+      ],
+    },
+    {
       name: 'displayOrder',
       type: 'number',
       defaultValue: 0,
