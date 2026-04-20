@@ -2,7 +2,7 @@
 
 > 기준 문서: [plan/c0-migration-plan.md](./c0-migration-plan.md)  
 > 마지막 갱신: 2026-04-20  
-> 현재 진행 기준: **Phase 0 완료, Phase 1 완료, Phase 2 대기**
+> 현재 진행 기준: **Phase 0 완료, Phase 1 완료, Phase 2 완료**
 
 ## 현재 상태
 
@@ -42,13 +42,13 @@
 
 ### Phase 2 — Profiles / Castings / News
 
-- [ ] `scripts/c0/seed-profiles.ts`
-- [ ] `scripts/c0/diff-castings.ts`
-- [ ] `data/baewoo-curated/c0/castings-diff-report.md`
-- [ ] Castings 승인 게이트 통과 여부 기록
-- [ ] `scripts/c0/seed-castings.ts`
-- [ ] `scripts/c0/seed-news.ts`
-- [ ] News 대용량 파싱 시간/메모리 기록
+- [x] `scripts/c0/seed-profiles.ts`
+- [x] `scripts/c0/diff-castings.ts`
+- [x] `data/baewoo-curated/c0/castings-diff-report.md`
+- [x] Castings 승인 게이트 통과 여부 기록
+- [x] `scripts/c0/seed-castings.ts`
+- [x] `scripts/c0/seed-news.ts`
+- [x] News 대용량 파싱 시간/메모리 기록
 
 ### Phase 3 — 신규 컬렉션 12개
 
@@ -83,17 +83,18 @@
 - `scripts/c0/runtime.ts` 추가
 - `scripts/c0/snapshot-pre-c0.ts`, `backup-pre-c0.ts`, `export-castings-pre-c0.ts` 추가
 - `scripts/c0/seed-teachers.ts`, `scripts/c0/seed-agencies.ts` 추가
+- `scripts/c0/seed-profiles.ts`, `scripts/c0/diff-castings.ts`, `scripts/c0/seed-castings.ts`, `scripts/c0/seed-news.ts` 추가
 - `src/migrations/20260420_090000_c0_phase1_core_reset.ts` 추가
 - `tmp/c0/snapshot-pre-c0.json`, `tmp/c0/castings-pre-c0.json`, `tmp/c0/backup/pre-c0.json` 생성
+- `data/baewoo-curated/c0/castings-diff-report.md` 생성
+- Neon DB Phase 2 실시드 완료 (`profiles=660`, `news=2908`, `castings=22`)
 - 진행판을 phase 단위 체크리스트로 재작성
 
 ## 다음 작업 우선순위
 
-1. Phase 2용 `profiles/news/castings` 파서 및 seed 스크립트 구현
-2. castings diff 리포트 생성 및 승인 게이트 기록
-3. `npm run db:seed:c0-profiles`
-4. `npm run db:seed:c0-castings`
-5. `npm run db:seed:c0-news`
+1. Phase 3 신규 컬렉션 12개를 3A/3B/3C 배치로 진행
+2. Phase 4 이미지 업로드 및 legacy URL 치환 준비
+3. 필요 시 `news/profiles/castings`의 2020년 이전 데이터 컷오프를 별도 후속 작업으로 분리 검토
 
 ## 검증 메모
 
@@ -102,9 +103,17 @@
   - `npm run typecheck`
   - `npm run lint`
   - `rg -n 'pages|Pages' payload.config.ts src scripts` → 잔존 참조 없음
+  - `npm run db:seed:c0-profiles:dry-run` → `660`
+  - `npm run db:c0:diff-castings` → baseline `10`, candidate `22`, exact match `10`, new only `12`
+  - `npm run db:seed:c0-castings:dry-run` → `22`
+  - `npm run db:seed:c0-news:dry-run` → `2908`, parse 약 `1470ms`, RSS delta 약 `554.6MB`
+  - Neon 실시드 후 카운트 검증 → `teachers=109`, `agencies=63`, `agencies_actors=185`, `profiles=660`, `news=2908`, `castings=22`
+  - `castings` source 분포 → `g5_write_new_casting=5`, `g5_write_new_casting2=4`, `g5_write_new_casting3=5`, `g5_write_new_casting_abio=6`, `g5_write_new_casting_bx=2`
+  - slug 중복 검사 → `profiles=0`, `news=0`, `castings=0`
 - 참고:
   - 생성된 migration은 `pages`만 drop하는 diff가 아니라, **현재 컬렉션 기준 첫 베이스라인 스냅샷**이다.
   - admin 부팅 수동 확인은 이번 세션에서 실행하지 않았다.
   - `.env.local`의 기본 `DATABASE_URL`은 현재 Neon 원격 DB를 가리킨다. Phase 1 destructive migration은 로컬 DB 또는 `ALLOW_DESTRUCTIVE_C0=1` 명시 시에만 통과하도록 막아두었다.
   - `pg_dump`는 로컬 설치 버전(14)과 Neon 서버 버전(17) 불일치로 사용할 수 없어, backup은 `pg` 직접 조회 기반 JSON export(`tmp/c0/backup/pre-c0.json`)로 대체했다.
-  - 2026-04-20 기준 Phase 1 실시드 후 DB 카운트는 `teachers=109`, `agencies=63`, `agencies_actors=185`, `profiles=0`, `news=0`, `castings=10`이다.
+  - `news.body_html`에는 아직 legacy URL이 남아 있다. 현재 잔존 카운트는 `/data/=2869`, `/web/img/=3`, `http://www.baewoo.co.kr/=810`, `http://baewoobaewoo.cafe24.com/=27`, `https://baewoo.co.kr:443/=1274` 이다.
+  - 사용자가 원하면 `2020년 이전 데이터 제외`는 rollback이 아니라 별도 정리 phase로 다루는 편이 안전하다.

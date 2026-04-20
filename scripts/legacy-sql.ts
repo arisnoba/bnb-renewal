@@ -3,8 +3,19 @@ import path from 'node:path'
 
 export type LegacyScalar = number | null | string
 export type LegacyRow = Record<string, LegacyScalar>
+export type LegacyInsertRecord = {
+  row: LegacyRow
+  tableName: string
+}
 
 export async function parseInsertFile(filePath: string): Promise<LegacyRow[]> {
+  const records = await parseInsertFileWithTables(filePath)
+  return records.map((record) => record.row)
+}
+
+export async function parseInsertFileWithTables(
+  filePath: string,
+): Promise<LegacyInsertRecord[]> {
   const absolutePath = path.resolve(filePath)
   const sql = await fs.readFile(absolutePath, 'utf8')
   const insertStatements = extractInsertStatements(sql)
@@ -13,30 +24,9 @@ export async function parseInsertFile(filePath: string): Promise<LegacyRow[]> {
     throw new Error(`INSERT 구문을 찾지 못했습니다: ${filePath}`)
   }
 
-  return insertStatements.flatMap((insertStatement) => {
-    const insertMatch = insertStatement.match(
-      /INSERT INTO\s+`[^`]+`\s+\(([\s\S]*?)\)\s+VALUES\s*([\s\S]*)$/m,
-    )
-
-    if (!insertMatch) {
-      throw new Error(`INSERT 구문을 파싱하지 못했습니다: ${filePath}`)
-    }
-
-    const [, columnBlock, valuesBlock] = insertMatch
-    const columns = [...columnBlock.matchAll(/`([^`]+)`/g)].map((match) => match[1])
-    const tuples = splitTuples(valuesBlock)
-
-    return tuples.map((tuple) => {
-      const fields = splitFields(tuple)
-      const row: LegacyRow = {}
-
-      for (const [index, column] of columns.entries()) {
-        row[column] = parseToken(fields[index] ?? 'NULL')
-      }
-
-      return row
-    })
-  })
+  return insertStatements.flatMap((insertStatement) =>
+    parseInsertStatement(insertStatement, filePath),
+  )
 }
 
 function extractInsertStatements(sql: string): string[] {
@@ -205,6 +195,37 @@ function splitFields(tuple: string): string[] {
 
   fields.push(current.trim())
   return fields
+}
+
+function parseInsertStatement(
+  insertStatement: string,
+  filePath: string,
+): LegacyInsertRecord[] {
+  const insertMatch = insertStatement.match(
+    /INSERT INTO\s+`([^`]+)`\s+\(([\s\S]*?)\)\s+VALUES\s*([\s\S]*)$/m,
+  )
+
+  if (!insertMatch) {
+    throw new Error(`INSERT 구문을 파싱하지 못했습니다: ${filePath}`)
+  }
+
+  const [, tableName, columnBlock, valuesBlock] = insertMatch
+  const columns = [...columnBlock.matchAll(/`([^`]+)`/g)].map((match) => match[1])
+  const tuples = splitTuples(valuesBlock)
+
+  return tuples.map((tuple) => {
+    const fields = splitFields(tuple)
+    const row: LegacyRow = {}
+
+    for (const [index, column] of columns.entries()) {
+      row[column] = parseToken(fields[index] ?? 'NULL')
+    }
+
+    return {
+      row,
+      tableName,
+    }
+  })
 }
 
 function parseToken(token: string): LegacyScalar {
