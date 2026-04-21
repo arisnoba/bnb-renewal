@@ -45,6 +45,7 @@
   - 중복 `subject`: 0건
   - 대표 출처: `baewoo=63`, `kidscenter=13`, `bnbuniv=2`, `bnbhighteen=0`
   - 재생성 명령: `npm run legacy:work:agencies`
+- [x] `g5_board_file`, `g5_menu`, `g5_menu2`는 통합 대상에서 제외
 
 ### 다음 통합 후보
 
@@ -60,8 +61,6 @@
 
 ### 보류 결정 필요
 
-- [ ] `g5_board_file`은 독립 통합이 아니라 게시글별 첨부 조인용으로 둘지 결정
-- [ ] `g5_menu`, `g5_menu2`는 IA 참고용인지 실제 CMS 데이터로 옮길지 결정
 - [ ] `g5_class`, `g5_class2`, `g5_timetable*`, `g5_month_plan`, `g5_plan`은 현재 사이트 범위에 포함할지 결정
 - [ ] `g5_write_reservation`, `sm_customer`, `g5_member`는 개인정보 가능성이 있어 공개 콘텐츠 이관에서 제외할지 확정
 - [ ] 강사 통합 시 Payload의 `center` 복수 기재 방식과 `data/baewoo-curated/exam/teacher.md` 기준이 일치하는지 검증
