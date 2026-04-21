@@ -122,9 +122,154 @@ main {
   font-size: 14px;
 }
 
+.test-summary,
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.test-summary span,
+.filter-pill {
+  border: 1px solid rgba(31, 29, 26, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  color: rgba(31, 29, 26, 0.82);
+  font-size: 14px;
+  line-height: 1;
+  padding: 10px 14px;
+}
+
+.teacher-filter-panel {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.teacher-filter-panel h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.filter-pill[aria-current='page'] {
+  background: #1f1d1a;
+  color: #fff;
+}
+
+.teacher-list {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.teacher-card {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 148px minmax(0, 1fr);
+  padding: 20px;
+}
+
+.teacher-photo {
+  align-items: center;
+  aspect-ratio: 3 / 4;
+  background: rgba(31, 29, 26, 0.08);
+  border: 1px solid rgba(31, 29, 26, 0.08);
+  border-radius: 8px;
+  color: rgba(31, 29, 26, 0.5);
+  display: flex;
+  font-family: 'SF Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 12px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.teacher-photo img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.teacher-info {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.teacher-info h2 {
+  font-size: 24px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.teacher-meta,
+.teacher-role,
+.teacher-summary {
+  color: rgba(31, 29, 26, 0.7);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.teacher-meta {
+  font-family: 'SF Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.teacher-data {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.teacher-data div {
+  min-width: 0;
+}
+
+.teacher-data dt {
+  color: rgba(31, 29, 26, 0.52);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.teacher-data dd {
+  color: rgba(31, 29, 26, 0.82);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.empty-state {
+  margin-top: 24px;
+}
+
+.empty-state h2,
+.empty-state p {
+  margin: 0;
+}
+
+.empty-state p {
+  color: rgba(31, 29, 26, 0.72);
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
 @media (max-width: 840px) {
   .grid-3 {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-card,
+  .teacher-data {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-photo {
+    max-width: 220px;
+    width: 100%;
   }
 
   main {

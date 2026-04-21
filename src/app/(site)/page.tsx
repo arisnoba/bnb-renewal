@@ -5,6 +5,7 @@ const publicRoutes = [
   '/art/faculty',
   '/art/casting',
   '/art/contact',
+  '/test/teachers',
 ]
 
 const nextSteps = [

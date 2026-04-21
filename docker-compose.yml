@@ -1,4 +1,19 @@
 services:
+  legacy-mariadb:
+    image: mariadb:10.6
+    container_name: bnb-renewal-legacy-mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - '3307:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max_allowed_packet=512M
+    volumes:
+      - legacy-mariadb-data:/var/lib/mysql
+      - ./data/legacy_dumps:/legacy_dumps:ro
+
   postgres:
     image: postgres:16-alpine
     container_name: bnb-renewal-postgres
@@ -12,4 +27,5 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
 volumes:
+  legacy-mariadb-data:
   postgres-data:

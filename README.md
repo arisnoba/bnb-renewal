@@ -30,7 +30,7 @@
 - 프레임워크: `Next.js App Router`
 - CMS: `Payload CMS`
 - DB: `Postgres`
-- 주요 데이터 소스: `data/baewoo.sql`를 분리·정제한 산출물
+- 레거시 원본 DB: `data/legacy_dumps`의 센터별 MariaDB dump
 
 권장 운영 방향은 `Vercel 기반 단일 앱 + Postgres + 파일 스토리지`다. 자세한 배포 판단 근거는 [docs/배포-운영-전략.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/배포-운영-전략.md:1)에 정리되어 있다.
 
@@ -57,13 +57,15 @@
 
 ### 마이그레이션 스크립트
 
+- `scripts/legacy-db/import-dumps.sh`
+- `scripts/legacy-db/verify-dumps.sh`
 - `scripts/seed-p0.ts`
 - `scripts/seed-p1.ts`
 - `scripts/legacy-sql.ts`
 - `scripts/split_baewoo_sql.py`
 - `scripts/curate_baewoo_tables.py`
 
-현재 코드는 "전체 완성본"이 아니라, `P0 이관 검증 + 라우트 골격 + 관리자 컬렉션 정리` 단계로 보는 것이 맞다.
+현재 코드는 "전체 완성본"이 아니라, `센터별 원본 dump 복원 + 라우트 골격 + 관리자 컬렉션 정리` 단계로 보는 것이 맞다. `seed-p0.ts`, `seed-p1.ts`, `baewoo-split/`, `baewoo-curated/`는 새 MariaDB 기반 파이프라인으로 대체될 예정이다.
 
 ## 3. 디렉터리 가이드
 
@@ -92,6 +94,26 @@
 
 ```bash
 docker compose up -d
+```
+
+Postgres만 띄우려면 아래 명령을 사용한다.
+
+```bash
+docker compose up -d postgres
+```
+
+센터별 레거시 dump를 로컬 MariaDB에 복원하려면 `data/legacy_dumps`에 dump 파일 4개를 둔 뒤 아래 명령을 실행한다.
+
+```bash
+npm run legacy:db:up
+npm run legacy:db:import
+npm run legacy:db:verify
+```
+
+기존 로컬 MariaDB 복원본을 버리고 다시 넣을 때만 아래 명령을 사용한다.
+
+```bash
+npm run legacy:db:import:reset
 ```
 
 ### 3. 의존성 설치

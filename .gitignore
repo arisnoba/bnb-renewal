@@ -21,6 +21,8 @@ tmp/c0/
 # 로컬 원본 덤프
 data/baewoo.sql
 data/baewoo.sql.gz
+data/legacy_dumps/*
+!data/legacy_dumps/README.md
 
 # 로컬 생성 SQL 산출물
 data/baewoo-split/_global.sql

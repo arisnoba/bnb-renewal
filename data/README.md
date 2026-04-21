@@ -4,19 +4,20 @@
 
 ## 구성
 
-- `baewoo.sql`
-  - 원본 MariaDB 전체 덤프다.
-  - 로컬 보관 전용이며 Git에는 포함하지 않는다.
+- `legacy_dumps/`
+  - 센터별 원본 MariaDB 전체 덤프 보관 위치다.
+  - SQL dump 본문은 로컬 보관 전용이며 Git에는 포함하지 않는다.
+  - 현재 기대 파일은 `baewoo.sql`, `bnbuniv.sql`, `kidscenter.sql`, `bnbhighteen.sql`이다.
 - `baewoo-split/`
-  - 원본 덤프를 테이블 단위 SQL 파일로 분리한 작업본이다.
-  - 전체 구조를 참조하거나 필요한 테이블만 선별할 때 사용한다.
+  - 이전 단일 dump 기반 테이블 분리 산출물이다.
+  - 새 작업에서는 정본으로 보지 않고, 기존 스크립트 호환이 끝나면 제거한다.
 - `baewoo-curated/`
-  - 실제 프로젝트 이관 우선순위 기준으로 다시 추린 선별본이다.
-  - P0, P1, P2, reference 순서로 나뉘어 있다.
+  - 이전 우선순위 선별본이다.
+  - `c0`, `p0`, `p1`, `p2` 입력을 읽는 구 시드 스크립트가 남아 있어 당장 삭제하지 않는다.
 
 ## 작업 흐름
 
-1. `baewoo.sql`을 로컬에 보관한다.
-2. `scripts/split_baewoo_sql.py`로 `baewoo-split/`을 생성한다.
-3. `scripts/curate_baewoo_tables.py`로 `baewoo-curated/`를 구성한다.
-4. 실제 변환과 적재는 `baewoo-curated/`의 우선순위 테이블부터 진행한다.
+1. 센터별 원본 dump를 `data/legacy_dumps/`에 보관한다.
+2. `npm run legacy:db:import`로 로컬 MariaDB에 원본 DB를 복원한다.
+3. 로컬 MariaDB에서 필요한 테이블을 조회해 Postgres/Payload 적재용 staging 데이터를 만든다.
+4. 새 DB 기반 추출 경로가 검증되면 기존 `baewoo-split/`, `baewoo-curated/c0`, `p0`, `p1`, `p2` 산출물을 제거한다.
