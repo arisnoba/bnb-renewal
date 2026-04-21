@@ -122,8 +122,8 @@
 
 ## 다음 작업 우선순위
 
-1. teacher 샘플 2명 이미지 치환 dry-run
-2. teacher 전체 구조화 이미지 FTP dry-run 및 용량 보고
+1. teacher 다운로드 실패 10건 경로 확인
+2. teacher 샘플 2명 이미지 치환 dry-run
 3. 다운로드 성공 파일만 Vercel Blob 업로드 및 치환 dry-run
 4. 필요 시 `news/profiles/castings`의 2020년 이전 데이터 컷오프를 별도 후속 작업으로 분리 검토
 
@@ -173,6 +173,10 @@
   - teacher 샘플 다운로드 → downloaded `18`, failed `0`, total `0.99 MiB`
   - teacher 샘플 Blob 업로드 → uploaded `18`, failed `0`
   - teacher 샘플 Blob image HEAD 확인 → `200 OK`, `Content-Type: image/png`
+  - teacher 전체 매니페스트 생성 → entries `1119`, unique source paths `1051`
+  - teacher 전체 FTP 다운로드 → downloaded `1109`, failed `10`, report `tmp/c0/teacher-image-download.json`
+  - teacher 전체 로컬 파일 위치 → `tmp/c0/images/teachers/` (`1041` files, `du -sh` 기준 `118M`)
+  - 구조화 이미지 Blob 경로 기준은 원본 공개 URL prefix 없이 `teachers/{sourcePath}`로 정리했다. 예: `teachers/1/teacher_img01.png`
   - 사용자가 원하면 `2020년 이전 데이터 제외`는 rollback이 아니라 별도 정리 phase로 다루는 편이 안전하다.
   - `npm run db:migrate`는 현재 Neon 대상에서 Payload의 dev-mode 경고로 중단된다. 메시지는 "If you'd like to run migrations, data loss will occur." 이며, 명시적 승인 없이 진행하지 않았다.
   - 위 dev-mode 경고는 승인 후 진행했고, Neon에는 3A 스키마가 일부 선반영된 상태라 migration을 idempotent하게 수정한 뒤 기록을 정상화했다.

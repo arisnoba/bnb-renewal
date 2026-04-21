@@ -44,6 +44,7 @@ type ScanFile = {
 type UploadSource = {
   localPath?: string
   normalizedUrl: string
+  pathnameSource: string
   sourceUrl: string
   title?: string
 }
@@ -73,7 +74,7 @@ async function main() {
   const entries: UploadedEntry[] = []
 
   for (const item of urls) {
-    const pathname = buildBlobPathname(options.prefix, item.normalizedUrl)
+    const pathname = buildBlobPathname(options.prefix, item.pathnameSource)
 
     if (options.dryRun) {
       entries.push({
@@ -153,7 +154,7 @@ function parseArgs(args: string[]): Options {
   let inputPath = ''
   let limit: Options['limit'] = 'all'
   let outputPath = ''
-  let prefix = 'c0/directings/sample'
+  let prefix = 'directings/sample'
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
@@ -237,6 +238,7 @@ function toUploadSources(input: ScanFile): UploadSource[] {
   if (Array.isArray(input.uniqueUrls)) {
     return input.uniqueUrls.map((item) => ({
       normalizedUrl: item.normalizedUrl,
+      pathnameSource: item.normalizedUrl,
       sourceUrl: item.url,
       title: item.samples?.[0]?.title,
     }))
@@ -247,14 +249,17 @@ function toUploadSources(input: ScanFile): UploadSource[] {
     .map((entry) => ({
       localPath: entry.localPath,
       normalizedUrl: String(entry.normalizedUrl),
+      pathnameSource: String(entry.sourcePath ?? entry.normalizedUrl),
       sourceUrl: String(entry.sourcePath ?? entry.normalizedUrl),
       title: entry.title,
     }))
 }
 
-function buildBlobPathname(prefix: string, sourceUrl: string) {
-  const url = new URL(sourceUrl)
-  const sourcePath = url.pathname.replace(/^\/+/, '')
+function buildBlobPathname(prefix: string, source: string) {
+  const sourcePath = /^https?:\/\//i.test(source)
+    ? new URL(source).pathname.replace(/^\/+/, '')
+    : source.replace(/^\/+/, '')
+
   return path.posix.join(prefix, sourcePath)
 }
 

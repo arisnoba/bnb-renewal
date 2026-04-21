@@ -280,6 +280,7 @@
    - Blob 업로드: 다운로드 성공 파일만 업로드하고 `legacy_path → blob_url` 매니페스트를 생성한다.
 4. Blob 업로드 스크립트: `scripts/c0/upload-images.ts`
    - 디렉토리 구조: `agency/{bn_id}/`, `teacher/{bn_id}/`, `class/`, `static/`, `editor/{date}/`, `bbs/{board}/{bn_id}/`
+   - 구조화 이미지의 Blob 경로는 원본 공개 URL 경로가 아니라 DB source path 기준으로 둔다. 예: `teachers/1/teacher_img01.png`
    - 매니페스트(`legacy_url|legacy_path → blob_url`) JSON 생성
 5. DB 치환 스크립트: `scripts/c0/replace-image-paths.ts`
    - 컬럼 대상: 모든 컬렉션의 `profileImagePath`, `gallery`, `bodyHtml`, `wr_content`, `legacyMeta` 안의 본문/이미지 필드 등
