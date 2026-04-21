@@ -14,6 +14,22 @@ type Options = {
 }
 
 type ScanFile = {
+  entries?: Array<{
+    bytes?: number
+    localPath?: string
+    normalizedUrl?: string
+    sourcePath?: string
+    status?: string
+    title?: string
+  }>
+  results?: Array<{
+    bytes?: number
+    localPath?: string
+    normalizedUrl?: string
+    sourcePath?: string
+    status?: string
+    title?: string
+  }>
   uniqueUrls: Array<{
     normalizedUrl: string
     samples?: Array<{
@@ -23,6 +39,13 @@ type ScanFile = {
     }>
     url: string
   }>
+}
+
+type UploadSource = {
+  localPath?: string
+  normalizedUrl: string
+  sourceUrl: string
+  title?: string
 }
 
 type UploadedEntry = {
@@ -45,7 +68,8 @@ async function main() {
   }
 
   const scanFile = await readScanFile(options.inputPath)
-  const urls = options.limit === 'all' ? scanFile.uniqueUrls : scanFile.uniqueUrls.slice(0, options.limit)
+  const uploadSources = toUploadSources(scanFile)
+  const urls = options.limit === 'all' ? uploadSources : uploadSources.slice(0, options.limit)
   const entries: UploadedEntry[] = []
 
   for (const item of urls) {
@@ -55,15 +79,17 @@ async function main() {
       entries.push({
         normalizedUrl: item.normalizedUrl,
         pathname,
-        sourceUrl: item.url,
+        sourceUrl: item.sourceUrl,
         status: 'dry-run',
-        title: item.samples?.[0]?.title,
+        title: item.title,
       })
       continue
     }
 
     try {
-      const image = await fetchImage(item.url, item.normalizedUrl)
+      const image = item.localPath
+        ? await readLocalImage(item.localPath)
+        : await fetchImage(item.sourceUrl, item.normalizedUrl)
       const blob = await put(pathname, image.blob, {
         access: 'public',
         addRandomSuffix: false,
@@ -77,18 +103,18 @@ async function main() {
         contentType: image.contentType,
         normalizedUrl: item.normalizedUrl,
         pathname,
-        sourceUrl: item.url,
+        sourceUrl: item.sourceUrl,
         status: 'uploaded',
-        title: item.samples?.[0]?.title,
+        title: item.title,
       })
     } catch (error) {
       entries.push({
         error: error instanceof Error ? error.message : String(error),
         normalizedUrl: item.normalizedUrl,
         pathname,
-        sourceUrl: item.url,
+        sourceUrl: item.sourceUrl,
         status: 'failed',
-        title: item.samples?.[0]?.title,
+        title: item.title,
       })
     }
   }
@@ -200,11 +226,30 @@ async function readScanFile(inputPath: string): Promise<ScanFile> {
   const raw = await fs.readFile(resolveProjectPath(inputPath), 'utf8')
   const parsed = JSON.parse(raw) as ScanFile
 
-  if (!Array.isArray(parsed.uniqueUrls)) {
+  if (!Array.isArray(parsed.uniqueUrls) && !Array.isArray(parsed.entries) && !Array.isArray(parsed.results)) {
     throw new Error(`legacy URL 스캔 파일 형식이 올바르지 않습니다: ${inputPath}`)
   }
 
   return parsed
+}
+
+function toUploadSources(input: ScanFile): UploadSource[] {
+  if (Array.isArray(input.uniqueUrls)) {
+    return input.uniqueUrls.map((item) => ({
+      normalizedUrl: item.normalizedUrl,
+      sourceUrl: item.url,
+      title: item.samples?.[0]?.title,
+    }))
+  }
+
+  return (input.entries ?? input.results ?? [])
+    .filter((entry) => entry.status === 'downloaded' && entry.localPath && entry.normalizedUrl)
+    .map((entry) => ({
+      localPath: entry.localPath,
+      normalizedUrl: String(entry.normalizedUrl),
+      sourceUrl: String(entry.sourcePath ?? entry.normalizedUrl),
+      title: entry.title,
+    }))
 }
 
 function buildBlobPathname(prefix: string, sourceUrl: string) {
@@ -229,6 +274,33 @@ async function fetchImage(sourceUrl: string, normalizedUrl: string) {
     bytes: arrayBuffer.byteLength,
     contentType,
   }
+}
+
+async function readLocalImage(localPath: string) {
+  const absolutePath = resolveProjectPath(localPath)
+  const buffer = await fs.readFile(absolutePath)
+  const contentType = contentTypeFromPath(absolutePath)
+  const blob = new Blob([buffer], { type: contentType })
+
+  return {
+    blob,
+    bytes: buffer.byteLength,
+    contentType,
+  }
+}
+
+function contentTypeFromPath(filePath: string) {
+  const extension = path.extname(filePath).toLowerCase()
+
+  if (extension === '.avif') return 'image/avif'
+  if (extension === '.bmp') return 'image/bmp'
+  if (extension === '.gif') return 'image/gif'
+  if (extension === '.jpg' || extension === '.jpeg') return 'image/jpeg'
+  if (extension === '.png') return 'image/png'
+  if (extension === '.svg') return 'image/svg+xml'
+  if (extension === '.webp') return 'image/webp'
+
+  return 'application/octet-stream'
 }
 
 async function fetchWithFallback(sourceUrl: string, normalizedUrl: string) {

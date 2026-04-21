@@ -269,11 +269,19 @@
      - 서브도메인: `http://baewoorun.baewoo.co.kr/...`, `http://academy.baewoo.co.kr/...`, `http://bnbplay.baewoo.co.kr/...`
    - HTML 태그 대상: `<img src>`, `<a href>` (이미지 링크), `background-image: url(...)`
    - 출력: `data/baewoo-curated/c0/legacy-urls.json` (전체 분포 + 호스트별 카운트)
-2. FTP에서 매니페스트 기반 다운로드 (기존 `download_profile_images_ftp.py` 패턴 차용 + 다중 호스트 처리)
-3. Blob 업로드 스크립트: `scripts/c0/upload-images.ts`
+2. 다운로드 경로 분리
+   - **본문 HTML 이미지**: HTML에 들어 있는 절대/상대 URL을 HTTP로 다운로드한다.
+   - **구조화 이미지 필드**: `profileImagePath`, `gallery.path`, `photoImage*`, 첨부파일 경로처럼 DB에 파일 경로만 저장된 항목은 FTP로 다운로드한다.
+   - FTP는 기존 `download_profile_images_ftp.py`의 source 설정/비밀번호 환경변수 패턴을 C0 전용 스크립트로 이관해서 사용한다.
+3. 구조화 이미지 실행 순서
+   - `ftp dry-run`: FTP 접속, 후보 remote path 존재 여부, 성공/실패 예상치를 먼저 보고한다.
+   - 실제 다운로드: Blob 업로드 전에 `tmp/c0/images/...`로 내려받고 총 파일 수/총 용량/실패 수를 보고한다.
+   - 용량 확인: 사용자가 스토리지 사용량을 판단할 수 있게 다운로드 결과의 bytes 합계와 컬렉션별 분포를 기록한다.
+   - Blob 업로드: 다운로드 성공 파일만 업로드하고 `legacy_path → blob_url` 매니페스트를 생성한다.
+4. Blob 업로드 스크립트: `scripts/c0/upload-images.ts`
    - 디렉토리 구조: `agency/{bn_id}/`, `teacher/{bn_id}/`, `class/`, `static/`, `editor/{date}/`, `bbs/{board}/{bn_id}/`
-   - 매니페스트(`legacy_url → blob_url`) JSON 생성
-4. DB 치환 스크립트: `scripts/c0/replace-image-paths.ts`
+   - 매니페스트(`legacy_url|legacy_path → blob_url`) JSON 생성
+5. DB 치환 스크립트: `scripts/c0/replace-image-paths.ts`
    - 컬럼 대상: 모든 컬렉션의 `profileImagePath`, `gallery`, `bodyHtml`, `wr_content`, `legacyMeta` 안의 본문/이미지 필드 등
    - HTML 안의 `<img src>` + `<a href>` (이미지 확장자만) + `style="background-image: url(...)"` 패턴 모두 치환
    - dry-run으로 치환될 항목 수 + 매니페스트 미스 카운트 확인 후 실행

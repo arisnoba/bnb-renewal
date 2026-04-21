@@ -11,6 +11,7 @@ import {
 type ScanTarget = {
   columns: string[]
   idColumn: string
+  relativeBasePath?: string
   table: string
   titleColumn?: string
 }
@@ -61,11 +62,27 @@ const LEGACY_HOSTS = new Set([
 ])
 
 const TARGETS: ScanTarget[] = [
-  { table: 'teachers', idColumn: 'id', titleColumn: 'name', columns: ['profile_image_path', 'legacy_meta'] },
+  {
+    table: 'teachers',
+    idColumn: 'id',
+    relativeBasePath: '/web/data/teacher',
+    titleColumn: 'name',
+    columns: [
+      'bio_html',
+      'profile_image_path',
+      'photo_image1',
+      'photo_image2',
+      'photo_image3',
+      'photo_image4',
+      'photo_image5',
+      'photo_image6',
+    ],
+  },
   {
     table: 'teachers_gallery',
     idColumn: 'id',
-    columns: ['profile_image_path', 'image_path', 'url', 'legacy_meta'],
+    relativeBasePath: '/web/data/teacher',
+    columns: ['path'],
   },
   {
     table: 'agencies',
@@ -236,6 +253,10 @@ function selectTargets(options: Options) {
   }
 
   const normalized = normalizeCollectionName(options.collection)
+  if (normalized === 'teacher_images') {
+    return TARGETS.filter((target) => target.table === 'teachers' || target.table === 'teachers_gallery')
+  }
+
   const selected = TARGETS.filter((target) => target.table === normalized)
 
   if (selected.length === 0) {
@@ -275,7 +296,7 @@ async function scanTargets(pool: Pool, targets: ScanTarget[], options: Options) 
           continue
         }
 
-        for (const extracted of extractLegacyUrls(text)) {
+        for (const extracted of extractLegacyUrls(text, target.relativeBasePath)) {
           const key = extracted.normalizedUrl
           const hostOrPrefix = classifyHostOrPrefix(extracted.normalizedUrl)
           const summary =
@@ -404,38 +425,42 @@ function stringifyScannableValue(value: unknown): string {
   return JSON.stringify(value)
 }
 
-function extractLegacyUrls(text: string): ExtractedUrl[] {
+function extractLegacyUrls(text: string, relativeBasePath?: string): ExtractedUrl[] {
   const matches: ExtractedUrl[] = []
   const structuredUrls = new Set<string>()
 
+  if (relativeBasePath && looksLikeRelativeImagePath(text)) {
+    pushIfLegacy(matches, text, 'relative', 'value', structuredUrls, relativeBasePath)
+  }
+
   for (const match of text.matchAll(/<img\b[^>]*\s(src)=["']([^"']+)["'][^>]*>/gi)) {
-    pushIfLegacy(matches, match[2], 'src', match[1] ?? 'src', structuredUrls)
+    pushIfLegacy(matches, match[2], 'src', match[1] ?? 'src', structuredUrls, relativeBasePath)
   }
 
   for (const match of text.matchAll(/<a\b[^>]*\s(href)=["']([^"']+)["'][^>]*>/gi)) {
     if (looksLikeImageUrl(match[2])) {
-      pushIfLegacy(matches, match[2], 'href', match[1] ?? 'href', structuredUrls)
+      pushIfLegacy(matches, match[2], 'href', match[1] ?? 'href', structuredUrls, relativeBasePath)
     }
   }
 
   for (const match of text.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)) {
-    pushIfLegacy(matches, match[1], 'css-url', 'style', structuredUrls)
+    pushIfLegacy(matches, match[1], 'css-url', 'style', structuredUrls, relativeBasePath)
   }
 
   for (const match of text.matchAll(/https?:\/\/[A-Za-z0-9_.:-]+\/[^\s"'<>),\\]+/g)) {
-    if (structuredUrls.has(normalizeLegacyUrl(match[0]) ?? '')) {
+    if (structuredUrls.has(normalizeLegacyUrl(match[0], relativeBasePath) ?? '')) {
       continue
     }
 
-    pushIfLegacy(matches, match[0], 'raw-absolute', 'raw')
+    pushIfLegacy(matches, match[0], 'raw-absolute', 'raw', undefined, relativeBasePath)
   }
 
   for (const match of text.matchAll(/(?:^|[\s"'(=])((?:\/data|\/web\/img)\/[^\s"'<>),\\]+)/g)) {
-    if (structuredUrls.has(normalizeLegacyUrl(match[1]) ?? '')) {
+    if (structuredUrls.has(normalizeLegacyUrl(match[1], relativeBasePath) ?? '')) {
       continue
     }
 
-    pushIfLegacy(matches, match[1], 'raw-relative', 'raw')
+    pushIfLegacy(matches, match[1], 'raw-relative', 'raw', undefined, relativeBasePath)
   }
 
   return dedupeExtracted(matches)
@@ -447,6 +472,7 @@ function pushIfLegacy(
   kind: ExtractedUrl['kind'],
   attribute: string,
   structuredUrls?: Set<string>,
+  relativeBasePath?: string,
 ) {
   const url = cleanUrl(value)
 
@@ -454,7 +480,7 @@ function pushIfLegacy(
     return
   }
 
-  const normalizedUrl = normalizeLegacyUrl(url)
+  const normalizedUrl = normalizeLegacyUrl(url, relativeBasePath)
 
   if (!normalizedUrl) {
     return
@@ -480,9 +506,17 @@ function decodeHtmlEntities(value: string) {
   return value.replaceAll('&amp;', '&').replaceAll('&#038;', '&')
 }
 
-function normalizeLegacyUrl(value: string): string | undefined {
+function normalizeLegacyUrl(value: string, relativeBasePath?: string): string | undefined {
   if (value.startsWith('/data/') || value.startsWith('/web/img/')) {
     return `https://www.baewoo.co.kr${value}`
+  }
+
+  if (value.startsWith('/web/data/')) {
+    return `https://www.baewoo.co.kr${value}`
+  }
+
+  if (relativeBasePath && looksLikeRelativeImagePath(value)) {
+    return `https://www.baewoo.co.kr/${relativeBasePath.replace(/^\/+|\/+$/g, '')}/${value.replace(/^\/+/, '')}`
   }
 
   let parsed: URL
@@ -532,6 +566,16 @@ function looksLikeImageUrl(value: string | undefined) {
 
   const path = value.split(/[?#]/, 1)[0] ?? ''
   return IMAGE_EXTENSION_RE.test(path)
+}
+
+function looksLikeRelativeImagePath(value: string | undefined) {
+  if (!value) {
+    return false
+  }
+
+  const trimmed = value.trim()
+
+  return !/^(?:https?:)?\/\//i.test(trimmed) && !trimmed.startsWith('/') && looksLikeImageUrl(trimmed)
 }
 
 function isKnownLegacyPath(pathname: string) {

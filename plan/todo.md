@@ -61,7 +61,9 @@
 
 - [x] `scripts/c0/scan-legacy-urls.ts`
 - [ ] `data/baewoo-curated/c0/legacy-urls.json`
-- [ ] 이미지 다운로드 / 업로드 매니페스트
+- [x] 구조화 이미지 FTP dry-run
+- [x] 구조화 이미지 다운로드 및 용량 보고
+- [x] 이미지 업로드 매니페스트
 - [ ] `scripts/c0/replace-image-paths.ts`
 - [ ] 잔존 legacy URL 0건 확인
 
@@ -120,9 +122,10 @@
 
 ## 다음 작업 우선순위
 
-1. Phase 4 `directings` 2건 샘플 본문 HTML 치환 실제 적용 여부 결정
-2. Phase 4 이미지 업로드/치환 스크립트를 전체 컬렉션 대상으로 확장
-3. 필요 시 `news/profiles/castings`의 2020년 이전 데이터 컷오프를 별도 후속 작업으로 분리 검토
+1. teacher 샘플 2명 이미지 치환 dry-run
+2. teacher 전체 구조화 이미지 FTP dry-run 및 용량 보고
+3. 다운로드 성공 파일만 Vercel Blob 업로드 및 치환 dry-run
+4. 필요 시 `news/profiles/castings`의 2020년 이전 데이터 컷오프를 별도 후속 작업으로 분리 검토
 
 ## 검증 메모
 
@@ -163,6 +166,13 @@
   - `news.body_html`에는 아직 legacy URL이 남아 있다. 현재 잔존 카운트는 `/data/=2869`, `/web/img/=3`, `http://www.baewoo.co.kr/=810`, `http://baewoobaewoo.cafe24.com/=27`, `https://baewoo.co.kr:443/=1274` 이다.
   - Phase 4 샘플은 `reviews`가 아니라 `directings`의 `id=48`(`리콜라`), `id=50`(`too cool for school`) 2건으로 제한했다.
   - `BLOB_READ_WRITE_TOKEN` 추가 후 `directings` 샘플 이미지 8개를 Vercel Blob에 업로드했다. 실제 DB 본문 치환은 아직 dry-run까지만 진행했다.
+  - Phase 4 다운로드 전략은 본문 HTML 이미지는 HTTP, `teachers`/`agencies` 같은 구조화 이미지 필드는 FTP로 분리한다. 구조화 이미지는 `ftp dry-run → 다운로드/용량 보고 → Blob 업로드 → 치환 dry-run` 순서로 진행한다.
+  - teacher 이미지 스캔은 `teachers.profile_image_path`, `teachers.photo_image1~6`, `teachers.bio_html`, `teachers_gallery.path` 기준으로 수행했고, 현재 `teachers=338 unique`, `teachers_gallery=713 unique`, 전체 `1051 unique / 1119 occurrences`이다.
+  - teacher 샘플 `id=1,2` 이미지 매니페스트 생성 → entries `18`, unique source paths `18`
+  - teacher 샘플 FTP dry-run → planned `18`, failed `0`, total `0.99 MiB`
+  - teacher 샘플 다운로드 → downloaded `18`, failed `0`, total `0.99 MiB`
+  - teacher 샘플 Blob 업로드 → uploaded `18`, failed `0`
+  - teacher 샘플 Blob image HEAD 확인 → `200 OK`, `Content-Type: image/png`
   - 사용자가 원하면 `2020년 이전 데이터 제외`는 rollback이 아니라 별도 정리 phase로 다루는 편이 안전하다.
   - `npm run db:migrate`는 현재 Neon 대상에서 Payload의 dev-mode 경고로 중단된다. 메시지는 "If you'd like to run migrations, data loss will occur." 이며, 명시적 승인 없이 진행하지 않았다.
   - 위 dev-mode 경고는 승인 후 진행했고, Neon에는 3A 스키마가 일부 선반영된 상태라 migration을 idempotent하게 수정한 뒤 기록을 정상화했다.
