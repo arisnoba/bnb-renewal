@@ -24,7 +24,7 @@ type PublishStatus = 'archived' | 'draft' | 'published'
 
 type TeacherRecord = {
   bioHtml: string
-  center: CenterValue
+  center: CenterValue[]
   displayOrder: number
   gallery: Array<{
     description?: string
@@ -227,7 +227,7 @@ function mapTeacherRow(row: LegacyRow, sourceTable: string): TeacherRecord {
 
   return {
     bioHtml: String(row.message ?? ''),
-    center: 'unknown',
+    center: ['unknown'],
     displayOrder: Number(row.bn_order ?? 0),
     gallery,
     legacyMeta: {

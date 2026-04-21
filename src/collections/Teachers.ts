@@ -58,7 +58,8 @@ export const Teachers: CollectionConfig = {
     {
       name: 'center',
       type: 'select',
-      defaultValue: 'unknown',
+      defaultValue: ['unknown'],
+      hasMany: true,
       options: centerOptions,
       required: true,
     },

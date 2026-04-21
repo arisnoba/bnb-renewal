@@ -19,7 +19,7 @@ type SeedOptions = {
 
 type TeacherRecord = {
   bioHtml: string
-  center: 'unknown'
+  center: ['unknown']
   displayOrder: number
   gallery: TeacherGalleryItem[]
   legacyMeta: Record<string, unknown>
@@ -161,7 +161,7 @@ function mapTeacherRow(row: LegacyRow, sourceTable: 'g5_teacher' | 'g5_teacher2'
 
   return {
     bioHtml: buildTeacherBioHtml(row),
-    center: 'unknown',
+    center: ['unknown'],
     displayOrder: toNumber(row.bn_order),
     gallery: collectGallery(row),
     legacyMeta: {
