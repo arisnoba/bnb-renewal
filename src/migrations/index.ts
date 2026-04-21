@@ -5,6 +5,7 @@ import * as migration_20260420_190000_c0_phase3_batch3a from './20260420_190000_
 import * as migration_20260420_200000_c0_phase3_batch3b from './20260420_200000_c0_phase3_batch3b';
 import * as migration_20260420_210000_c0_phase3_batch3c from './20260420_210000_c0_phase3_batch3c';
 import * as migration_20260421_160000_teachers_center_has_many from './20260421_160000_teachers_center_has_many';
+import * as migration_20260421_163000_teachers_center_select_table from './20260421_163000_teachers_center_select_table';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260421_160000_teachers_center_has_many.up,
     down: migration_20260421_160000_teachers_center_has_many.down,
     name: '20260421_160000_teachers_center_has_many',
+  },
+  {
+    up: migration_20260421_163000_teachers_center_select_table.up,
+    down: migration_20260421_163000_teachers_center_select_table.down,
+    name: '20260421_163000_teachers_center_select_table',
   },
 ];
