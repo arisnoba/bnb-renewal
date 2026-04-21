@@ -29,6 +29,23 @@ npm run legacy:db:verify
 
 기존 로컬 복원본을 폐기하고 다시 넣을 때만 `npm run legacy:db:import:reset`을 사용한다.
 
+## 작업 DB
+
+센터별 원본 테이블을 직접 수정해 최종 구조로 바꾸지 않고, 통합/정리 결과는 `bnb_legacy_work` DB에 만든다. 테이블명은 임시 이름이나 `_unified` 접미사 대신 최종 컬렉션 구조에 가까운 이름을 사용한다.
+
+### `g5_agency` 통합
+
+`g5_agency`는 4개 센터 DB에 같은 성격으로 존재하지만 본문과 세부 필드가 완전히 같지는 않다. 따라서 `subject`를 기준으로 중복을 제거하고, 선택되지 않은 출처는 `legacy_meta.sources`에 보존한다.
+
+- 결과 테이블: `bnb_legacy_work.agencies`
+- 재생성 명령: `npm run legacy:work:agencies`
+- 중복 기준: `TRIM(subject)`
+- 대표 데이터 우선순위: `baewoo` -> `kidscenter` -> `bnbuniv` -> `bnbhighteen`
+- 보존 출처: 대표 row의 `source_db`, `source_table`, `source_id`, 전체 출처 배열 `legacy_meta.sources`
+- 배우/기수 정보: `wr_1~wr_43`, `pr_1~pr_9`를 `actors` JSON으로 정규화
+- 검증일: 2026-04-21
+- 검증 결과: 원본 합계 245건, 고유 `subject` 78건, 통합 결과 78건, 중복 `subject` 0건
+
 ## 이관 방식
 
 1. 원본 dump는 수정하지 않는다.

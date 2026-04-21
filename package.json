@@ -18,6 +18,7 @@
     "legacy:db:import": "bash scripts/legacy-db/import-dumps.sh",
     "legacy:db:import:reset": "bash scripts/legacy-db/import-dumps.sh --reset",
     "legacy:db:verify": "bash scripts/legacy-db/verify-dumps.sh",
+    "legacy:work:agencies": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-db/build-work-agencies.sql",
     "db:seed:p0-dry-run": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --dry-run",
     "db:seed:p0-sample": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --limit 3",
     "db:seed:p0-teachers": "node --env-file=.env.local --import tsx scripts/seed-p0.ts --only teachers --teacher-limit all",
