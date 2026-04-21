@@ -9,10 +9,14 @@ import { AppearancesExtra } from './src/collections/AppearancesExtra'
 import { Agencies } from './src/collections/Agencies'
 import { Banners } from './src/collections/Banners'
 import { Castings } from './src/collections/Castings'
+import { Directings } from './src/collections/Directings'
+import { Dramas } from './src/collections/Dramas'
 import { Lineups } from './src/collections/Lineups'
 import { Movies } from './src/collections/Movies'
 import { News } from './src/collections/News'
 import { Profiles } from './src/collections/Profiles'
+import { Reviews } from './src/collections/Reviews'
+import { Shoots } from './src/collections/Shoots'
 import { StarCards } from './src/collections/StarCards'
 import { TeacherFiles } from './src/collections/TeacherFiles'
 import { Teachers } from './src/collections/Teachers'
@@ -55,6 +59,10 @@ export default buildConfig({
     Appearances,
     AppearancesExtra,
     StarCards,
+    Shoots,
+    Dramas,
+    Directings,
+    Reviews,
   ],
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),

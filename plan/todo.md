@@ -1,8 +1,8 @@
 # C0 기준 마이그레이션 진행판
 
 > 기준 문서: [plan/c0-migration-plan.md](./c0-migration-plan.md)  
-> 마지막 갱신: 2026-04-20  
-> 현재 진행 기준: **Phase 0 완료, Phase 1 완료, Phase 2 완료**
+> 마지막 갱신: 2026-04-21  
+> 현재 진행 기준: **Phase 0 완료, Phase 1 완료, Phase 2 완료, Phase 3 Batch 3A/3B/3C 완료**
 
 ## 현재 상태
 
@@ -54,7 +54,7 @@
 
 - [x] Batch 3A 완료
 - [x] Batch 3B 완료
-- [ ] Batch 3C 완료
+- [x] Batch 3C 완료
 - [ ] 신규 컬렉션 12개 admin 그룹화 확인
 
 ### Phase 4 — 이미지 업로드 및 URL 치환
@@ -106,11 +106,21 @@
   - migration 기록: `20260420_200000_c0_phase3_batch3b`
   - 실제 카운트: `movies=107`, `appearances=153`, `appearances-extra=38`, `star-cards=35`
   - slug 중복: `0 / 0 / 0 / 0`
+- Phase 3 Batch 3C 스캐폴딩 추가
+  - `shoots`, `dramas`, `directings`, `reviews` 컬렉션 정의
+  - `scripts/c0/seed-legacy-board.ts`, `seed-shoots.ts`, `seed-dramas.ts`, `seed-directings.ts`, `seed-reviews.ts`
+  - `src/migrations/20260420_210000_c0_phase3_batch3c.ts` 생성
+- Phase 3 Batch 3C dry-run 검증 완료 (`shoots=804`, `dramas=509`, `directings=442`, `reviews=198`)
+- Neon DB Phase 3 Batch 3C 적용 완료
+  - migration 기록: `20260420_210000_c0_phase3_batch3c`
+  - 실제 카운트: `shoots=804`, `dramas=509`, `directings=442`, `reviews=198`
+  - slug 중복: `0 / 0 / 0 / 0`
+  - source 중복: `0 / 0 / 0 / 0`
 - 진행판을 phase 단위 체크리스트로 재작성
 
 ## 다음 작업 우선순위
 
-1. Phase 3 신규 컬렉션 12개를 3A/3B/3C 배치로 진행
+1. Phase 3 신규 컬렉션 12개 admin 그룹/화면 렌더링 수동 확인
 2. Phase 4 이미지 업로드 및 legacy URL 치환 준비
 3. 필요 시 `news/profiles/castings`의 2020년 이전 데이터 컷오프를 별도 후속 작업으로 분리 검토
 
@@ -129,10 +139,17 @@
   - `npm run db:seed:c0-appearances:dry-run` → `153`
   - `npm run db:seed:c0-appearances-extra:dry-run` → `38`
   - `npm run db:seed:c0-star-cards:dry-run` → `35`
+  - `npm run db:seed:c0-shoots:dry-run` → `804`
+  - `npm run db:seed:c0-dramas:dry-run` → `509`
+  - `npm run db:seed:c0-directings:dry-run` → `442`
+  - `npm run db:seed:c0-reviews:dry-run` → `198`
   - Neon 실시드 후 카운트 검증 → `teachers=109`, `agencies=63`, `agencies_actors=185`, `profiles=660`, `news=2908`, `castings=22`
   - Neon Phase 3 Batch 3B 후 카운트 검증 → `movies=107`, `appearances=153`, `appearances_extra=38`, `star_cards=35`
+  - Neon Phase 3 Batch 3C 후 카운트 검증 → `shoots=804`, `dramas=509`, `directings=442`, `reviews=198`
   - `castings` source 분포 → `g5_write_new_casting=5`, `g5_write_new_casting2=4`, `g5_write_new_casting3=5`, `g5_write_new_casting_abio=6`, `g5_write_new_casting_bx=2`
-  - slug 중복 검사 → `profiles=0`, `news=0`, `castings=0`, `movies=0`, `appearances=0`, `appearances_extra=0`, `star_cards=0`
+  - `directings` source 분포 → `g5_write_new_direct=138`, `g5_write_new_direct2=51`, `g5_write_new_direct3=105`, `g5_write_new_direct_abio=17`, `g5_write_new_direct_bx=131`
+  - slug 중복 검사 → `profiles=0`, `news=0`, `castings=0`, `movies=0`, `appearances=0`, `appearances_extra=0`, `star_cards=0`, `shoots=0`, `dramas=0`, `directings=0`, `reviews=0`
+  - source 중복 검사 → `shoots=0`, `dramas=0`, `directings=0`, `reviews=0`
 - 참고:
   - 생성된 migration은 `pages`만 drop하는 diff가 아니라, **현재 컬렉션 기준 첫 베이스라인 스냅샷**이다.
   - admin 부팅 수동 확인은 이번 세션에서 실행하지 않았다.
@@ -145,3 +162,4 @@
   - 이번 세션의 3B도 dev 서버 동적 반영으로 테이블이 먼저 생성된 상태였고, read-only 확인 후 `20260420_200000_c0_phase3_batch3b` migration 기록을 정상화했다.
   - `appearances` / `appearances_extra`는 초기 스캐폴딩에서 남은 빈 컬럼 `extra_notes`를 `cast_list_label`로 안전하게 rename한 뒤 seed를 진행했다.
   - `video-castings`, `banners`, `teacher-files`, `lineups`의 admin 그룹/화면 렌더링 수동 확인은 이번 세션에서 아직 하지 않았다.
+  - `shoots`, `dramas`, `directings`, `reviews`의 admin 그룹/화면 렌더링 수동 확인은 이번 세션에서 아직 하지 않았다.
