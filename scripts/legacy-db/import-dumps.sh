@@ -24,7 +24,7 @@ run_mariadb() {
 
 wait_for_mariadb() {
   for _ in {1..60}; do
-    if docker compose exec -T legacy-mariadb mariadb-admin ping -uroot -p"${ROOT_PASSWORD}" --silent >/dev/null 2>&1; then
+    if run_mariadb -e "SELECT 1;" >/dev/null 2>&1; then
       return 0
     fi
 
