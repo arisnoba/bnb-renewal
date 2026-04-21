@@ -15,18 +15,22 @@
 - 각 통합 작업은 `scripts/legacy-db/build-work-*.sql`로 반복 실행 가능하게 만든다.
 - `package.json`에는 `legacy:work:*` 명령을 추가한다.
 - 대표 row만 고르더라도 탈락한 원본 출처는 `legacy_meta.sources`에 보존한다.
+- 동일 인물로 판단되는 row가 여러 개 있으면 데이터가 더 많은 row를 대표로 살리고, 서로 다른 인물로 중복 생성하지 않는다.
+- 강사는 여러 센터에 동시에 노출될 수 있으므로 중복 row를 만들지 않고 `center`에 복수 센터를 기록한다.
 
 ### 반복 작업 절차
 
 1. 후보 테이블의 4개 DB row 수, schema 차이, 대표 샘플을 확인한다.
 2. 중복 제거 기준을 정한다. 예: `TRIM(subject)`, source key, slug 후보.
-3. 최종 컬렉션에 가까운 `bnb_legacy_work` 테이블 구조를 만든다.
-4. 원본 출처 필드(`source_db`, `source_table`, `source_id`)와 `legacy_meta.sources`를 반드시 남긴다.
-5. 통합 SQL을 `scripts/legacy-db/build-work-*.sql`에 작성한다.
-6. `npm run legacy:work:*` 명령을 추가한다.
-7. 통합 결과를 검증한다: 원본 합계, 고유 키 수, 결과 row 수, 중복 키 0건, 대표 출처 분포.
-8. `docs/레거시-DB-전환-방향.md`와 이 TODO에 결정/검증 결과를 기록한다.
-9. 관련 파일만 골라 커밋한다. 사용자 작업으로 보이는 다른 변경은 건드리지 않는다.
+3. 동일 인물/동일 콘텐츠로 판단되는 중복은 데이터 완성도가 높은 row를 대표로 선택한다.
+4. 강사 통합은 `data/baewoo-curated/exam/teacher.md`의 센터별 인원 확인 결과를 참고해 `center` 열에 복수 센터를 기록한다.
+5. 최종 컬렉션에 가까운 `bnb_legacy_work` 테이블 구조를 만든다.
+6. 원본 출처 필드(`source_db`, `source_table`, `source_id`)와 `legacy_meta.sources`를 반드시 남긴다.
+7. 통합 SQL을 `scripts/legacy-db/build-work-*.sql`에 작성한다.
+8. `npm run legacy:work:*` 명령을 추가한다.
+9. 통합 결과를 검증한다: 원본 합계, 고유 키 수, 결과 row 수, 중복 키 0건, 대표 출처 분포.
+10. `docs/레거시-DB-전환-방향.md`와 이 TODO에 결정/검증 결과를 기록한다.
+11. 관련 파일만 골라 커밋한다. 사용자 작업으로 보이는 다른 변경은 건드리지 않는다.
 
 ### 완료
 
@@ -60,6 +64,7 @@
 - [ ] `g5_menu`, `g5_menu2`는 IA 참고용인지 실제 CMS 데이터로 옮길지 결정
 - [ ] `g5_class`, `g5_class2`, `g5_timetable*`, `g5_month_plan`, `g5_plan`은 현재 사이트 범위에 포함할지 결정
 - [ ] `g5_write_reservation`, `sm_customer`, `g5_member`는 개인정보 가능성이 있어 공개 콘텐츠 이관에서 제외할지 확정
+- [ ] 강사 통합 시 Payload의 `center` 복수 기재 방식과 `data/baewoo-curated/exam/teacher.md` 기준이 일치하는지 검증
 
 ## 기존 c0 기준 마이그레이션 기록
 
