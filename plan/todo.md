@@ -1,8 +1,67 @@
-# C0 기준 마이그레이션 진행판
+# 레거시 DB 마이그레이션 진행판
 
-> 기준 문서: [plan/c0-migration-plan.md](./c0-migration-plan.md)  
+> 기준 문서: [docs/레거시-DB-전환-방향.md](../docs/레거시-DB-전환-방향.md), [docs/레거시-테이블-분류-초안.md](../docs/레거시-테이블-분류-초안.md), [plan/c0-migration-plan.md](./c0-migration-plan.md)  
 > 마지막 갱신: 2026-04-21  
-> 현재 진행 기준: **Phase 0 완료, Phase 1 완료, Phase 2 완료, Phase 3 Batch 3A/3B/3C 완료**
+> 현재 진행 기준: **센터별 MariaDB dump 기반 통합으로 전환 중, 기존 c0 진행 기록은 하단에 보존**
+
+## 센터별 dump 기반 통합 진행판
+
+### 현재 기준
+
+- 정본 입력은 `data/legacy_dumps`의 센터별 원본 SQL dump다.
+- 로컬 MariaDB의 원본 DB(`baewoo`, `bnbuniv`, `kidscenter`, `bnbhighteen`)는 직접 최종 구조로 바꾸지 않는다.
+- 통합/정리 결과는 `bnb_legacy_work` DB에 만든다.
+- 작업 테이블명은 `_unified` 같은 임시 접미사를 붙이지 않고 최종 컬렉션에 가까운 이름을 쓴다.
+- 각 통합 작업은 `scripts/legacy-db/build-work-*.sql`로 반복 실행 가능하게 만든다.
+- `package.json`에는 `legacy:work:*` 명령을 추가한다.
+- 대표 row만 고르더라도 탈락한 원본 출처는 `legacy_meta.sources`에 보존한다.
+
+### 반복 작업 절차
+
+1. 후보 테이블의 4개 DB row 수, schema 차이, 대표 샘플을 확인한다.
+2. 중복 제거 기준을 정한다. 예: `TRIM(subject)`, source key, slug 후보.
+3. 최종 컬렉션에 가까운 `bnb_legacy_work` 테이블 구조를 만든다.
+4. 원본 출처 필드(`source_db`, `source_table`, `source_id`)와 `legacy_meta.sources`를 반드시 남긴다.
+5. 통합 SQL을 `scripts/legacy-db/build-work-*.sql`에 작성한다.
+6. `npm run legacy:work:*` 명령을 추가한다.
+7. 통합 결과를 검증한다: 원본 합계, 고유 키 수, 결과 row 수, 중복 키 0건, 대표 출처 분포.
+8. `docs/레거시-DB-전환-방향.md`와 이 TODO에 결정/검증 결과를 기록한다.
+9. 관련 파일만 골라 커밋한다. 사용자 작업으로 보이는 다른 변경은 건드리지 않는다.
+
+### 완료
+
+- [x] 로컬 MariaDB dump 복원 환경 구성
+- [x] `data/legacy_dumps` gitignore 처리
+- [x] 폐기 후보 테이블 삭제
+- [x] 추가 폐기 승인 테이블 삭제
+- [x] `g5_agency` -> `bnb_legacy_work.agencies` 통합
+  - 원본 합계: 245건
+  - 고유 `TRIM(subject)`: 78건
+  - 통합 결과: 78건
+  - 중복 `subject`: 0건
+  - 대표 출처: `baewoo=63`, `kidscenter=13`, `bnbuniv=2`, `bnbhighteen=0`
+  - 재생성 명령: `npm run legacy:work:agencies`
+
+### 다음 통합 후보
+
+- [ ] 티쳐: `g5_teacher`, `g5_teacher2`, `g5_teacher_file`, `g5_lesson_teacher`
+- [ ] 공지/뉴스: `g5_write_new_notice`, `g5_write_notice`, 하이틴 뉴스 계열
+- [ ] 프로필/합격자: `g5_write_new_profile*`, `g5_write_profile`, `g5_write_portfolio_profile`, `g5_write_qr_profile`
+- [ ] 캐스팅: `g5_casting`, `g5_write_new_casting*`
+- [ ] 제휴/에이전시 게시판: `g5_write_agency*`
+- [ ] 배너: `g5_banner`, `g5_banner2`, `g5_banner_new`
+- [ ] 라인업/영상: `g5_write_lineup*`, `g5_write_new_youtube`, `g5_write_new_main_youtube`, `g5_write_wmv`
+- [ ] 작품/활동: `g5_write_movie`, `g5_write_new_drama*`, `g5_write_new_appear*`, `g5_write_new_direct*`, `g5_write_new_shoot`
+- [ ] 후기/스타카드: `g5_write_after`, `g5_write_new_hoogi`, `g5_star`, `g5_write_starcard`, `g5_write_new_starcard`
+
+### 보류 결정 필요
+
+- [ ] `g5_board_file`은 독립 통합이 아니라 게시글별 첨부 조인용으로 둘지 결정
+- [ ] `g5_menu`, `g5_menu2`는 IA 참고용인지 실제 CMS 데이터로 옮길지 결정
+- [ ] `g5_class`, `g5_class2`, `g5_timetable*`, `g5_month_plan`, `g5_plan`은 현재 사이트 범위에 포함할지 결정
+- [ ] `g5_write_reservation`, `sm_customer`, `g5_member`는 개인정보 가능성이 있어 공개 콘텐츠 이관에서 제외할지 확정
+
+## 기존 c0 기준 마이그레이션 기록
 
 ## 현재 상태
 
