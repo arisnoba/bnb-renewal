@@ -120,8 +120,8 @@
 
 ## 다음 작업 우선순위
 
-1. Phase 4 `directings` 2건 샘플 이미지 다운로드 / 업로드 매니페스트 테스트
-2. Phase 4 본문 HTML 치환 dry-run 스크립트 추가
+1. Phase 4 `directings` 2건 샘플 본문 HTML 치환 실제 적용 여부 결정
+2. Phase 4 이미지 업로드/치환 스크립트를 전체 컬렉션 대상으로 확장
 3. 필요 시 `news/profiles/castings`의 2020년 이전 데이터 컷오프를 별도 후속 작업으로 분리 검토
 
 ## 검증 메모
@@ -145,6 +145,9 @@
   - `npm run db:seed:c0-reviews:dry-run` → `198`
   - `npm run db:c0:scan-legacy-urls -- --collection directings --ids 48,50 --output tmp/c0/legacy-urls-directings-sample.json` → 문서 `2`, unique URL `8`, occurrence `8`
   - legacy image HEAD 샘플 확인 → `200 OK`, `Content-Type: image/jpeg`
+  - `npm run db:c0:upload-images -- --input tmp/c0/legacy-urls-directings-sample.json --output tmp/c0/blob-manifest-directings-sample.json --prefix c0/directings/sample` → uploaded `8`, failed `0`
+  - Blob image HEAD 샘플 확인 → `200 OK`, `Content-Type: image/jpeg`
+  - `npm run db:c0:replace-image-paths -- --dry-run --collection directings --ids 48,50 --manifest tmp/c0/blob-manifest-directings-sample.json --output tmp/c0/replace-directings-sample-dry-run.json` → rows `2`, replacements `8`, unused manifest URLs `0`
   - Neon 실시드 후 카운트 검증 → `teachers=109`, `agencies=63`, `agencies_actors=185`, `profiles=660`, `news=2908`, `castings=22`
   - Neon Phase 3 Batch 3B 후 카운트 검증 → `movies=107`, `appearances=153`, `appearances_extra=38`, `star_cards=35`
   - Neon Phase 3 Batch 3C 후 카운트 검증 → `shoots=804`, `dramas=509`, `directings=442`, `reviews=198`
@@ -159,7 +162,7 @@
   - `pg_dump`는 로컬 설치 버전(14)과 Neon 서버 버전(17) 불일치로 사용할 수 없어, backup은 `pg` 직접 조회 기반 JSON export(`tmp/c0/backup/pre-c0.json`)로 대체했다.
   - `news.body_html`에는 아직 legacy URL이 남아 있다. 현재 잔존 카운트는 `/data/=2869`, `/web/img/=3`, `http://www.baewoo.co.kr/=810`, `http://baewoobaewoo.cafe24.com/=27`, `https://baewoo.co.kr:443/=1274` 이다.
   - Phase 4 샘플은 `reviews`가 아니라 `directings`의 `id=48`(`리콜라`), `id=50`(`too cool for school`) 2건으로 제한했다.
-  - 현재 `.env.local`에는 `BLOB_READ_WRITE_TOKEN`, `VERCEL_BLOB_READ_WRITE_TOKEN`, `VERCEL_TOKEN`이 없어 실제 Vercel Blob 업로드는 아직 진행하지 않았다.
+  - `BLOB_READ_WRITE_TOKEN` 추가 후 `directings` 샘플 이미지 8개를 Vercel Blob에 업로드했다. 실제 DB 본문 치환은 아직 dry-run까지만 진행했다.
   - 사용자가 원하면 `2020년 이전 데이터 제외`는 rollback이 아니라 별도 정리 phase로 다루는 편이 안전하다.
   - `npm run db:migrate`는 현재 Neon 대상에서 Payload의 dev-mode 경고로 중단된다. 메시지는 "If you'd like to run migrations, data loss will occur." 이며, 명시적 승인 없이 진행하지 않았다.
   - 위 dev-mode 경고는 승인 후 진행했고, Neon에는 3A 스키마가 일부 선반영된 상태라 migration을 idempotent하게 수정한 뒤 기록을 정상화했다.
