@@ -57,15 +57,13 @@
 
 ### 마이그레이션 스크립트
 
-- `scripts/legacy-db/import-dumps.sh`
-- `scripts/legacy-db/verify-dumps.sh`
-- `scripts/seed-p0.ts`
-- `scripts/seed-p1.ts`
-- `scripts/legacy-sql.ts`
-- `scripts/split_baewoo_sql.py`
-- `scripts/curate_baewoo_tables.py`
+- `scripts/legacy-mariadb/import-dumps.sh`
+- `scripts/legacy-mariadb/verify-dumps.sh`
+- `scripts/legacy-mariadb/build-work-*.sql`
+- `scripts/legacy-mariadb/asset-downloads/*.py`
+- `scripts/payload-migration/*.ts`
 
-현재 코드는 "전체 완성본"이 아니라, `센터별 원본 dump 복원 + 라우트 골격 + 관리자 컬렉션 정리` 단계로 보는 것이 맞다. `seed-p0.ts`, `seed-p1.ts`, `baewoo-split/`, `baewoo-curated/`는 새 MariaDB 기반 파이프라인으로 대체될 예정이다.
+현재 코드는 "전체 완성본"이 아니라, `센터별 원본 dump 복원 + MariaDB work table 구성 + 테스트 라우트 검증` 단계로 보는 것이 맞다. 이전 `seed-p0.ts`, `seed-p1.ts`, `baewoo-curated/` 기반 정적 SQL 시드 경로는 제거했고, 필요한 기록은 [docs/archive](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/archive:1)에 보존한다.
 
 ## 3. 디렉터리 가이드
 

@@ -1,5 +1,7 @@
 import type { Teacher } from '@/payload-types'
 
+import Link from 'next/link'
+
 import { centers, getCenterLabel } from '@/lib/centers'
 import { getPayloadClient } from '@/lib/payload'
 
@@ -37,7 +39,12 @@ function getTeacherImagePath(teacher: Teacher): null | string {
     return imagePath
   }
 
-  return imagePath.startsWith('/') ? imagePath : `/${imagePath}`
+  const normalizedPath = imagePath.replace(/^\/+/, '')
+
+  return `/legacy/teachers/${normalizedPath
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/')}`
 }
 
 function getCenterText(teacher: Teacher): string {
@@ -122,6 +129,9 @@ export default async function TeacherTestPage({
           점검합니다.
         </p>
         <div className="test-summary">
+          <Link className="filter-pill" href="/test">
+            전체 메뉴
+          </Link>
           <span>전체 {teacherResult.docs.length}명</span>
           <span>표시 {teachers.length}명</span>
           <span>정렬 displayOrder</span>

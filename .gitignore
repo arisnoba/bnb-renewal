@@ -13,10 +13,7 @@ tsconfig.tsbuildinfo
 src/payload-types.ts
 public/legacy
 config/profile-image-ftp-sources.json
-tmp/profile-image-manifest.json
-tmp/profile-image-download-report.json
-tmp/profile-image-download-success.json
-tmp/c0/
+tmp/
 
 # 로컬 원본 덤프
 data/baewoo.sql
@@ -27,5 +24,3 @@ data/legacy_dumps/*
 # 로컬 생성 SQL 산출물
 data/baewoo-split/_global.sql
 data/baewoo-split/tables/*.sql
-data/baewoo-curated/*/*.sql
-node_modules

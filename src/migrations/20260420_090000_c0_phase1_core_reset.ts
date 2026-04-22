@@ -1,6 +1,6 @@
 import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
 
-import { assertDestructiveC0Allowed } from '../../scripts/c0/runtime'
+import { assertDestructiveC0Allowed } from '../../scripts/payload-migration/runtime'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   assertDestructiveC0Allowed()

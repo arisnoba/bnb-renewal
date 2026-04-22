@@ -193,15 +193,15 @@ node --env-file=.env.local --import tsx scripts/download-profile-images.ts --dry
 
 대표 원인:
 
-- `profiles` 컬렉션에 해당 `sourceId` 문서가 아직 없음
+- MariaDB work table 또는 Payload `profiles` 컬렉션에 해당 원본 문서가 아직 없음
 
-이 경우 먼저 `profiles` 시드를 다시 넣어야 한다.
+이 경우 먼저 MariaDB work table을 다시 만들고, 현재 연결 중인 Payload 적재 경로를 다시 실행해야 한다.
 
 ```bash
-node --env-file=.env.local --import tsx scripts/seed-p1.ts --only profiles --limit 1000
+npm run legacy:work:profiles
 ```
 
-그 뒤 `npm run profiles:images:apply`를 다시 실행한다.
+그 뒤 `npm run db:c0:profile-images:download`를 다시 실행한다.
 
 ### 6-3. 같은 파일을 반복 다운로드함
 

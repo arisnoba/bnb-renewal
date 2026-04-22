@@ -2,7 +2,8 @@
 
 > 작성일: 2026-04-16
 > 위치: 프로젝트 내부 (다중 세션 참조용)
-> 관련: [plan/todo.md](./todo.md) (진행 체크리스트), [data/baewoo-curated/c0/baewoo-migration-context.md](../data/baewoo-curated/c0/baewoo-migration-context.md) (기존 컨텍스트)
+> 관련: [plan/todo.md](./todo.md) (진행 체크리스트), [docs/archive/c0-migration-context.md](../docs/archive/c0-migration-context.md) (기존 컨텍스트)
+> 보존 상태: 이 문서는 과거 `data/baewoo-curated` 정적 SQL 기반 계획의 기록이다. 현재 이관 기준은 센터별 MariaDB dump와 `scripts/legacy-mariadb/build-work-*.sql`이다.
 
 ## Context
 
@@ -115,9 +116,9 @@
 4. Pages를 참조하는 라우트(`src/app/(site)/...`) + 홈/관리자 안내 문구 점검 및 정리
 5. `tmp/c0/` runtime 산출물 경로를 `.gitignore`에 추가 (`tmp/c0/`)
 6. Pages 컬렉션 제거 마이그레이션 SQL 생성 (`npm run db:migrate:create`)
-7. `seed-p0.ts`의 pages 처리 로직만 제거 (teachers/news 처리는 Phase 5 일괄 제거 시까지 보존). 파일 상단에 `@deprecated — see scripts/c0/` 표기
+7. `seed-p0.ts`의 pages 처리 로직만 제거 (teachers/news 처리는 Phase 5 일괄 제거 시까지 보존). 파일 상단에 `@deprecated — see scripts/payload-migration/` 표기
 8. `seed-p1.ts`/`profile-images.ts`는 동일하게 deprecated 표기만 (제거는 Phase 5)
-9. 신규 공통 모듈: `scripts/c0/parse.ts`
+9. 신규 공통 모듈: `scripts/payload-migration/parse.ts`
    - phpMyAdmin 4.6.0 덤프 INSERT 파서
    - MySQL→PG 타입 변환
    - `0000-00-00` → null 처리
@@ -127,7 +128,7 @@
 
 **산출물**
 - `data/baewoo-curated/c0/SCHEMA.md` (23개 테이블 스키마 + 컬렉션 매핑 표)
-- `scripts/c0/parse.ts`
+- `scripts/payload-migration/parse.ts`
 - Pages 컬렉션 제거 마이그레이션 SQL (`src/migrations/`)
 
 **검증**
@@ -159,12 +160,12 @@
 > **중요**: `Castings`는 Phase 2 승인 게이트 전까지 truncate 하지 않는다. clean slate보다 기준 데이터 보존이 우선이다.
 
 **시드 작업**
-1. `scripts/c0/seed-teachers.ts` 신규
+1. `scripts/payload-migration/seed-teachers.ts` 신규
    - 입력: `c0/g5_teacher.sql` + `c0/g5_teacher2.sql`
    - 출력: Teachers 컬렉션 upsert (`sourceTable`로 둘 구분)
    - teacher2의 `photo_img1~6` 필드를 Teachers 스키마에 추가
    - dry-run / limit / only 옵션 (seed-p0 패턴 차용)
-2. `scripts/c0/seed-agencies.ts` 신규
+2. `scripts/payload-migration/seed-agencies.ts` 신규
    - 입력: `c0/g5_agency.sql`
    - `wr_1~43` 페어를 `actors: [{name, generation}]` 배열로 정규화
    - `pr_1~9` 프로필 이미지 경로 보존 (Phase 4에서 Blob URL로 일괄 치환)
@@ -187,20 +188,20 @@
 **목표**: Profiles/Castings를 c0 기준으로 교체하고 News를 처음으로 시드.
 
 **작업**
-1. `scripts/c0/seed-profiles.ts` 신규
+1. `scripts/payload-migration/seed-profiles.ts` 신규
    - 입력: `c0/g5_write_new_profile.sql`
    - 현 `seed-p1.ts`의 profiles 로직 c0 입력으로 이식
    - 프로필 이미지 URL 매핑은 Phase 4로 분리 (현 `loadLegacyProfileImageUrlMap` 의존 제거 또는 stub)
-2. **Castings diff 리포트 + 승인 게이트** (`scripts/c0/diff-castings.ts`)
+2. **Castings diff 리포트 + 승인 게이트** (`scripts/payload-migration/diff-castings.ts`)
    - `tmp/c0/castings-pre-c0.json` baseline vs `c0/g5_write_new_casting_all.sql` (INSERT 22건) 비교
    - 카운트 차이, sourceId 일치/불일치, 제목 일치/불일치 sample 비교
    - 출력: `data/baewoo-curated/c0/castings-diff-report.md`
    - **사용자 승인 후에만 `seed-castings.ts` 실행**
-3. `scripts/c0/seed-castings.ts` 신규
+3. `scripts/payload-migration/seed-castings.ts` 신규
    - 입력: `c0/g5_write_new_casting_all.sql` (내부 테이블명은 `g5_write_new_casting` — 파서에서 처리)
    - 승인된 경우에만 **그 시점에** Castings 정리 후 재시드
    - 승인 거부 시 기존 Castings 유지
-4. `scripts/c0/seed-news.ts` 신규
+4. `scripts/payload-migration/seed-news.ts` 신규
    - 입력: `c0/g5_write_new_notice.sql` (18MB)
    - **메모리 주의**: `readline` + 라인 단위 INSERT 파싱 또는 청크 처리
    - **Phase 2 마지막에 실행, dry-run으로 시간/메모리 먼저 측정**
@@ -243,7 +244,7 @@
 - 컬렉션 정의 (`src/collections/{Name}.ts`) 작성 — `slug`, `labels.singular`, `labels.plural`, `admin.group: '레거시 콘텐츠'` 분류
 - `payload.config.ts`에 등록
 - 마이그레이션 생성 (`npm run db:migrate:create`)
-- `scripts/c0/seed-{name}.ts` 작성
+- `scripts/payload-migration/seed-{name}.ts` 작성
 - dry-run → 실시드 → admin 확인
 - 한 테이블 끝나야 다음 테이블 진행 (atomic commit 단위)
 
@@ -260,7 +261,7 @@
 **목표**: 레거시 이미지 파일을 Vercel Blob에 올리고, DB의 경로 컬럼 + 본문 HTML의 모든 legacy URL 패턴을 일괄 업데이트.
 
 **작업**
-1. **legacy URL 패턴 수집** (사전 작업, `scripts/c0/scan-legacy-urls.ts`)
+1. **legacy URL 패턴 수집** (사전 작업, `scripts/payload-migration/scan-legacy-urls.ts`)
    - 모든 컬렉션 본문 HTML/필드를 스캔
    - 추출 대상 패턴:
      - 상대경로: `/data/...`, `/web/img/...`, `/data/file/...`, `/data/editor/...`
@@ -278,11 +279,11 @@
    - 실제 다운로드: Blob 업로드 전에 `tmp/c0/images/...`로 내려받고 총 파일 수/총 용량/실패 수를 보고한다.
    - 용량 확인: 사용자가 스토리지 사용량을 판단할 수 있게 다운로드 결과의 bytes 합계와 컬렉션별 분포를 기록한다.
    - Blob 업로드: 다운로드 성공 파일만 업로드하고 `legacy_path → blob_url` 매니페스트를 생성한다.
-4. Blob 업로드 스크립트: `scripts/c0/upload-images.ts`
+4. Blob 업로드 스크립트: `scripts/payload-migration/upload-images.ts`
    - 디렉토리 구조: `agency/{bn_id}/`, `teacher/{bn_id}/`, `class/`, `static/`, `editor/{date}/`, `bbs/{board}/{bn_id}/`
    - 구조화 이미지의 Blob 경로는 원본 공개 URL 경로가 아니라 DB source path 기준으로 둔다. 예: `teachers/1/teacher_img01.png`
    - 매니페스트(`legacy_url|legacy_path → blob_url`) JSON 생성
-5. DB 치환 스크립트: `scripts/c0/replace-image-paths.ts`
+5. DB 치환 스크립트: `scripts/payload-migration/replace-image-paths.ts`
    - 컬럼 대상: 모든 컬렉션의 `profileImagePath`, `gallery`, `bodyHtml`, `wr_content`, `legacyMeta` 안의 본문/이미지 필드 등
    - HTML 안의 `<img src>` + `<a href>` (이미지 확장자만) + `style="background-image: url(...)"` 패턴 모두 치환
    - dry-run으로 치환될 항목 수 + 매니페스트 미스 카운트 확인 후 실행
@@ -302,7 +303,7 @@
 **목표**: 전체 마이그레이션 정합성 점검 + p0~p2 폐기.
 
 **작업**
-1. `scripts/c0/verify.ts` (전체 검증 리포트)
+1. `scripts/payload-migration/verify.ts` (전체 검증 리포트)
    - 컬렉션별 레코드 수 vs c0 SQL INSERT 카운트
    - sourceTable/sourceId 중복 검사
    - slug 충돌
@@ -349,16 +350,16 @@
 - `data/baewoo-curated/c0/castings-diff-report.md` (Phase 2)
 - `data/baewoo-curated/c0/legacy-urls.json` (Phase 4)
 - `data/baewoo-curated/c0/verify-report.md` (Phase 5)
-- `scripts/c0/parse.ts` (Phase 0)
-- `scripts/c0/seed-teachers.ts` (Phase 1)
-- `scripts/c0/seed-agencies.ts` (Phase 1)
-- `scripts/c0/diff-castings.ts` (Phase 2)
-- `scripts/c0/seed-profiles.ts` / `seed-castings.ts` / `seed-news.ts` (Phase 2)
-- `scripts/c0/seed-{video-castings,banners,teacher-files,lineups,movies,appearances,appearances-extra,star-cards,shoots,dramas,directings,reviews}.ts` (Phase 3, 12개)
-- `scripts/c0/scan-legacy-urls.ts` (Phase 4)
-- `scripts/c0/upload-images.ts` (Phase 4)
-- `scripts/c0/replace-image-paths.ts` (Phase 4)
-- `scripts/c0/verify.ts` (Phase 5)
+- `scripts/payload-migration/parse.ts` (Phase 0)
+- `scripts/payload-migration/seed-teachers.ts` (Phase 1)
+- `scripts/payload-migration/seed-agencies.ts` (Phase 1)
+- `scripts/payload-migration/diff-castings.ts` (Phase 2)
+- `scripts/payload-migration/seed-profiles.ts` / `seed-castings.ts` / `seed-news.ts` (Phase 2)
+- `scripts/payload-migration/seed-{video-castings,banners,teacher-files,lineups,movies,appearances,appearances-extra,star-cards,shoots,dramas,directings,reviews}.ts` (Phase 3, 12개)
+- `scripts/payload-migration/scan-legacy-urls.ts` (Phase 4)
+- `scripts/payload-migration/upload-images.ts` (Phase 4)
+- `scripts/payload-migration/replace-image-paths.ts` (Phase 4)
+- `scripts/payload-migration/verify.ts` (Phase 5)
 - `src/collections/{VideoCastings,Banners,TeacherFiles,Lineups,Movies,Appearances,AppearancesExtra,StarCards,Shoots,Dramas,Directings,Reviews}.ts` (Phase 3, 12개)
 
 > 모든 경로는 프로젝트 루트(`/Users/arisnoba/Documents/GitHub/bnb-renewal/`) 기준 상대경로.

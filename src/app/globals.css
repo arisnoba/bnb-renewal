@@ -257,13 +257,162 @@ main {
   margin-top: 10px;
 }
 
+.test-menu-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 24px;
+}
+
+.test-menu-button {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.test-menu-button strong {
+  font-size: 18px;
+}
+
+.test-menu-button span {
+  color: rgba(31, 29, 26, 0.72);
+  line-height: 1.5;
+}
+
+.test-menu-button code {
+  color: rgba(31, 29, 26, 0.58);
+  font-family: 'SF Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.test-record-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.test-record-card {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 112px minmax(0, 1fr);
+  padding: 18px;
+}
+
+.test-record-media {
+  align-items: center;
+  aspect-ratio: 1;
+  background: rgba(31, 29, 26, 0.08);
+  border: 1px solid rgba(31, 29, 26, 0.08);
+  border-radius: 8px;
+  color: rgba(31, 29, 26, 0.5);
+  display: flex;
+  font-family: 'SF Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 12px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.test-record-media img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.test-record-body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.test-record-body h2 {
+  font-size: 20px;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.teacher-related-files {
+  border-top: 1px solid rgba(31, 29, 26, 0.1);
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+}
+
+.teacher-related-files-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.teacher-related-files-header h3 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.teacher-related-files-header span,
+.teacher-related-file span {
+  color: rgba(31, 29, 26, 0.58);
+  font-family: 'SF Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.teacher-related-files-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+}
+
+.teacher-related-file {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.teacher-related-file-media {
+  align-items: center;
+  aspect-ratio: 4 / 3;
+  background: rgba(31, 29, 26, 0.08);
+  border: 1px solid rgba(31, 29, 26, 0.08);
+  border-radius: 6px;
+  color: rgba(31, 29, 26, 0.5);
+  display: flex;
+  font-family: 'SF Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 11px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.teacher-related-file-media img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.teacher-related-file strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.teacher-related-file span {
+  display: block;
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 840px) {
   .grid-3 {
     grid-template-columns: 1fr;
   }
 
+  .test-menu-grid,
   .teacher-card,
-  .teacher-data {
+  .teacher-data,
+  .test-record-card {
     grid-template-columns: 1fr;
   }
 
