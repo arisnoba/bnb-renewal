@@ -173,6 +173,23 @@ npm run legacy:db:verify
 - 검증 결과: 통합 `exam_results` 177건, `university=152`, `arts_high_school=25`, 썸네일 URL 누락 0건, slug 중복 0건
 - 날짜 범위: 대학교 `2019-01-10 14:24:00` ~ `2026-01-09 11:22:17`, 예술고등학교 `2022-03-17 09:35:41` ~ `2026-01-09 11:36:51`
 
+### 진행중인 캐스팅 출연현황 통합
+
+`g5_write_new_appear`는 진행중인 캐스팅 출연현황 콘텐츠이므로 `casting_appearances`로 통합한다. `screen_appearances`는 드라마/광고 출연장면용으로 이미 쓰고 있으므로, 캐스팅 진행 현황과 실제 출연장면은 분리한다.
+
+- 결과 테이블: `bnb_legacy_work.casting_appearances`
+- 재생성 명령: `npm run legacy:work:casting-appearances`
+- 입력 테이블: `baewoo.g5_write_new_appear`, `bnbhighteen.g5_write_new_appear`, `kidscenter.g5_write_new_appear`
+- 제외 테이블: `bnbuniv.g5_write_new_appear`
+- 센터 기준: `baewoo` -> `art`, `bnbhighteen` -> `highteen`, `kidscenter` -> `kids`
+- 필드 기준: `wr_subject` -> `title`, `wr_content` -> `body_html`, `wr_1` -> `broadcaster`, `wr_2` -> `production_company`, `wr_3` -> `directors`, `wr_4` -> `writers`, `wr_5` -> `casting_status`, `wr_6` -> `casting_company`
+- 썸네일 기준: 각 센터 `g5_board_file`의 `bo_table=new_appear`, `wr_id`, `bf_no=0` 첨부를 사용한다.
+- 날짜 기준: `created_at`과 `published_at`은 원본 `wr_datetime` 우선, 없으면 `1970-01-01 00:00:00` fallback. `updated_at`은 work table 생성 시각을 사용한다.
+- 검증일: 2026-04-22
+- 검증 결과: 통합 `casting_appearances` 414건, 아트 153건, 하이틴 129건, 키즈 132건, 썸네일 URL 373건, slug 중복 0건
+- 진행상태 분포: `방송종료=404`, `(사전제작)캐스팅종료=5`, `캐스팅진행중=3`, `방영중=2`
+- 날짜 범위: `2010-08-20 16:39:43` ~ `2026-04-13 13:07:11`
+
 ## 이관 방식
 
 1. 원본 dump는 수정하지 않는다.
@@ -187,6 +204,7 @@ npm run legacy:db:verify
 
 - 새 MariaDB 기반 추출 스크립트가 기존 시드 대상 컬렉션을 대체했다.
 - `package.json`에서 구 `db:seed:p0-*`, `db:seed:p1-*`, 구 `db:seed:c0-*` 명령을 제거했다.
+- 현재 실행 명령 기준은 `docs/레거시-명령어-기준.md`를 따른다.
 - README와 활성 문서에서 구 경로 참조를 정리했다.
 - 프론트 테스트 페이지에서 주요 MariaDB work table을 직접 확인한다.
 

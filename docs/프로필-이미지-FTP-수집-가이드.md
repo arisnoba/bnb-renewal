@@ -73,78 +73,46 @@ PROFILE_IMAGE_FTP_HIGHTEEN_PASSWORD=...
 
 ## 3. 실행 순서
 
-### 3-1. 타입/시드 기본 확인
+### 3-1. Work table 생성
 
 ```bash
-npm run payload:generate-types
-npm run typecheck
-npm run db:seed:p1-profiles:dry-run
+npm run legacy:work:profiles
 ```
 
-### 3-2. manifest 생성
+### 3-2. FTP dry-run
 
-SQL 기준으로 실제 필요한 이미지 파일 목록을 만든다.
+실제 다운로드 전에 FTP에서 파일을 찾을 수 있는지 확인한다.
 
 ```bash
-npm run profiles:images:manifest
+npm run legacy:assets:profiles:dry-run
 ```
-
-생성 파일:
-
-- `tmp/profile-image-manifest.json`
 
 현재 기준 건수:
 
 - `660`건
 
-### 3-3. FTP dry-run
-
-실제 다운로드 전에 FTP에서 파일을 찾을 수 있는지 확인한다.
-
-```bash
-npm run profiles:images:dry-run
-```
-
 소량 샘플만 보고 싶으면:
 
 ```bash
-python3 scripts/download_profile_images_ftp.py --dry-run --limit 5
+python3 scripts/legacy-mariadb/asset-downloads/download-profile-images-ftp.py --dry-run --limit 5
 ```
 
 결과 파일:
 
-- `tmp/profile-image-download-report.json`
+- `tmp/legacy-assets/profile-image-download-report.json`
 
-### 3-4. 실제 다운로드
+### 3-3. 실제 다운로드
 
 필요한 파일만 `public/legacy/profiles/<sourceId>/...`로 내려받는다.
 
 ```bash
-npm run profiles:images:sync
+npm run legacy:assets:profiles:download
 ```
 
 소량 샘플 다운로드:
 
 ```bash
-python3 scripts/download_profile_images_ftp.py --limit 3
-```
-
-성공 상태 파일:
-
-- `tmp/profile-image-download-success.json`
-
-### 3-5. DB 반영
-
-다운로드 성공 상태 파일 기준으로 `profiles.profileImagePath`를 반영한다.
-
-```bash
-npm run profiles:images:apply
-```
-
-샘플 드라이런:
-
-```bash
-node --env-file=.env.local --import tsx scripts/download-profile-images.ts --dry-run --limit 5
+python3 scripts/legacy-mariadb/asset-downloads/download-profile-images-ftp.py --limit 3
 ```
 
 ## 4. 결과물 위치
@@ -155,9 +123,7 @@ node --env-file=.env.local --import tsx scripts/download-profile-images.ts --dry
 
 중간 산출물:
 
-- `tmp/profile-image-manifest.json`
-- `tmp/profile-image-download-report.json`
-- `tmp/profile-image-download-success.json`
+- `tmp/legacy-assets/profile-image-download-report.json`
 
 이 파일들은 로컬 실행 산출물이므로 Git 추적 대상이 아니다.
 
@@ -165,10 +131,8 @@ node --env-file=.env.local --import tsx scripts/download-profile-images.ts --dry
 
 정상 흐름이면 아래를 확인한다.
 
-- `npm run profiles:images:manifest` 후 `tmp/profile-image-manifest.json` 생성
-- `npm run profiles:images:dry-run` 후 `failed = 0` 또는 허용 가능한 실패만 존재
-- `npm run profiles:images:sync` 후 `public/legacy/profiles/...` 파일 생성
-- `npm run profiles:images:apply` 후 관리자에서 `profiles.profileImagePath` 확인
+- `npm run legacy:assets:profiles:dry-run` 후 `failed = 0` 또는 허용 가능한 실패만 존재
+- `npm run legacy:assets:profiles:download` 후 `public/legacy/profiles/...` 파일 생성
 
 추가 수동 확인:
 
@@ -201,7 +165,7 @@ node --env-file=.env.local --import tsx scripts/download-profile-images.ts --dry
 npm run legacy:work:profiles
 ```
 
-그 뒤 `npm run db:c0:profile-images:download`를 다시 실행한다.
+그 뒤 `npm run legacy:assets:profiles:download`를 다시 실행한다.
 
 ### 6-3. 같은 파일을 반복 다운로드함
 

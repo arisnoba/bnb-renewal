@@ -47,6 +47,38 @@ const baseColumns = `
   CAST(COALESCE(source_id, '') AS CHAR) AS source_id
 `;
 
+function localLegacyAssetPath({
+	boTable,
+	collection,
+	path,
+	role,
+	sourceDb = 'source_db',
+	sourceId = 'source_id',
+}: {
+	boTable: string;
+	collection: string;
+	path: string;
+	role: string;
+	sourceDb?: string;
+	sourceId?: string;
+}) {
+	return `
+      CASE
+        WHEN NULLIF(TRIM(COALESCE(${path}, '')), '') IS NULL THEN ''
+        ELSE CONCAT(
+          '/legacy/${collection}/',
+          ${sourceDb},
+          '/',
+          ${boTable},
+          '/',
+          ${sourceId},
+          '/${role}/',
+          SUBSTRING_INDEX(COALESCE(${path}, ''), '/', -1)
+        )
+      END
+    `;
+}
+
 export const mariaDbTestCollections = [
 	{
 		description: '통합 강사 목록과 대표 이미지 원본 경로',
@@ -121,7 +153,12 @@ export const mariaDbTestCollections = [
         COALESCE(name, '') AS meta1,
         CAST(display_order AS CHAR) AS meta2,
         '' AS meta3,
-        COALESCE(profile_image_path, '') AS image_path
+        ${localLegacyAssetPath({
+			boTable: "'g5_agency'",
+			collection: 'agencies',
+			path: 'profile_image_path',
+			role: 'profile',
+		})} AS image_path
       FROM bnb_legacy_work.agencies
       ORDER BY display_order ASC, id ASC
       LIMIT 100
@@ -140,7 +177,20 @@ export const mariaDbTestCollections = [
         COALESCE(actor_name, '') AS meta1,
         COALESCE(generation, '') AS meta2,
         CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-        COALESCE(thumbnail_url, agency_logo_url, '') AS image_path
+        CASE
+          WHEN NULLIF(TRIM(COALESCE(thumbnail_url, '')), '') IS NOT NULL THEN ${localLegacyAssetPath({
+			boTable: "'new_shoot'",
+			collection: 'artist-press',
+			path: 'thumbnail_url',
+			role: 'thumbnail',
+		})}
+          ELSE ${localLegacyAssetPath({
+			boTable: "'new_shoot'",
+			collection: 'artist-press',
+			path: 'agency_logo_path',
+			role: 'agency-logo',
+		})}
+        END AS image_path
       FROM bnb_legacy_work.artist_press
       ORDER BY published_at DESC, id DESC
       LIMIT 100
@@ -197,8 +247,45 @@ export const mariaDbTestCollections = [
         COALESCE(performer_name, '') AS meta1,
         CONCAT(COALESCE(project_title, ''), ' / ', COALESCE(role_name, '')) AS meta2,
         CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-        COALESCE(thumbnail_url, profile_image_url, '') AS image_path
+        CASE
+          WHEN NULLIF(TRIM(COALESCE(thumbnail_path, '')), '') IS NOT NULL THEN ${localLegacyAssetPath({
+			boTable: "'new_drama'",
+			collection: 'screen-appearances',
+			path: 'thumbnail_path',
+			role: 'thumbnail',
+		})}
+          ELSE ${localLegacyAssetPath({
+			boTable: "'new_drama'",
+			collection: 'screen-appearances',
+			path: 'profile_image_path',
+			role: 'profile',
+		})}
+        END AS image_path
       FROM bnb_legacy_work.screen_appearances
+      ORDER BY published_at DESC, id DESC
+      LIMIT 100
+    `,
+	},
+	{
+		description: '진행중인 캐스팅 출연현황 통합 결과',
+		href: '/test/mariadb/casting-appearances',
+		label: 'Casting Appearances',
+		slug: 'casting-appearances',
+		table: 'casting_appearances',
+		sql: `
+      SELECT
+        ${baseColumns},
+        COALESCE(title, '') AS title,
+        COALESCE(center, '') AS meta1,
+        CONCAT(COALESCE(broadcaster, ''), ' / ', COALESCE(casting_status, '')) AS meta2,
+        CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
+        ${localLegacyAssetPath({
+			boTable: "'new_appear'",
+			collection: 'casting-appearances',
+			path: 'thumbnail_path',
+			role: 'thumbnail',
+		})} AS image_path
+      FROM bnb_legacy_work.casting_appearances
       ORDER BY published_at DESC, id DESC
       LIMIT 100
     `,
@@ -288,7 +375,20 @@ export const mariaDbTestCollections = [
         COALESCE(school_name, '') AS meta1,
         COALESCE(school_logo_slug, '') AS meta2,
         CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-        COALESCE(student_image_url, school_logo_url, '') AS image_path
+        CASE
+          WHEN NULLIF(TRIM(COALESCE(student_image_path, '')), '') IS NOT NULL THEN ${localLegacyAssetPath({
+			boTable: "'new_hoogi'",
+			collection: 'exam-passed-reviews',
+			path: 'student_image_path',
+			role: 'student',
+		})}
+          ELSE ${localLegacyAssetPath({
+			boTable: "'new_hoogi'",
+			collection: 'exam-passed-reviews',
+			path: 'school_logo_path',
+			role: 'school-logo',
+		})}
+        END AS image_path
       FROM bnb_legacy_work.exam_passed_reviews
       ORDER BY published_at DESC, id DESC
       LIMIT 100
@@ -311,7 +411,14 @@ export const mariaDbTestCollections = [
         COALESCE(logo_original_name, '') AS meta1,
         CAST(review_count AS CHAR) AS meta2,
         CONCAT(COALESCE(logo_width, ''), 'x', COALESCE(logo_height, '')) AS meta3,
-        COALESCE(logo_url, '') AS image_path
+        ${localLegacyAssetPath({
+			boTable: "'new_hoogi'",
+			collection: 'exam-school-logos',
+			path: 'logo_path',
+			role: 'logo',
+			sourceDb: "'bnbuniv'",
+			sourceId: 'id',
+		})} AS image_path
       FROM bnb_legacy_work.exam_school_logos
       ORDER BY school_name ASC, id ASC
       LIMIT 100
@@ -330,7 +437,18 @@ export const mariaDbTestCollections = [
         COALESCE(result_type, '') AS meta1,
         COALESCE(center, '') AS meta2,
         CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-        COALESCE(thumbnail_url, thumbnail_path, '') AS image_path
+        ${localLegacyAssetPath({
+			boTable: `
+            CASE
+              WHEN source_table = 'g5_write_victory10' THEN 'victory10'
+              WHEN source_table = 'g5_write_victory30' THEN 'victory30'
+              ELSE REPLACE(source_table, 'g5_write_', '')
+            END
+          `,
+			collection: 'exam-results',
+			path: 'COALESCE(thumbnail_path, thumbnail_url, \'\')',
+			role: 'thumbnail',
+		})} AS image_path
       FROM bnb_legacy_work.exam_results
       ORDER BY published_at DESC, id DESC
       LIMIT 100
@@ -379,11 +497,13 @@ export async function getMariaDbRows(collection: MariaDbTestCollection, options:
 			? buildTeacherSql(options.center ?? 'all')
 			: collection.slug === 'profiles'
 				? buildProfileSql(options.center ?? 'all')
-				: collection.slug === 'news'
-					? buildNewsSql(options.center ?? 'all')
-					: collection.slug === 'screen-appearances'
-						? buildScreenAppearanceSql(options.center ?? 'all')
-						: collection.sql;
+					: collection.slug === 'news'
+						? buildNewsSql(options.center ?? 'all')
+						: collection.slug === 'screen-appearances'
+							? buildScreenAppearanceSql(options.center ?? 'all')
+							: collection.slug === 'casting-appearances'
+								? buildCastingAppearanceSql(options.center ?? 'all')
+								: collection.sql;
 	const lines = await runMariaDbQuery(sql);
 	const rows = lines.map(parseRow);
 
@@ -490,8 +610,45 @@ function buildScreenAppearanceSql(center: MariaDbRowsOptions['center']) {
       COALESCE(performer_name, '') AS meta1,
       CONCAT(COALESCE(project_title, ''), ' / ', COALESCE(role_name, '')) AS meta2,
       CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-      COALESCE(thumbnail_url, profile_image_url, '') AS image_path
+      CASE
+        WHEN NULLIF(TRIM(COALESCE(thumbnail_path, '')), '') IS NOT NULL THEN ${localLegacyAssetPath({
+			boTable: "'new_drama'",
+			collection: 'screen-appearances',
+			path: 'thumbnail_path',
+			role: 'thumbnail',
+		})}
+        ELSE ${localLegacyAssetPath({
+			boTable: "'new_drama'",
+			collection: 'screen-appearances',
+			path: 'profile_image_path',
+			role: 'profile',
+		})}
+      END AS image_path
     FROM bnb_legacy_work.screen_appearances
+    ${whereSql}
+    ORDER BY published_at DESC, id DESC
+    LIMIT 100
+  `;
+}
+
+function buildCastingAppearanceSql(center: MariaDbRowsOptions['center']) {
+	const centerFilter = center && center !== 'all' ? center : undefined;
+	const whereSql = centerFilter ? `WHERE center = '${centerFilter}'` : '';
+
+	return `
+    SELECT
+      ${baseColumns},
+      COALESCE(title, '') AS title,
+      COALESCE(center, '') AS meta1,
+      CONCAT(COALESCE(broadcaster, ''), ' / ', COALESCE(casting_status, '')) AS meta2,
+      CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
+      ${localLegacyAssetPath({
+			boTable: "'new_appear'",
+			collection: 'casting-appearances',
+			path: 'thumbnail_path',
+			role: 'thumbnail',
+		})} AS image_path
+    FROM bnb_legacy_work.casting_appearances
     ${whereSql}
     ORDER BY published_at DESC, id DESC
     LIMIT 100

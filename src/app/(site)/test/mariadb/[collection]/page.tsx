@@ -64,7 +64,7 @@ export default async function MariaDbCollectionTestPage({
         </div>
       </section>
 
-      {collection.slug === 'teachers' || collection.slug === 'profiles' || collection.slug === 'news' || collection.slug === 'screen-appearances' ? (
+      {collection.slug === 'teachers' || collection.slug === 'profiles' || collection.slug === 'news' || collection.slug === 'screen-appearances' || collection.slug === 'casting-appearances' ? (
         <section className="surface card teacher-filter-panel">
           <h2>센터 필터</h2>
           <div className="filter-group" aria-label="MariaDB 센터 필터">

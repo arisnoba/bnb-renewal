@@ -134,6 +134,18 @@
   - slug 중복: 0건
   - 날짜 범위: 대학교 `2019-01-10 14:24:00` ~ `2026-01-09 11:22:17`, 예술고등학교 `2022-03-17 09:35:41` ~ `2026-01-09 11:36:51`
   - 재생성 명령: `npm run legacy:work:exam-results`
+- [x] 진행중인 캐스팅 출연현황: `g5_write_new_appear` 통합
+  - 결과 테이블: `bnb_legacy_work.casting_appearances`
+  - 입력: `baewoo.g5_write_new_appear`, `bnbhighteen.g5_write_new_appear`, `kidscenter.g5_write_new_appear`
+  - 제외: 입시 `bnbuniv.g5_write_new_appear`
+  - 통합 `casting_appearances`: 414건
+  - 센터 분포: `art=153`, `highteen=129`, `kids=132`
+  - 필드 정리: `wr_1 -> broadcaster`, `wr_2 -> production_company`, `wr_3 -> directors`, `wr_4 -> writers`, `wr_5 -> casting_status`, `wr_6 -> casting_company`
+  - 썸네일 기준: `g5_board_file.bo_table=new_appear`, `bf_no=0`
+  - 썸네일 URL: 373건
+  - slug 중복: 0건
+  - 날짜 범위: `2010-08-20 16:39:43` ~ `2026-04-13 13:07:11`
+  - 재생성 명령: `npm run legacy:work:casting-appearances`
 - [x] `g5_board_file`, `g5_menu`, `g5_menu2`는 통합 대상에서 제외
 
 ### 다음 통합 후보
@@ -144,7 +156,7 @@
 - [ ] 제휴/에이전시 게시판: `g5_write_agency*`
 - [ ] 배너: `g5_banner`, `g5_banner2`, `g5_banner_new`
 - [ ] 라인업/영상: `g5_write_lineup*`, `g5_write_new_youtube`, `g5_write_new_main_youtube`, `g5_write_wmv`
-- [ ] 작품/활동 후속: `g5_write_movie`, `g5_write_new_drama*`, `g5_write_new_appear*`, `g5_write_new_direct*`, 필요 시 다른 센터의 `g5_write_new_shoot`
+- [ ] 작품/활동 후속: `g5_write_movie`, `g5_write_new_drama*`, `g5_write_new_direct*`, 필요 시 `g5_write_new_appear2`와 다른 센터의 `g5_write_new_shoot`
 - [ ] 후기/스타카드: `g5_write_after`, `g5_write_new_hoogi`, `g5_star`, `g5_write_starcard`, `g5_write_new_starcard`
 
 ### 보류 결정 필요

@@ -225,7 +225,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--include-drafts", action="store_true")
     parser.add_argument("--limit", default="all")
-    parser.add_argument("--output", default="tmp/c0/teacher-image-download-report.json")
+    parser.add_argument("--output", default="tmp/legacy-assets/teacher-image-download-report.json")
     args = parser.parse_args()
 
     if args.limit != "all":

@@ -64,7 +64,7 @@ async function main() {
 function parseArgs(args: string[]): Options {
   let ids: string[] = []
   let limit: Options['limit'] = 'all'
-  let outputPath = 'tmp/c0/teacher-image-manifest.json'
+  let outputPath = 'tmp/legacy-assets/teacher-image-manifest.json'
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
@@ -247,7 +247,7 @@ function toManifestEntry(input: {
     column: input.column,
     ftpRemotePath: `web/data/teacher/${sourcePath}`,
     id: input.id,
-    localPath: `tmp/c0/images/teachers/${sourcePath}`,
+    localPath: `tmp/legacy-assets/images/teachers/${sourcePath}`,
     normalizedUrl: `https://www.baewoo.co.kr/web/data/teacher/${sourcePath}`,
     sourcePath,
     title: input.title,

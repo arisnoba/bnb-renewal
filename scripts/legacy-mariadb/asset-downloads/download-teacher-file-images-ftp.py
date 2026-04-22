@@ -212,7 +212,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config-path")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", default="all")
-    parser.add_argument("--output", default="tmp/c0/teacher-file-image-download-report.json")
+    parser.add_argument("--output", default="tmp/legacy-assets/teacher-file-image-download-report.json")
     args = parser.parse_args()
 
     if args.limit != "all":

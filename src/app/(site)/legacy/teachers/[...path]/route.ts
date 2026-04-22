@@ -3,6 +3,7 @@ import path from 'node:path'
 
 const teacherImageRoots = [
   path.resolve(process.cwd(), 'public/legacy/teachers'),
+  path.resolve(process.cwd(), 'tmp/legacy-assets/images/teachers'),
   path.resolve(process.cwd(), 'tmp/c0/images/teachers'),
 ]
 
