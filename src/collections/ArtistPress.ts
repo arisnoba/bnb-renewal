@@ -9,8 +9,12 @@ import {
   systemDateFields,
 } from './shared'
 
-export const Profiles: CollectionConfig = {
-  slug: 'profiles',
+export const ArtistPress: CollectionConfig = {
+  slug: 'artist-press',
+  labels: {
+    plural: '출신 아티스트',
+    singular: '출신 아티스트',
+  },
   access: {
     create: loggedInOnly,
     delete: loggedInOnly,
@@ -18,50 +22,39 @@ export const Profiles: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['name', 'centers', 'filter', 'publishedAt', 'updatedAtLabel'],
-    group: '프로필/출연',
-    useAsTitle: 'name',
+    defaultColumns: ['title', 'actorName', 'generation', 'publishedAt', 'updatedAtLabel'],
+    group: '프로필/성과',
+    useAsTitle: 'title',
   },
   defaultSort: '-publishedAt',
   fields: [
     ...sourceFields,
     centersField,
     {
-      name: 'name',
+      name: 'title',
       type: 'text',
       required: true,
     },
     {
-      name: 'filter',
+      name: 'actorName',
       type: 'text',
+      required: true,
     },
     {
-      name: 'englishName',
+      name: 'generation',
       type: 'text',
-    },
-    {
-      name: 'height',
-      type: 'text',
-    },
-    {
-      name: 'weight',
-      type: 'text',
+      required: true,
     },
     {
       name: 'bodyHtml',
       type: 'textarea',
-      required: true,
     },
     {
-      name: 'profileImagePath',
+      name: 'agencyLogoPath',
       type: 'text',
     },
     {
-      name: 'excerpt',
-      type: 'textarea',
-    },
-    {
-      name: 'authorName',
+      name: 'thumbnailPath',
       type: 'text',
     },
     ...publishingFields,

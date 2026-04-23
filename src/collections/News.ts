@@ -1,16 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-
-const centerOptions = [
-  { label: '전체', value: 'all' },
-  { label: '아트센터', value: 'art' },
-  { label: '입시센터', value: 'exam' },
-  { label: '키즈센터', value: 'kids' },
-  { label: '하이틴센터', value: 'highteen' },
-  { label: '애비뉴센터', value: 'avenue' },
-  { label: '미분류', value: 'unknown' },
-]
+import {
+  centersField,
+  legacyMetaField,
+  publishingFields,
+  sourceFields,
+  systemDateFields,
+} from './shared'
 
 export const News: CollectionConfig = {
   slug: 'news',
@@ -21,27 +18,13 @@ export const News: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'category', 'publishedAt', 'updatedAt'],
+    defaultColumns: ['title', 'centers', 'category', 'publishedAt', 'updatedAtLabel'],
+    group: '운영/소식',
     useAsTitle: 'title',
   },
   defaultSort: '-publishedAt',
   fields: [
-    {
-      name: 'sourceTable',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'sourceId',
-      type: 'number',
-      required: true,
-    },
-    {
-      name: 'slug',
-      type: 'text',
-      required: true,
-      unique: true,
-    },
+    ...sourceFields,
     {
       name: 'title',
       type: 'text',
@@ -51,13 +34,7 @@ export const News: CollectionConfig = {
       name: 'category',
       type: 'text',
     },
-    {
-      name: 'center',
-      type: 'select',
-      defaultValue: 'unknown',
-      options: centerOptions,
-      required: true,
-    },
+    centersField,
     {
       name: 'bodyHtml',
       type: 'textarea',
@@ -68,37 +45,20 @@ export const News: CollectionConfig = {
       type: 'textarea',
     },
     {
-      name: 'authorName',
+      name: 'thumbnailPath',
       type: 'text',
     },
     {
-      name: 'publishedAt',
-      type: 'date',
+      name: 'authorName',
+      type: 'text',
     },
-    {
-      name: 'displayStatus',
-      type: 'select',
-      defaultValue: 'published',
-      options: [
-        { label: '임시저장', value: 'draft' },
-        { label: '공개', value: 'published' },
-        { label: '보관', value: 'archived' },
-      ],
-      required: true,
-    },
-    {
-      name: 'isPublic',
-      type: 'checkbox',
-      defaultValue: true,
-    },
+    ...publishingFields,
     {
       name: 'viewCount',
       type: 'number',
       defaultValue: 0,
     },
-    {
-      name: 'legacyMeta',
-      type: 'json',
-    },
+    ...systemDateFields,
+    legacyMetaField,
   ],
 }

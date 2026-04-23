@@ -1,16 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-
-const centerOptions = [
-  { label: '전체', value: 'all' },
-  { label: '아트센터', value: 'art' },
-  { label: '입시센터', value: 'exam' },
-  { label: '키즈센터', value: 'kids' },
-  { label: '하이틴센터', value: 'highteen' },
-  { label: '애비뉴센터', value: 'avenue' },
-  { label: '미분류', value: 'unknown' },
-]
+import { centersField, legacyMetaField, sourceFields, systemDateFields } from './shared'
 
 export const Teachers: CollectionConfig = {
   slug: 'teachers',
@@ -25,27 +16,13 @@ export const Teachers: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['name', 'center', 'displayOrder', 'updatedAt'],
+    defaultColumns: ['name', 'centers', 'displayOrder', 'updatedAtLabel'],
+    group: '교육',
     useAsTitle: 'name',
   },
   defaultSort: 'displayOrder',
   fields: [
-    {
-      name: 'sourceTable',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'sourceId',
-      type: 'number',
-      required: true,
-    },
-    {
-      name: 'slug',
-      type: 'text',
-      required: true,
-      unique: true,
-    },
+    ...sourceFields,
     {
       name: 'name',
       type: 'text',
@@ -55,14 +32,7 @@ export const Teachers: CollectionConfig = {
       name: 'role',
       type: 'text',
     },
-    {
-      name: 'center',
-      type: 'select',
-      defaultValue: ['unknown'],
-      hasMany: true,
-      options: centerOptions,
-      required: true,
-    },
+    centersField,
     {
       name: 'summary',
       type: 'textarea',
@@ -120,6 +90,32 @@ export const Teachers: CollectionConfig = {
       ],
     },
     {
+      name: 'representativeWorks',
+      type: 'array',
+      admin: {
+        description: '강사 등록/수정 시 함께 관리하는 대표작 목록입니다.',
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+        },
+        {
+          name: 'posterPath',
+          type: 'text',
+        },
+        {
+          name: 'description',
+          type: 'text',
+        },
+        {
+          name: 'displayOrder',
+          type: 'number',
+          defaultValue: 0,
+        },
+      ],
+    },
+    {
       name: 'displayOrder',
       type: 'number',
       defaultValue: 0,
@@ -135,9 +131,7 @@ export const Teachers: CollectionConfig = {
       ],
       required: true,
     },
-    {
-      name: 'legacyMeta',
-      type: 'json',
-    },
+    ...systemDateFields,
+    legacyMetaField,
   ],
 }

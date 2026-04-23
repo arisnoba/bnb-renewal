@@ -9,8 +9,12 @@ import {
   systemDateFields,
 } from './shared'
 
-export const Profiles: CollectionConfig = {
-  slug: 'profiles',
+export const CastingDirectors: CollectionConfig = {
+  slug: 'casting-directors',
+  labels: {
+    plural: '캐스팅 디렉터',
+    singular: '캐스팅 디렉터',
+  },
   access: {
     create: loggedInOnly,
     delete: loggedInOnly,
@@ -18,46 +22,31 @@ export const Profiles: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['name', 'centers', 'filter', 'publishedAt', 'updatedAtLabel'],
-    group: '프로필/출연',
-    useAsTitle: 'name',
+    defaultColumns: ['personName', 'company', 'centers', 'publishedAt', 'updatedAtLabel'],
+    group: '캐스팅/오디션',
+    useAsTitle: 'personName',
   },
-  defaultSort: '-publishedAt',
+  defaultSort: 'personName',
   fields: [
     ...sourceFields,
-    centersField,
     {
-      name: 'name',
+      name: 'personName',
+      type: 'text',
+      required: true,
+      unique: true,
+    },
+    {
+      name: 'company',
       type: 'text',
       required: true,
     },
+    centersField,
     {
-      name: 'filter',
-      type: 'text',
-    },
-    {
-      name: 'englishName',
-      type: 'text',
-    },
-    {
-      name: 'height',
-      type: 'text',
-    },
-    {
-      name: 'weight',
+      name: 'category',
       type: 'text',
     },
     {
       name: 'bodyHtml',
-      type: 'textarea',
-      required: true,
-    },
-    {
-      name: 'profileImagePath',
-      type: 'text',
-    },
-    {
-      name: 'excerpt',
       type: 'textarea',
     },
     {

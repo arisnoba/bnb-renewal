@@ -4,24 +4,21 @@ import { fileURLToPath } from 'node:url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 
-import { Appearances } from './src/collections/Appearances'
-import { AppearancesExtra } from './src/collections/AppearancesExtra'
 import { Agencies } from './src/collections/Agencies'
-import { Banners } from './src/collections/Banners'
-import { Castings } from './src/collections/Castings'
-import { Directings } from './src/collections/Directings'
-import { Dramas } from './src/collections/Dramas'
-import { Lineups } from './src/collections/Lineups'
-import { Movies } from './src/collections/Movies'
+import { ArtistPress } from './src/collections/ArtistPress'
+import { AuditionSchedules } from './src/collections/AuditionSchedules'
+import { CastingAppearances } from './src/collections/CastingAppearances'
+import { CastingDirectors } from './src/collections/CastingDirectors'
+import { Curriculums } from './src/collections/Curriculums'
+import { ExamPassedReviews } from './src/collections/ExamPassedReviews'
+import { ExamPassedVideos } from './src/collections/ExamPassedVideos'
+import { ExamResults } from './src/collections/ExamResults'
+import { ExamSchoolLogos } from './src/collections/ExamSchoolLogos'
 import { News } from './src/collections/News'
 import { Profiles } from './src/collections/Profiles'
-import { Reviews } from './src/collections/Reviews'
-import { Shoots } from './src/collections/Shoots'
-import { StarCards } from './src/collections/StarCards'
-import { TeacherFiles } from './src/collections/TeacherFiles'
+import { ScreenAppearances } from './src/collections/ScreenAppearances'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
-import { VideoCastings } from './src/collections/VideoCastings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -35,6 +32,7 @@ const databaseURL =
 
 export default buildConfig({
   admin: {
+    dateFormat: 'yy.MM.dd HH:mm',
     importMap: {
       baseDir: path.resolve(dirname, './src'),
       importMapFile: path.resolve(
@@ -47,22 +45,19 @@ export default buildConfig({
   collections: [
     Users,
     Teachers,
+    Curriculums,
     News,
     Profiles,
-    Castings,
     Agencies,
-    VideoCastings,
-    Banners,
-    TeacherFiles,
-    Lineups,
-    Movies,
-    Appearances,
-    AppearancesExtra,
-    StarCards,
-    Shoots,
-    Dramas,
-    Directings,
-    Reviews,
+    ArtistPress,
+    AuditionSchedules,
+    CastingDirectors,
+    CastingAppearances,
+    ScreenAppearances,
+    ExamPassedReviews,
+    ExamPassedVideos,
+    ExamResults,
+    ExamSchoolLogos,
   ],
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),
