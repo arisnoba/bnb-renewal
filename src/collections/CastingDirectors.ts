@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const CastingDirectors: CollectionConfig = {
@@ -22,7 +21,7 @@ export const CastingDirectors: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['personName', 'company', 'centers', 'publishedAt', 'updatedAtLabel'],
+    defaultColumns: ['personName', 'company', 'centers', 'publishedAt', 'updatedAt'],
     group: '캐스팅/오디션',
     useAsTitle: 'personName',
   },
@@ -54,7 +53,6 @@ export const CastingDirectors: CollectionConfig = {
       type: 'text',
     },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

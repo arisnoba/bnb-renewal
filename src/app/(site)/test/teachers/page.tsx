@@ -11,7 +11,7 @@ const statusFilters = ['all', 'published', 'draft', 'archived'] as const
 export const dynamic = 'force-dynamic'
 
 type CenterFilter = (typeof centerFilters)[number]
-type CenterValue = Teacher['center'][number]
+type CenterValue = Teacher['centers'][number]
 type StatusFilter = (typeof statusFilters)[number]
 
 function getFilter<T extends readonly string[]>(
@@ -48,7 +48,7 @@ function getTeacherImagePath(teacher: Teacher): null | string {
 }
 
 function getCenterText(teacher: Teacher): string {
-  return teacher.center.map((center) => getCenterLabel(center)).join(', ')
+  return teacher.centers.map((center) => getCenterLabel(center)).join(', ')
 }
 
 function filterTeachers(
@@ -58,7 +58,7 @@ function filterTeachers(
 ): Teacher[] {
   return teachers.filter((teacher) => {
     const matchesCenter =
-      centerFilter === 'all' || teacher.center.includes(centerFilter as CenterValue)
+      centerFilter === 'all' || teacher.centers.includes(centerFilter as CenterValue)
     const matchesStatus = statusFilter === 'all' || teacher.status === statusFilter
 
     return matchesCenter && matchesStatus
@@ -110,6 +110,11 @@ export default async function TeacherTestPage({
     limit: 500,
     pagination: false,
     sort: 'displayOrder',
+    where: {
+      status: {
+        equals: 'published',
+      },
+    },
   })
 
   const teachers = filterTeachers(

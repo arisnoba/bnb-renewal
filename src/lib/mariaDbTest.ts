@@ -467,7 +467,7 @@ export const mariaDbTestCollections = [
         COALESCE(center, '') AS meta1,
         COALESCE(category, '') AS meta2,
         CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-        '' AS image_path
+        COALESCE(thumbnail_local_path, '') AS image_path
       FROM bnb_legacy_work.news
       ORDER BY published_at DESC, id DESC
       LIMIT 100
@@ -591,7 +591,7 @@ function buildNewsSql(center: MariaDbRowsOptions['center']) {
       COALESCE(center, '') AS meta1,
       COALESCE(category, '') AS meta2,
       CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
-      '' AS image_path
+      COALESCE(thumbnail_local_path, '') AS image_path
     FROM bnb_legacy_work.news
     ${whereSql}
     ORDER BY published_at DESC, id DESC

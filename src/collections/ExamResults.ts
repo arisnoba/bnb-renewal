@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const ExamResults: CollectionConfig = {
@@ -22,7 +21,7 @@ export const ExamResults: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'resultType', 'publishedAt', 'updatedAtLabel'],
+    defaultColumns: ['title', 'resultType', 'publishedAt', 'updatedAt'],
     group: '후기/합격',
     useAsTitle: 'title',
   },
@@ -36,7 +35,6 @@ export const ExamResults: CollectionConfig = {
     { name: 'thumbnailPath', type: 'text' },
     { name: 'thumbnailSource', type: 'text', required: true },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

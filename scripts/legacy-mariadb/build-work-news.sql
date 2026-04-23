@@ -18,6 +18,9 @@ CREATE TABLE `bnb_legacy_work`.`news` (
   `category` varchar(255) DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `body_html` mediumtext DEFAULT NULL,
+  `thumbnail_path` varchar(512) DEFAULT NULL,
+  `thumbnail_local_path` varchar(512) DEFAULT NULL,
+  `attachments_json` longtext DEFAULT NULL CHECK (JSON_VALID(`attachments_json`)),
   `author_name` varchar(255) DEFAULT NULL,
   `view_count` int(11) NOT NULL DEFAULT 0,
   `is_public` tinyint(1) NOT NULL DEFAULT 1,
@@ -87,6 +90,47 @@ SELECT
 FROM `bnbhighteen`.`g5_write_new_notice`
 WHERE `wr_is_comment` = 0;
 
+DROP TEMPORARY TABLE IF EXISTS `tmp_news_files`;
+
+CREATE TEMPORARY TABLE `tmp_news_files` AS
+SELECT 'baewoo' AS `source_db`, `bo_table`, `wr_id`, `bf_no`, `bf_source`, `bf_file`, `bf_filesize` FROM `baewoo`.`g5_board_file`
+UNION ALL
+SELECT 'bnbuniv', `bo_table`, `wr_id`, `bf_no`, `bf_source`, `bf_file`, `bf_filesize` FROM `bnbuniv`.`g5_board_file`
+UNION ALL
+SELECT 'kidscenter', `bo_table`, `wr_id`, `bf_no`, `bf_source`, `bf_file`, `bf_filesize` FROM `kidscenter`.`g5_board_file`
+UNION ALL
+SELECT 'bnbhighteen', `bo_table`, `wr_id`, `bf_no`, `bf_source`, `bf_file`, `bf_filesize` FROM `bnbhighteen`.`g5_board_file`;
+
+ALTER TABLE `tmp_news_files`
+  ADD INDEX `tmp_news_files_source_idx` (`source_db`, `bo_table`, `wr_id`, `bf_no`);
+
+DROP TEMPORARY TABLE IF EXISTS `tmp_news_file_groups`;
+
+CREATE TEMPORARY TABLE `tmp_news_file_groups` AS
+SELECT
+  `file`.`source_db`,
+  `file`.`bo_table`,
+  `file`.`wr_id`,
+  MIN(`file`.`bf_no`) AS `thumbnail_file_no`,
+  JSON_ARRAYAGG(
+    JSON_OBJECT(
+      'fileNo', `file`.`bf_no`,
+      'role', CONCAT('file-', `file`.`bf_no`),
+      'originalName', NULLIF(TRIM(`file`.`bf_source`), ''),
+      'fileName', `file`.`bf_file`,
+      'path', CONCAT('/web/data/file/', `file`.`bo_table`, '/', `file`.`bf_file`),
+      'localPath', CONCAT('/legacy/news/', `file`.`source_db`, '/', `file`.`bo_table`, '/', `file`.`wr_id`, '/file-', `file`.`bf_no`, '/', `file`.`bf_file`),
+      'filesize', `file`.`bf_filesize`
+    )
+    ORDER BY `file`.`bf_no`
+  ) AS `attachments_json`
+FROM `tmp_news_files` AS `file`
+WHERE NULLIF(TRIM(`file`.`bf_file`), '') IS NOT NULL
+GROUP BY `file`.`source_db`, `file`.`bo_table`, `file`.`wr_id`;
+
+ALTER TABLE `tmp_news_file_groups`
+  ADD INDEX `tmp_news_file_groups_source_idx` (`source_db`, `bo_table`, `wr_id`);
+
 INSERT INTO `bnb_legacy_work`.`news` (
   `source_db`,
   `source_table`,
@@ -96,6 +140,9 @@ INSERT INTO `bnb_legacy_work`.`news` (
   `category`,
   `title`,
   `body_html`,
+  `thumbnail_path`,
+  `thumbnail_local_path`,
+  `attachments_json`,
   `author_name`,
   `view_count`,
   `is_public`,
@@ -113,6 +160,15 @@ SELECT
   NULLIF(TRIM(`news`.`ca_name`), '') AS `category`,
   NULLIF(TRIM(`news`.`wr_subject`), '') AS `title`,
   NULLIF(`news`.`wr_content`, '') AS `body_html`,
+  CASE
+    WHEN `thumbnail`.`bf_file` IS NOT NULL THEN CONCAT('/web/data/file/', REPLACE(`news`.`source_table`, 'g5_write_', ''), '/', `thumbnail`.`bf_file`)
+    ELSE NULL
+  END AS `thumbnail_path`,
+  CASE
+    WHEN `thumbnail`.`bf_file` IS NOT NULL THEN CONCAT('/legacy/news/', `news`.`source_db`, '/', REPLACE(`news`.`source_table`, 'g5_write_', ''), '/', `news`.`wr_id`, '/file-', `thumbnail`.`bf_no`, '/', `thumbnail`.`bf_file`)
+    ELSE NULL
+  END AS `thumbnail_local_path`,
+  `file_group`.`attachments_json`,
   NULLIF(TRIM(`news`.`wr_name`), '') AS `author_name`,
   COALESCE(`news`.`wr_hit`, 0) AS `view_count`,
   IF(UPPER(TRIM(COALESCE(`news`.`public`, 'Y'))) = 'N', 0, 1) AS `is_public`,
@@ -147,8 +203,18 @@ SELECT
       'link2', NULLIF(TRIM(`news`.`wr_link2`), ''),
       'link1Hit', `news`.`wr_link1_hit`,
       'link2Hit', `news`.`wr_link2_hit`
-    )
+    ),
+    'attachments', `file_group`.`attachments_json`
   ) AS `legacy_meta`
 FROM `tmp_news_all` AS `news`
+LEFT JOIN `tmp_news_file_groups` AS `file_group`
+  ON `file_group`.`source_db` = `news`.`source_db`
+  AND `file_group`.`bo_table` = REPLACE(`news`.`source_table`, 'g5_write_', '')
+  AND `file_group`.`wr_id` = `news`.`wr_id`
+LEFT JOIN `tmp_news_files` AS `thumbnail`
+  ON `thumbnail`.`source_db` = `news`.`source_db`
+  AND `thumbnail`.`bo_table` = REPLACE(`news`.`source_table`, 'g5_write_', '')
+  AND `thumbnail`.`wr_id` = `news`.`wr_id`
+  AND `thumbnail`.`bf_no` = `file_group`.`thumbnail_file_no`
 WHERE NULLIF(TRIM(`news`.`wr_subject`), '') IS NOT NULL
 ORDER BY `news`.`center`, `news`.`wr_datetime` DESC, `news`.`wr_id` DESC;

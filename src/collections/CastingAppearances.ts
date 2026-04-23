@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const CastingAppearances: CollectionConfig = {
@@ -40,7 +39,6 @@ export const CastingAppearances: CollectionConfig = {
     { name: 'castingCompany', type: 'text' },
     { name: 'thumbnailPath', type: 'text' },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

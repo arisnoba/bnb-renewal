@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import type { Where } from 'payload'
 
 import { getPayloadClient } from '@/lib/payload'
 import { getTestCollection, testCollections } from '@/lib/testCollections'
@@ -11,6 +12,39 @@ type TestDoc = Record<string, unknown> & {
   slug?: string
   sourceId?: number | string
   sourceTable?: string
+}
+
+function buildPublishedWhere(collectionSlug: string): Where | undefined {
+  if (collectionSlug === 'teachers') {
+    return {
+      status: {
+        equals: 'published',
+      },
+    }
+  }
+
+  if (
+    [
+      'artist-press',
+      'audition-schedules',
+      'casting-directors',
+      'casting-appearances',
+      'exam-passed-reviews',
+      'exam-passed-videos',
+      'exam-results',
+      'news',
+      'profiles',
+      'screen-appearances',
+    ].includes(collectionSlug)
+  ) {
+    return {
+      displayStatus: {
+        equals: 'published',
+      },
+    }
+  }
+
+  return undefined
 }
 
 export function generateStaticParams() {
@@ -92,6 +126,7 @@ export default async function CollectionTestPage({
     limit: 100,
     pagination: false,
     sort: collection.sort,
+    where: buildPublishedWhere(collection.slug),
   })
   const docs = result.docs as unknown as TestDoc[]
 

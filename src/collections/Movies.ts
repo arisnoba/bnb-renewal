@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
+import { adminDateConfig } from './shared'
 
 export const Movies: CollectionConfig = {
   slug: 'movies',
@@ -70,6 +71,8 @@ export const Movies: CollectionConfig = {
     {
       name: 'publishedAt',
       type: 'date',
+      label: '발행일',
+      admin: adminDateConfig,
     },
     {
       name: 'displayStatus',

@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const ExamPassedVideos: CollectionConfig = {
@@ -22,7 +21,7 @@ export const ExamPassedVideos: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'youtubeUrl', 'publishedAt', 'updatedAtLabel'],
+    defaultColumns: ['title', 'youtubeUrl', 'publishedAt', 'updatedAt'],
     group: '후기/합격',
     useAsTitle: 'title',
   },
@@ -35,7 +34,6 @@ export const ExamPassedVideos: CollectionConfig = {
     { name: 'youtubeCode', type: 'text', required: true, unique: true },
     { name: 'youtubeUrl', type: 'text', required: true },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

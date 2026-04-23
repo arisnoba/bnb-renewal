@@ -1,11 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-export const TeacherFiles: CollectionConfig = {
-  slug: 'teacher-files',
+import { legacyMetaField, sourceFields } from './shared'
+
+export const TeacherFilmographies: CollectionConfig = {
+  slug: 'teacher-filmographies',
   labels: {
-    plural: '강사 첨부파일',
-    singular: '강사 첨부파일',
+    plural: '강사 대표작',
+    singular: '강사 대표작',
   },
   access: {
     create: loggedInOnly,
@@ -14,43 +16,40 @@ export const TeacherFiles: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'teacherSourceId', 'displayOrder', 'updatedAt'],
-    group: '레거시 콘텐츠',
+    defaultColumns: ['title', 'resolvedTeacherName', 'displayOrder', 'updatedAt'],
+    group: '교육/강사진',
     useAsTitle: 'title',
   },
   defaultSort: 'displayOrder',
   fields: [
+    ...sourceFields,
     {
-      name: 'sourceTable',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'sourceId',
+      name: 'teacherSourceId',
       type: 'number',
       required: true,
     },
     {
-      name: 'slug',
+      name: 'resolvedTeacherId',
+      type: 'number',
+    },
+    {
+      name: 'resolvedTeacherSlug',
       type: 'text',
-      required: true,
-      unique: true,
+    },
+    {
+      name: 'resolvedTeacherName',
+      type: 'text',
     },
     {
       name: 'title',
       type: 'text',
-      required: true,
     },
     {
-      name: 'teacherSourceId',
-      type: 'number',
-    },
-    {
-      name: 'filePath',
+      name: 'posterPath',
       type: 'text',
     },
     {
-      name: 'descriptionHtml',
+      name: 'description',
       type: 'textarea',
     },
     {
@@ -58,9 +57,6 @@ export const TeacherFiles: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
     },
-    {
-      name: 'legacyMeta',
-      type: 'json',
-    },
+    legacyMetaField,
   ],
 }

@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const ExamPassedReviews: CollectionConfig = {
@@ -22,7 +21,7 @@ export const ExamPassedReviews: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'schoolName', 'publishedAt', 'updatedAtLabel'],
+    defaultColumns: ['title', 'schoolName', 'publishedAt', 'updatedAt'],
     group: '후기/합격',
     useAsTitle: 'title',
   },
@@ -37,7 +36,6 @@ export const ExamPassedReviews: CollectionConfig = {
     { name: 'schoolLogoPath', type: 'text', required: true },
     { name: 'studentImagePath', type: 'text', required: true },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

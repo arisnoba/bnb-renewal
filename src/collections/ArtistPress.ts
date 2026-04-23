@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const ArtistPress: CollectionConfig = {
@@ -22,7 +21,7 @@ export const ArtistPress: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'actorName', 'generation', 'publishedAt', 'updatedAtLabel'],
+    defaultColumns: ['title', 'actorName', 'generation', 'publishedAt', 'updatedAt'],
     group: '프로필/성과',
     useAsTitle: 'title',
   },
@@ -58,7 +57,6 @@ export const ArtistPress: CollectionConfig = {
       type: 'text',
     },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

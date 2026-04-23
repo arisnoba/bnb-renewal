@@ -18,6 +18,9 @@ export default function TestIndexPage() {
           <Link className="filter-pill" href="/test/mariadb">
             MariaDB 기준 검수
           </Link>
+          <Link className="filter-pill" href="/test/postgres">
+            PostgreSQL 기준 검수
+          </Link>
           <span>Payload/Neon 참고 메뉴 {testCollections.length}개</span>
         </div>
       </section>
@@ -28,6 +31,10 @@ export default function TestIndexPage() {
           <code>/test/mariadb</code>는 로컬 Docker MariaDB의{' '}
           <code>bnb_legacy_work</code>를 직접 조회합니다. 아래 Payload 메뉴는 현재
           앱 환경변수에 연결된 DB 상태를 보는 참고 화면입니다.
+        </p>
+        <p>
+          <code>/test/postgres</code>는 로컬 PostgreSQL/Payload 컬렉션을 직접
+          조회하는 이관 결과 검수 화면입니다.
         </p>
       </section>
 

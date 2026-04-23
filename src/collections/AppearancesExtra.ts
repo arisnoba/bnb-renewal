@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
+import { adminDateConfig } from './shared'
 
 export const AppearancesExtra: CollectionConfig = {
   slug: 'appearances-extra',
@@ -102,6 +103,8 @@ export const AppearancesExtra: CollectionConfig = {
     {
       name: 'publishedAt',
       type: 'date',
+      label: '발행일',
+      admin: adminDateConfig,
     },
     {
       name: 'displayStatus',

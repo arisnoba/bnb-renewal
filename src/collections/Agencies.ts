@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-import { centersField, legacyMetaField, sourceFields, systemDateFields } from './shared'
+import { centersField, legacyMetaField, sourceFields } from './shared'
 
 export const Agencies: CollectionConfig = {
   slug: 'agencies',
@@ -12,7 +12,7 @@ export const Agencies: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['subject', 'name', 'centers', 'displayOrder', 'updatedAtLabel'],
+    defaultColumns: ['subject', 'name', 'centers', 'displayOrder', 'updatedAt'],
     group: '엔터테인먼트',
     useAsTitle: 'subject',
   },
@@ -65,7 +65,6 @@ export const Agencies: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
     },
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

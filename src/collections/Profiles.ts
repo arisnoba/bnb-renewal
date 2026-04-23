@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const Profiles: CollectionConfig = {
@@ -18,7 +17,7 @@ export const Profiles: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['name', 'centers', 'filter', 'publishedAt', 'updatedAtLabel'],
+    defaultColumns: ['name', 'centers', 'filter', 'publishedAt', 'updatedAt'],
     group: '프로필/출연',
     useAsTitle: 'name',
   },
@@ -65,7 +64,6 @@ export const Profiles: CollectionConfig = {
       type: 'text',
     },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

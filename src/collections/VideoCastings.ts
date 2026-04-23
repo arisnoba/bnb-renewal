@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-
 export const VideoCastings: CollectionConfig = {
   slug: 'video-castings',
   labels: {

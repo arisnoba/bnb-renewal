@@ -7,41 +7,6 @@ export const adminDateConfig = {
   },
 }
 
-export const systemDateFields: Field[] = [
-  {
-    name: 'createdAtLabel',
-    type: 'ui',
-    label: '등록일',
-    admin: {
-      components: {
-        Cell: '/components/payload/FormattedDateCell#FormattedDateCell',
-        Field: '/components/payload/FormattedDateUIField#FormattedDateUIField',
-      },
-      custom: {
-        sourceField: 'createdAt',
-      },
-      disableListColumn: false,
-      position: 'sidebar',
-    },
-  },
-  {
-    name: 'updatedAtLabel',
-    type: 'ui',
-    label: '수정일',
-    admin: {
-      components: {
-        Cell: '/components/payload/FormattedDateCell#FormattedDateCell',
-        Field: '/components/payload/FormattedDateUIField#FormattedDateUIField',
-      },
-      custom: {
-        sourceField: 'updatedAt',
-      },
-      disableListColumn: false,
-      position: 'sidebar',
-    },
-  },
-]
-
 export const centerOptions = [
   { label: '아트센터', value: 'art' },
   { label: '입시센터', value: 'exam' },
@@ -61,6 +26,7 @@ export const displayStatusOptions = [
 export const centersField: Field = {
   name: 'centers',
   type: 'select',
+  label: '센터',
   defaultValue: ['unknown'],
   hasMany: true,
   options: centerOptions,
@@ -71,21 +37,25 @@ export const sourceFields: Field[] = [
   {
     name: 'sourceDb',
     type: 'text',
+    label: '원본 DB',
     required: true,
   },
   {
     name: 'sourceTable',
     type: 'text',
+    label: '원본 테이블',
     required: true,
   },
   {
     name: 'sourceId',
     type: 'number',
+    label: '원본 ID',
     required: true,
   },
   {
     name: 'slug',
     type: 'text',
+    label: '슬러그',
     required: true,
     unique: true,
   },
@@ -95,16 +65,19 @@ export const publishingFields: Field[] = [
   {
     name: 'publishedAt',
     type: 'date',
+    label: '발행일',
     admin: adminDateConfig,
   },
   {
     name: 'isPublic',
     type: 'checkbox',
+    label: '공개 여부',
     defaultValue: true,
   },
   {
     name: 'displayStatus',
     type: 'select',
+    label: '노출 상태',
     defaultValue: 'published',
     options: displayStatusOptions,
     required: true,
@@ -114,4 +87,5 @@ export const publishingFields: Field[] = [
 export const legacyMetaField: Field = {
   name: 'legacyMeta',
   type: 'json',
+  label: '레거시 메타',
 }

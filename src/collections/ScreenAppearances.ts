@@ -6,7 +6,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const ScreenAppearances: CollectionConfig = {
@@ -41,7 +40,6 @@ export const ScreenAppearances: CollectionConfig = {
     { name: 'profileImagePath', type: 'text' },
     { name: 'thumbnailPath', type: 'text' },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

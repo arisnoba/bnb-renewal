@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-import { legacyMetaField, systemDateFields } from './shared'
+import { legacyMetaField } from './shared'
 
 export const ExamSchoolLogos: CollectionConfig = {
   slug: 'exam-school-logos',
@@ -16,7 +16,7 @@ export const ExamSchoolLogos: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['schoolName', 'reviewCount', 'updatedAtLabel'],
+    defaultColumns: ['schoolName', 'reviewCount', 'updatedAt'],
     group: '후기/합격',
     useAsTitle: 'schoolName',
   },
@@ -30,7 +30,6 @@ export const ExamSchoolLogos: CollectionConfig = {
     { name: 'logoWidth', type: 'number' },
     { name: 'logoHeight', type: 'number' },
     { name: 'reviewCount', type: 'number', defaultValue: 0 },
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

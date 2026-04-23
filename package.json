@@ -47,6 +47,7 @@
     "payload:legacy:backup": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backup-pre-c0.ts",
     "payload:legacy:export-castings": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/export-castings-pre-c0.ts",
     "payload:legacy:scan-urls": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/scan-legacy-urls.ts",
+    "payload:legacy:seed-work": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/seed-work-tables.ts",
     "payload:legacy:upload-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/upload-images.ts",
     "payload:legacy:replace-image-paths": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/replace-image-paths.ts",
     "legacy:assets:teachers:manifest": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/export-teacher-image-manifest.ts",

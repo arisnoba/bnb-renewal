@@ -7,7 +7,6 @@ import {
   legacyMetaField,
   publishingFields,
   sourceFields,
-  systemDateFields,
 } from './shared'
 
 export const AuditionSchedules: CollectionConfig = {
@@ -23,7 +22,7 @@ export const AuditionSchedules: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'centers', 'eventType', 'scheduleStartDate', 'updatedAtLabel'],
+    defaultColumns: ['title', 'centers', 'eventType', 'scheduleStartDate', 'updatedAt'],
     group: '캐스팅/오디션',
     useAsTitle: 'title',
   },
@@ -78,7 +77,6 @@ export const AuditionSchedules: CollectionConfig = {
       type: 'text',
     },
     ...publishingFields,
-    ...systemDateFields,
     legacyMetaField,
   ],
 }

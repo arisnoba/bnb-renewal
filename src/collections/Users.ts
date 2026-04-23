@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { centerOptions, systemDateFields } from './shared'
+import { centerOptions } from './shared'
 
 const rolePermissionLevels = {
   admin: 80,
@@ -10,8 +10,12 @@ const rolePermissionLevels = {
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: {
+    plural: '관리자',
+    singular: '관리자',
+  },
   admin: {
-    defaultColumns: ['email', 'role', 'center', 'updatedAtLabel'],
+    defaultColumns: ['email', 'role', 'center', 'updatedAt'],
     group: '관리자',
     useAsTitle: 'email',
   },
@@ -75,6 +79,5 @@ export const Users: CollectionConfig = {
       options: centerOptions.filter((option) => option.value !== 'all'),
       required: true,
     },
-    ...systemDateFields,
   ],
 }

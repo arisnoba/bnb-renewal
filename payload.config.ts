@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
+import { ko } from 'payload/i18n/ko'
 
 import { Agencies } from './src/collections/Agencies'
 import { ArtistPress } from './src/collections/ArtistPress'
@@ -41,6 +42,20 @@ export default buildConfig({
       ),
     },
     user: Users.slug,
+  },
+  i18n: {
+    fallbackLanguage: 'ko',
+    supportedLanguages: {
+      ko,
+    },
+    translations: {
+      ko: {
+        general: {
+          createdAt: '등록일',
+          updatedAt: '수정일',
+        },
+      },
+    },
   },
   collections: [
     Users,
