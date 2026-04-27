@@ -20,6 +20,7 @@ CREATE TABLE `bnb_legacy_work`.`profiles` (
   `height` varchar(64) DEFAULT NULL,
   `weight` varchar(64) DEFAULT NULL,
   `english_name` varchar(255) DEFAULT NULL,
+  `profile_image_path` varchar(512) DEFAULT NULL,
   `body_html` mediumtext DEFAULT NULL,
   `author_name` varchar(255) DEFAULT NULL,
   `published_at` datetime NOT NULL,
@@ -83,6 +84,25 @@ WHERE `wr_is_comment` = 0
     '시니어', '시니어키즈'
   );
 
+DROP TEMPORARY TABLE IF EXISTS `tmp_profile_file_sources`;
+
+CREATE TEMPORARY TABLE `tmp_profile_file_sources` AS
+SELECT 'baewoo' AS `source_db`, `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `baewoo`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL
+UNION ALL
+SELECT 'bnbuniv' AS `source_db`, `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `bnbuniv`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL
+UNION ALL
+SELECT 'kidscenter' AS `source_db`, `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `kidscenter`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL
+UNION ALL
+SELECT 'bnbhighteen' AS `source_db`, `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `bnbhighteen`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL;
+
 INSERT INTO `bnb_legacy_work`.`profiles` (
   `source_db`,
   `source_table`,
@@ -94,6 +114,7 @@ INSERT INTO `bnb_legacy_work`.`profiles` (
   `height`,
   `weight`,
   `english_name`,
+  `profile_image_path`,
   `body_html`,
   `author_name`,
   `published_at`,
@@ -119,6 +140,24 @@ SELECT
   NULLIF(TRIM(`profile`.`wr_1`), '') AS `height`,
   NULLIF(TRIM(`profile`.`wr_2`), '') AS `weight`,
   NULLIF(TRIM(`profile`.`wr_3`), '') AS `english_name`,
+  (
+    SELECT CONCAT(
+      '/legacy/profiles/',
+      `profile`.`source_db`,
+      '/',
+      REPLACE(`profile`.`source_table`, 'g5_write_', ''),
+      '/',
+      `profile`.`wr_id`,
+      '/',
+      `file_source`.`bf_file`
+    )
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1
+  ) AS `profile_image_path`,
   NULLIF(`profile`.`wr_content`, '') AS `body_html`,
   NULLIF(TRIM(`profile`.`wr_name`), '') AS `author_name`,
   COALESCE(NULLIF(`profile`.`wr_datetime`, '0000-00-00 00:00:00'), CURRENT_TIMESTAMP) AS `published_at`,

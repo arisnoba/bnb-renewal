@@ -51,6 +51,12 @@ export const centersField: Field = {
   hooks: {
     beforeValidate: [
       ({ req, value }) => {
+        if (!req.user) {
+          return Array.isArray(value) && value.length > 0
+            ? value
+            : ["unknown"];
+        }
+
         const center = userCenterValue(req.user);
 
         if (center !== "art") {

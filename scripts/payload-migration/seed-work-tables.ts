@@ -4,6 +4,7 @@ import { promisify } from 'node:util'
 import type { Payload } from 'payload'
 
 import { getPayloadClient } from '../../src/lib/payload'
+import { parseProfileCareerItems } from '../../src/lib/profileBodyHtml'
 
 const execFileAsync = promisify(execFile)
 
@@ -407,26 +408,30 @@ const configs: TableConfig[] = [
       'height',
       'weight',
       'english_name',
+      'profile_image_path',
       'body_html',
       'author_name',
       'published_at',
       'is_public',
       'legacy_meta',
     ],
-    transform: (row) => ({
-      ...sourceDoc(row),
-      authorName: text(row.author_name),
-      bodyHtml: requiredText(row.body_html, 'profiles.body_html'),
-      centers: centersFrom(row.center),
-      englishName: text(row.english_name),
-      filter: text(row.filter),
-      height: text(row.height),
-      displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      name: requiredText(row.name, 'profiles.name'),
-      publishedAt: dateText(row.published_at),
-      weight: text(row.weight),
-    }),
+    transform: (row) => {
+      return {
+        ...sourceDoc(row),
+        authorName: text(row.author_name),
+        careerItems: parseProfileCareerItems(row.body_html),
+        centers: centersFrom(row.center),
+        englishName: text(row.english_name),
+        filter: text(row.filter),
+        height: text(row.height),
+        displayStatus: displayStatusFromPublic(row.is_public),
+        legacyMeta: parseJsonValue(row.legacy_meta),
+        name: requiredText(row.name, 'profiles.name'),
+        publishedAt: dateText(row.published_at),
+        profileImagePath: text(row.profile_image_path),
+        weight: text(row.weight),
+      }
+    },
   },
   {
     collection: 'screen-appearances',
