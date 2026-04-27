@@ -4,7 +4,6 @@ import { allowAll, loggedInOnly } from "./access";
 import {
   adminCollapsible,
   adminRow,
-  adminTabs,
   imagePathField,
   legacyMetaField,
 } from "./shared";
@@ -28,52 +27,40 @@ export const ExamSchoolLogos: CollectionConfig = {
   },
   defaultSort: "schoolName",
   fields: [
-    ...adminTabs([
+    adminRow([
       {
-        label: "학교",
-        fields: [
-          adminRow([
-            {
-              name: "schoolName",
-              type: "text",
-              label: "학교명",
-              required: true,
-            },
-            {
-              name: "schoolSlug",
-              type: "text",
-              label: "학교 슬러그",
-              required: true,
-              unique: true,
-            },
-          ]),
-          {
-            name: "reviewCount",
-            type: "number",
-            label: "후기 수",
-            defaultValue: 0,
-          },
-        ],
+        name: "schoolName",
+        type: "text",
+        label: "학교명",
+        required: true,
       },
       {
-        label: "로고",
-        fields: [
-          imagePathField("logoPath", "로고 이미지", true),
-          adminRow([
-            { name: "logoOriginalName", type: "text", label: "원본 파일명" },
-            {
-              name: "logoFile",
-              type: "text",
-              label: "로고 파일",
-              required: true,
-            },
-          ]),
-          adminRow([
-            { name: "logoWidth", type: "number", label: "가로" },
-            { name: "logoHeight", type: "number", label: "세로" },
-          ]),
-        ],
+        name: "schoolSlug",
+        type: "text",
+        label: "학교 슬러그",
+        required: true,
+        unique: true,
       },
+    ]),
+    {
+      name: "reviewCount",
+      type: "number",
+      label: "후기 수",
+      defaultValue: 0,
+    },
+    imagePathField("logoPath", "로고 이미지", true),
+    adminRow([
+      { name: "logoOriginalName", type: "text", label: "원본 파일명" },
+      {
+        name: "logoFile",
+        type: "text",
+        label: "로고 파일",
+        required: true,
+      },
+    ]),
+    adminRow([
+      { name: "logoWidth", type: "number", label: "가로" },
+      { name: "logoHeight", type: "number", label: "세로" },
     ]),
     adminCollapsible("레거시/원본", [legacyMetaField]),
   ],

@@ -214,22 +214,27 @@ const configs: TableConfig[] = [
       'is_public',
       'legacy_meta',
     ],
-    transform: (row) => ({
-      ...sourceDoc(row),
-      bodyHtml: text(row.body_html),
-      broadcaster: text(row.broadcaster),
-      castingCompany: text(row.casting_company),
-      castingStatus: text(row.casting_status),
-      centers: centersFrom(row.center),
-      directors: text(row.directors),
-      displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      productionCompany: text(row.production_company),
-      publishedAt: dateText(row.published_at),
-      thumbnailPath: text(row.thumbnail_path),
-      title: requiredText(row.title, 'casting_appearances.title'),
-      writers: text(row.writers),
-    }),
+    transform: (row) => {
+      const legacyMeta = parseJsonValue(row.legacy_meta)
+
+      return {
+        ...sourceDoc(row),
+        bodyHtml: text(row.body_html),
+        broadcaster: text(row.broadcaster),
+        castingCompany: text(row.casting_company),
+        castingStatus: text(row.casting_status),
+        castMembers: buildCastingAppearanceCastMembers(legacyMeta),
+        centers: centersFrom(row.center),
+        directors: text(row.directors),
+        displayStatus: displayStatusFromPublic(row.is_public),
+        legacyMeta,
+        productionCompany: text(row.production_company),
+        publishedAt: dateText(row.published_at),
+        thumbnailPath: text(row.thumbnail_path),
+        title: requiredText(row.title, 'casting_appearances.title'),
+        writers: text(row.writers),
+      }
+    },
   },
   {
     collection: 'exam-passed-reviews',
@@ -829,6 +834,65 @@ function buildRepresentativeWorks(rows: WorkRow[], teacherSourceDb: string) {
       posterPath: item.posterPath,
       title: item.title,
     }))
+}
+
+function buildCastingAppearanceCastMembers(legacyMeta: unknown) {
+  const rawFields = objectValue(objectValue(legacyMeta)?.rawFields)
+
+  if (!rawFields) {
+    return []
+  }
+
+  const actorNames = splitLegacyRows(rawFields.wr8)
+  const roleNames = splitLegacyRows(rawFields.wr9)
+  const episodeNumbers = splitLegacyRows(rawFields.wr10)
+  const rowCount = Math.max(actorNames.length, roleNames.length, episodeNumbers.length)
+  const castMembers = []
+
+  for (let index = 0; index < rowCount; index += 1) {
+    const actorName = actorNames[index]
+    const roleName = roleNames[index]
+    const episodes = episodeNumbers[index]
+
+    if (!actorName && !roleName && !episodes) {
+      continue
+    }
+
+    castMembers.push({
+      actorName,
+      roleName,
+      episodeNumbers: episodes,
+    })
+  }
+
+  return castMembers
+}
+
+function splitLegacyRows(value: unknown) {
+  const current = text(value)
+
+  if (!current) {
+    return []
+  }
+
+  if (current.includes('|')) {
+    const parts = current.split('|').map((item) => item.trim())
+
+    while (parts[0] === '') {
+      parts.shift()
+    }
+
+    while (parts[parts.length - 1] === '') {
+      parts.pop()
+    }
+
+    return parts.map((item) => item || undefined)
+  }
+
+  return current
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
 }
 
 function teacherFilePosterPath(row: WorkRow) {

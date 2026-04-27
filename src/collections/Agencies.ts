@@ -46,7 +46,6 @@ export const Agencies: CollectionConfig = {
               label: "이름",
             },
           ]),
-          centersField,
           {
             name: "summary",
             type: "textarea",
@@ -90,6 +89,7 @@ export const Agencies: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
+      centersField,
       {
         name: "displayOrder",
         type: "number",

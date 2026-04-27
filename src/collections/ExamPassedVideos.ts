@@ -34,7 +34,6 @@ export const ExamPassedVideos: CollectionConfig = {
         label: "영상",
         fields: [
           { name: "title", type: "text", label: "제목", required: true },
-          centersField,
           adminRow([
             {
               name: "youtubeCode",
@@ -54,7 +53,7 @@ export const ExamPassedVideos: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields(publishingFields),
+    ...sidebarFields([centersField, ...publishingFields]),
     legacyCollapsible(),
   ],
 };

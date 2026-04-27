@@ -47,7 +47,6 @@ export const Teachers: CollectionConfig = {
               label: "직함",
             },
           ]),
-          centersField,
           imagePathField("profileImagePath", "프로필 이미지"),
           adminCollapsible("추가 사진", [
             adminRow([imagePathField("photoImage1", "사진 1")]),
@@ -125,6 +124,7 @@ export const Teachers: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
+      centersField,
       {
         name: "displayOrder",
         type: "number",

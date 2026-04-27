@@ -46,15 +46,12 @@ export const AuditionSchedules: CollectionConfig = {
             label: "제목",
             required: true,
           },
-          adminRow([
-            centersField,
-            {
-              name: "eventType",
-              type: "text",
-              label: "일정 유형",
-              required: true,
-            },
-          ]),
+          {
+            name: "eventType",
+            type: "text",
+            label: "일정 유형",
+            required: true,
+          },
           adminRow([
             {
               name: "scheduleStartDate",
@@ -80,6 +77,7 @@ export const AuditionSchedules: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
+      centersField,
       ...publishingFields,
       {
         name: "authorName",

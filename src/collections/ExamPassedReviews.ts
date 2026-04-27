@@ -2,8 +2,8 @@ import type { CollectionConfig } from "payload";
 
 import { allowAll, loggedInOnly } from "./access";
 import {
+  adminCollapsible,
   adminRow,
-  adminTabs,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -24,44 +24,40 @@ export const ExamPassedReviews: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ["title", "schoolName", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "school", "publishedAt", "updatedAt"],
     group: "후기/합격",
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
   fields: [
-    ...adminTabs([
+    { name: "title", type: "text", label: "제목", required: true },
+    {
+      name: "school",
+      type: "relationship",
+      label: "학교 선택",
+      relationTo: "exam-school-logos",
+      required: true,
+      admin: {
+        description:
+          "학교가 검색되지 않으면 먼저 합격 학교 로고에 학교와 로고를 등록하세요.",
+      },
+    },
+    { name: "bodyHtml", type: "textarea", label: "본문" },
+    adminRow([imagePathField("studentImagePath", "학생 이미지", true)]),
+    adminCollapsible("레거시 학교 정보", [
       {
-        label: "후기",
-        fields: [
-          { name: "title", type: "text", label: "제목", required: true },
-          adminRow([
-            centersField,
-            {
-              name: "schoolName",
-              type: "text",
-              label: "학교명",
-              required: true,
-            },
-          ]),
-          { name: "bodyHtml", type: "textarea", label: "본문" },
-        ],
+        name: "schoolName",
+        type: "text",
+        label: "학교명",
       },
       {
-        label: "미디어/학교",
-        fields: [
-          {
-            name: "schoolLogoSlug",
-            type: "text",
-            label: "학교 로고 슬러그",
-            required: true,
-          },
-          adminRow([imagePathField("schoolLogoPath", "학교 로고", true)]),
-          adminRow([imagePathField("studentImagePath", "학생 이미지", true)]),
-        ],
+        name: "schoolLogoSlug",
+        type: "text",
+        label: "학교 로고 슬러그",
       },
+      adminRow([imagePathField("schoolLogoPath", "학교 로고 경로")]),
     ]),
-    ...sidebarFields(publishingFields),
+    ...sidebarFields([centersField, ...publishingFields]),
     legacyCollapsible(),
   ],
 };

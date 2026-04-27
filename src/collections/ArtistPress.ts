@@ -60,7 +60,6 @@ export const ArtistPress: CollectionConfig = {
               required: true,
             },
           ]),
-          centersField,
           {
             name: "bodyHtml",
             type: "textarea",
@@ -76,7 +75,7 @@ export const ArtistPress: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields(publishingFields),
+    ...sidebarFields([centersField, ...publishingFields]),
     legacyCollapsible(),
   ],
 };

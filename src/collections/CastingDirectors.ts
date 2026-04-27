@@ -54,14 +54,11 @@ export const CastingDirectors: CollectionConfig = {
               required: true,
             },
           ]),
-          adminRow([
-            centersField,
-            {
-              name: "category",
-              type: "text",
-              label: "분류",
-            },
-          ]),
+          {
+            name: "category",
+            type: "text",
+            label: "분류",
+          },
           {
             name: "bodyHtml",
             type: "textarea",
@@ -71,6 +68,7 @@ export const CastingDirectors: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
+      centersField,
       ...publishingFields,
       {
         name: "authorName",

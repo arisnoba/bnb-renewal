@@ -186,7 +186,7 @@ export async function getPostgresRows(
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: collection.slug as never,
-    depth: 0,
+    depth: 1,
     limit: 10000,
     pagination: false,
     sort: sortMap[collection.slug],
@@ -343,7 +343,7 @@ function mapDocToRow(
     case 'exam-passed-reviews':
       return baseRow(doc, {
         imagePath: examPassedReviewImagePath(doc),
-        meta1: stringify(doc.schoolName),
+        meta1: relationshipSchoolName(doc.school) || stringify(doc.schoolName),
         meta2: stringify(doc.centers),
         meta3: stringify(doc.publishedAt),
         title: stringify(doc.title),
@@ -584,11 +584,29 @@ function castingAppearanceImagePath(doc: TestDoc) {
 
 function examPassedReviewImagePath(doc: TestDoc) {
   return (
+    relationshipLogoPath(doc.school) ||
+    normalizeImagePath(doc.schoolLogoPath) ||
     normalizeImagePath(doc.studentImagePath) ||
-    normalizeImagePath(doc.schoolLogoPath)
+    ''
   )
 }
 
 function examResultImagePath(doc: TestDoc) {
   return normalizeImagePath(doc.thumbnailPath)
+}
+
+function relationshipLogoPath(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return ''
+  }
+
+  return normalizeImagePath((value as Record<string, unknown>).logoPath)
+}
+
+function relationshipSchoolName(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return ''
+  }
+
+  return stringify((value as Record<string, unknown>).schoolName)
 }

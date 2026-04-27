@@ -2,7 +2,6 @@ import type { CollectionConfig } from "payload";
 
 import { allowAll, loggedInOnly } from "./access";
 import {
-  adminRow,
   adminTabs,
   centersField,
   imagePathField,
@@ -46,14 +45,11 @@ export const News: CollectionConfig = {
             label: "제목",
             required: true,
           },
-          adminRow([
-            {
-              name: "category",
-              type: "text",
-              label: "분류",
-            },
-            centersField,
-          ]),
+          {
+            name: "category",
+            type: "text",
+            label: "분류",
+          },
           {
             name: "excerpt",
             type: "textarea",
@@ -73,6 +69,7 @@ export const News: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
+      centersField,
       ...publishingFields,
       {
         name: "authorName",

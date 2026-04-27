@@ -127,9 +127,9 @@ export const testCollections = [
   {
     description: '입시전용 합격후기',
     href: '/test/exam-passed-reviews',
-    imageFields: [],
+    imageFields: ['school.logoPath', 'schoolLogoPath', 'studentImagePath'],
     label: 'Exam Passed Reviews',
-    metaFields: ['centers', 'schoolName', 'publishedAt'],
+    metaFields: ['centers', 'school.schoolName', 'schoolName', 'publishedAt'],
     slug: 'exam-passed-reviews',
     sort: '-publishedAt',
     titleFields: ['title'],

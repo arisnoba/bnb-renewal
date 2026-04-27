@@ -55,7 +55,7 @@ export function generateStaticParams() {
 
 function getFieldText(doc: TestDoc, fields: string[]) {
   for (const field of fields) {
-    const value = doc[field]
+    const value = getFieldValue(doc, field)
 
     if (value == null) {
       continue
@@ -75,6 +75,20 @@ function getFieldText(doc: TestDoc, fields: string[]) {
   return '제목 없음'
 }
 
+function getFieldValue(doc: TestDoc, field: string) {
+  return field.split('.').reduce<unknown>((currentValue, segment) => {
+    if (
+      currentValue &&
+      typeof currentValue === 'object' &&
+      !Array.isArray(currentValue)
+    ) {
+      return (currentValue as Record<string, unknown>)[segment]
+    }
+
+    return undefined
+  }, doc)
+}
+
 function formatValue(value: unknown) {
   if (value == null || value === '') {
     return '-'
@@ -82,6 +96,12 @@ function formatValue(value: unknown) {
 
   if (Array.isArray(value)) {
     return value.join(', ')
+  }
+
+  if (typeof value === 'object') {
+    const record = value as Record<string, unknown>
+
+    return String(record.schoolName ?? record.title ?? record.name ?? record.id ?? '-')
   }
 
   if (typeof value === 'boolean') {
@@ -122,7 +142,7 @@ export default async function CollectionTestPage({
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: collection.slug,
-    depth: 0,
+    depth: 1,
     limit: 100,
     pagination: false,
     sort: collection.sort,
@@ -181,13 +201,13 @@ export default async function CollectionTestPage({
                     {collection.metaFields.map((field) => (
                       <div key={field}>
                         <dt>{field}</dt>
-                        <dd>{formatValue(doc[field])}</dd>
+                        <dd>{formatValue(getFieldValue(doc, field))}</dd>
                       </div>
                     ))}
                     {collection.imageFields.map((field) => (
                       <div key={field}>
                         <dt>{field}</dt>
-                        <dd>{formatValue(doc[field])}</dd>
+                        <dd>{formatValue(getFieldValue(doc, field))}</dd>
                       </div>
                     ))}
                   </dl>

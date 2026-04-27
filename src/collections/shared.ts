@@ -7,8 +7,8 @@ type AdminTab = {
 
 export const adminDateConfig = {
   date: {
-    displayFormat: "yy.MM.dd HH:mm",
-    pickerAppearance: "dayAndTime" as const,
+    displayFormat: "yy.MM.dd",
+    pickerAppearance: "dayOnly" as const,
   },
 };
 
@@ -22,6 +22,20 @@ export const centerOptions = [
   { label: "미분류", value: "unknown" },
 ];
 
+const centerValues = new Set(centerOptions.map((option) => option.value));
+
+function userCenterValue(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return "unknown";
+  }
+
+  const center = (user as { center?: unknown }).center;
+
+  return typeof center === "string" && centerValues.has(center)
+    ? center
+    : "unknown";
+}
+
 export const displayStatusOptions = [
   { label: "임시저장", value: "draft" },
   { label: "공개", value: "published" },
@@ -32,10 +46,28 @@ export const centersField: Field = {
   name: "centers",
   type: "select",
   label: "센터",
-  defaultValue: ["unknown"],
+  defaultValue: ({ user }) => [userCenterValue(user)],
   hasMany: true,
+  hooks: {
+    beforeValidate: [
+      ({ req, value }) => {
+        const center = userCenterValue(req.user);
+
+        if (center !== "art") {
+          return [center];
+        }
+
+        return Array.isArray(value) && value.length > 0 ? value : [center];
+      },
+    ],
+  },
   options: centerOptions,
   required: true,
+  admin: {
+    components: {
+      Field: "@/components/payload/CentersField#CentersField",
+    },
+  },
 };
 
 export const sourceFields: Field[] = [
@@ -71,6 +103,7 @@ export const publishingFields: Field[] = [
     name: "publishedAt",
     type: "date",
     label: "발행일",
+    defaultValue: () => new Date().toISOString(),
     admin: adminDateConfig,
   },
   {

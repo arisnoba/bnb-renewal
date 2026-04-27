@@ -35,15 +35,12 @@ export const ExamResults: CollectionConfig = {
         label: "합격결과",
         fields: [
           { name: "title", type: "text", label: "제목", required: true },
-          adminRow([
-            centersField,
-            {
-              name: "resultType",
-              type: "text",
-              label: "결과 유형",
-              required: true,
-            },
-          ]),
+          {
+            name: "resultType",
+            type: "text",
+            label: "결과 유형",
+            required: true,
+          },
           { name: "bodyHtml", type: "textarea", label: "본문" },
         ],
       },
@@ -62,7 +59,7 @@ export const ExamResults: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields(publishingFields),
+    ...sidebarFields([centersField, ...publishingFields]),
     legacyCollapsible(),
   ],
 };

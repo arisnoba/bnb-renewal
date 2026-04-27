@@ -47,14 +47,11 @@ export const Profiles: CollectionConfig = {
               label: "영문명",
             },
           ]),
-          adminRow([
-            centersField,
-            {
-              name: "filter",
-              type: "text",
-              label: "필터",
-            },
-          ]),
+          {
+            name: "filter",
+            type: "text",
+            label: "필터",
+          },
           adminRow([
             {
               name: "height",
@@ -86,6 +83,7 @@ export const Profiles: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
+      centersField,
       ...publishingFields,
       {
         name: "authorName",

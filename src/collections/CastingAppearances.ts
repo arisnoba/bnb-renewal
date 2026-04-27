@@ -38,13 +38,10 @@ export const CastingAppearances: CollectionConfig = {
   fields: [
     ...adminTabs([
       {
-        label: "출연현황",
+        label: "작품 정보",
         fields: [
           { name: "title", type: "text", label: "제목", required: true },
-          adminRow([
-            centersField,
-            { name: "castingStatus", type: "text", label: "캐스팅 상태" },
-          ]),
+          { name: "castingStatus", type: "text", label: "캐스팅 상태" },
           adminRow([
             { name: "broadcaster", type: "text", label: "방송사" },
             { name: "productionCompany", type: "text", label: "제작사" },
@@ -57,6 +54,37 @@ export const CastingAppearances: CollectionConfig = {
         ],
       },
       {
+        label: "출연자",
+        fields: [
+          {
+            name: "castMembers",
+            type: "array",
+            label: "출연자",
+            labels: {
+              plural: "출연자",
+              singular: "출연자",
+            },
+            admin: {
+              initCollapsed: false,
+            },
+            fields: [
+              adminRow([
+                { name: "actorName", type: "text", label: "배우 이름" },
+                { name: "roleName", type: "text", label: "역할" },
+                {
+                  name: "episodeNumbers",
+                  type: "text",
+                  label: "출연회차",
+                  admin: {
+                    description: "예: 1,2,5,6",
+                  },
+                },
+              ]),
+            ],
+          },
+        ],
+      },
+      {
         label: "미디어/캐스팅",
         fields: [
           adminRow([
@@ -66,7 +94,7 @@ export const CastingAppearances: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields(publishingFields),
+    ...sidebarFields([centersField, ...publishingFields]),
     legacyCollapsible(),
   ],
 };

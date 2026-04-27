@@ -41,15 +41,12 @@ export const ScreenAppearances: CollectionConfig = {
         label: "출연장면",
         fields: [
           { name: "title", type: "text", label: "제목", required: true },
-          adminRow([
-            centersField,
-            {
-              name: "appearanceType",
-              type: "text",
-              label: "출연 유형",
-              required: true,
-            },
-          ]),
+          {
+            name: "appearanceType",
+            type: "text",
+            label: "출연 유형",
+            required: true,
+          },
           adminRow([
             {
               name: "performerName",
@@ -75,7 +72,7 @@ export const ScreenAppearances: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields(publishingFields),
+    ...sidebarFields([centersField, ...publishingFields]),
     legacyCollapsible(),
   ],
 };
