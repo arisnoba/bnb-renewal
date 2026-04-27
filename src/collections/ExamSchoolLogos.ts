@@ -1,13 +1,19 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from './access'
-import { legacyMetaField } from './shared'
+import { allowAll, loggedInOnly } from "./access";
+import {
+  adminCollapsible,
+  adminRow,
+  adminTabs,
+  imagePathField,
+  legacyMetaField,
+} from "./shared";
 
 export const ExamSchoolLogos: CollectionConfig = {
-  slug: 'exam-school-logos',
+  slug: "exam-school-logos",
   labels: {
-    plural: '합격 학교 로고',
-    singular: '합격 학교 로고',
+    plural: "합격 학교 로고",
+    singular: "합격 학교 로고",
   },
   access: {
     create: loggedInOnly,
@@ -16,20 +22,59 @@ export const ExamSchoolLogos: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['schoolName', 'reviewCount', 'updatedAt'],
-    group: '후기/합격',
-    useAsTitle: 'schoolName',
+    defaultColumns: ["schoolName", "reviewCount", "updatedAt"],
+    group: "후기/합격",
+    useAsTitle: "schoolName",
   },
-  defaultSort: 'schoolName',
+  defaultSort: "schoolName",
   fields: [
-    { name: 'schoolName', type: 'text', required: true },
-    { name: 'schoolSlug', type: 'text', required: true, unique: true },
-    { name: 'logoPath', type: 'text', required: true },
-    { name: 'logoOriginalName', type: 'text' },
-    { name: 'logoFile', type: 'text', required: true },
-    { name: 'logoWidth', type: 'number' },
-    { name: 'logoHeight', type: 'number' },
-    { name: 'reviewCount', type: 'number', defaultValue: 0 },
-    legacyMetaField,
+    ...adminTabs([
+      {
+        label: "학교",
+        fields: [
+          adminRow([
+            {
+              name: "schoolName",
+              type: "text",
+              label: "학교명",
+              required: true,
+            },
+            {
+              name: "schoolSlug",
+              type: "text",
+              label: "학교 슬러그",
+              required: true,
+              unique: true,
+            },
+          ]),
+          {
+            name: "reviewCount",
+            type: "number",
+            label: "후기 수",
+            defaultValue: 0,
+          },
+        ],
+      },
+      {
+        label: "로고",
+        fields: [
+          imagePathField("logoPath", "로고 이미지", true),
+          adminRow([
+            { name: "logoOriginalName", type: "text", label: "원본 파일명" },
+            {
+              name: "logoFile",
+              type: "text",
+              label: "로고 파일",
+              required: true,
+            },
+          ]),
+          adminRow([
+            { name: "logoWidth", type: "number", label: "가로" },
+            { name: "logoHeight", type: "number", label: "세로" },
+          ]),
+        ],
+      },
+    ]),
+    adminCollapsible("레거시/원본", [legacyMetaField]),
   ],
-}
+};

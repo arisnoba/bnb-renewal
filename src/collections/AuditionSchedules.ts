@@ -1,19 +1,21 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from './access'
+import { allowAll, loggedInOnly } from "./access";
 import {
   adminDateConfig,
+  adminRow,
+  adminTabs,
   centersField,
-  legacyMetaField,
+  legacyCollapsible,
   publishingFields,
-  sourceFields,
-} from './shared'
+  sidebarFields,
+} from "./shared";
 
 export const AuditionSchedules: CollectionConfig = {
-  slug: 'audition-schedules',
+  slug: "audition-schedules",
   labels: {
-    plural: '오디션 일정',
-    singular: '오디션 일정',
+    plural: "오디션 일정",
+    singular: "오디션 일정",
   },
   access: {
     create: loggedInOnly,
@@ -22,61 +24,91 @@ export const AuditionSchedules: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'centers', 'eventType', 'scheduleStartDate', 'updatedAt'],
-    group: '캐스팅/오디션',
-    useAsTitle: 'title',
+    defaultColumns: [
+      "title",
+      "centers",
+      "eventType",
+      "scheduleStartDate",
+      "updatedAt",
+    ],
+    group: "캐스팅/오디션",
+    useAsTitle: "title",
   },
-  defaultSort: '-scheduleStartDate',
+  defaultSort: "-scheduleStartDate",
   fields: [
-    ...sourceFields,
-    {
-      name: 'dedupeKey',
-      type: 'text',
-      required: true,
-      unique: true,
-    },
-    centersField,
-    {
-      name: 'eventType',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'bodyHtml',
-      type: 'textarea',
-    },
-    {
-      name: 'scheduleStartDate',
-      type: 'date',
-      admin: adminDateConfig,
-      required: true,
-    },
-    {
-      name: 'scheduleEndDate',
-      type: 'date',
-      admin: adminDateConfig,
-      required: true,
-    },
-    {
-      name: 'scheduleStartRaw',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'scheduleEndRaw',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'authorName',
-      type: 'text',
-    },
-    ...publishingFields,
-    legacyMetaField,
+    ...adminTabs([
+      {
+        label: "일정",
+        fields: [
+          {
+            name: "title",
+            type: "text",
+            label: "제목",
+            required: true,
+          },
+          adminRow([
+            centersField,
+            {
+              name: "eventType",
+              type: "text",
+              label: "일정 유형",
+              required: true,
+            },
+          ]),
+          adminRow([
+            {
+              name: "scheduleStartDate",
+              type: "date",
+              label: "시작일",
+              admin: adminDateConfig,
+              required: true,
+            },
+            {
+              name: "scheduleEndDate",
+              type: "date",
+              label: "종료일",
+              admin: adminDateConfig,
+              required: true,
+            },
+          ]),
+          {
+            name: "bodyHtml",
+            type: "textarea",
+            label: "본문",
+          },
+        ],
+      },
+    ]),
+    ...sidebarFields([
+      ...publishingFields,
+      {
+        name: "authorName",
+        type: "text",
+        label: "작성자명",
+      },
+      {
+        name: "dedupeKey",
+        type: "text",
+        label: "중복 기준 키",
+        required: true,
+        unique: true,
+      },
+    ]),
+    legacyCollapsible([
+      adminRow([
+        {
+          name: "scheduleStartRaw",
+          type: "text",
+          label: "원본 시작일",
+          required: true,
+        },
+        {
+          name: "scheduleEndRaw",
+          type: "text",
+          label: "원본 종료일",
+          required: true,
+        },
+      ]),
+    ]),
   ],
-}
+};

@@ -1,18 +1,21 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from './access'
+import { allowAll, loggedInOnly } from "./access";
 import {
+  adminRow,
+  adminTabs,
   centersField,
-  legacyMetaField,
+  imagePathField,
+  legacyCollapsible,
   publishingFields,
-  sourceFields,
-} from './shared'
+  sidebarFields,
+} from "./shared";
 
 export const CastingAppearances: CollectionConfig = {
-  slug: 'casting-appearances',
+  slug: "casting-appearances",
   labels: {
-    plural: '캐스팅 출연현황',
-    singular: '캐스팅 출연현황',
+    plural: "캐스팅 출연현황",
+    singular: "캐스팅 출연현황",
   },
   access: {
     create: loggedInOnly,
@@ -21,24 +24,49 @@ export const CastingAppearances: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'centers', 'broadcaster', 'castingStatus', 'publishedAt'],
-    group: '캐스팅/오디션',
-    useAsTitle: 'title',
+    defaultColumns: [
+      "title",
+      "centers",
+      "broadcaster",
+      "castingStatus",
+      "publishedAt",
+    ],
+    group: "캐스팅/오디션",
+    useAsTitle: "title",
   },
-  defaultSort: '-publishedAt',
+  defaultSort: "-publishedAt",
   fields: [
-    ...sourceFields,
-    centersField,
-    { name: 'title', type: 'text', required: true },
-    { name: 'bodyHtml', type: 'textarea' },
-    { name: 'broadcaster', type: 'text' },
-    { name: 'productionCompany', type: 'text' },
-    { name: 'directors', type: 'text' },
-    { name: 'writers', type: 'text' },
-    { name: 'castingStatus', type: 'text' },
-    { name: 'castingCompany', type: 'text' },
-    { name: 'thumbnailPath', type: 'text' },
-    ...publishingFields,
-    legacyMetaField,
+    ...adminTabs([
+      {
+        label: "출연현황",
+        fields: [
+          { name: "title", type: "text", label: "제목", required: true },
+          adminRow([
+            centersField,
+            { name: "castingStatus", type: "text", label: "캐스팅 상태" },
+          ]),
+          adminRow([
+            { name: "broadcaster", type: "text", label: "방송사" },
+            { name: "productionCompany", type: "text", label: "제작사" },
+          ]),
+          adminRow([
+            { name: "directors", type: "text", label: "감독" },
+            { name: "writers", type: "text", label: "작가" },
+          ]),
+          { name: "bodyHtml", type: "textarea", label: "본문" },
+        ],
+      },
+      {
+        label: "미디어/캐스팅",
+        fields: [
+          adminRow([
+            imagePathField("thumbnailPath", "썸네일"),
+            { name: "castingCompany", type: "text", label: "캐스팅 회사" },
+          ]),
+        ],
+      },
+    ]),
+    ...sidebarFields(publishingFields),
+    legacyCollapsible(),
   ],
-}
+};

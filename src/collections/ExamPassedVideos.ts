@@ -1,18 +1,20 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from './access'
+import { allowAll, loggedInOnly } from "./access";
 import {
+  adminRow,
+  adminTabs,
   centersField,
-  legacyMetaField,
+  legacyCollapsible,
   publishingFields,
-  sourceFields,
-} from './shared'
+  sidebarFields,
+} from "./shared";
 
 export const ExamPassedVideos: CollectionConfig = {
-  slug: 'exam-passed-videos',
+  slug: "exam-passed-videos",
   labels: {
-    plural: '합격영상',
-    singular: '합격영상',
+    plural: "합격영상",
+    singular: "합격영상",
   },
   access: {
     create: loggedInOnly,
@@ -21,19 +23,38 @@ export const ExamPassedVideos: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'youtubeUrl', 'publishedAt', 'updatedAt'],
-    group: '후기/합격',
-    useAsTitle: 'title',
+    defaultColumns: ["title", "youtubeUrl", "publishedAt", "updatedAt"],
+    group: "후기/합격",
+    useAsTitle: "title",
   },
-  defaultSort: '-publishedAt',
+  defaultSort: "-publishedAt",
   fields: [
-    ...sourceFields,
-    centersField,
-    { name: 'title', type: 'text', required: true },
-    { name: 'bodyHtml', type: 'textarea' },
-    { name: 'youtubeCode', type: 'text', required: true, unique: true },
-    { name: 'youtubeUrl', type: 'text', required: true },
-    ...publishingFields,
-    legacyMetaField,
+    ...adminTabs([
+      {
+        label: "영상",
+        fields: [
+          { name: "title", type: "text", label: "제목", required: true },
+          centersField,
+          adminRow([
+            {
+              name: "youtubeCode",
+              type: "text",
+              label: "유튜브 코드",
+              required: true,
+              unique: true,
+            },
+            {
+              name: "youtubeUrl",
+              type: "text",
+              label: "유튜브 URL",
+              required: true,
+            },
+          ]),
+          { name: "bodyHtml", type: "textarea", label: "본문" },
+        ],
+      },
+    ]),
+    ...sidebarFields(publishingFields),
+    legacyCollapsible(),
   ],
-}
+};

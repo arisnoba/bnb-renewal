@@ -1,18 +1,20 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from './access'
+import { allowAll, loggedInOnly } from "./access";
 import {
+  adminRow,
+  adminTabs,
   centersField,
-  legacyMetaField,
+  legacyCollapsible,
   publishingFields,
-  sourceFields,
-} from './shared'
+  sidebarFields,
+} from "./shared";
 
 export const CastingDirectors: CollectionConfig = {
-  slug: 'casting-directors',
+  slug: "casting-directors",
   labels: {
-    plural: '캐스팅 디렉터',
-    singular: '캐스팅 디렉터',
+    plural: "캐스팅 디렉터",
+    singular: "캐스팅 디렉터",
   },
   access: {
     create: loggedInOnly,
@@ -21,38 +23,61 @@ export const CastingDirectors: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['personName', 'company', 'centers', 'publishedAt', 'updatedAt'],
-    group: '캐스팅/오디션',
-    useAsTitle: 'personName',
+    defaultColumns: [
+      "personName",
+      "company",
+      "centers",
+      "publishedAt",
+      "updatedAt",
+    ],
+    group: "캐스팅/오디션",
+    useAsTitle: "personName",
   },
-  defaultSort: 'personName',
+  defaultSort: "personName",
   fields: [
-    ...sourceFields,
-    {
-      name: 'personName',
-      type: 'text',
-      required: true,
-      unique: true,
-    },
-    {
-      name: 'company',
-      type: 'text',
-      required: true,
-    },
-    centersField,
-    {
-      name: 'category',
-      type: 'text',
-    },
-    {
-      name: 'bodyHtml',
-      type: 'textarea',
-    },
-    {
-      name: 'authorName',
-      type: 'text',
-    },
-    ...publishingFields,
-    legacyMetaField,
+    ...adminTabs([
+      {
+        label: "디렉터",
+        fields: [
+          adminRow([
+            {
+              name: "personName",
+              type: "text",
+              label: "이름",
+              required: true,
+              unique: true,
+            },
+            {
+              name: "company",
+              type: "text",
+              label: "회사",
+              required: true,
+            },
+          ]),
+          adminRow([
+            centersField,
+            {
+              name: "category",
+              type: "text",
+              label: "분류",
+            },
+          ]),
+          {
+            name: "bodyHtml",
+            type: "textarea",
+            label: "본문",
+          },
+        ],
+      },
+    ]),
+    ...sidebarFields([
+      ...publishingFields,
+      {
+        name: "authorName",
+        type: "text",
+        label: "작성자명",
+      },
+    ]),
+    legacyCollapsible(),
   ],
-}
+};

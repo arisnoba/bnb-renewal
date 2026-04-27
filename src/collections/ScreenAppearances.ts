@@ -1,18 +1,21 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from './access'
+import { allowAll, loggedInOnly } from "./access";
 import {
+  adminRow,
+  adminTabs,
   centersField,
-  legacyMetaField,
+  imagePathField,
+  legacyCollapsible,
   publishingFields,
-  sourceFields,
-} from './shared'
+  sidebarFields,
+} from "./shared";
 
 export const ScreenAppearances: CollectionConfig = {
-  slug: 'screen-appearances',
+  slug: "screen-appearances",
   labels: {
-    plural: '드라마/광고 출연장면',
-    singular: '드라마/광고 출연장면',
+    plural: "드라마/광고 출연장면",
+    singular: "드라마/광고 출연장면",
   },
   access: {
     create: loggedInOnly,
@@ -21,25 +24,58 @@ export const ScreenAppearances: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'centers', 'performerName', 'projectTitle', 'publishedAt'],
-    group: '캐스팅/오디션',
-    useAsTitle: 'title',
+    defaultColumns: [
+      "title",
+      "centers",
+      "performerName",
+      "projectTitle",
+      "publishedAt",
+    ],
+    group: "캐스팅/오디션",
+    useAsTitle: "title",
   },
-  defaultSort: '-publishedAt',
+  defaultSort: "-publishedAt",
   fields: [
-    ...sourceFields,
-    centersField,
-    { name: 'appearanceType', type: 'text', required: true },
-    { name: 'title', type: 'text', required: true },
-    { name: 'bodyHtml', type: 'textarea' },
-    { name: 'performerName', type: 'text', required: true },
-    { name: 'className', type: 'text' },
-    { name: 'projectTitle', type: 'text' },
-    { name: 'roleName', type: 'text' },
-    { name: 'airDateLabel', type: 'text' },
-    { name: 'profileImagePath', type: 'text' },
-    { name: 'thumbnailPath', type: 'text' },
-    ...publishingFields,
-    legacyMetaField,
+    ...adminTabs([
+      {
+        label: "출연장면",
+        fields: [
+          { name: "title", type: "text", label: "제목", required: true },
+          adminRow([
+            centersField,
+            {
+              name: "appearanceType",
+              type: "text",
+              label: "출연 유형",
+              required: true,
+            },
+          ]),
+          adminRow([
+            {
+              name: "performerName",
+              type: "text",
+              label: "출연자",
+              required: true,
+            },
+            { name: "className", type: "text", label: "반/클래스" },
+          ]),
+          adminRow([
+            { name: "projectTitle", type: "text", label: "작품명" },
+            { name: "roleName", type: "text", label: "역할" },
+          ]),
+          { name: "airDateLabel", type: "text", label: "방영일 표시" },
+          { name: "bodyHtml", type: "textarea", label: "본문" },
+        ],
+      },
+      {
+        label: "미디어",
+        fields: [
+          adminRow([imagePathField("profileImagePath", "프로필 이미지")]),
+          adminRow([imagePathField("thumbnailPath", "썸네일")]),
+        ],
+      },
+    ]),
+    ...sidebarFields(publishingFields),
+    legacyCollapsible(),
   ],
-}
+};
