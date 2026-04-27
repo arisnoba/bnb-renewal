@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import { allowAll, centerScopedCollectionAccess } from "./access";
 import {
   adminCollapsible,
   adminRow,
@@ -19,7 +19,10 @@ export const Teachers: CollectionConfig = {
     plural: "강사진",
     singular: "강사",
   },
-  access: centerScopedCollectionAccess,
+  access: {
+    ...centerScopedCollectionAccess,
+    read: allowAll,
+  },
   admin: {
     defaultColumns: ["name", "centers", "authorName", "displayOrder", "updatedAt"],
     group: "교육",
@@ -85,7 +88,38 @@ export const Teachers: CollectionConfig = {
             name: "bioHtml",
             type: "textarea",
             label: "소개",
+            defaultValue: "-",
             required: true,
+            admin: {
+              hidden: true,
+            },
+          },
+        ],
+      },
+      {
+        label: "경력관리",
+        fields: [
+          {
+            name: "careerItems",
+            type: "array",
+            label: "경력관리",
+            labels: {
+              plural: "경력",
+              singular: "경력",
+            },
+            fields: [
+              {
+                name: "title",
+                type: "text",
+                label: "타이틀",
+                required: true,
+              },
+              {
+                name: "content",
+                type: "textarea",
+                label: "내용",
+              },
+            ],
           },
         ],
       },

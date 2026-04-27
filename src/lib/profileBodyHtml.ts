@@ -174,6 +174,36 @@ function parseProfileCareerItemsByKnownTitles(value: unknown): ProfileCareerItem
   return careerItems;
 }
 
+function parseCareerItemsByTableRows(source: string): ProfileCareerItem[] {
+  const rows = Array.from(source.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi));
+
+  if (rows.length === 0) {
+    return [];
+  }
+
+  return rows
+    .map((row) => {
+      const rowHtml = row[1];
+      const titleMatch = rowHtml.match(/<th\b[^>]*>([\s\S]*?)<\/th>/i);
+      const contentMatch = rowHtml.match(/<td\b[^>]*>([\s\S]*?)<\/td>/i);
+
+      if (!titleMatch || !contentMatch) {
+        return undefined;
+      }
+
+      const title = cleanProfileCareerTitle(titleMatch[1]);
+      const content = profileBodyLines(contentMatch[1]).join("\n");
+
+      return title && content
+        ? {
+            content,
+            title,
+          }
+        : undefined;
+    })
+    .filter((item): item is ProfileCareerItem => Boolean(item));
+}
+
 export function parseProfileCareerItems(value: unknown) {
   const source = String(value ?? "").trim();
 
@@ -188,4 +218,20 @@ export function parseProfileCareerItems(value: unknown) {
   }
 
   return parseProfileCareerItemsByKnownTitles(source);
+}
+
+export function parseTeacherCareerItems(value: unknown) {
+  const source = String(value ?? "").trim();
+
+  if (!source) {
+    return [];
+  }
+
+  const tableCareerItems = parseCareerItemsByTableRows(source);
+
+  if (tableCareerItems.length > 0) {
+    return tableCareerItems;
+  }
+
+  return parseProfileCareerItems(source);
 }

@@ -5,7 +5,7 @@ import type { Payload } from 'payload'
 
 import { authorNameFromCenters } from '../../src/collections/shared'
 import { getPayloadClient } from '../../src/lib/payload'
-import { parseProfileCareerItems } from '../../src/lib/profileBodyHtml'
+import { parseProfileCareerItems, parseTeacherCareerItems } from '../../src/lib/profileBodyHtml'
 
 const execFileAsync = promisify(execFile)
 
@@ -507,6 +507,7 @@ const configs: TableConfig[] = [
     transform: (row, context) => ({
       ...sourceDoc(row),
       bioHtml: requiredText(row.body_html, 'teachers.body_html'),
+      careerItems: parseTeacherCareerItems(row.body_html),
       centers: centersFrom(row.centers),
       displayOrder: number(row.display_order),
       gallery: normalizeGallery(row.gallery),
