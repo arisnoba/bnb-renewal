@@ -46,6 +46,7 @@ type TableConfig = {
 
 type SeedContext = {
   teacherFilesByTeacherSlug: Map<string, WorkRow[]>
+  teacherIdsBySlug: Map<string, number | string>
 }
 
 type RepresentativeWork = {
@@ -537,7 +538,7 @@ const configs: TableConfig[] = [
       'content_raw',
       'legacy_meta',
     ],
-    transform: (row) => ({
+    transform: (row, context) => ({
       ...sourceDoc({
         ...row,
         slug: `curriculum-${row.source_db}-${row.source_table}-${row.source_id}`,
@@ -548,8 +549,10 @@ const configs: TableConfig[] = [
       resolvedTeacherId: number(row.resolved_teacher_id),
       resolvedTeacherSlug: text(row.resolved_teacher_slug),
       subject: text(row.subject),
+      teacher: teacherIdFromSlug(row.resolved_teacher_slug, context),
       teacherName: text(row.teacher_name),
       titleRaw: text(row.title_raw),
+      weeklyLessons: buildCurriculumWeeklyLessons(row.title_raw, row.content_raw),
     }),
   },
 ]
@@ -562,7 +565,11 @@ async function main() {
   const summary: Record<string, { created: number; dryRun: number; updated: number }> = {}
 
   for (const config of selected) {
-    const rows = await readWorkTable(config)
+    if (config.collection === 'curriculums' && payload) {
+      context.teacherIdsBySlug = await readPayloadTeacherIdsBySlug(payload)
+    }
+
+    const rows = normalizeRowsForSeed(config, await readWorkTable(config))
     const limitedRows = options.limit === 'all' ? rows : rows.slice(0, options.limit)
     const collectionSummary = { created: 0, dryRun: 0, updated: 0 }
 
@@ -583,6 +590,49 @@ async function main() {
   }
 
   console.log(JSON.stringify({ dryRun: options.dryRun, summary }, null, 2))
+}
+
+function normalizeRowsForSeed(config: TableConfig, rows: WorkRow[]) {
+  if (config.collection !== 'curriculums') {
+    return rows
+  }
+
+  return dedupeCurriculumRows(rows)
+}
+
+function dedupeCurriculumRows(rows: WorkRow[]) {
+  const bestRows = new Map<string, WorkRow>()
+
+  for (const row of rows) {
+    const key = curriculumDedupeKey(row)
+    const current = bestRows.get(key)
+
+    if (!current || number(row.source_id, Number.MAX_SAFE_INTEGER) < number(current.source_id, Number.MAX_SAFE_INTEGER)) {
+      bestRows.set(key, row)
+    }
+  }
+
+  return Array.from(bestRows.values()).sort(
+    (left, right) =>
+      number(left.source_id, Number.MAX_SAFE_INTEGER) -
+      number(right.source_id, Number.MAX_SAFE_INTEGER),
+  )
+}
+
+function curriculumDedupeKey(row: WorkRow) {
+  return JSON.stringify({
+    lessons: normalizeCurriculumDedupeValue(
+      JSON.stringify(buildCurriculumWeeklyLessons(row.title_raw, row.content_raw)),
+    ),
+    subject: normalizeCurriculumDedupeValue(text(row.subject)),
+    teacherName: normalizeCurriculumDedupeValue(text(row.teacher_name)),
+  })
+}
+
+function normalizeCurriculumDedupeValue(value: unknown) {
+  return String(value ?? '')
+    .toLowerCase()
+    .replace(/[\s!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]+/g, '')
 }
 
 function parseArgs(args: string[]): Options {
@@ -688,7 +738,31 @@ async function buildSeedContext(): Promise<SeedContext> {
     teacherFilesByTeacherSlug.set(slug, current)
   }
 
-  return { teacherFilesByTeacherSlug }
+  return { teacherFilesByTeacherSlug, teacherIdsBySlug: new Map() }
+}
+
+async function readPayloadTeacherIdsBySlug(payload: Payload) {
+  const result = await (payload as unknown as {
+    find: (args: {
+      collection: string
+      depth: number
+      limit: number
+      overrideAccess: boolean
+      pagination: boolean
+    }) => Promise<{ docs: { id: number | string; slug?: unknown }[] }>
+  }).find({
+    collection: 'teachers',
+    depth: 0,
+    limit: 10000,
+    overrideAccess: true,
+    pagination: false,
+  })
+
+  return new Map(
+    result.docs
+      .map((doc) => [text(doc.slug), doc.id] as const)
+      .filter((entry): entry is readonly [string, number | string] => Boolean(entry[0])),
+  )
 }
 
 async function readWorkTable(config: TableConfig): Promise<WorkRow[]> {
@@ -866,6 +940,35 @@ function buildCastingAppearanceCastMembers(legacyMeta: unknown) {
   }
 
   return castMembers
+}
+
+function buildCurriculumWeeklyLessons(titleRaw: unknown, contentRaw: unknown) {
+  const lessonSubjects = splitLegacyRows(titleRaw)
+  const lessonContents = splitLegacyRows(contentRaw)
+  const rowCount = Math.max(lessonSubjects.length, lessonContents.length)
+  const weeklyLessons = []
+
+  for (let index = 0; index < rowCount; index += 1) {
+    const lessonSubject = lessonSubjects[index]
+    const lessonContent = lessonContents[index]
+
+    if (!lessonSubject && !lessonContent) {
+      continue
+    }
+
+    weeklyLessons.push({
+      lessonContent,
+      lessonSubject,
+    })
+  }
+
+  return weeklyLessons
+}
+
+function teacherIdFromSlug(value: unknown, context: SeedContext) {
+  const slug = text(value)
+
+  return slug ? context.teacherIdsBySlug.get(slug) : undefined
 }
 
 function splitLegacyRows(value: unknown) {

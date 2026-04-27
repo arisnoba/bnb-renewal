@@ -16,9 +16,9 @@ export const Curriculums: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ["teacherName", "category", "updatedAt"],
+    defaultColumns: ["subject", "teacher", "category", "updatedAt"],
     group: "교육",
-    useAsTitle: "teacherName",
+    useAsTitle: "subject",
   },
   fields: [
     ...adminTabs([
@@ -32,26 +32,53 @@ export const Curriculums: CollectionConfig = {
               label: "분류",
             },
             {
-              name: "teacherName",
-              type: "text",
+              name: "teacher",
+              type: "relationship",
               label: "강사명",
+              relationTo: "teachers",
             },
           ]),
           {
             name: "subject",
-            type: "textarea",
-            label: "주제",
+            type: "text",
+            label: "제목",
           },
           {
-            name: "contentRaw",
-            type: "textarea",
-            label: "내용",
+            name: "weeklyLessons",
+            type: "array",
+            label: "주차별 강의",
+            labels: {
+              plural: "주차별 강의",
+              singular: "주차별 강의",
+            },
+            admin: {
+              initCollapsed: false,
+            },
+            fields: [
+              adminRow([
+                {
+                  name: "lessonSubject",
+                  type: "text",
+                  label: "강의 주제",
+                },
+                {
+                  name: "lessonContent",
+                  type: "textarea",
+                  label: "강의 내용",
+                },
+              ]),
+            ],
           },
         ],
       },
       {
         label: "연결 정보",
         fields: [
+          {
+            name: "teacherName",
+            type: "text",
+            label: "원본 강사명",
+          },
           adminRow([
             {
               name: "resolvedTeacherId",
@@ -67,7 +94,12 @@ export const Curriculums: CollectionConfig = {
           {
             name: "titleRaw",
             type: "textarea",
-            label: "원본 제목",
+            label: "원본 주차별 강의 주제",
+          },
+          {
+            name: "contentRaw",
+            type: "textarea",
+            label: "원본 주차별 강의 내용",
           },
         ],
       },
