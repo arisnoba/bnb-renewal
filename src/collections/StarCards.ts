@@ -78,11 +78,6 @@ export const StarCards: CollectionConfig = {
       required: true,
     },
     {
-      name: 'isPublic',
-      type: 'checkbox',
-      defaultValue: true,
-    },
-    {
       name: 'viewCount',
       type: 'number',
       defaultValue: 0,

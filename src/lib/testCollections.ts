@@ -59,7 +59,7 @@ export const testCollections = [
     href: '/test/casting-directors',
     imageFields: [],
     label: 'Casting Directors',
-    metaFields: ['centers', 'company', 'category', 'publishedAt', 'isPublic'],
+    metaFields: ['centers', 'company', 'category', 'publishedAt', 'displayStatus'],
     slug: 'casting-directors',
     sort: '-publishedAt',
     titleFields: ['personName', 'company'],

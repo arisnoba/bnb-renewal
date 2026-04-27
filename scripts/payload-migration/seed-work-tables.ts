@@ -115,7 +115,7 @@ const configs: TableConfig[] = [
       bodyHtml: text(row.body_html),
       centers: centersFrom(row.center),
       generation: requiredText(row.generation, 'artist_press.generation'),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       publishedAt: dateText(row.published_at),
       thumbnailPath: text(row.thumbnail_path),
@@ -151,7 +151,7 @@ const configs: TableConfig[] = [
       centers: centersFrom(row.centers),
       dedupeKey: requiredText(row.dedupe_key, 'audition_schedules.dedupe_key'),
       eventType: text(row.event_type),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       publishedAt: dateText(row.published_at),
       scheduleEndDate: dateText(row.schedule_end_date),
@@ -186,7 +186,7 @@ const configs: TableConfig[] = [
       category: text(row.category),
       centers: centersFrom(row.centers),
       company: requiredText(row.company, 'castings.company'),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       personName: requiredText(row.person_name, 'castings.person_name'),
       publishedAt: dateText(row.published_at),
@@ -222,7 +222,7 @@ const configs: TableConfig[] = [
       castingStatus: text(row.casting_status),
       centers: centersFrom(row.center),
       directors: text(row.directors),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       productionCompany: text(row.production_company),
       publishedAt: dateText(row.published_at),
@@ -254,7 +254,7 @@ const configs: TableConfig[] = [
       ...sourceDoc(row),
       bodyHtml: text(row.body_html),
       centers: centersFrom(row.center),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       publishedAt: dateText(row.published_at),
       schoolLogoPath: text(row.school_logo_path),
@@ -284,7 +284,7 @@ const configs: TableConfig[] = [
       ...sourceDoc(row),
       bodyHtml: text(row.body_html),
       centers: ['exam'],
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       publishedAt: dateText(row.published_at),
       title: requiredText(row.title, 'exam_passed_videos.title'),
@@ -314,7 +314,7 @@ const configs: TableConfig[] = [
       ...sourceDoc(row),
       bodyHtml: text(row.body_html),
       centers: centersFrom(row.center),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       publishedAt: dateText(row.published_at),
       resultType: text(row.result_type),
@@ -377,7 +377,7 @@ const configs: TableConfig[] = [
       category: text(row.category),
       centers: centersFrom(row.center),
       thumbnailPath: text(row.thumbnail_path),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: {
         attachments: parseJsonValue(row.attachments_json),
         ...(objectValue(parseJsonValue(row.legacy_meta)) ?? {}),
@@ -415,7 +415,7 @@ const configs: TableConfig[] = [
       englishName: text(row.english_name),
       filter: text(row.filter),
       height: text(row.height),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       name: requiredText(row.name, 'profiles.name'),
       publishedAt: dateText(row.published_at),
@@ -452,7 +452,7 @@ const configs: TableConfig[] = [
       bodyHtml: text(row.body_html),
       centers: centersFrom(row.center),
       className: text(row.class_name),
-      isPublic: bool(row.is_public),
+      displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       performerName: text(row.performer_name),
       profileImagePath: text(row.profile_image_path),
@@ -988,8 +988,10 @@ function number(value: unknown, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback
 }
 
-function bool(value: unknown) {
-  return value === true || value === 1 || value === '1'
+function displayStatusFromPublic(value: unknown) {
+  return value === false || value === 0 || value === '0' || value === 'false'
+    ? 'archived'
+    : 'published'
 }
 
 function status(value: unknown) {

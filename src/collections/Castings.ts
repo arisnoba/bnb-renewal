@@ -68,12 +68,6 @@ export const Castings: CollectionConfig = {
         admin: adminDateConfig,
       },
       {
-        name: "isPublic",
-        type: "checkbox",
-        label: "공개 여부",
-        defaultValue: true,
-      },
-      {
         name: "authorName",
         type: "text",
         label: "작성자명",

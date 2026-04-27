@@ -74,12 +74,6 @@ export const publishingFields: Field[] = [
     admin: adminDateConfig,
   },
   {
-    name: "isPublic",
-    type: "checkbox",
-    label: "공개 여부",
-    defaultValue: true,
-  },
-  {
     name: "displayStatus",
     type: "select",
     label: "노출 상태",
