@@ -65,7 +65,7 @@ export const CentersField: SelectFieldClientComponent = (props) => {
             margin: 0,
           }}
         >
-          소속 센터가 자동 선택됩니다. 센터 변경은 아트센터 관리자만 가능합니다.
+          소속 센터가 자동 선택됩니다. 센터 변경은 센터 통합 매니저 이상만 가능합니다.
         </p>
       ) : null}
     </>

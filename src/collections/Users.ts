@@ -51,12 +51,7 @@ export const Users: CollectionConfig = {
           return data
         }
 
-        const center = data.center
-        let role = data.role
-
-        if (role !== 'master') {
-          role = center === 'art' ? 'admin' : 'manager'
-        }
+        const role = data.role
 
         if (role && role in rolePermissionLevels) {
           return {
@@ -82,13 +77,13 @@ export const Users: CollectionConfig = {
       type: 'select',
       admin: {
         description:
-          '마스터=100, 아트센터 관리자=80, 센터 매니저=50 으로 자동 적용됩니다.',
+          '최고관리자=100, 센터 통합 매니저=80, 센터매니저=50 으로 적용됩니다.',
       },
       defaultValue: 'manager',
       options: [
-        { label: '최고 관리자', value: 'master' },
-        { label: '아트센터 관리자', value: 'admin' },
-        { label: '센터 매니저', value: 'manager' },
+        { label: '최고관리자', value: 'master' },
+        { label: '센터 통합 매니저', value: 'admin' },
+        { label: '센터매니저', value: 'manager' },
       ],
       required: true,
     },

@@ -16,13 +16,13 @@ import {
 export const ExamSchoolLogos: CollectionConfig = {
   slug: "exam-school-logos",
   labels: {
-    plural: "합격 학교 로고",
-    singular: "합격 학교 로고",
+    plural: "대학 로고 설정",
+    singular: "대학 로고 설정",
   },
   access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: ["schoolName", "centers", "authorName", "reviewCount", "updatedAt"],
-    group: "후기/합격",
+    group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "schoolName",
   },

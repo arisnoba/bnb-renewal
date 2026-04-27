@@ -1,11 +1,11 @@
 import type { CollectionConfig } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedCollectionAccess, globalAdminOnly } from "./access";
 import {
+  allCentersBeforeValidate,
   adminRow,
   adminTabs,
   authorNameField,
-  centerScopedBeforeValidate,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -18,7 +18,10 @@ export const Agencies: CollectionConfig = {
     plural: "에이전시",
     singular: "에이전시",
   },
-  access: centerScopedCollectionAccess,
+  access: {
+    ...centerScopedCollectionAccess,
+    create: globalAdminOnly,
+  },
   admin: {
     defaultColumns: ["subject", "name", "centers", "authorName", "displayOrder", "updatedAt"],
     group: "교육",
@@ -26,7 +29,7 @@ export const Agencies: CollectionConfig = {
   },
   defaultSort: "displayOrder",
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [allCentersBeforeValidate],
   },
   fields: [
     ...adminTabs([

@@ -7,6 +7,7 @@ import * as migration_20260427_200000_curriculum_teacher_relationship from './20
 import * as migration_20260427_210000_dedupe_curriculums from './20260427_210000_dedupe_curriculums'
 import * as migration_20260427_220000_profile_career_items from './20260427_220000_profile_career_items'
 import * as migration_20260427_230000_center_access_author_names from './20260427_230000_center_access_author_names'
+import * as migration_20260427_235000_center_all_filter_access from './20260427_235000_center_all_filter_access'
 
 export const migrations = [
   {
@@ -53,5 +54,10 @@ export const migrations = [
     up: migration_20260427_230000_center_access_author_names.up,
     down: migration_20260427_230000_center_access_author_names.down,
     name: '20260427_230000_center_access_author_names',
+  },
+  {
+    up: migration_20260427_235000_center_all_filter_access.up,
+    down: migration_20260427_235000_center_all_filter_access.down,
+    name: '20260427_235000_center_all_filter_access',
   },
 ]

@@ -21,8 +21,18 @@ export const centerOptions = [
 ];
 
 export type CenterValue = (typeof centerOptions)[number]["value"];
+export type CenterFilterValue = CenterValue | "all";
 
 const centerValues = new Set(centerOptions.map((option) => option.value));
+const centerFilterValues = new Set<CenterFilterValue>([
+  "all",
+  ...centerOptions.map((option) => option.value),
+]);
+
+const centerFilterOptions = [
+  { label: "ALL", value: "all" },
+  ...centerOptions,
+];
 
 const centerAuthorNames: Record<CenterValue, string> = {
   art: "배우앤배움 아트센터",
@@ -58,7 +68,7 @@ export function isExamAdminMenuHidden(user: unknown) {
   return !isGlobalAdminUser(user) && userCenterValue(user) !== "exam";
 }
 
-function normalizeCenterValues(value: unknown): CenterValue[] {
+function normalizeCenterFilterValues(value: unknown): CenterFilterValue[] {
   const values = Array.isArray(value) ? value : value ? [value] : [];
   const centers = values.map((item) => String(item ?? "").trim());
 
@@ -66,20 +76,49 @@ function normalizeCenterValues(value: unknown): CenterValue[] {
     throw new Error("센터를 선택해야 합니다.");
   }
 
-  const invalidCenter = centers.find((center) => !centerValues.has(center));
+  const invalidCenter = centers.find(
+    (center) => !centerFilterValues.has(center as CenterFilterValue),
+  );
 
   if (invalidCenter) {
     throw new Error(`지원하지 않는 센터 값입니다: ${invalidCenter}`);
   }
 
+  if (centers.includes("all")) {
+    return ["all"];
+  }
+
   return Array.from(new Set(centers)) as CenterValue[];
 }
 
+function authorNameFromUser(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return undefined;
+  }
+
+  const name = (user as { name?: unknown }).name;
+  const email = (user as { email?: unknown }).email;
+
+  if (typeof name === "string" && name.trim()) {
+    return name.trim();
+  }
+
+  if (typeof email === "string" && email.trim()) {
+    return email.trim();
+  }
+
+  return undefined;
+}
+
 export function authorNameFromCenters(value: unknown) {
-  const centers = normalizeCenterValues(value);
+  const centers = normalizeCenterFilterValues(value);
 
   if (centers.length !== 1) {
     return centerAuthorNames.art;
+  }
+
+  if (centers[0] === "all") {
+    return "배우앤배움 전체 센터";
   }
 
   return centerAuthorNames[centers[0]];
@@ -101,25 +140,7 @@ export const centersField: Field = {
     return center ? [center] : undefined;
   },
   hasMany: true,
-  hooks: {
-    beforeValidate: [
-      ({ req, value }) => {
-        const user = req.user;
-        const center = userCenterValue(user);
-
-        if (user && !isGlobalAdminUser(user)) {
-          if (!center) {
-            throw new Error("관리자 계정에 유효한 센터가 없습니다.");
-          }
-
-          return [center];
-        }
-
-        return normalizeCenterValues(value);
-      },
-    ],
-  },
-  options: centerOptions,
+  options: centerFilterOptions,
   required: true,
   admin: {
     components: {
@@ -159,12 +180,46 @@ export const centerScopedBeforeValidate: CollectionBeforeValidateHook = ({
       throw new Error("관리자 계정에 유효한 센터가 없습니다.");
     }
 
-    nextData.centers = [userCenter];
+    if (originalCenters) {
+      const normalizedOriginalCenters = normalizeCenterFilterValues(originalCenters);
+
+      if (normalizedOriginalCenters.includes("all")) {
+        throw new Error("ALL 센터 콘텐츠는 센터매니저가 수정할 수 없습니다.");
+      }
+
+      nextData.centers = normalizedOriginalCenters;
+    } else {
+      nextData.centers = [userCenter];
+    }
   } else {
-    nextData.centers = normalizeCenterValues(nextData.centers ?? originalCenters);
+    nextData.centers = normalizeCenterFilterValues(nextData.centers ?? originalCenters);
   }
 
-  nextData.authorName = authorNameFromCenters(nextData.centers);
+  nextData.authorName =
+    authorNameFromUser(user) ??
+    nextData.authorName ??
+    authorNameFromCenters(nextData.centers);
+
+  return nextData;
+};
+
+export const allCentersBeforeValidate: CollectionBeforeValidateHook = ({
+  data,
+  req,
+}) => {
+  if (!data) {
+    return data;
+  }
+
+  const nextData: Record<string, unknown> = {
+    ...data,
+    centers: ["all"],
+  };
+
+  nextData.authorName =
+    authorNameFromUser(req.user) ??
+    nextData.authorName ??
+    authorNameFromCenters(nextData.centers);
 
   return nextData;
 };

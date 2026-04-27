@@ -23,7 +23,7 @@ export const ExamResults: CollectionConfig = {
   access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: ["title", "centers", "authorName", "resultType", "publishedAt", "updatedAt"],
-    group: "후기/합격",
+    group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "title",
   },

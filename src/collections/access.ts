@@ -54,9 +54,18 @@ export const centerScopedReadAccess: Access = ({ req }) => {
   }
 
   return {
-    centers: {
-      contains: center,
-    },
+    or: [
+      {
+        centers: {
+          contains: center,
+        },
+      },
+      {
+        centers: {
+          contains: 'all',
+        },
+      },
+    ],
   }
 }
 

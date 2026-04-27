@@ -23,7 +23,7 @@ export const ExamPassedReviews: CollectionConfig = {
   access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: ["title", "centers", "authorName", "school", "publishedAt", "updatedAt"],
-    group: "후기/합격",
+    group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "title",
   },
@@ -41,7 +41,7 @@ export const ExamPassedReviews: CollectionConfig = {
       required: true,
       admin: {
         description:
-          "학교가 검색되지 않으면 먼저 합격 학교 로고에 학교와 로고를 등록하세요.",
+          "학교가 검색되지 않으면 먼저 대학 로고 설정에 학교와 로고를 등록하세요.",
       },
     },
     { name: "bodyHtml", type: "textarea", label: "본문" },
