@@ -1,11 +1,14 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminCollapsible,
   adminRow,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
+  isExamAdminMenuHidden,
   legacyCollapsible,
   publishingFields,
   sidebarFields,
@@ -17,18 +20,17 @@ export const ExamPassedReviews: CollectionConfig = {
     plural: "합격후기",
     singular: "합격후기",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["title", "school", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "centers", "authorName", "school", "publishedAt", "updatedAt"],
     group: "후기/합격",
+    hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
     {
@@ -57,7 +59,7 @@ export const ExamPassedReviews: CollectionConfig = {
       },
       adminRow([imagePathField("schoolLogoPath", "학교 로고 경로")]),
     ]),
-    ...sidebarFields([centersField, ...publishingFields]),
+    ...sidebarFields([centersField, ...publishingFields, authorNameField]),
     legacyCollapsible(),
   ],
 };

@@ -1,9 +1,11 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -17,15 +19,12 @@ export const ArtistPress: CollectionConfig = {
     plural: "출신 아티스트",
     singular: "출신 아티스트",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",
+      "centers",
+      "authorName",
       "actorName",
       "generation",
       "publishedAt",
@@ -35,6 +34,9 @@ export const ArtistPress: CollectionConfig = {
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -75,7 +77,7 @@ export const ArtistPress: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields([centersField, ...publishingFields]),
+    ...sidebarFields([centersField, ...publishingFields, authorNameField]),
     legacyCollapsible(),
   ],
 };

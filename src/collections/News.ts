@@ -1,8 +1,10 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -16,16 +18,12 @@ export const News: CollectionConfig = {
     plural: "뉴스",
     singular: "뉴스",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",
       "centers",
+      "authorName",
       "category",
       "publishedAt",
       "updatedAt",
@@ -34,6 +32,9 @@ export const News: CollectionConfig = {
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -71,11 +72,7 @@ export const News: CollectionConfig = {
     ...sidebarFields([
       centersField,
       ...publishingFields,
-      {
-        name: "authorName",
-        type: "text",
-        label: "작성자명",
-      },
+      authorNameField,
       {
         name: "viewCount",
         type: "number",

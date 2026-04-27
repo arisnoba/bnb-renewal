@@ -1,9 +1,11 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   legacyCollapsible,
   publishingFields,
@@ -16,17 +18,13 @@ export const CastingDirectors: CollectionConfig = {
     plural: "캐스팅 디렉터",
     singular: "캐스팅 디렉터",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: [
       "personName",
       "company",
       "centers",
+      "authorName",
       "publishedAt",
       "updatedAt",
     ],
@@ -34,6 +32,9 @@ export const CastingDirectors: CollectionConfig = {
     useAsTitle: "personName",
   },
   defaultSort: "personName",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -70,11 +71,7 @@ export const CastingDirectors: CollectionConfig = {
     ...sidebarFields([
       centersField,
       ...publishingFields,
-      {
-        name: "authorName",
-        type: "text",
-        label: "작성자명",
-      },
+      authorNameField,
     ]),
     legacyCollapsible(),
   ],

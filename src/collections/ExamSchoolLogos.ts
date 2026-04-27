@@ -1,11 +1,16 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminCollapsible,
   adminRow,
+  authorNameField,
+  centerScopedBeforeValidate,
+  centersField,
   imagePathField,
+  isExamAdminMenuHidden,
   legacyMetaField,
+  sidebarFields,
 } from "./shared";
 
 export const ExamSchoolLogos: CollectionConfig = {
@@ -14,18 +19,17 @@ export const ExamSchoolLogos: CollectionConfig = {
     plural: "합격 학교 로고",
     singular: "합격 학교 로고",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["schoolName", "reviewCount", "updatedAt"],
+    defaultColumns: ["schoolName", "centers", "authorName", "reviewCount", "updatedAt"],
     group: "후기/합격",
+    hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "schoolName",
   },
   defaultSort: "schoolName",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     adminRow([
       {
@@ -62,6 +66,7 @@ export const ExamSchoolLogos: CollectionConfig = {
       { name: "logoWidth", type: "number", label: "가로" },
       { name: "logoHeight", type: "number", label: "세로" },
     ]),
+    ...sidebarFields([centersField, authorNameField]),
     adminCollapsible("레거시/원본", [legacyMetaField]),
   ],
 };

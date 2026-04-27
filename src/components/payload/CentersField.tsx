@@ -11,20 +11,28 @@ const validCenters = new Set([
   "kids",
   "highteen",
   "avenue",
-  "all",
-  "unknown",
 ]);
 
 function getUserCenter(user: unknown) {
   if (!user || typeof user !== "object") {
-    return "unknown";
+    return undefined;
   }
 
   const center = (user as { center?: unknown }).center;
 
   return typeof center === "string" && validCenters.has(center)
     ? center
-    : "unknown";
+    : undefined;
+}
+
+function isGlobalAdmin(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return false;
+  }
+
+  const role = (user as { role?: unknown }).role;
+
+  return role === "master" || role === "admin";
 }
 
 function normalizeCenters(value: unknown) {
@@ -34,22 +42,22 @@ function normalizeCenters(value: unknown) {
 export const CentersField: SelectFieldClientComponent = (props) => {
   const { user } = useAuth();
   const userCenter = getUserCenter(user);
-  const isArtCenter = userCenter === "art";
+  const canEditCenters = isGlobalAdmin(user);
   const { setValue, value } = useField<string[]>({
     potentiallyStalePath: props.path,
   });
   const values = normalizeCenters(value);
 
   useEffect(() => {
-    if (values.length === 0 && userCenter) {
+    if (!canEditCenters && values.length === 0 && userCenter) {
       setValue([userCenter]);
     }
-  }, [setValue, userCenter, values.length]);
+  }, [canEditCenters, setValue, userCenter, values.length]);
 
   return (
     <>
-      <SelectField {...props} readOnly={!isArtCenter} />
-      {!isArtCenter ? (
+      <SelectField {...props} readOnly={!canEditCenters} />
+      {!canEditCenters ? (
         <p
           style={{
             color: "var(--theme-elevation-600)",
@@ -57,7 +65,7 @@ export const CentersField: SelectFieldClientComponent = (props) => {
             margin: 0,
           }}
         >
-          소속 센터가 자동 선택됩니다. 센터 변경은 아트센터 계정만 가능합니다.
+          소속 센터가 자동 선택됩니다. 센터 변경은 아트센터 관리자만 가능합니다.
         </p>
       ) : null}
     </>

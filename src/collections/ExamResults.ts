@@ -1,11 +1,14 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
+  isExamAdminMenuHidden,
   legacyCollapsible,
   publishingFields,
   sidebarFields,
@@ -17,18 +20,17 @@ export const ExamResults: CollectionConfig = {
     plural: "합격결과",
     singular: "합격결과",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["title", "resultType", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "centers", "authorName", "resultType", "publishedAt", "updatedAt"],
     group: "후기/합격",
+    hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -59,7 +61,7 @@ export const ExamResults: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields([centersField, ...publishingFields]),
+    ...sidebarFields([centersField, ...publishingFields, authorNameField]),
     legacyCollapsible(),
   ],
 };

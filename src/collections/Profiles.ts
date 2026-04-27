@@ -5,10 +5,12 @@ import {
   isKnownProfileFilterValue,
   isProfileFilterValueAllowed,
 } from "../lib/profileFilters";
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -36,18 +38,16 @@ export const Profiles: CollectionConfig = {
     plural: "프로필",
     singular: "프로필",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["name", "centers", "filter", "publishedAt", "updatedAt"],
+    defaultColumns: ["name", "centers", "authorName", "filter", "publishedAt", "updatedAt"],
     group: "매니지먼트",
     useAsTitle: "name",
   },
   defaultSort: "-publishedAt",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -154,11 +154,7 @@ export const Profiles: CollectionConfig = {
     ...sidebarFields([
       centersField,
       ...publishingFields,
-      {
-        name: "authorName",
-        type: "text",
-        label: "작성자명",
-      },
+      authorNameField,
     ]),
     legacyCollapsible(),
   ],

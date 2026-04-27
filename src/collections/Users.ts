@@ -1,12 +1,29 @@
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig } from 'payload'
 
-import { centerOptions } from './shared'
+import { globalAdminOnly } from './access'
+import { centerOptions, isGlobalAdminUser } from './shared'
 
 const rolePermissionLevels = {
   admin: 80,
   manager: 50,
   master: 100,
 } as const
+
+const readUsers: Access = ({ req }) => {
+  if (isGlobalAdminUser(req.user)) {
+    return true
+  }
+
+  if (!req.user?.id) {
+    return false
+  }
+
+  return {
+    id: {
+      equals: req.user.id,
+    },
+  }
+}
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -17,7 +34,14 @@ export const Users: CollectionConfig = {
   admin: {
     defaultColumns: ['email', 'role', 'center', 'updatedAt'],
     group: '관리자',
+    hidden: ({ user }) => !isGlobalAdminUser(user),
     useAsTitle: 'email',
+  },
+  access: {
+    create: globalAdminOnly,
+    delete: globalAdminOnly,
+    read: readUsers,
+    update: globalAdminOnly,
   },
   auth: true,
   hooks: {
@@ -27,11 +51,17 @@ export const Users: CollectionConfig = {
           return data
         }
 
-        const role = data.role
+        const center = data.center
+        let role = data.role
+
+        if (role !== 'master') {
+          role = center === 'art' ? 'admin' : 'manager'
+        }
 
         if (role && role in rolePermissionLevels) {
           return {
             ...data,
+            role,
             permissionLevel:
               rolePermissionLevels[role as keyof typeof rolePermissionLevels],
           }
@@ -56,7 +86,7 @@ export const Users: CollectionConfig = {
       },
       defaultValue: 'manager',
       options: [
-        { label: '마스터', value: 'master' },
+        { label: '최고 관리자', value: 'master' },
         { label: '아트센터 관리자', value: 'admin' },
         { label: '센터 매니저', value: 'manager' },
       ],
@@ -76,7 +106,7 @@ export const Users: CollectionConfig = {
       name: 'center',
       type: 'select',
       defaultValue: 'art',
-      options: centerOptions.filter((option) => option.value !== 'all'),
+      options: centerOptions,
       required: true,
     },
   ],

@@ -1,9 +1,11 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -16,18 +18,16 @@ export const Agencies: CollectionConfig = {
     plural: "에이전시",
     singular: "에이전시",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["subject", "name", "centers", "displayOrder", "updatedAt"],
+    defaultColumns: ["subject", "name", "centers", "authorName", "displayOrder", "updatedAt"],
     group: "교육",
     useAsTitle: "subject",
   },
   defaultSort: "displayOrder",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -90,6 +90,7 @@ export const Agencies: CollectionConfig = {
     ]),
     ...sidebarFields([
       centersField,
+      authorNameField,
       {
         name: "displayOrder",
         type: "number",

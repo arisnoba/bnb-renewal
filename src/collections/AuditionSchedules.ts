@@ -1,10 +1,12 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminDateConfig,
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   legacyCollapsible,
   publishingFields,
@@ -17,16 +19,12 @@ export const AuditionSchedules: CollectionConfig = {
     plural: "오디션 일정",
     singular: "오디션 일정",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",
       "centers",
+      "authorName",
       "eventType",
       "scheduleStartDate",
       "updatedAt",
@@ -35,6 +33,9 @@ export const AuditionSchedules: CollectionConfig = {
     useAsTitle: "title",
   },
   defaultSort: "-scheduleStartDate",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -79,11 +80,7 @@ export const AuditionSchedules: CollectionConfig = {
     ...sidebarFields([
       centersField,
       ...publishingFields,
-      {
-        name: "authorName",
-        type: "text",
-        label: "작성자명",
-      },
+      authorNameField,
       {
         name: "dedupeKey",
         type: "text",

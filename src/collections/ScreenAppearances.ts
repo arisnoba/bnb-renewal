@@ -1,9 +1,11 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
+import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
   centersField,
   imagePathField,
   legacyCollapsible,
@@ -17,16 +19,12 @@ export const ScreenAppearances: CollectionConfig = {
     plural: "드라마/광고 출연장면",
     singular: "드라마/광고 출연장면",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",
       "centers",
+      "authorName",
       "performerName",
       "projectTitle",
       "publishedAt",
@@ -35,6 +33,9 @@ export const ScreenAppearances: CollectionConfig = {
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
+  },
   fields: [
     ...adminTabs([
       {
@@ -72,7 +73,7 @@ export const ScreenAppearances: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields([centersField, ...publishingFields]),
+    ...sidebarFields([centersField, ...publishingFields, authorNameField]),
     legacyCollapsible(),
   ],
 };

@@ -3,6 +3,7 @@ import { promisify } from 'node:util'
 
 import type { Payload } from 'payload'
 
+import { authorNameFromCenters } from '../../src/collections/shared'
 import { getPayloadClient } from '../../src/lib/payload'
 import { parseProfileCareerItems } from '../../src/lib/profileBodyHtml'
 
@@ -46,6 +47,7 @@ type TableConfig = {
 }
 
 type SeedContext = {
+  teacherCentersBySlug: Map<string, string[]>
   teacherFilesByTeacherSlug: Map<string, WorkRow[]>
   teacherIdsBySlug: Map<string, number | string>
 }
@@ -345,6 +347,8 @@ const configs: TableConfig[] = [
       'legacy_meta',
     ],
     transform: (row) => ({
+      centers: ['exam'],
+      authorName: authorNameFromCenters(['exam']),
       legacyMeta: parseJsonValue(row.legacy_meta),
       logoFile: text(row.logo_file),
       logoHeight: number(row.logo_height),
@@ -548,6 +552,7 @@ const configs: TableConfig[] = [
         ...row,
         slug: `curriculum-${row.source_db}-${row.source_table}-${row.source_id}`,
       }),
+      centers: teacherCentersFromSlug(row.resolved_teacher_slug, row.source_db, context),
       category: text(row.category),
       contentRaw: text(row.content_raw),
       legacyMeta: parseJsonValue(row.legacy_meta),
@@ -580,6 +585,7 @@ async function main() {
 
     for (const row of limitedRows) {
       const doc = config.transform(row, context)
+      applyAuthorName(doc)
 
       if (options.dryRun) {
         collectionSummary.dryRun += 1
@@ -716,6 +722,7 @@ function selectConfigs(collections: string[]) {
 }
 
 async function buildSeedContext(): Promise<SeedContext> {
+  const teachers = await readRows('teachers', ['slug', 'centers'])
   const teacherFiles = await readRows('teacher_files', [
     'source_db',
     'source_table',
@@ -730,6 +737,17 @@ async function buildSeedContext(): Promise<SeedContext> {
   ])
 
   const teacherFilesByTeacherSlug = new Map<string, WorkRow[]>()
+  const teacherCentersBySlug = new Map<string, string[]>()
+
+  for (const row of teachers) {
+    const slug = text(row.slug)
+
+    if (!slug) {
+      continue
+    }
+
+    teacherCentersBySlug.set(slug, centersFrom(row.centers))
+  }
 
   for (const row of teacherFiles) {
     const slug = text(row.resolved_teacher_slug)
@@ -743,7 +761,11 @@ async function buildSeedContext(): Promise<SeedContext> {
     teacherFilesByTeacherSlug.set(slug, current)
   }
 
-  return { teacherFilesByTeacherSlug, teacherIdsBySlug: new Map() }
+  return {
+    teacherCentersBySlug,
+    teacherFilesByTeacherSlug,
+    teacherIdsBySlug: new Map(),
+  }
 }
 
 async function readPayloadTeacherIdsBySlug(payload: Payload) {
@@ -851,6 +873,12 @@ function sourceDoc(row: WorkRow) {
   }
 }
 
+function applyAuthorName(doc: PayloadDoc) {
+  if ('centers' in doc) {
+    doc.authorName = authorNameFromCenters(doc.centers)
+  }
+}
+
 function centersFrom(value: unknown) {
   const parsed = parseJsonValue(value)
   const values = Array.isArray(parsed) ? parsed : [parsed]
@@ -858,7 +886,11 @@ function centersFrom(value: unknown) {
     .map((item) => String(item ?? '').trim())
     .filter(Boolean)
 
-  return centers.length > 0 ? centers : ['unknown']
+  if (centers.length === 0) {
+    throw new Error('센터 값이 비어 있습니다.')
+  }
+
+  return centers
 }
 
 function parseJsonArray(value: unknown): unknown[] {
@@ -974,6 +1006,37 @@ function teacherIdFromSlug(value: unknown, context: SeedContext) {
   const slug = text(value)
 
   return slug ? context.teacherIdsBySlug.get(slug) : undefined
+}
+
+function teacherCentersFromSlug(value: unknown, sourceDb: unknown, context: SeedContext) {
+  const slug = text(value)
+
+  const centers = slug ? context.teacherCentersBySlug.get(slug) : undefined
+
+  if (!centers || centers.length === 0) {
+    const fallbackCenter = centerFromSourceDb(sourceDb)
+
+    if (fallbackCenter) {
+      return [fallbackCenter]
+    }
+
+    throw new Error(`강사 센터를 찾을 수 없습니다: ${slug || text(sourceDb)}`)
+  }
+
+  return centers
+}
+
+function centerFromSourceDb(value: unknown) {
+  switch (text(value)) {
+    case 'baewoo':
+      return 'art'
+    case 'kidscenter':
+      return 'kids'
+    case 'bnbhighteen':
+      return 'highteen'
+    default:
+      return undefined
+  }
 }
 
 function splitLegacyRows(value: unknown) {

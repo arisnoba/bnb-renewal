@@ -1,7 +1,15 @@
 import type { CollectionConfig } from "payload";
 
-import { allowAll, loggedInOnly } from "./access";
-import { adminRow, adminTabs, legacyCollapsible } from "./shared";
+import { centerScopedCollectionAccess } from "./access";
+import {
+  adminRow,
+  adminTabs,
+  authorNameField,
+  centerScopedBeforeValidate,
+  centersField,
+  legacyCollapsible,
+  sidebarFields,
+} from "./shared";
 
 export const Curriculums: CollectionConfig = {
   slug: "curriculums",
@@ -9,16 +17,14 @@ export const Curriculums: CollectionConfig = {
     plural: "커리큘럼",
     singular: "커리큘럼",
   },
-  access: {
-    create: loggedInOnly,
-    delete: loggedInOnly,
-    read: allowAll,
-    update: loggedInOnly,
-  },
+  access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["subject", "teacher", "category", "updatedAt"],
+    defaultColumns: ["subject", "centers", "authorName", "teacher", "category", "updatedAt"],
     group: "교육",
     useAsTitle: "subject",
+  },
+  hooks: {
+    beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
     ...adminTabs([
@@ -104,6 +110,7 @@ export const Curriculums: CollectionConfig = {
         ],
       },
     ]),
+    ...sidebarFields([centersField, authorNameField]),
     legacyCollapsible(),
   ],
 };
