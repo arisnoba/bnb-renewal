@@ -15,6 +15,26 @@ type Options = {
 
 type WorkRow = Record<string, unknown>
 type PayloadDoc = Record<string, unknown>
+type DynamicPayload = {
+  create: (args: {
+    collection: string
+    data: PayloadDoc
+    overrideAccess: boolean
+  }) => Promise<unknown>
+  find: (args: {
+    collection: string
+    depth: number
+    limit: number
+    overrideAccess: boolean
+    where: Record<string, { equals: unknown }>
+  }) => Promise<{ docs: { id: number | string }[] }>
+  update: (args: {
+    collection: string
+    data: PayloadDoc
+    id: number | string
+    overrideAccess: boolean
+  }) => Promise<unknown>
+}
 
 type TableConfig = {
   collection: string
@@ -700,7 +720,7 @@ async function readRows(table: string, columns: string[]): Promise<WorkRow[]> {
 async function upsertDoc(payload: Payload, config: TableConfig, doc: PayloadDoc) {
   const uniqueField = config.uniqueField ?? defaultUniqueField
   const uniqueValue = doc[uniqueField]
-  const dynamicPayload = payload as any
+  const dynamicPayload = payload as unknown as DynamicPayload
 
   if (!uniqueValue) {
     throw new Error(`${config.collection}.${uniqueField} 값이 비어 있습니다.`)
@@ -803,7 +823,12 @@ function buildRepresentativeWorks(rows: WorkRow[], teacherSourceDb: string) {
 
   return Array.from(bestByKey.values())
     .sort((left, right) => left.displayOrder - right.displayOrder)
-    .map(({ rawSourceDb: _rawSourceDb, ...item }) => item)
+    .map((item) => ({
+      description: item.description,
+      displayOrder: item.displayOrder,
+      posterPath: item.posterPath,
+      title: item.title,
+    }))
 }
 
 function teacherFilePosterPath(row: WorkRow) {

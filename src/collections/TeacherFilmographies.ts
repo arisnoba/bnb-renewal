@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
-import { legacyMetaField, sourceFields } from './shared'
+import { imagePathField, legacyMetaField, sourceFields } from './shared'
 
 export const TeacherFilmographies: CollectionConfig = {
   slug: 'teacher-filmographies',
@@ -16,8 +16,13 @@ export const TeacherFilmographies: CollectionConfig = {
     update: loggedInOnly,
   },
   admin: {
-    defaultColumns: ['title', 'resolvedTeacherName', 'displayOrder', 'updatedAt'],
-    group: '교육/강사진',
+    defaultColumns: [
+      'title',
+      'resolvedTeacherName',
+      'displayOrder',
+      'updatedAt',
+    ],
+    group: '교육',
     useAsTitle: 'title',
   },
   defaultSort: 'displayOrder',
@@ -44,10 +49,7 @@ export const TeacherFilmographies: CollectionConfig = {
       name: 'title',
       type: 'text',
     },
-    {
-      name: 'posterPath',
-      type: 'text',
-    },
+    imagePathField('posterPath', '포스터 이미지'),
     {
       name: 'description',
       type: 'textarea',

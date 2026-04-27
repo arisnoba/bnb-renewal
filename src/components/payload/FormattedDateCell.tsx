@@ -25,7 +25,6 @@ export function FormattedDateCell({
   field,
   link,
   linkURL,
-  onClick,
   rowData,
 }: DefaultCellComponentProps) {
   const sourceField = resolveSourceField(field)

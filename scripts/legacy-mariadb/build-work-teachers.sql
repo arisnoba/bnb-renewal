@@ -495,7 +495,10 @@ SELECT
   ) AS `centers`,
   NULLIF(`representative`.`summary`, '') AS `summary`,
   NULLIF(`representative`.`message`, '') AS `body_html`,
-  NULLIF(TRIM(`representative`.`bn_bimg`), '') AS `profile_image_path`,
+  COALESCE(
+    NULLIF(TRIM(`representative`.`bn_bimg`), ''),
+    NULLIF(TRIM(`representative`.`photo_img1`), '')
+  ) AS `profile_image_path`,
   NULLIF(TRIM(`representative`.`photo_img1`), '') AS `photo_image1`,
   NULLIF(TRIM(`representative`.`photo_img2`), '') AS `photo_image2`,
   NULLIF(TRIM(`representative`.`photo_img3`), '') AS `photo_image3`,

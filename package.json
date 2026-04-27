@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/run-with-env.mjs config/env/local-postgres.env ./node_modules/next/dist/bin/next dev",
+    "dev": "node scripts/dev-local.mjs",
     "dev:remote": "next dev",
     "build": "next build",
     "start": "next start",
@@ -20,7 +20,7 @@
     "db:migrate:create": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js migrate:create",
     "db:remote:migrate": "node --env-file=.env.local ./node_modules/payload/bin.js migrate",
     "db:remote:migrate:create": "node --env-file=.env.local ./node_modules/payload/bin.js migrate:create",
-    "dev:local": "node scripts/run-with-env.mjs config/env/local-postgres.env ./node_modules/next/dist/bin/next dev",
+    "dev:local": "node scripts/dev-local.mjs",
     "payload:local": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js",
     "payload:local:generate-types": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js generate:types",
     "db:local:up": "docker compose up -d postgres",

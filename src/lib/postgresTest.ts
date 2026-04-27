@@ -36,7 +36,7 @@ export type PostgresRowsOptions = {
   center?: 'all' | 'art' | 'exam' | 'highteen' | 'kids'
 }
 
-type TestDoc = Record<string, any>
+type TestDoc = Record<string, unknown>
 
 export const postgresTestCollections: PostgresTestCollection[] = [
   {
@@ -251,21 +251,25 @@ function mapDocToRow(
   switch (collectionSlug) {
     case 'teachers':
       return {
-        id: doc.id,
+        id: rowId(doc.id),
         imagePath: teacherImagePath(doc),
         meta1: stringify(doc.centers),
         meta2: stringify(doc.status),
         meta3: stringify(doc.displayOrder),
         relatedFiles: (Array.isArray(doc.representativeWorks) ? doc.representativeWorks : [])
           .slice(0, 12)
-          .map((item: TestDoc) => ({
-            displayOrder: stringify(item.displayOrder),
-            imagePath: teacherRepresentativeWorkPath(item),
-            sourceDb: stringify(doc.sourceDb),
-            sourceId: stringify(doc.sourceId),
-            sourceTable: stringify(doc.sourceTable),
-            title: stringify(item.title),
-          })),
+          .map((item) => {
+            const work = objectDoc(item)
+
+            return {
+              displayOrder: stringify(work.displayOrder),
+              imagePath: teacherRepresentativeWorkPath(work),
+              sourceDb: stringify(doc.sourceDb),
+              sourceId: stringify(doc.sourceId),
+              sourceTable: stringify(doc.sourceTable),
+              title: stringify(work.title),
+            }
+          }),
         slug: stringify(doc.slug),
         sourceDb: stringify(doc.sourceDb),
         sourceId: stringify(doc.sourceId),
@@ -362,7 +366,7 @@ function mapDocToRow(
       })
     case 'exam-school-logos':
       return {
-        id: doc.id,
+        id: rowId(doc.id),
         imagePath: normalizeImagePath(doc.logoPath),
         meta1: stringify(doc.schoolSlug),
         meta2: stringify(doc.reviewCount),
@@ -404,7 +408,7 @@ function baseRow(
   },
 ): PostgresTestRow {
   return {
-    id: doc.id,
+    id: rowId(doc.id),
     imagePath: input.imagePath,
     meta1: input.meta1,
     meta2: input.meta2,
@@ -424,6 +428,18 @@ function stringify(value: unknown) {
   }
 
   return String(value ?? '').trim()
+}
+
+function objectDoc(value: unknown): TestDoc {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as TestDoc : {}
+}
+
+function rowId(value: unknown): number | string {
+  if (typeof value === 'number' || typeof value === 'string') {
+    return value
+  }
+
+  return stringify(value)
 }
 
 function normalizeImagePath(path: unknown) {
@@ -475,7 +491,7 @@ function teacherImagePath(doc: TestDoc) {
   }
 
   return legacyAssetPath({
-    boTable: doc.sourceTable,
+    boTable: stringify(doc.sourceTable),
     collection: 'teachers',
     path: doc.profileImagePath || doc.photoImage1,
     role: 'profile',
