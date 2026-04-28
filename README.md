@@ -23,16 +23,18 @@
 - 공개 사이트
 - Payload 관리자 `/admin`
 - 센터별 소개/강사진/캐스팅/상담 라우트
-- 레거시 데이터 선별 이관 파이프라인
+- 레거시 dump 기반 DB 이전 파이프라인
 
 ### 현재 기준 아키텍처
 
 - 프레임워크: `Next.js App Router`
 - CMS: `Payload CMS`
-- DB: `Postgres`
+- 로컬 DB: MariaDB 원본 복원, Postgres 정제/검증
+- 운영 DB: Vercel Neon Postgres
 - 레거시 원본 DB: `data/legacy_dumps`의 센터별 MariaDB dump
+- 파일/이미지 스토리지: `Cloudflare R2`
 
-권장 운영 방향은 `Vercel 기반 단일 앱 + Postgres + 파일 스토리지`다. 자세한 배포 판단 근거는 [docs/배포-운영-전략.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/배포-운영-전략.md:1)에 정리되어 있다.
+권장 운영 방향은 `Vercel 기반 단일 앱 + Postgres + Cloudflare R2`다. 현재 기준은 [docs/01-프로젝트-운영-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/01-프로젝트-운영-정책.md:1)에 정리되어 있다.
 
 ## 2. 현재 구현 범위
 
@@ -63,7 +65,7 @@
 - `scripts/legacy-mariadb/asset-downloads/*.py`
 - `scripts/payload-migration/*.ts`
 
-현재 코드는 "전체 완성본"이 아니라, `센터별 원본 dump 복원 + MariaDB work table 구성 + 테스트 라우트 검증` 단계로 보는 것이 맞다. 이전 `seed-p0.ts`, `seed-p1.ts`, `baewoo-curated/` 기반 정적 SQL 시드 경로는 제거했고, 필요한 기록은 [docs/archive](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/archive:1)에 보존한다.
+현재 데이터 이전 기준은 `data/legacy_dumps -> 로컬 MariaDB -> 로컬 Postgres/Payload DB 정제 -> Vercel Neon` 흐름이다. 이전 P0/P1/P2/C0 기준과 `seed-p0.ts`, `seed-p1.ts`, `baewoo-curated/` 기반 정적 SQL 시드 경로는 폐기된 과거 방향이며 현재 판단 기준으로 사용하지 않는다.
 
 ## 3. 디렉터리 가이드
 
@@ -72,9 +74,9 @@
 - [src/lib](/Users/arisnoba/Documents/GitHub/bnb-renewal/src/lib:1): 공용 유틸리티와 센터 매핑
 - [scripts](/Users/arisnoba/Documents/GitHub/bnb-renewal/scripts:1): 레거시 데이터 분리/정제/시드 스크립트
 - [data](/Users/arisnoba/Documents/GitHub/bnb-renewal/data:1): 원본 SQL, 분리본, 정제본, 요약 파일
-- [docs](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs:1): IA, DB, SEO, 배포, 운영 관련 의사결정 문서
+- [docs](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs:1): 현재 기준 정책 문서와 archive
 - [deliverables](/Users/arisnoba/Documents/GitHub/bnb-renewal/deliverables:1): SEO 관련 산출물
-- [plan](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan:1): 견적 및 기획성 문서
+- [plan](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan:1): 현재 작업 기록과 archive
 
 ## 4. 빠른 시작
 
@@ -137,12 +139,12 @@ npm run dev
 ```bash
 npm run lint
 npm run typecheck
-npm run db:seed:p0-dry-run
+npm run legacy:db:verify
 ```
 
 ## 5. 작업 원칙
 
-이 저장소는 "한 번에 전부 이관"보다 "작은 범위 선별 이관 + 검증 후 확장" 원칙을 따른다.
+이 저장소는 "레거시 dump를 로컬에서 복원/정제/검증한 뒤 Neon으로 옮기는" 원칙을 따른다.
 
 - 기존 패턴을 우선 따르고, 불필요한 재설계는 피한다.
 - 공개 사이트 핵심 콘텐츠부터 옮긴다.
@@ -150,23 +152,24 @@ npm run db:seed:p0-dry-run
 - 구현 전에 관련 문서와 현재 코드를 먼저 읽는다.
 - 완료 전에는 가능한 검증을 수행하고, 못 한 검증은 명시한다.
 
-상세 규칙은 [docs/프로젝트-작업-규칙.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/프로젝트-작업-규칙.md:1)를 기준 문서로 사용한다.
+상세 규칙은 [docs/05-작업-규칙.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/05-작업-규칙.md:1)를 기준 문서로 사용한다.
 
 ## 6. 참고 문서
 
-- [docs/IA-사이트구조분석.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/IA-사이트구조분석.md:1): 기존 5개 사이트 구조 분석
-- [docs/통합-사이트-메뉴-구조도.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/통합-사이트-메뉴-구조도.md:1): 통합 IA 방향
-- [docs/SEO-URL-전략.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/SEO-URL-전략.md:1): URL, SEO, 이전 전략
-- [docs/DB-마이그레이션-우선순위-계획.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/DB-마이그레이션-우선순위-계획.md:1): 단계별 데이터 이관 원칙
-- [docs/프로필-이미지-FTP-수집-가이드.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/프로필-이미지-FTP-수집-가이드.md:1): 프로필 이미지 FTP 수집 및 반영 절차
-- [docs/배포-운영-전략.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/배포-운영-전략.md:1): 배포 구조와 비용/운영 판단
+- [docs/00-문서-인덱스.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/00-문서-인덱스.md:1): 문서 진입점과 archive 맵
+- [docs/01-프로젝트-운영-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/01-프로젝트-운영-정책.md:1): 배포, DB, R2, 환경변수 기준
+- [docs/02-레거시-마이그레이션-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/02-레거시-마이그레이션-정책.md:1): 레거시 DB/이미지 이관 기준
+- [docs/03-Payload-admin-운영-UX.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/03-Payload-admin-운영-UX.md:1): 관리자 작성 UX, Lexical, media, SEO 기준
+- [docs/04-IA-SEO-URL-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/04-IA-SEO-URL-정책.md:1): IA, URL, SEO 기준
+- [docs/05-작업-규칙.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/05-작업-규칙.md:1): 작업 방식과 검증 규칙
+- [plan/현재작업.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan/현재작업.md:1): 현재 진행 상황과 검증 기록
 
 ## 7. 지금 먼저 보면 좋은 순서
 
 새로 합류한 사람이면 아래 순서가 가장 빠르다.
 
 1. 이 `README.md`
-2. [docs/프로젝트-작업-규칙.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/프로젝트-작업-규칙.md:1)
-3. [docs/IA-사이트구조분석.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/IA-사이트구조분석.md:1)
-4. [docs/DB-마이그레이션-우선순위-계획.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/DB-마이그레이션-우선순위-계획.md:1)
+2. [docs/00-문서-인덱스.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/00-문서-인덱스.md:1)
+3. [plan/현재작업.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan/현재작업.md:1)
+4. 이번 작업에 해당하는 `docs/01~05` 기준 문서
 5. [payload.config.ts](/Users/arisnoba/Documents/GitHub/bnb-renewal/payload.config.ts:1)

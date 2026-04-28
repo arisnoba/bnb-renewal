@@ -7,11 +7,24 @@ import {
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
-  imagePathField,
   isExamAdminMenuHidden,
   legacyMetaField,
   sidebarFields,
 } from "./shared";
+
+function validateSchoolSlug(value: unknown) {
+  const slug = String(value ?? "").trim();
+
+  if (!slug) {
+    return "학교 슬러그를 입력하세요.";
+  }
+
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    return "학교 슬러그는 영문 소문자, 숫자, 하이픈(-)만 입력할 수 있습니다.";
+  }
+
+  return true;
+}
 
 export const ExamSchoolLogos: CollectionConfig = {
   slug: "exam-school-logos",
@@ -21,7 +34,7 @@ export const ExamSchoolLogos: CollectionConfig = {
   },
   access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["schoolName", "centers", "authorName", "reviewCount", "updatedAt"],
+    defaultColumns: ["schoolName", "schoolSlug", "centers", "authorName", "updatedAt"],
     group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "schoolName",
@@ -44,29 +57,68 @@ export const ExamSchoolLogos: CollectionConfig = {
         label: "학교 슬러그",
         required: true,
         unique: true,
+        admin: {
+          description:
+            "영문 소문자, 숫자, 하이픈(-)만 입력하세요. 예: seoul-arts",
+        },
+        validate: validateSchoolSlug,
       },
     ]),
+    {
+      name: "logoMedia",
+      type: "upload",
+      label: "로고 이미지",
+      relationTo: "media",
+    },
     {
       name: "reviewCount",
       type: "number",
       label: "후기 수",
       defaultValue: 0,
+      admin: {
+        hidden: true,
+      },
     },
-    imagePathField("logoPath", "로고 이미지", true),
-    adminRow([
-      { name: "logoOriginalName", type: "text", label: "원본 파일명" },
+    ...sidebarFields([centersField, authorNameField]),
+    adminCollapsible("레거시/원본", [
+      {
+        name: "logoPath",
+        type: "text",
+        label: "레거시 로고 경로",
+      },
+      {
+        name: "logoOriginalName",
+        type: "text",
+        label: "원본 파일명",
+        admin: {
+          hidden: true,
+        },
+      },
       {
         name: "logoFile",
         type: "text",
         label: "로고 파일",
-        required: true,
+        admin: {
+          hidden: true,
+        },
       },
+      {
+        name: "logoWidth",
+        type: "number",
+        label: "가로",
+        admin: {
+          hidden: true,
+        },
+      },
+      {
+        name: "logoHeight",
+        type: "number",
+        label: "세로",
+        admin: {
+          hidden: true,
+        },
+      },
+      legacyMetaField,
     ]),
-    adminRow([
-      { name: "logoWidth", type: "number", label: "가로" },
-      { name: "logoHeight", type: "number", label: "세로" },
-    ]),
-    ...sidebarFields([centersField, authorNameField]),
-    adminCollapsible("레거시/원본", [legacyMetaField]),
   ],
 };

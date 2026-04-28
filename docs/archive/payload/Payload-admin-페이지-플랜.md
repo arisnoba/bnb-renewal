@@ -475,7 +475,7 @@ MariaDB work table명은 당장 바꾸지 않는다.
 - `artist_press`의 최종 영문 컬렉션명은 `artist-press`로 한다.
 - 기존 c0 컬렉션(`appearances`, `shoots`, `reviews` 등)은 MariaDB work table 기준 컬렉션으로 대체/통합한다.
 - 센터 필드는 모든 공개 콘텐츠 컬렉션에서 복수 센터 처리가 가능한 `centers` 기준으로 둔다.
-- 이미지 경로는 우선 로컬 다운로드/레거시 경로를 보존하고, R2/Blob URL 단순화는 후속 단계로 분리한다.
+- 이미지 경로는 우선 로컬 다운로드/레거시 경로를 보존하고, R2 object key/public URL 단순화는 후속 단계로 분리한다.
 
 ---
 
@@ -503,4 +503,4 @@ MariaDB work table명은 당장 바꾸지 않는다.
 - 상담/오디션 폼 구현
 - 공개 사이트 페이지 디자인
 - 레거시 데이터 추가 변환/시드
-- Vercel Blob 이미지 치환
+- Cloudflare R2 이미지 치환

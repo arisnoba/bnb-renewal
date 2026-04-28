@@ -1,0 +1,31 @@
+#action-save {
+  --bg-color: #1f5eff;
+  --hover-bg: #1748c7;
+  --color: #ffffff;
+  --btn-border: 1px solid #1f5eff;
+  --hover-btn-border: 1px solid #1748c7;
+  --btn-font-weight: 700;
+  box-shadow: 0 8px 22px rgba(31, 94, 255, 0.28);
+}
+
+#action-save:not(:disabled):hover,
+#action-save:not(:disabled):focus-visible {
+  box-shadow: 0 10px 26px rgba(31, 94, 255, 0.34);
+}
+
+#action-save.btn--disabled,
+#action-save:disabled {
+  box-shadow: none;
+}
+
+:root {
+  --bnb-admin-font-sans: 'Pretendard Variable', 'Pretendard', 'SF Pro Text', 'Apple SD Gothic Neo',
+    'Noto Sans KR', system-ui, sans-serif;
+}
+
+.rich-text-lexical .editor-container,
+.rich-text-lexical .ContentEditable__root,
+.lexical-diff .field-diff-content .html-diff {
+  font-family: var(--bnb-admin-font-sans);
+  letter-spacing: 0;
+}

@@ -3,6 +3,7 @@ import type { CollectionBeforeValidateHook, Field } from "payload";
 type AdminTab = {
   fields: Field[];
   label: string;
+  name?: string;
 };
 
 export const adminDateConfig = {
@@ -252,23 +253,24 @@ export const sourceFields: Field[] = [
   },
 ];
 
-export const publishingFields: Field[] = [
-  {
-    name: "publishedAt",
-    type: "date",
-    label: "발행일",
-    defaultValue: () => new Date().toISOString(),
-    admin: adminDateConfig,
-  },
-  {
-    name: "displayStatus",
-    type: "select",
-    label: "노출 상태",
-    defaultValue: "published",
-    options: displayStatusOptions,
-    required: true,
-  },
-];
+export const publishedAtField: Field = {
+  name: "publishedAt",
+  type: "date",
+  label: "발행일",
+  defaultValue: () => new Date().toISOString(),
+  admin: adminDateConfig,
+};
+
+export const displayStatusField: Field = {
+  name: "displayStatus",
+  type: "select",
+  label: "노출 상태",
+  defaultValue: "published",
+  options: displayStatusOptions,
+  required: true,
+};
+
+export const publishingFields: Field[] = [publishedAtField, displayStatusField];
 
 export const legacyMetaField: Field = {
   name: "legacyMeta",
