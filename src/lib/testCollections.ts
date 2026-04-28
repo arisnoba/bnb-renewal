@@ -139,7 +139,7 @@ export const testCollections = [
     href: '/test/exam-passed-videos',
     imageFields: [],
     label: 'Exam Passed Videos',
-    metaFields: ['centers', 'youtubeCode', 'publishedAt'],
+    metaFields: ['centers', 'youtubeUrl', 'publishedAt'],
     slug: 'exam-passed-videos',
     sort: '-publishedAt',
     titleFields: ['title'],
@@ -147,7 +147,7 @@ export const testCollections = [
   {
     description: '입시전용 합격결과',
     href: '/test/exam-results',
-    imageFields: [],
+    imageFields: ['thumbnailPath'],
     label: 'Exam Results',
     metaFields: ['centers', 'resultType', 'publishedAt'],
     slug: 'exam-results',

@@ -187,14 +187,13 @@ export async function getPostgresRows(
   const result = await payload.find({
     collection: collection.slug as never,
     depth: 1,
-    limit: 10000,
-    pagination: false,
+    limit: 100,
     sort: sortMap[collection.slug],
     where: buildPublishedWhere(collection.slug),
   })
 
   const docs = (result.docs as TestDoc[]).filter((doc) => matchesCenter(doc, options?.center))
-  return docs.slice(0, 100).map((doc) => mapDocToRow(collection.slug, doc))
+  return docs.map((doc) => mapDocToRow(collection.slug, doc))
 }
 
 function buildPublishedWhere(collectionSlug: string): Where | undefined {
@@ -351,8 +350,8 @@ function mapDocToRow(
     case 'exam-passed-videos':
       return baseRow(doc, {
         imagePath: '',
-        meta1: stringify(doc.youtubeCode),
-        meta2: stringify(doc.youtubeUrl),
+        meta1: stringify(doc.youtubeUrl),
+        meta2: stringify(doc.centers),
         meta3: stringify(doc.publishedAt),
         title: stringify(doc.title),
       })
@@ -367,7 +366,7 @@ function mapDocToRow(
     case 'exam-school-logos':
       return {
         id: rowId(doc.id),
-        imagePath: normalizeImagePath(doc.logoPath),
+        imagePath: examSchoolLogoImagePath(doc),
         meta1: stringify(doc.schoolSlug),
         meta2: stringify(doc.reviewCount),
         meta3: '',
@@ -380,7 +379,7 @@ function mapDocToRow(
       }
     case 'news':
       return baseRow(doc, {
-        imagePath: normalizeImagePath(doc.thumbnailPath),
+        imagePath: newsImagePath(doc),
         meta1: stringify(doc.centers),
         meta2: stringify(doc.category),
         meta3: stringify(doc.publishedAt),
@@ -466,6 +465,18 @@ function basename(path: unknown) {
   return value.split('/').filter(Boolean).pop() ?? ''
 }
 
+function boTableFromSourceTable(value: unknown) {
+  return stringify(value).replace(/^g5_write_/, '')
+}
+
+function encodePath(value: string) {
+  return value
+    .split('/')
+    .filter(Boolean)
+    .map((part) => encodeURIComponent(part))
+    .join('/')
+}
+
 function legacyAssetPath(input: {
   boTable: string
   collection: string
@@ -484,20 +495,26 @@ function legacyAssetPath(input: {
 }
 
 function teacherImagePath(doc: TestDoc) {
-  const direct = normalizeImagePath(doc.profileImagePath || doc.photoImage1)
+  return teacherLegacyImagePath(doc, doc.profileImagePath || doc.photoImage1)
+}
 
-  if (direct && !direct.startsWith('//') && !direct.includes('/data/')) {
-    return direct
+function teacherLegacyImagePath(doc: TestDoc, path: unknown) {
+  const value = stringify(path)
+
+  if (!value) {
+    return ''
   }
 
-  return legacyAssetPath({
-    boTable: stringify(doc.sourceTable),
-    collection: 'teachers',
-    path: doc.profileImagePath || doc.photoImage1,
-    role: 'profile',
-    sourceDb: doc.sourceDb,
-    sourceId: doc.sourceId,
-  })
+  if (value.startsWith('/legacy/teachers/')) {
+    return normalizeImagePath(value)
+  }
+
+  const sourcePath = value
+    .replace(/^https?:\/\/[^/]+\/web\/data\/teacher\//, '')
+    .replace(/^\/?web\/data\/teacher\//, '')
+    .replace(/^\/+/, '')
+
+  return `/legacy/teachers/${stringify(doc.sourceDb)}/${stringify(doc.sourceTable)}/${encodePath(sourcePath)}`
 }
 
 function teacherRepresentativeWorkPath(doc: TestDoc) {
@@ -507,7 +524,7 @@ function teacherRepresentativeWorkPath(doc: TestDoc) {
     return ''
   }
 
-  if (value.startsWith('/legacy/teacher-files/') || value.startsWith('/')) {
+  if (value.startsWith('/legacy/teacher-files/')) {
     return value
   }
 
@@ -527,6 +544,8 @@ function agencyImagePath(doc: TestDoc) {
 
 function artistPressImagePath(doc: TestDoc) {
   return (
+    mediaImagePath(doc.thumbnailMedia) ||
+    mediaImagePath(doc.agencyLogoMedia) ||
     legacyAssetPath({
       boTable: 'new_shoot',
       collection: 'artist-press',
@@ -547,7 +566,17 @@ function artistPressImagePath(doc: TestDoc) {
 }
 
 function profileImagePath(doc: TestDoc) {
-  return normalizeImagePath(doc.profileImagePath)
+  const value = stringify(doc.profileImagePath)
+
+  if (!value) {
+    return ''
+  }
+
+  if (value.startsWith('/legacy/profiles/')) {
+    return normalizeImagePath(value)
+  }
+
+  return `/legacy/profiles/${stringify(doc.sourceDb)}/${boTableFromSourceTable(doc.sourceTable)}/${stringify(doc.sourceId)}/${encodeURIComponent(basename(value))}`
 }
 
 function screenAppearanceImagePath(doc: TestDoc) {
@@ -585,14 +614,34 @@ function castingAppearanceImagePath(doc: TestDoc) {
 function examPassedReviewImagePath(doc: TestDoc) {
   return (
     relationshipLogoPath(doc.school) ||
-    normalizeImagePath(doc.schoolLogoPath) ||
-    normalizeImagePath(doc.studentImagePath) ||
+    examPassedReviewStudentImagePath(doc) ||
     ''
   )
 }
 
+function examSchoolLogoImagePath(doc: TestDoc) {
+  return mediaImagePath(doc.logoMedia) || examSchoolLogoLegacyPath(doc)
+}
+
 function examResultImagePath(doc: TestDoc) {
-  return normalizeImagePath(doc.thumbnailPath)
+  const value = stringify(doc.thumbnailPath)
+
+  if (!value) {
+    return ''
+  }
+
+  if (value.startsWith('/legacy/exam-results/')) {
+    return normalizeImagePath(value)
+  }
+
+  return legacyAssetPath({
+    boTable: examResultBoTable(doc.sourceTable),
+    collection: 'exam-results',
+    path: value,
+    role: 'thumbnail',
+    sourceDb: doc.sourceDb,
+    sourceId: doc.sourceId,
+  })
 }
 
 function relationshipLogoPath(value: unknown) {
@@ -600,7 +649,7 @@ function relationshipLogoPath(value: unknown) {
     return ''
   }
 
-  return normalizeImagePath((value as Record<string, unknown>).logoPath)
+  return examSchoolLogoImagePath(value as TestDoc)
 }
 
 function relationshipSchoolName(value: unknown) {
@@ -609,4 +658,111 @@ function relationshipSchoolName(value: unknown) {
   }
 
   return stringify((value as Record<string, unknown>).schoolName)
+}
+
+function mediaImagePath(value: unknown) {
+  const media = objectDoc(value)
+  const sizes = objectDoc(media.sizes)
+  const thumbnail = objectDoc(sizes.thumbnail)
+
+  return normalizeMediaPath(thumbnail.url) || normalizeMediaPath(media.url)
+}
+
+function normalizeMediaPath(path: unknown) {
+  const value = stringify(path)
+
+  if (!value) {
+    return ''
+  }
+
+  try {
+    const url = new URL(value)
+
+    if (url.pathname.startsWith('/api/media/file/')) {
+      return url.pathname
+    }
+  } catch {
+    return normalizeImagePath(value)
+  }
+
+  return normalizeImagePath(value)
+}
+
+function examSchoolLogoLegacyPath(doc: TestDoc) {
+  const fileName = basename(doc.logoPath)
+
+  if (!fileName) {
+    return ''
+  }
+
+  if (stringify(doc.logoPath).startsWith('/legacy/exam-school-logos/')) {
+    return normalizeImagePath(doc.logoPath)
+  }
+
+  return `/legacy/exam-school-logos/bnbuniv/new_hoogi/${stringify(doc.id)}/logo/${encodeURIComponent(fileName)}`
+}
+
+function examPassedReviewStudentImagePath(doc: TestDoc) {
+  const value = stringify(doc.studentImagePath)
+
+  if (!value) {
+    return ''
+  }
+
+  if (value.startsWith('/legacy/exam-passed-reviews/')) {
+    return normalizeImagePath(value)
+  }
+
+  return legacyAssetPath({
+    boTable: 'new_hoogi',
+    collection: 'exam-passed-reviews',
+    path: value,
+    role: 'student',
+    sourceDb: doc.sourceDb,
+    sourceId: doc.sourceId,
+  })
+}
+
+function examResultBoTable(sourceTable: unknown) {
+  const value = stringify(sourceTable)
+
+  if (value === 'g5_write_victory10') {
+    return 'victory10'
+  }
+
+  if (value === 'g5_write_victory30') {
+    return 'victory30'
+  }
+
+  return boTableFromSourceTable(value)
+}
+
+function newsImagePath(doc: TestDoc) {
+  return (
+    mediaImagePath(doc.thumbnailMedia) ||
+    newsAttachmentLocalPath(doc) ||
+    legacyAssetPath({
+      boTable: boTableFromSourceTable(doc.sourceTable),
+      collection: 'news',
+      path: doc.thumbnailPath,
+      role: 'file-0',
+      sourceDb: doc.sourceDb,
+      sourceId: doc.sourceId,
+    })
+  )
+}
+
+function newsAttachmentLocalPath(doc: TestDoc) {
+  const legacyMeta = objectDoc(doc.legacyMeta)
+  const attachments = Array.isArray(legacyMeta.attachments)
+    ? legacyMeta.attachments
+    : []
+  const thumbnailName = basename(doc.thumbnailPath)
+  const attachment = attachments
+    .map(objectDoc)
+    .find((item) => basename(item.path) === thumbnailName || basename(item.localPath) === thumbnailName)
+    ?? objectDoc(attachments[0])
+  const localPath = stringify(attachment.localPath)
+
+  return localPath.startsWith('/legacy/') ? localPath : ''
 }

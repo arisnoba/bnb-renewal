@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { Button } from '@/components/ui/button'
 import { centers } from '@/lib/centers'
+import { testCollections } from '@/lib/testCollections'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -47,6 +48,11 @@ const testGroups = [
     description: '센터 필터가 적용된 뉴스 목록입니다.',
     links: centerNewsPages,
     title: '센터별 뉴스',
+  },
+  {
+    description: 'Payload 컬렉션의 최근 데이터와 이미지 경로를 확인하는 내부 검수 페이지입니다.',
+    links: testCollections,
+    title: '컬렉션 테스트',
   },
 ]
 

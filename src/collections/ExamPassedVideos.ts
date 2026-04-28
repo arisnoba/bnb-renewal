@@ -1,9 +1,8 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionBeforeValidateHook, CollectionConfig } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
+import { extractYouTubeVideoId, youtubeWatchUrl } from "@/lib/youtube";
 import {
-  adminRow,
-  adminTabs,
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
@@ -12,6 +11,28 @@ import {
   publishingFields,
   sidebarFields,
 } from "./shared";
+
+const syncYouTubeFields: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+  if (!data) {
+    return data;
+  }
+
+  const nextData = { ...data };
+  const youtubeUrl =
+    typeof nextData.youtubeUrl === "string"
+      ? nextData.youtubeUrl.trim()
+      : typeof originalDoc?.youtubeUrl === "string"
+        ? originalDoc.youtubeUrl.trim()
+        : "";
+  const youtubeCode = extractYouTubeVideoId(youtubeUrl);
+
+  if (youtubeCode) {
+    nextData.youtubeCode = youtubeCode;
+    nextData.youtubeUrl = youtubeWatchUrl(youtubeCode);
+  }
+
+  return nextData;
+};
 
 export const ExamPassedVideos: CollectionConfig = {
   slug: "exam-passed-videos",
@@ -28,33 +49,45 @@ export const ExamPassedVideos: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [syncYouTubeFields, centerScopedBeforeValidate],
   },
   fields: [
-    ...adminTabs([
-      {
-        label: "영상",
-        fields: [
-          { name: "title", type: "text", label: "제목", required: true },
-          adminRow([
-            {
-              name: "youtubeCode",
-              type: "text",
-              label: "유튜브 코드",
-              required: true,
-              unique: true,
-            },
-            {
-              name: "youtubeUrl",
-              type: "text",
-              label: "유튜브 URL",
-              required: true,
-            },
-          ]),
-          { name: "bodyHtml", type: "textarea", label: "본문" },
-        ],
+    { name: "title", type: "text", label: "제목", required: true },
+    {
+      name: "youtubeCode",
+      type: "text",
+      label: "유튜브 코드",
+      required: true,
+      unique: true,
+      admin: {
+        hidden: true,
       },
-    ]),
+    },
+    {
+      name: "youtubeUrl",
+      type: "text",
+      label: "유튜브 URL",
+      required: true,
+      validate: (value: unknown) => {
+        if (!value) {
+          return "유튜브 URL을 입력해 주세요.";
+        }
+
+        return extractYouTubeVideoId(value)
+          ? true
+          : "유효한 유튜브 URL을 입력해 주세요.";
+      },
+    },
+    {
+      name: "youtubePreview",
+      type: "ui",
+      admin: {
+        components: {
+          Field:
+            "@/components/payload/YouTubePreviewField#YouTubePreviewField",
+        },
+      },
+    },
     ...sidebarFields([centersField, ...publishingFields, authorNameField]),
     legacyCollapsible(),
   ],

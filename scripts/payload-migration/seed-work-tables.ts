@@ -284,7 +284,6 @@ const configs: TableConfig[] = [
       'source_id',
       'slug',
       'title',
-      'body_html',
       'youtube_code',
       'youtube_url',
       'published_at',
@@ -293,7 +292,6 @@ const configs: TableConfig[] = [
     ],
     transform: (row) => ({
       ...sourceDoc(row),
-      bodyHtml: text(row.body_html),
       centers: ['exam'],
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
