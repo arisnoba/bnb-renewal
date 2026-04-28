@@ -62,7 +62,7 @@ export const Agencies: CollectionConfig = {
         ],
       },
       {
-        label: "인물/이미지",
+        label: "회사 로고",
         fields: [
           imagePathField("profileImagePath", "대표 이미지"),
           {

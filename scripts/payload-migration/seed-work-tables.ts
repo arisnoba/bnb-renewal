@@ -17,6 +17,7 @@ type Options = {
 
 type WorkRow = Record<string, unknown>
 type PayloadDoc = Record<string, unknown>
+type PayloadWhere = Record<string, unknown>
 type DynamicPayload = {
   create: (args: {
     collection: string
@@ -28,7 +29,7 @@ type DynamicPayload = {
     depth: number
     limit: number
     overrideAccess: boolean
-    where: Record<string, { equals: unknown }>
+    where: PayloadWhere
   }) => Promise<{ docs: { id: number | string }[] }>
   update: (args: {
     collection: string
@@ -41,6 +42,7 @@ type DynamicPayload = {
 type TableConfig = {
   collection: string
   columns: string[]
+  lookupWhere?: (doc: PayloadDoc) => PayloadWhere
   table: string
   transform: (row: WorkRow, context: SeedContext) => PayloadDoc
   uniqueField?: string
@@ -401,6 +403,7 @@ const configs: TableConfig[] = [
   {
     collection: 'profiles',
     table: 'profiles',
+    lookupWhere: sourceLookupWhere,
     columns: [
       'source_db',
       'source_table',
@@ -429,7 +432,7 @@ const configs: TableConfig[] = [
         filter: text(row.filter),
         height: text(row.height),
         displayStatus: displayStatusFromPublic(row.is_public),
-        legacyMeta: parseJsonValue(row.legacy_meta),
+        legacyMeta: legacyMetaWithPreviousSlug(row.legacy_meta, row.previous_slug),
         name: requiredText(row.name, 'profiles.name'),
         publishedAt: dateText(row.published_at),
         profileImagePath: text(row.profile_image_path),
@@ -605,11 +608,111 @@ async function main() {
 }
 
 function normalizeRowsForSeed(config: TableConfig, rows: WorkRow[]) {
+  if (config.collection === 'profiles') {
+    return normalizeProfileRowsForSlug(rows)
+  }
+
   if (config.collection !== 'curriculums') {
     return rows
   }
 
   return dedupeCurriculumRows(rows)
+}
+
+function normalizeProfileRowsForSlug(rows: WorkRow[]) {
+  const entries = rows.map((row) => ({
+    baseSlug: profileSlugFromEnglishName(row.english_name) ?? requiredText(row.slug, 'profiles.slug'),
+    row,
+  }))
+  const sorted = [...entries].sort((left, right) => {
+    return (
+      compareText(left.baseSlug, right.baseSlug) ||
+      compareText(text(left.row.source_db), text(right.row.source_db)) ||
+      compareText(text(left.row.source_table), text(right.row.source_table)) ||
+      number(left.row.source_id, Number.MAX_SAFE_INTEGER) -
+        number(right.row.source_id, Number.MAX_SAFE_INTEGER) ||
+      compareText(requiredText(left.row.slug, 'profiles.slug'), requiredText(right.row.slug, 'profiles.slug'))
+    )
+  })
+  const usedSlugs = new Set<string>()
+  const slugByRow = new Map<WorkRow, string>()
+
+  for (const entry of sorted) {
+    let slug = entry.baseSlug
+    let suffix = 2
+
+    while (usedSlugs.has(slug)) {
+      slug = `${entry.baseSlug}-${suffix}`
+      suffix += 1
+    }
+
+    usedSlugs.add(slug)
+    slugByRow.set(entry.row, slug)
+  }
+
+  return rows.map((row) => {
+    const originalSlug = requiredText(row.slug, 'profiles.slug')
+    const refinedSlug = slugByRow.get(row) ?? originalSlug
+
+    if (refinedSlug === originalSlug) {
+      return row
+    }
+
+    return {
+      ...row,
+      previous_slug: originalSlug,
+      slug: refinedSlug,
+    }
+  })
+}
+
+function profileSlugFromEnglishName(value: unknown) {
+  const normalized = String(value ?? '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+  const tokens = normalized.match(/[a-z0-9]+/g) ?? []
+
+  if (tokens.length === 0) {
+    return undefined
+  }
+
+  if (tokens.length === 1) {
+    return tokens[0]
+  }
+
+  return `${tokens[0]}-${tokens.slice(1).join('')}`
+}
+
+function legacyMetaWithPreviousSlug(value: unknown, previousSlugValue: unknown) {
+  const legacyMeta = parseJsonValue(value)
+  const previousSlug = text(previousSlugValue)
+
+  if (!previousSlug) {
+    return legacyMeta
+  }
+
+  const legacyMetaObject = objectValue(legacyMeta)
+
+  if (legacyMetaObject) {
+    return {
+      ...legacyMetaObject,
+      previousSlug,
+    }
+  }
+
+  if (legacyMeta === undefined) {
+    return { previousSlug }
+  }
+
+  return {
+    legacyMeta,
+    previousSlug,
+  }
+}
+
+function compareText(left: unknown, right: unknown) {
+  return String(left ?? '').localeCompare(String(right ?? ''))
 }
 
 function dedupeCurriculumRows(rows: WorkRow[]) {
@@ -833,16 +936,18 @@ async function upsertDoc(payload: Payload, config: TableConfig, doc: PayloadDoc)
     throw new Error(`${config.collection}.${uniqueField} 값이 비어 있습니다.`)
   }
 
+  const where = config.lookupWhere?.(doc) ?? {
+    [uniqueField]: {
+      equals: uniqueValue,
+    },
+  }
+
   const existing = await dynamicPayload.find({
     collection: config.collection,
     depth: 0,
     limit: 1,
     overrideAccess: true,
-    where: {
-      [uniqueField]: {
-        equals: uniqueValue,
-      },
-    },
+    where,
   })
 
   if (existing.docs[0]) {
@@ -871,6 +976,16 @@ function sourceDoc(row: WorkRow) {
     sourceDb: requiredText(row.source_db, 'source_db'),
     sourceId: number(row.source_id),
     sourceTable: requiredText(row.source_table, 'source_table'),
+  }
+}
+
+function sourceLookupWhere(doc: PayloadDoc): PayloadWhere {
+  return {
+    and: [
+      { sourceDb: { equals: requiredText(doc.sourceDb, 'sourceDb') } },
+      { sourceTable: { equals: requiredText(doc.sourceTable, 'sourceTable') } },
+      { sourceId: { equals: number(doc.sourceId) } },
+    ],
   }
 }
 
