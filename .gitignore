@@ -12,6 +12,7 @@ coverage
 tsconfig.tsbuildinfo
 src/payload-types.ts
 public/legacy
+public/media
 config/profile-image-ftp-sources.json
 tmp/
 

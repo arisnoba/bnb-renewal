@@ -4,10 +4,12 @@ import { fileURLToPath } from 'node:url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { buildConfig } from 'payload'
 import { ko } from 'payload/i18n/ko'
+import sharp from 'sharp'
 
 import { Agencies } from './src/collections/Agencies'
 import { ArtistPress } from './src/collections/ArtistPress'
 import { AuditionSchedules } from './src/collections/AuditionSchedules'
+import { Categories } from './src/collections/Categories'
 import { CastingAppearances } from './src/collections/CastingAppearances'
 import { CastingDirectors } from './src/collections/CastingDirectors'
 import { Curriculums } from './src/collections/Curriculums'
@@ -15,11 +17,18 @@ import { ExamPassedReviews } from './src/collections/ExamPassedReviews'
 import { ExamPassedVideos } from './src/collections/ExamPassedVideos'
 import { ExamResults } from './src/collections/ExamResults'
 import { ExamSchoolLogos } from './src/collections/ExamSchoolLogos'
+import { Media } from './src/collections/Media'
 import { News } from './src/collections/News'
+import { Pages } from './src/collections/Pages'
+import { Posts } from './src/collections/Posts'
 import { Profiles } from './src/collections/Profiles'
 import { ScreenAppearances } from './src/collections/ScreenAppearances'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
+import { Footer } from './src/Footer/config'
+import { Header } from './src/Header/config'
+import { defaultLexical } from './src/fields/defaultLexical'
+import { plugins } from './src/plugins'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -59,6 +68,10 @@ export default buildConfig({
   },
   collections: [
     Users,
+    Pages,
+    Posts,
+    Media,
+    Categories,
     Teachers,
     Curriculums,
     News,
@@ -80,11 +93,15 @@ export default buildConfig({
       connectionString: databaseURL,
     },
   }),
+  editor: defaultLexical,
+  globals: [Header, Footer],
+  plugins,
   routes: {
     admin: '/admin',
   },
   secret: process.env.PAYLOAD_SECRET ?? 'bnb-renewal-dev-secret',
   serverURL: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  sharp,
   typescript: {
     outputFile: path.resolve(dirname, './src/payload-types.ts'),
   },
