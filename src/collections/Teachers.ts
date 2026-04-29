@@ -109,6 +109,11 @@ export const Teachers: CollectionConfig = {
               plural: "필모그래피",
               singular: "필모그래피",
             },
+            admin: {
+              components: {
+                RowLabel: "@/components/payload/TeacherFilmographyRowLabel#TeacherFilmographyRowLabel",
+              },
+            },
             fields: [
               {
                 name: "title",
