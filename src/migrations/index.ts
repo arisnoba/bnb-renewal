@@ -18,6 +18,10 @@ import * as migration_20260429_170000_drop_exam_school_logo_legacy_fields from '
 import * as migration_20260429_190000_teacher_generate_slug from './20260429_190000_teacher_generate_slug'
 import * as migration_20260429_195000_delete_draft_teachers from './20260429_195000_delete_draft_teachers'
 import * as migration_20260429_200000_drop_teacher_representative_work_display_order from './20260429_200000_drop_teacher_representative_work_display_order'
+import * as migration_20260429_210000_curriculum_policy_restructure from './20260429_210000_curriculum_policy_restructure'
+import * as migration_20260429_211000_curriculum_class_options from './20260429_211000_curriculum_class_options'
+import * as migration_20260429_212000_curriculum_capacity_default from './20260429_212000_curriculum_capacity_default'
+import * as migration_20260429_213000_drop_curriculum_legacy_fields from './20260429_213000_drop_curriculum_legacy_fields'
 
 export const migrations = [
   {
@@ -119,5 +123,25 @@ export const migrations = [
     up: migration_20260429_200000_drop_teacher_representative_work_display_order.up,
     down: migration_20260429_200000_drop_teacher_representative_work_display_order.down,
     name: '20260429_200000_drop_teacher_representative_work_display_order',
+  },
+  {
+    up: migration_20260429_210000_curriculum_policy_restructure.up,
+    down: migration_20260429_210000_curriculum_policy_restructure.down,
+    name: '20260429_210000_curriculum_policy_restructure',
+  },
+  {
+    up: migration_20260429_211000_curriculum_class_options.up,
+    down: migration_20260429_211000_curriculum_class_options.down,
+    name: '20260429_211000_curriculum_class_options',
+  },
+  {
+    up: migration_20260429_212000_curriculum_capacity_default.up,
+    down: migration_20260429_212000_curriculum_capacity_default.down,
+    name: '20260429_212000_curriculum_capacity_default',
+  },
+  {
+    up: migration_20260429_213000_drop_curriculum_legacy_fields.up,
+    down: migration_20260429_213000_drop_curriculum_legacy_fields.down,
+    name: '20260429_213000_drop_curriculum_legacy_fields',
   },
 ]

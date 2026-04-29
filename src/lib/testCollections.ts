@@ -95,14 +95,14 @@ export const testCollections = [
     titleFields: ['title'],
   },
   {
-    description: '강사별 커리큘럼 원문',
+    description: '강의 정보와 주차별 커리큘럼',
     href: '/test/curriculums',
     imageFields: [],
     label: 'Curriculums',
-    metaFields: ['category', 'teacherName', 'subject'],
+    metaFields: ['centers', 'className', 'educationStartDate', 'capacity'],
     slug: 'curriculums',
-    sort: 'category',
-    titleFields: ['subject', 'titleRaw'],
+    sort: 'title',
+    titleFields: ['title'],
   },
   {
     description: '진행중인 캐스팅 출연현황',

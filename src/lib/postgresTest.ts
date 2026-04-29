@@ -145,7 +145,7 @@ const sortMap: Record<string, string> = {
   'audition-schedules': '-scheduleStartDate',
   'casting-appearances': '-publishedAt',
   'casting-directors': 'personName',
-  curriculums: 'category',
+  curriculums: 'title',
   'exam-passed-reviews': '-publishedAt',
   'exam-passed-videos': '-publishedAt',
   'exam-results': '-publishedAt',
@@ -276,13 +276,19 @@ function mapDocToRow(
         title: stringify(doc.name),
       }
     case 'curriculums':
-      return baseRow(doc, {
+      return {
+        ...baseRow(doc, {
         imagePath: '',
-        meta1: stringify(doc.category),
-        meta2: stringify(doc.teacherName),
-        meta3: stringify(doc.subject),
-        title: stringify(doc.titleRaw) || stringify(doc.subject) || stringify(doc.teacherName),
-      })
+        meta1: stringify(doc.className),
+        meta2: stringify(doc.educationStartDate),
+        meta3: stringify(doc.capacity),
+        title: stringify(doc.title),
+        }),
+        slug: '',
+        sourceDb: '',
+        sourceId: '',
+        sourceTable: '',
+      }
     case 'agencies':
       return baseRow(doc, {
         imagePath: agencyImagePath(doc),

@@ -526,6 +526,14 @@ const configs: TableConfig[] = [
   {
     collection: 'curriculums',
     table: 'teacher_lessons',
+    uniqueField: 'title',
+    lookupWhere: (doc) => ({
+      and: [
+        { title: { equals: requiredText(doc.title, 'curriculums.title') } },
+        { className: { equals: requiredText(doc.className, 'curriculums.className') } },
+        { teacher: { equals: doc.teacher ?? null } },
+      ],
+    }),
     columns: [
       'source_db',
       'source_table',
@@ -537,24 +545,13 @@ const configs: TableConfig[] = [
       'subject',
       'title_raw',
       'content_raw',
-      'legacy_meta',
     ],
     transform: (row, context) => ({
-      ...sourceDoc({
-        ...row,
-        slug: `curriculum-${row.source_db}-${row.source_table}-${row.source_id}`,
-      }),
       centers: teacherCentersFromSlug(row.resolved_teacher_slug, row.source_db, context),
-      category: text(row.category),
-      contentRaw: text(row.content_raw),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      resolvedTeacherId: number(row.resolved_teacher_id),
-      resolvedTeacherSlug: text(row.resolved_teacher_slug),
-      subject: text(row.subject),
+      className: curriculumClassName(row.category),
+      curriculumLessons: buildCurriculumLessons(row.title_raw, row.content_raw),
       teacher: teacherIdFromSlug(row.resolved_teacher_slug, context),
-      teacherName: text(row.teacher_name),
-      titleRaw: text(row.title_raw),
-      weeklyLessons: buildCurriculumWeeklyLessons(row.title_raw, row.content_raw),
+      title: text(row.subject) ?? text(row.category) ?? '커리큘럼',
     }),
   },
 ]
@@ -725,7 +722,7 @@ function dedupeCurriculumRows(rows: WorkRow[]) {
 function curriculumDedupeKey(row: WorkRow) {
   return JSON.stringify({
     lessons: normalizeCurriculumDedupeValue(
-      JSON.stringify(buildCurriculumWeeklyLessons(row.title_raw, row.content_raw)),
+      JSON.stringify(buildCurriculumLessons(row.title_raw, row.content_raw)),
     ),
     subject: normalizeCurriculumDedupeValue(text(row.subject)),
     teacherName: normalizeCurriculumDedupeValue(text(row.teacher_name)),
@@ -1071,27 +1068,50 @@ function buildCastingAppearanceCastMembers(legacyMeta: unknown) {
   return castMembers
 }
 
-function buildCurriculumWeeklyLessons(titleRaw: unknown, contentRaw: unknown) {
-  const lessonSubjects = splitLegacyRows(titleRaw)
-  const lessonContents = splitLegacyRows(contentRaw)
-  const rowCount = Math.max(lessonSubjects.length, lessonContents.length)
-  const weeklyLessons = []
+function buildCurriculumLessons(titleRaw: unknown, contentRaw: unknown) {
+  const topics = splitLegacyRows(titleRaw)
+  const contents = splitLegacyRows(contentRaw)
+  const rowCount = Math.max(topics.length, contents.length)
+  const lessons = []
 
   for (let index = 0; index < rowCount; index += 1) {
-    const lessonSubject = lessonSubjects[index]
-    const lessonContent = lessonContents[index]
+    const topic = topics[index]
+    const content = contents[index]
 
-    if (!lessonSubject && !lessonContent) {
+    if (!topic && !content) {
       continue
     }
 
-    weeklyLessons.push({
-      lessonContent,
-      lessonSubject,
+    lessons.push({
+      content,
+      topic,
     })
   }
 
-  return weeklyLessons
+  return lessons
+}
+
+function curriculumClassName(value: unknown) {
+  const className = text(value)
+
+  switch (className) {
+    case '1':
+      return '초급 I Class'
+    case '2':
+      return '중급 R Class'
+    case '3':
+      return '고급 U Class'
+    case '4':
+      return '전문 D Class'
+    case '5':
+      return '배우 A Class'
+    case '6':
+      return '애비뉴 S Class'
+    case '7':
+      return '특강반'
+    default:
+      return className
+  }
 }
 
 function teacherIdFromSlug(value: unknown, context: SeedContext) {

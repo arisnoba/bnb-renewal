@@ -29,3 +29,23 @@
   font-family: var(--bnb-admin-font-sans);
   letter-spacing: 0;
 }
+
+.bnb-admin-required-field .field-label::after {
+  color: var(--theme-error-500);
+  content: "*";
+  margin-left: 4px;
+}
+
+.bnb-curriculum-days-field {
+  position: relative;
+}
+
+.bnb-curriculum-days-field__options {
+  border: 1px solid transparent;
+  border-radius: var(--style-radius-s);
+}
+
+.bnb-curriculum-days-field.error .bnb-curriculum-days-field__options {
+  background: var(--theme-error-50);
+  border-color: var(--theme-error-500);
+}
