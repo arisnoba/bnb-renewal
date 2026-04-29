@@ -378,9 +378,8 @@ export const ExamPassedReviews: CollectionConfig = {
         name: "displayStatus",
         type: "select",
         label: "상태",
-        defaultValue: "published",
+        defaultValue: "archived",
         options: displayStatusOptions,
-        required: true,
       },
       {
         name: "authorName",

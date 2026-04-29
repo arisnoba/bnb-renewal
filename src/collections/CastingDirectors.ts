@@ -3,12 +3,13 @@ import type { CollectionConfig } from "payload";
 import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
-  adminTabs,
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
+  displayStatusOptions,
+  imagePathField,
   legacyCollapsible,
-  publishingFields,
+  publishedAtField,
   sidebarFields,
 } from "./shared";
 
@@ -36,43 +37,86 @@ export const CastingDirectors: CollectionConfig = {
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
-    ...adminTabs([
+    adminRow([
       {
-        label: "디렉터",
-        fields: [
-          adminRow([
-            {
-              name: "personName",
-              type: "text",
-              label: "이름",
-              required: true,
-              unique: true,
-            },
-            {
-              name: "company",
-              type: "text",
-              label: "회사",
-              required: true,
-            },
-          ]),
-          {
-            name: "category",
-            type: "text",
-            label: "분류",
-          },
-          {
-            name: "bodyHtml",
-            type: "textarea",
-            label: "본문",
-          },
-        ],
+        name: "personName",
+        type: "text",
+        label: "이름",
+        required: true,
+        unique: true,
+      },
+      {
+        name: "company",
+        type: "text",
+        label: "회사",
+        required: true,
       },
     ]),
+    {
+      name: "profileImageMedia",
+      type: "upload",
+      label: "프로필 이미지",
+      relationTo: "media",
+      required: false,
+    },
+    {
+      name: "careerItems",
+      type: "array",
+      label: "경력",
+      labels: {
+        plural: "경력",
+        singular: "경력",
+      },
+      admin: {
+        components: {
+          RowLabel:
+            "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel",
+        },
+      },
+      fields: [
+        adminRow([
+          {
+            name: "title",
+            type: "text",
+            label: "년도",
+            required: true,
+            admin: {
+              width: "33.333%",
+            },
+          },
+          {
+            name: "content",
+            type: "textarea",
+            label: "내용",
+            admin: {
+              width: "66.667%",
+            },
+          },
+        ]),
+      ],
+    },
+    {
+      name: "category",
+      type: "text",
+      label: "분류",
+      admin: {
+        hidden: true,
+      },
+    },
     ...sidebarFields([
       centersField,
-      ...publishingFields,
+      publishedAtField,
+      {
+        name: "displayStatus",
+        type: "select",
+        label: "상태",
+        defaultValue: "archived",
+        options: displayStatusOptions,
+      },
       authorNameField,
     ]),
-    legacyCollapsible(),
+    legacyCollapsible([
+      imagePathField("profileImagePath", "레거시 프로필 이미지"),
+    ]),
   ],
 };

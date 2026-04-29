@@ -5,7 +5,11 @@ import type { Payload } from 'payload'
 
 import { authorNameFromCenters } from '../../src/collections/shared'
 import { getPayloadClient } from '../../src/lib/payload'
-import { parseProfileCareerItems, parseTeacherCareerItems } from '../../src/lib/profileBodyHtml'
+import {
+  parseCastingDirectorCareerItems,
+  parseProfileCareerItems,
+  parseTeacherCareerItems,
+} from '../../src/lib/profileBodyHtml'
 
 const execFileAsync = promisify(execFile)
 
@@ -180,6 +184,7 @@ const configs: TableConfig[] = [
       'centers',
       'body_html',
       'category',
+      'profile_image_path',
       'author_name',
       'published_at',
       'is_public',
@@ -188,13 +193,14 @@ const configs: TableConfig[] = [
     transform: (row) => ({
       ...sourceDoc(row),
       authorName: text(row.author_name),
-      bodyHtml: text(row.body_html),
       category: text(row.category),
       centers: centersFrom(row.centers),
       company: requiredText(row.company, 'castings.company'),
+      careerItems: parseCastingDirectorCareerItems(row.body_html),
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
       personName: requiredText(row.person_name, 'castings.person_name'),
+      profileImagePath: text(row.profile_image_path),
       publishedAt: dateText(row.published_at),
     }),
   },

@@ -235,3 +235,7 @@ export function parseTeacherCareerItems(value: unknown) {
 
   return parseProfileCareerItems(source);
 }
+
+export function parseCastingDirectorCareerItems(value: unknown) {
+  return [...parseTeacherCareerItems(value)].reverse();
+}

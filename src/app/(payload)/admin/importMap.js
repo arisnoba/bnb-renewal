@@ -36,6 +36,7 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { ProfileNameFields as ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb } from '@/components/payload/ProfileNameFields'
 import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 } from '@/components/payload/ProfileSlugField'
 import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de61 } from '@/components/payload/ProfileFilterField'
+import { CastingDirectorCareerRowLabel as CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6 } from '@/components/payload/CastingDirectorCareerRowLabel'
 import { YouTubePreviewField as YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d } from '@/components/payload/YouTubePreviewField'
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
@@ -83,6 +84,7 @@ export const importMap = {
   "@/components/payload/ProfileNameFields#ProfileNameFields": ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb,
   "@/components/payload/ProfileSlugField#ProfileSlugField": ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8,
   "@/components/payload/ProfileFilterField#ProfileFilterField": ProfileFilterField_0c27d6f1f63313f291c972be4860de61,
+  "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel": CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6,
   "@/components/payload/YouTubePreviewField#YouTubePreviewField": YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d,
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,

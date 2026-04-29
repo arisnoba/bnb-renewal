@@ -9,6 +9,10 @@ import * as migration_20260427_220000_profile_career_items from './20260427_2200
 import * as migration_20260427_230000_center_access_author_names from './20260427_230000_center_access_author_names'
 import * as migration_20260427_235000_center_all_filter_access from './20260427_235000_center_all_filter_access'
 import * as migration_20260428_010000_teacher_career_items from './20260428_010000_teacher_career_items'
+import * as migration_20260429_120000_casting_director_profile_image_media from './20260429_120000_casting_director_profile_image_media'
+import * as migration_20260429_130000_casting_director_career_items from './20260429_130000_casting_director_career_items'
+import * as migration_20260429_140000_casting_director_optional_display_status from './20260429_140000_casting_director_optional_display_status'
+import * as migration_20260429_150000_global_optional_archived_status from './20260429_150000_global_optional_archived_status'
 
 export const migrations = [
   {
@@ -65,5 +69,25 @@ export const migrations = [
     up: migration_20260428_010000_teacher_career_items.up,
     down: migration_20260428_010000_teacher_career_items.down,
     name: '20260428_010000_teacher_career_items',
+  },
+  {
+    up: migration_20260429_120000_casting_director_profile_image_media.up,
+    down: migration_20260429_120000_casting_director_profile_image_media.down,
+    name: '20260429_120000_casting_director_profile_image_media',
+  },
+  {
+    up: migration_20260429_130000_casting_director_career_items.up,
+    down: migration_20260429_130000_casting_director_career_items.down,
+    name: '20260429_130000_casting_director_career_items',
+  },
+  {
+    up: migration_20260429_140000_casting_director_optional_display_status.up,
+    down: migration_20260429_140000_casting_director_optional_display_status.down,
+    name: '20260429_140000_casting_director_optional_display_status',
+  },
+  {
+    up: migration_20260429_150000_global_optional_archived_status.up,
+    down: migration_20260429_150000_global_optional_archived_status.down,
+    name: '20260429_150000_global_optional_archived_status',
   },
 ]

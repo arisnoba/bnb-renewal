@@ -102,6 +102,44 @@ Postgres만 띄우려면 아래 명령을 사용한다.
 docker compose up -d postgres
 ```
 
+Beekeeper Studio 같은 DB GUI에서 로컬 DB를 볼 때는 아래 값을 입력한다.
+
+Payload 로컬 Postgres:
+
+| 항목 | 값 |
+| --- | --- |
+| Connection Type | `Postgres` |
+| Authentication Method | `Username / Password` |
+| Connection Mode | `Host and Port` |
+| Host | `127.0.0.1` |
+| Port | `5432` |
+| User | `postgres` |
+| Password | `postgres` |
+| Default Database | `bnb_renewal` |
+| SSL | 꺼짐 |
+| SSH Tunnel | 꺼짐 |
+| Connection Name | `BNB Local Postgres` |
+
+접속 URL로 입력할 수 있는 도구에서는 `postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal`을 사용한다. macOS 일부 DB GUI에서는 `localhost`가 IPv6 `::1`로 먼저 잡혀 다른 빈 DB처럼 보일 수 있으므로 `127.0.0.1`을 기본값으로 사용한다.
+
+레거시 MariaDB:
+
+| 항목 | 값 |
+| --- | --- |
+| Connection Type | `MariaDB` 또는 `MySQL` |
+| Authentication Method | `Username / Password` |
+| Connection Mode | `Host and Port` |
+| Host | `127.0.0.1` |
+| Port | `3307` |
+| User | `root` |
+| Password | `root` |
+| Default Database | 복원 전에는 비워두고, 작업 테이블 확인 시 `bnb_legacy_work` |
+| SSL | 꺼짐 |
+| SSH Tunnel | 꺼짐 |
+| Connection Name | `BNB Legacy MariaDB` |
+
+접속 URL로 입력할 수 있는 도구에서는 작업 테이블 기준으로 `mysql://root:root@127.0.0.1:3307/bnb_legacy_work`을 사용한다. 원본 복원 DB를 직접 볼 때는 Default Database를 `baewoo`, `bnbhighteen`, `bnbuniv`, `kidscenter` 중 필요한 DB로 바꾼다.
+
 센터별 레거시 dump를 로컬 MariaDB에 복원하려면 `data/legacy_dumps`에 dump 파일 4개를 둔 뒤 아래 명령을 실행한다.
 
 ```bash

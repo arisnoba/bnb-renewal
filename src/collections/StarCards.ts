@@ -69,13 +69,13 @@ export const StarCards: CollectionConfig = {
     {
       name: 'displayStatus',
       type: 'select',
-      defaultValue: 'published',
+      label: '상태',
+      defaultValue: 'archived',
       options: [
         { label: '임시저장', value: 'draft' },
         { label: '공개', value: 'published' },
-        { label: '보관', value: 'archived' },
+        { label: '비공개', value: 'archived' },
       ],
-      required: true,
     },
     {
       name: 'viewCount',

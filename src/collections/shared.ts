@@ -128,7 +128,7 @@ export function authorNameFromCenters(value: unknown) {
 export const displayStatusOptions = [
   { label: "임시저장", value: "draft" },
   { label: "공개", value: "published" },
-  { label: "보관", value: "archived" },
+  { label: "비공개", value: "archived" },
 ];
 
 export const centersField: Field = {
@@ -264,10 +264,9 @@ export const publishedAtField: Field = {
 export const displayStatusField: Field = {
   name: "displayStatus",
   type: "select",
-  label: "노출 상태",
-  defaultValue: "published",
+  label: "상태",
+  defaultValue: "archived",
   options: displayStatusOptions,
-  required: true,
 };
 
 export const publishingFields: Field[] = [publishedAtField, displayStatusField];

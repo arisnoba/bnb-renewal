@@ -239,10 +239,9 @@ export const ExamResults: CollectionConfig = {
       {
         name: "displayStatus",
         type: "select",
-        label: "노출 상태",
-        defaultValue: "published",
+        label: "상태",
+        defaultValue: "archived",
         options: displayStatusOptions,
-        required: true,
       },
       authorNameField,
       slugField({

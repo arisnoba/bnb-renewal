@@ -19,6 +19,7 @@ CREATE TABLE `bnb_legacy_work`.`castings` (
   `centers` longtext NOT NULL CHECK (JSON_VALID(`centers`)),
   `body_html` mediumtext DEFAULT NULL,
   `category` varchar(255) DEFAULT NULL,
+  `profile_image_path` varchar(512) DEFAULT NULL,
   `author_name` varchar(255) DEFAULT NULL,
   `published_at` datetime NOT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT 1,
@@ -239,6 +240,25 @@ FROM (
 ) AS `ranked_castings`
 WHERE `representative_rank` = 1;
 
+DROP TEMPORARY TABLE IF EXISTS `tmp_casting_files`;
+
+CREATE TEMPORARY TABLE `tmp_casting_files` AS
+SELECT 'baewoo' AS `source_db`, `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `baewoo`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL
+UNION ALL
+SELECT 'bnbuniv', `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `bnbuniv`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL
+UNION ALL
+SELECT 'kidscenter', `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `kidscenter`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL
+UNION ALL
+SELECT 'bnbhighteen', `bo_table`, `wr_id`, `bf_no`, `bf_file`
+FROM `bnbhighteen`.`g5_board_file`
+WHERE NULLIF(TRIM(`bf_file`), '') IS NOT NULL;
+
 INSERT INTO `bnb_legacy_work`.`castings` (
   `source_db`,
   `source_table`,
@@ -249,6 +269,7 @@ INSERT INTO `bnb_legacy_work`.`castings` (
   `centers`,
   `body_html`,
   `category`,
+  `profile_image_path`,
   `author_name`,
   `published_at`,
   `is_public`,
@@ -270,6 +291,15 @@ SELECT
   ) AS `centers`,
   NULLIF(`representative`.`wr_content`, '') AS `body_html`,
   NULLIF(TRIM(`representative`.`ca_name`), '') AS `category`,
+  (
+    SELECT CONCAT('/legacy/castings/', `representative`.`source_db`, '/', `file`.`bo_table`, '/', `representative`.`wr_id`, '/', `file`.`bf_file`)
+    FROM `tmp_casting_files` AS `file`
+    WHERE `file`.`source_db` = `representative`.`source_db`
+      AND `file`.`bo_table` = REPLACE(`representative`.`source_table`, 'g5_write_', '')
+      AND `file`.`wr_id` = `representative`.`wr_id`
+    ORDER BY `file`.`bf_no`
+    LIMIT 1
+  ) AS `profile_image_path`,
   NULLIF(TRIM(`representative`.`wr_name`), '') AS `author_name`,
   COALESCE(NULLIF(`representative`.`wr_datetime`, '0000-00-00 00:00:00'), CURRENT_TIMESTAMP) AS `published_at`,
   IF(COALESCE(TRIM(`representative`.`public`), '') = '0' OR UPPER(COALESCE(TRIM(`representative`.`public`), '')) = 'N', 0, 1) AS `is_public`,
