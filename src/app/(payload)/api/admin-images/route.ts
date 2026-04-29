@@ -1,11 +1,11 @@
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { unlink } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
-import { del, put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 
 import { getPayloadClient } from "@/lib/payload";
+import { deleteR2Object, getR2ObjectKey, uploadR2Object } from "@/lib/r2";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const LOCAL_UPLOAD_ROOT = path.resolve(
@@ -38,6 +38,12 @@ async function requireAdmin(request: Request) {
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
+}
+
+function logStorageError(message: string, error: unknown) {
+  console.error(message, error);
+
+  return jsonError(`${message} R2 키 권한과 버킷 설정을 확인하세요.`, 500);
 }
 
 function getStorageDateParts() {
@@ -87,14 +93,6 @@ function getLocalFilePath(publicPath: string) {
   return filePath;
 }
 
-function isVercelBlobUrl(value: string) {
-  try {
-    return new URL(value).hostname.endsWith(".blob.vercel-storage.com");
-  } catch {
-    return false;
-  }
-}
-
 export async function POST(request: Request) {
   if (!(await requireAdmin(request))) {
     return jsonError("로그인이 필요합니다.", 401);
@@ -120,33 +118,25 @@ export async function POST(request: Request) {
     file.name,
   )}`;
   const storagePath = `admin-images/${year}/${month}/${fileName}`;
+  const fileBuffer = Buffer.from(await file.arrayBuffer());
+  let uploaded: Awaited<ReturnType<typeof uploadR2Object>>;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(storagePath, file, {
-      access: "public",
-      addRandomSuffix: false,
-      allowOverwrite: false,
+  try {
+    uploaded = await uploadR2Object({
+      body: fileBuffer,
+      cacheControl: "public, max-age=31536000, immutable",
       contentType: file.type,
+      key: storagePath,
     });
-
-    return NextResponse.json({
-      fileName,
-      path: blob.url,
-      storage: "blob",
-    });
+  } catch (error) {
+    return logStorageError("R2 이미지 업로드에 실패했습니다.", error);
   }
-
-  const localDir = path.join(LOCAL_UPLOAD_ROOT, year, month);
-  const localPath = path.join(localDir, fileName);
-  const publicPath = `${PUBLIC_UPLOAD_PREFIX}/${year}/${month}/${fileName}`;
-
-  await mkdir(localDir, { recursive: true });
-  await writeFile(localPath, Buffer.from(await file.arrayBuffer()));
 
   return NextResponse.json({
     fileName,
-    path: publicPath,
-    storage: "local",
+    objectKey: uploaded.objectKey,
+    path: uploaded.publicUrl,
+    storage: "r2",
   });
 }
 
@@ -164,8 +154,14 @@ export async function DELETE(request: Request) {
     return jsonError("삭제할 이미지 경로가 없습니다.", 400);
   }
 
-  if (process.env.BLOB_READ_WRITE_TOKEN && isVercelBlobUrl(imagePath)) {
-    await del(imagePath);
+  const objectKey = getR2ObjectKey(imagePath);
+
+  if (objectKey) {
+    try {
+      await deleteR2Object(objectKey);
+    } catch (error) {
+      return logStorageError("R2 이미지 삭제에 실패했습니다.", error);
+    }
   } else {
     const localPath = getLocalFilePath(imagePath);
 

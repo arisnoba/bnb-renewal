@@ -1,8 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { put } from '@vercel/blob'
-
+import { uploadR2Object } from '../../src/lib/r2'
 import { resolveProjectPath, writeJsonFile } from './runtime'
 
 type Options = {
@@ -50,12 +49,13 @@ type UploadSource = {
 }
 
 type UploadedEntry = {
-  blobUrl?: string
   bytes?: number
   contentType?: string
   error?: string
   normalizedUrl: string
+  objectKey?: string
   pathname: string
+  publicUrl?: string
   sourceUrl: string
   status: 'dry-run' | 'failed' | 'uploaded'
   title?: string
@@ -64,17 +64,13 @@ type UploadedEntry = {
 async function main() {
   const options = parseArgs(process.argv.slice(2))
 
-  if (!options.dryRun && !process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error('BLOB_READ_WRITE_TOKEN 이 필요합니다.')
-  }
-
   const scanFile = await readScanFile(options.inputPath)
   const uploadSources = toUploadSources(scanFile)
   const urls = options.limit === 'all' ? uploadSources : uploadSources.slice(0, options.limit)
   const entries: UploadedEntry[] = []
 
   for (const item of urls) {
-    const pathname = buildBlobPathname(options.prefix, item.pathnameSource)
+    const pathname = buildObjectKey(options.prefix, item.pathnameSource)
 
     if (options.dryRun) {
       entries.push({
@@ -91,19 +87,20 @@ async function main() {
       const image = item.localPath
         ? await readLocalImage(item.localPath)
         : await fetchImage(item.sourceUrl, item.normalizedUrl)
-      const blob = await put(pathname, image.blob, {
-        access: 'public',
-        addRandomSuffix: false,
-        allowOverwrite: true,
+      const uploaded = await uploadR2Object({
+        body: image.buffer,
+        cacheControl: 'public, max-age=31536000, immutable',
         contentType: image.contentType,
+        key: pathname,
       })
 
       entries.push({
-        blobUrl: blob.url,
         bytes: image.bytes,
         contentType: image.contentType,
         normalizedUrl: item.normalizedUrl,
+        objectKey: uploaded.objectKey,
         pathname,
+        publicUrl: uploaded.publicUrl,
         sourceUrl: item.sourceUrl,
         status: 'uploaded',
         title: item.title,
@@ -255,7 +252,7 @@ function toUploadSources(input: ScanFile): UploadSource[] {
     }))
 }
 
-function buildBlobPathname(prefix: string, source: string) {
+function buildObjectKey(prefix: string, source: string) {
   const sourcePath = /^https?:\/\//i.test(source)
     ? new URL(source).pathname.replace(/^\/+/, '')
     : source.replace(/^\/+/, '')
@@ -272,11 +269,11 @@ async function fetchImage(sourceUrl: string, normalizedUrl: string) {
   }
 
   const arrayBuffer = await response.arrayBuffer()
-  const blob = new Blob([arrayBuffer], { type: contentType })
+  const buffer = Buffer.from(arrayBuffer)
 
   return {
-    blob,
-    bytes: arrayBuffer.byteLength,
+    buffer,
+    bytes: buffer.byteLength,
     contentType,
   }
 }
@@ -285,10 +282,9 @@ async function readLocalImage(localPath: string) {
   const absolutePath = resolveProjectPath(localPath)
   const buffer = await fs.readFile(absolutePath)
   const contentType = contentTypeFromPath(absolutePath)
-  const blob = new Blob([buffer], { type: contentType })
 
   return {
-    blob,
+    buffer,
     bytes: buffer.byteLength,
     contentType,
   }

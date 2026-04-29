@@ -23,14 +23,15 @@ type ManifestFile = {
   entries: Array<{
     blobUrl?: string
     normalizedUrl: string
+    publicUrl?: string
     sourceUrl: string
     status: string
   }>
 }
 
 type Replacement = {
-  blobUrl: string
   legacyUrls: string[]
+  publicUrl: string
 }
 
 type RowResult = {
@@ -210,10 +211,10 @@ async function readReplacements(manifestPath: string): Promise<Replacement[]> {
   }
 
   return manifest.entries
-    .filter((entry) => entry.status === 'uploaded' && entry.blobUrl)
+    .filter((entry) => entry.status === 'uploaded' && (entry.publicUrl || entry.blobUrl))
     .map((entry) => ({
-      blobUrl: String(entry.blobUrl),
       legacyUrls: Array.from(new Set([entry.sourceUrl, entry.normalizedUrl])),
+      publicUrl: String(entry.publicUrl ?? entry.blobUrl),
     }))
 }
 
@@ -250,7 +251,7 @@ function applyReplacements(value: string, replacements: Replacement[]) {
 
       usedLegacyUrls.add(legacyUrl)
       count += occurrences
-      nextValue = nextValue.split(legacyUrl).join(replacement.blobUrl)
+      nextValue = nextValue.split(legacyUrl).join(replacement.publicUrl)
     }
   }
 
