@@ -22,9 +22,7 @@ type Options = {
 
 type ExamSchoolLogoRow = {
   id: number
-  legacy_meta: unknown
   logo_media_id: number | null
-  logo_path: string | null
   school_name: string | null
   school_slug: string | null
 }
@@ -236,7 +234,7 @@ async function readRows(
   schema: Awaited<ReturnType<typeof readSchemaState>>,
 ): Promise<ExamSchoolLogoRow[]> {
   const params: unknown[] = []
-  const where: string[] = ['logo_path IS NOT NULL']
+  const where: string[] = ['school_slug IS NOT NULL']
 
   if (options.ids.length > 0) {
     params.push(options.ids)
@@ -251,9 +249,7 @@ async function readRows(
         id,
         school_name,
         school_slug,
-        logo_path,
-        ${logoMediaSelect},
-        legacy_meta
+        ${logoMediaSelect}
       FROM exam_school_logos
       WHERE ${where.join(' AND ')}
       ORDER BY id ASC
@@ -295,18 +291,10 @@ async function processRow({
 
   const matched = matchLogo(row, reportEntries)
 
-  if (!matched && !row.logo_path) {
-    return {
-      ...base,
-      action: 'skipped-no-logo',
-    }
-  }
-
   if (!matched) {
     return {
       ...base,
       action: 'unresolved-logo-path',
-      legacyPath: normalizeLegacyPath(row.logo_path),
     }
   }
 
@@ -361,43 +349,24 @@ async function processRow({
 }
 
 function matchLogo(row: ExamSchoolLogoRow, reportEntries: DownloadReportEntry[]) {
-  const legacyPath = normalizeLegacyPath(row.logo_path)
-
-  if (!legacyPath) {
-    return undefined
-  }
-
-  const byReport = findReportEntry(row, legacyPath, reportEntries)
+  const byReport = findReportEntry(row, reportEntries)
 
   if (byReport?.localPath) {
+    const legacyPath = normalizeLegacyPath(byReport.remotePath) ?? normalizeLegacyPath(byReport.sourceUrl)
+
     return {
       fileName: path.basename(byReport.localPath),
-      legacyPath,
+      legacyPath: legacyPath ?? byReport.localPath,
       localPath: normalizeLocalPath(byReport.localPath),
       originalName: text(byReport.originalName),
     } satisfies MatchedLogo
   }
-
-  const localPath = buildLocalPathFromRow(row, legacyPath)
-
-  if (!localPath) {
-    return undefined
-  }
-
-  return {
-    fileName: path.basename(localPath),
-    legacyPath,
-    localPath,
-  } satisfies MatchedLogo
 }
 
 function findReportEntry(
   row: ExamSchoolLogoRow,
-  legacyPath: string,
   reportEntries: DownloadReportEntry[],
 ) {
-  const fileName = path.basename(legacyPath)
-
   return reportEntries.find((entry) => {
     if (entry.assetRole !== 'logo') {
       return false
@@ -405,12 +374,8 @@ function findReportEntry(
 
     const sameId = entry.workId === row.id || entry.sourceId === row.id
     const sameSlug = text(entry.slug) === text(row.school_slug)
-    const samePath =
-      normalizeLegacyPath(entry.remotePath) === legacyPath ||
-      normalizeLegacyPath(entry.sourceUrl) === legacyPath ||
-      path.basename(text(entry.localPath) ?? '') === fileName
 
-    return (sameId || sameSlug) && samePath
+    return Boolean(entry.localPath) && (sameId || sameSlug)
   })
 }
 
@@ -426,11 +391,6 @@ async function readDownloadReportEntries(): Promise<DownloadReportEntry[]> {
   } catch {
     return []
   }
-}
-
-function buildLocalPathFromRow(row: ExamSchoolLogoRow, legacyPath: string) {
-  const fileName = path.basename(legacyPath)
-  return `public/legacy/exam-school-logos/bnbuniv/new_hoogi/${row.id}/logo/${fileName}`
 }
 
 async function findExistingMediaId(pool: Pool, fileName: string) {

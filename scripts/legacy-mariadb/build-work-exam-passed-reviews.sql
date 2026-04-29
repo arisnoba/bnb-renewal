@@ -126,7 +126,6 @@ CREATE TABLE `bnb_legacy_work`.`exam_school_logos` (
   `logo_file` varchar(255) NOT NULL,
   `logo_width` int(11) DEFAULT NULL,
   `logo_height` int(11) DEFAULT NULL,
-  `review_count` int(11) NOT NULL,
   `legacy_meta` longtext DEFAULT NULL CHECK (JSON_VALID(`legacy_meta`)),
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
@@ -171,7 +170,6 @@ INSERT INTO `bnb_legacy_work`.`exam_school_logos` (
   `logo_file`,
   `logo_width`,
   `logo_height`,
-  `review_count`,
   `created_at`,
   `updated_at`,
   `legacy_meta`
@@ -185,11 +183,6 @@ SELECT
   `representative`.`bf_file` AS `logo_file`,
   `representative`.`bf_width` AS `logo_width`,
   `representative`.`bf_height` AS `logo_height`,
-  (
-    SELECT COUNT(*)
-    FROM `tmp_exam_school_logo_sources` AS `source`
-    WHERE `source`.`school_slug` = `representative`.`school_slug`
-  ) AS `review_count`,
   (
     SELECT MIN(COALESCE(NULLIF(`source`.`wr_datetime`, '0000-00-00 00:00:00'), CURRENT_TIMESTAMP))
     FROM `tmp_exam_school_logo_sources` AS `source`

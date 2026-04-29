@@ -127,7 +127,7 @@ export const testCollections = [
   {
     description: '입시전용 합격후기',
     href: '/test/exam-passed-reviews',
-    imageFields: ['school.logoPath', 'schoolLogoPath', 'studentImagePath'],
+    imageFields: ['school.logoMedia', 'schoolLogoPath', 'studentImagePath'],
     label: 'Exam Passed Reviews',
     metaFields: ['centers', 'school.schoolName', 'schoolName', 'publishedAt'],
     slug: 'exam-passed-reviews',
@@ -157,9 +157,9 @@ export const testCollections = [
   {
     description: '합격후기에 쓰이는 학교 로고 리스트',
     href: '/test/exam-school-logos',
-    imageFields: ['logoPath'],
+    imageFields: ['logoMedia'],
     label: 'Exam School Logos',
-    metaFields: ['schoolSlug', 'reviewCount'],
+    metaFields: ['schoolSlug'],
     slug: 'exam-school-logos',
     sort: 'schoolName',
     titleFields: ['schoolName'],

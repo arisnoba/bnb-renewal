@@ -13,6 +13,8 @@ import * as migration_20260429_120000_casting_director_profile_image_media from 
 import * as migration_20260429_130000_casting_director_career_items from './20260429_130000_casting_director_career_items'
 import * as migration_20260429_140000_casting_director_optional_display_status from './20260429_140000_casting_director_optional_display_status'
 import * as migration_20260429_150000_global_optional_archived_status from './20260429_150000_global_optional_archived_status'
+import * as migration_20260429_160000_drop_exam_school_logo_review_count from './20260429_160000_drop_exam_school_logo_review_count'
+import * as migration_20260429_170000_drop_exam_school_logo_legacy_fields from './20260429_170000_drop_exam_school_logo_legacy_fields'
 
 export const migrations = [
   {
@@ -89,5 +91,15 @@ export const migrations = [
     up: migration_20260429_150000_global_optional_archived_status.up,
     down: migration_20260429_150000_global_optional_archived_status.down,
     name: '20260429_150000_global_optional_archived_status',
+  },
+  {
+    up: migration_20260429_160000_drop_exam_school_logo_review_count.up,
+    down: migration_20260429_160000_drop_exam_school_logo_review_count.down,
+    name: '20260429_160000_drop_exam_school_logo_review_count',
+  },
+  {
+    up: migration_20260429_170000_drop_exam_school_logo_legacy_fields.up,
+    down: migration_20260429_170000_drop_exam_school_logo_legacy_fields.down,
+    name: '20260429_170000_drop_exam_school_logo_legacy_fields',
   },
 ]

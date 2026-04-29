@@ -408,9 +408,9 @@ export const mariaDbTestCollections = [
         'exam_school_logos' AS source_table,
         CAST(id AS CHAR) AS source_id,
         COALESCE(school_name, '') AS title,
-        COALESCE(logo_original_name, '') AS meta1,
-        CAST(review_count AS CHAR) AS meta2,
-        CONCAT(COALESCE(logo_width, ''), 'x', COALESCE(logo_height, '')) AS meta3,
+        COALESCE(school_slug, '') AS meta1,
+        '' AS meta2,
+        '' AS meta3,
         ${localLegacyAssetPath({
 			boTable: "'new_hoogi'",
 			collection: 'exam-school-logos',

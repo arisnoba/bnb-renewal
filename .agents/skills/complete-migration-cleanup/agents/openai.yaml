@@ -1,0 +1,4 @@
+interface:
+  display_name: "마이그레이션 정제 완료"
+  short_description: "정제 검증과 원격 반영 게이트를 실행합니다"
+  default_prompt: "Use $complete-migration-cleanup to verify a cleaned migration table and prepare safe remote Neon/R2 follow-up."

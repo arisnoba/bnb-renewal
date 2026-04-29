@@ -2,13 +2,11 @@ import type { CollectionConfig } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
 import {
-  adminCollapsible,
   adminRow,
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
   isExamAdminMenuHidden,
-  legacyMetaField,
   sidebarFields,
 } from "./shared";
 
@@ -70,55 +68,6 @@ export const ExamSchoolLogos: CollectionConfig = {
       label: "로고 이미지",
       relationTo: "media",
     },
-    {
-      name: "reviewCount",
-      type: "number",
-      label: "후기 수",
-      defaultValue: 0,
-      admin: {
-        hidden: true,
-      },
-    },
     ...sidebarFields([centersField, authorNameField]),
-    adminCollapsible("레거시/원본", [
-      {
-        name: "logoPath",
-        type: "text",
-        label: "레거시 로고 경로",
-      },
-      {
-        name: "logoOriginalName",
-        type: "text",
-        label: "원본 파일명",
-        admin: {
-          hidden: true,
-        },
-      },
-      {
-        name: "logoFile",
-        type: "text",
-        label: "로고 파일",
-        admin: {
-          hidden: true,
-        },
-      },
-      {
-        name: "logoWidth",
-        type: "number",
-        label: "가로",
-        admin: {
-          hidden: true,
-        },
-      },
-      {
-        name: "logoHeight",
-        type: "number",
-        label: "세로",
-        admin: {
-          hidden: true,
-        },
-      },
-      legacyMetaField,
-    ]),
   ],
 };

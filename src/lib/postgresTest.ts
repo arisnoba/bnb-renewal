@@ -368,7 +368,7 @@ function mapDocToRow(
         id: rowId(doc.id),
         imagePath: examSchoolLogoImagePath(doc),
         meta1: stringify(doc.schoolSlug),
-        meta2: stringify(doc.reviewCount),
+        meta2: '',
         meta3: '',
         relatedFiles: [],
         slug: stringify(doc.schoolSlug),
@@ -620,7 +620,7 @@ function examPassedReviewImagePath(doc: TestDoc) {
 }
 
 function examSchoolLogoImagePath(doc: TestDoc) {
-  return mediaImagePath(doc.logoMedia) || examSchoolLogoLegacyPath(doc)
+  return mediaImagePath(doc.logoMedia)
 }
 
 function examResultImagePath(doc: TestDoc) {
@@ -686,20 +686,6 @@ function normalizeMediaPath(path: unknown) {
   }
 
   return normalizeImagePath(value)
-}
-
-function examSchoolLogoLegacyPath(doc: TestDoc) {
-  const fileName = basename(doc.logoPath)
-
-  if (!fileName) {
-    return ''
-  }
-
-  if (stringify(doc.logoPath).startsWith('/legacy/exam-school-logos/')) {
-    return normalizeImagePath(doc.logoPath)
-  }
-
-  return `/legacy/exam-school-logos/bnbuniv/new_hoogi/${stringify(doc.id)}/logo/${encodeURIComponent(fileName)}`
 }
 
 function examPassedReviewStudentImagePath(doc: TestDoc) {
