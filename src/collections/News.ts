@@ -22,6 +22,7 @@ import {
 } from "@payloadcms/richtext-lexical";
 import { JSDOM } from "jsdom";
 import { slugField } from "payload";
+import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
 import { centerScopedCollectionAccess } from "./access";
 import {
@@ -36,6 +37,8 @@ import {
   sidebarFields,
 } from "./shared";
 
+const newsSlugify = createKoreanSlugifyWithFallback("news");
+
 const newsBodyEditor = lexicalEditor({
   admin: {
     placeholder: "본문을 입력하세요.",
@@ -49,28 +52,6 @@ const newsBodyEditor = lexicalEditor({
     InlineToolbarFeature(),
   ],
 });
-
-function newsSlugify({ valueToSlugify }: { valueToSlugify?: unknown }) {
-  const normalized = String(valueToSlugify ?? "")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-  const tokens = normalized.match(/[a-z0-9]+/g) ?? [];
-
-  if (tokens.length > 0) {
-    return tokens.join("-");
-  }
-
-  const now = new Date();
-  const date = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, "0"),
-    String(now.getDate()).padStart(2, "0"),
-  ].join("");
-  const suffix = Math.random().toString(36).slice(2, 6);
-
-  return `news-${date}-${suffix}`;
-}
 
 function hasLexicalContent(value: unknown) {
   if (!value || typeof value !== "object") {

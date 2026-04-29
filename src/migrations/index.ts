@@ -15,6 +15,7 @@ import * as migration_20260429_140000_casting_director_optional_display_status f
 import * as migration_20260429_150000_global_optional_archived_status from './20260429_150000_global_optional_archived_status'
 import * as migration_20260429_160000_drop_exam_school_logo_review_count from './20260429_160000_drop_exam_school_logo_review_count'
 import * as migration_20260429_170000_drop_exam_school_logo_legacy_fields from './20260429_170000_drop_exam_school_logo_legacy_fields'
+import * as migration_20260429_190000_teacher_generate_slug from './20260429_190000_teacher_generate_slug'
 
 export const migrations = [
   {
@@ -101,5 +102,10 @@ export const migrations = [
     up: migration_20260429_170000_drop_exam_school_logo_legacy_fields.up,
     down: migration_20260429_170000_drop_exam_school_logo_legacy_fields.down,
     name: '20260429_170000_drop_exam_school_logo_legacy_fields',
+  },
+  {
+    up: migration_20260429_190000_teacher_generate_slug.up,
+    down: migration_20260429_190000_teacher_generate_slug.down,
+    name: '20260429_190000_teacher_generate_slug',
   },
 ]

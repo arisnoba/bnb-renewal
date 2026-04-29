@@ -3,6 +3,7 @@
 import type { ChangeEvent } from 'react';
 
 import { useField } from '@payloadcms/ui';
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { getTeacherImageSrc } from './teacherImageSrc';
@@ -258,13 +259,13 @@ export const TeacherAdditionalPhotosField = () => {
 						<article
 							key={`${value}-${index}`}
 							style={{
-								alignItems: 'start',
+								alignItems: 'center',
 								background: 'var(--theme-elevation-50)',
 								border: '1px solid var(--theme-border-color)',
 								borderRadius: 'var(--style-radius-s)',
 								display: 'grid',
 								gap: 'calc(var(--base) / 2)',
-								gridTemplateColumns: '72px minmax(0, 1fr) auto',
+								gridTemplateColumns: '72px minmax(0, 1fr) auto auto',
 								padding: 'calc(var(--base) * 0.5)',
 							}}>
 							<a
@@ -303,56 +304,42 @@ export const TeacherAdditionalPhotosField = () => {
 									'IMG'
 								)}
 							</a>
-							<div style={{ display: 'grid', gap: 8, minWidth: 0 }}>
-								<div
-									style={{
-										color: 'var(--theme-text)',
-										fontSize: 13,
-										fontWeight: 600,
-										overflow: 'hidden',
-										textOverflow: 'ellipsis',
-										whiteSpace: 'nowrap',
-									}}
-									title={fileName}>
-									{index + 1}. {fileName}
-								</div>
-								<input
-									disabled={controlsDisabled}
-									onChange={(event) => {
-										const nextValues = [...visibleValues];
-										nextValues[index] = event.currentTarget.value;
-										updateValues([...nextValues, ...Array(photoFields.length - nextValues.length).fill('')]);
-									}}
-									placeholder="이미지 경로 또는 URL"
-									style={{
-										background: 'var(--theme-input-bg, var(--theme-elevation-0))',
-										border: '1px solid var(--theme-border-color)',
-										borderRadius: 'var(--style-radius-s)',
-										color: 'var(--theme-text)',
-										fontSize: 12,
-										minWidth: 0,
-										padding: '8px 10px',
-									}}
-									type="text"
-									value={value}
-								/>
+							<div
+								style={{
+									color: 'var(--theme-text)',
+									fontSize: 13,
+									fontWeight: 600,
+									minWidth: 0,
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+								}}
+								title={fileName}>
+								{fileName}
 							</div>
-							<div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+							<div style={{ display: 'flex', gap: 6 }}>
 								<button
+									aria-label="위로 이동"
 									disabled={controlsDisabled || index === 0}
 									onClick={() => moveItem(index, -1)}
 									style={actionButtonStyle(controlsDisabled || index === 0)}
+									title="위로 이동"
 									type="button">
-									위
+									<ArrowUp aria-hidden="true" size={16} strokeWidth={2} />
 								</button>
 								<button
+									aria-label="아래로 이동"
 									disabled={controlsDisabled || index === visibleValues.length - 1}
 									onClick={() => moveItem(index, 1)}
 									style={actionButtonStyle(controlsDisabled || index === visibleValues.length - 1)}
+									title="아래로 이동"
 									type="button">
-									아래
+									<ArrowDown aria-hidden="true" size={16} strokeWidth={2} />
 								</button>
+							</div>
+							<div>
 								<button
+									aria-label="삭제"
 									disabled={controlsDisabled}
 									onClick={() => removeItem(index)}
 									style={{
@@ -361,8 +348,9 @@ export const TeacherAdditionalPhotosField = () => {
 										borderColor: 'var(--theme-error-150)',
 										color: 'var(--theme-error-700)',
 									}}
+									title="삭제"
 									type="button">
-									삭제
+									<Trash2 aria-hidden="true" size={16} strokeWidth={2} />
 								</button>
 							</div>
 						</article>
@@ -377,14 +365,19 @@ export const TeacherAdditionalPhotoHiddenField = () => null;
 
 function actionButtonStyle(disabled: boolean) {
 	return {
+		alignItems: 'center',
 		background: 'var(--theme-elevation-100)',
 		border: '1px solid var(--theme-border-color)',
 		borderRadius: 'var(--style-radius-s)',
 		color: 'var(--theme-text)',
 		cursor: disabled ? 'not-allowed' : 'pointer',
+		display: 'inline-flex',
 		fontSize: 12,
+		height: 36,
+		justifyContent: 'center',
 		lineHeight: 1,
-		padding: '8px 10px',
+		padding: 0,
 		whiteSpace: 'nowrap' as const,
+		width: 36,
 	};
 }

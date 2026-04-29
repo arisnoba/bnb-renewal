@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { koreanSlugify } from '../utilities/koreanSlugify'
 import { slugField } from 'payload'
 
 export const Categories: CollectionConfig = {
@@ -23,6 +24,7 @@ export const Categories: CollectionConfig = {
     },
     slugField({
       position: undefined,
+      slugify: koreanSlugify,
     }),
   ],
 }
