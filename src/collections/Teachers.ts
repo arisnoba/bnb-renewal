@@ -2,7 +2,6 @@ import type { CollectionConfig } from "payload";
 
 import { allowAll, centerScopedCollectionAccess } from "./access";
 import {
-  adminCollapsible,
   adminRow,
   adminTabs,
   authorNameField,
@@ -33,57 +32,52 @@ export const Teachers: CollectionConfig = {
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
+    {
+      name: "name",
+      type: "text",
+      label: "이름",
+      required: true,
+    },
     ...adminTabs([
       {
         label: "기본 정보",
         fields: [
           adminRow([
             {
-              name: "name",
-              type: "text",
-              label: "이름",
-              required: true,
-            },
-            {
               name: "role",
               type: "text",
               label: "직함",
             },
+            {
+              name: "summary",
+              type: "textarea",
+              label: "전공/학교",
+            },
           ]),
           imagePathField("profileImagePath", "프로필 이미지"),
-          adminCollapsible("추가 사진", [
-            adminRow([imagePathField("photoImage1", "사진 1")]),
-            adminRow([imagePathField("photoImage2", "사진 2")]),
-            adminRow([imagePathField("photoImage3", "사진 3")]),
-            adminRow([imagePathField("photoImage4", "사진 4")]),
-            adminRow([imagePathField("photoImage5", "사진 5")]),
-            adminRow([imagePathField("photoImage6", "사진 6")]),
-          ]),
           {
-            name: "gallery",
-            type: "array",
-            label: "갤러리",
-            fields: [
-              {
-                ...imagePathField("path", "이미지", true),
+            name: "photoImage1",
+            type: "text",
+            label: "갤러리 이미지 업로드",
+            admin: {
+              components: {
+                Field: "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotosField",
               },
-              {
-                name: "title",
-                type: "text",
-                label: "제목",
-              },
-              {
-                name: "description",
-                type: "text",
-                label: "설명",
-              },
-            ],
+            },
           },
-          {
-            name: "summary",
-            type: "textarea",
-            label: "요약",
-          },
+          ...["photoImage2", "photoImage3", "photoImage4", "photoImage5", "photoImage6"].map(
+            (name): NonNullable<CollectionConfig["fields"]>[number] => ({
+              name,
+              type: "text",
+              label: name,
+              admin: {
+                components: {
+                  Field:
+                    "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotoHiddenField",
+                },
+              },
+            }),
+          ),
           {
             name: "bioHtml",
             type: "textarea",

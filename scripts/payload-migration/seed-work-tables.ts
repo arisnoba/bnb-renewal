@@ -492,7 +492,6 @@ const configs: TableConfig[] = [
       'photo_image4',
       'photo_image5',
       'photo_image6',
-      'gallery',
       'display_order',
       'status',
       'legacy_meta',
@@ -503,7 +502,6 @@ const configs: TableConfig[] = [
       careerItems: parseTeacherCareerItems(row.body_html),
       centers: centersFrom(row.centers),
       displayOrder: number(row.display_order),
-      gallery: normalizeGallery(row.gallery),
       legacyMeta: {
         normalizedName: text(row.normalized_name),
         ...(objectValue(parseJsonValue(row.legacy_meta)) ?? {}),
@@ -1003,18 +1001,6 @@ function parseJsonArray(value: unknown): unknown[] {
   const parsed = parseJsonValue(value)
 
   return Array.isArray(parsed) ? parsed : []
-}
-
-function normalizeGallery(value: unknown) {
-  return parseJsonArray(value)
-    .map((item) => objectValue(item))
-    .filter((item): item is Record<string, unknown> => Boolean(item))
-    .map((item) => ({
-      description: text(item.description),
-      path: text(item.path),
-      title: text(item.title),
-    }))
-    .filter((item) => Boolean(item.path))
 }
 
 function buildRepresentativeWorks(rows: WorkRow[], teacherSourceDb: string) {

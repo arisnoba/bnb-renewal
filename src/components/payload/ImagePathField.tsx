@@ -4,7 +4,9 @@ import type { TextFieldClientComponent } from 'payload';
 import type { ChangeEvent } from 'react';
 
 import { useRef, useState } from 'react';
-import { useField } from '@payloadcms/ui';
+import { useDocumentInfo, useField } from '@payloadcms/ui';
+
+import { getTeacherImageSrc } from './teacherImageSrc';
 
 const imageExtensions = new Set(['avif', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp']);
 
@@ -62,15 +64,22 @@ async function readErrorMessage(response: Response) {
 
 export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFromProps }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { collectionSlug } = useDocumentInfo();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [message, setMessage] = useState('');
 	const [messageType, setMessageType] = useState<'error' | 'info'>('info');
-	const { disabled, errorMessage, setValue, showError, value } = useField<string>({
+	const { disabled, errorMessage, path: fieldPath, setValue, showError, value } = useField<string>({
 		potentiallyStalePath: pathFromProps,
 	});
+	const { value: sourceDb } = useField<string>({ path: 'sourceDb' });
+	const { value: sourceId } = useField<string>({ path: 'sourceId' });
+	const { value: sourceTable } = useField<string>({ path: 'sourceTable' });
 	const fieldValue = typeof value === 'string' ? value : '';
 	const label = typeof field.label === 'string' ? field.label : (pathFromProps ?? field.name);
-	const imageSrc = getImageSrc(value);
+	const imageSrc =
+		collectionSlug === 'teachers' && fieldPath === 'profileImagePath'
+			? getTeacherImageSrc(value, { sourceDb, sourceId, sourceTable })
+			: getImageSrc(value);
 	const canPreview = imageSrc && isProbablyImage(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());
 	const fileName = imageSrc ? getFileName(imageSrc) : getFileName(fieldValue);

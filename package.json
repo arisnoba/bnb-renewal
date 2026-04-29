@@ -49,6 +49,7 @@
     "payload:legacy:export-castings": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/export-castings-pre-c0.ts",
     "payload:legacy:scan-urls": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/scan-legacy-urls.ts",
     "payload:legacy:seed-work": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/seed-work-tables.ts",
+    "payload:legacy:backfill-teacher-photos": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-teacher-photo-images.ts",
     "payload:legacy:plan-news-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/plan-news-image-storage.ts",
     "payload:legacy:link-news-thumbnails": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-news-thumbnails-to-media.ts",
     "payload:legacy:link-casting-director-profile-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-casting-director-profile-images-to-media.ts",
