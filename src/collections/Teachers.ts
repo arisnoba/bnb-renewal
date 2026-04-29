@@ -99,15 +99,15 @@ export const Teachers: CollectionConfig = {
         ],
       },
       {
-        label: "경력관리",
+        label: "필모그래피",
         fields: [
           {
             name: "careerItems",
             type: "array",
-            label: "경력관리",
+            label: "필모그래피",
             labels: {
-              plural: "경력",
-              singular: "경력",
+              plural: "필모그래피",
+              singular: "필모그래피",
             },
             fields: [
               {
@@ -132,20 +132,22 @@ export const Teachers: CollectionConfig = {
             name: "representativeWorks",
             type: "array",
             label: "대표작",
+            labels: {
+              plural: "대표작",
+              singular: "대표작",
+            },
+            admin: {
+              components: {
+                RowLabel:
+                  "@/components/payload/TeacherRepresentativeWorkRowLabel#TeacherRepresentativeWorkRowLabel",
+              },
+            },
             fields: [
-              adminRow([
-                {
-                  name: "title",
-                  type: "text",
-                  label: "제목",
-                },
-                {
-                  name: "displayOrder",
-                  type: "number",
-                  label: "정렬순서",
-                  defaultValue: 0,
-                },
-              ]),
+              {
+                name: "title",
+                type: "text",
+                label: "제목",
+              },
               {
                 ...imagePathField("posterPath", "포스터 이미지"),
               },

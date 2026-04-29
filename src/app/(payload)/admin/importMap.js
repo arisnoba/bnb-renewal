@@ -22,6 +22,7 @@ import { FolderField as FolderField_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@pa
 import { ImagePathField as ImagePathField_fcd3c3bfc986007a95eb590661ef5689 } from '@/components/payload/ImagePathField'
 import { TeacherAdditionalPhotosField as TeacherAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
 import { TeacherAdditionalPhotoHiddenField as TeacherAdditionalPhotoHiddenField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
+import { TeacherRepresentativeWorkRowLabel as TeacherRepresentativeWorkRowLabel_d628a446f2ef335398d7c73186843abd } from '@/components/payload/TeacherRepresentativeWorkRowLabel'
 import { CentersField as CentersField_32f6973a336e54b2fbe5bbbe92a20938 } from '@/components/payload/CentersField'
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -72,6 +73,7 @@ export const importMap = {
   "@/components/payload/ImagePathField#ImagePathField": ImagePathField_fcd3c3bfc986007a95eb590661ef5689,
   "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotosField": TeacherAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
   "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotoHiddenField": TeacherAdditionalPhotoHiddenField_92d5bd680f3dd09cb3cbebf273cd6ecc,
+  "@/components/payload/TeacherRepresentativeWorkRowLabel#TeacherRepresentativeWorkRowLabel": TeacherRepresentativeWorkRowLabel_d628a446f2ef335398d7c73186843abd,
   "@/components/payload/CentersField#CentersField": CentersField_32f6973a336e54b2fbe5bbbe92a20938,
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,

@@ -16,6 +16,8 @@ import * as migration_20260429_150000_global_optional_archived_status from './20
 import * as migration_20260429_160000_drop_exam_school_logo_review_count from './20260429_160000_drop_exam_school_logo_review_count'
 import * as migration_20260429_170000_drop_exam_school_logo_legacy_fields from './20260429_170000_drop_exam_school_logo_legacy_fields'
 import * as migration_20260429_190000_teacher_generate_slug from './20260429_190000_teacher_generate_slug'
+import * as migration_20260429_195000_delete_draft_teachers from './20260429_195000_delete_draft_teachers'
+import * as migration_20260429_200000_drop_teacher_representative_work_display_order from './20260429_200000_drop_teacher_representative_work_display_order'
 
 export const migrations = [
   {
@@ -107,5 +109,15 @@ export const migrations = [
     up: migration_20260429_190000_teacher_generate_slug.up,
     down: migration_20260429_190000_teacher_generate_slug.down,
     name: '20260429_190000_teacher_generate_slug',
+  },
+  {
+    up: migration_20260429_195000_delete_draft_teachers.up,
+    down: migration_20260429_195000_delete_draft_teachers.down,
+    name: '20260429_195000_delete_draft_teachers',
+  },
+  {
+    up: migration_20260429_200000_drop_teacher_representative_work_display_order.up,
+    down: migration_20260429_200000_drop_teacher_representative_work_display_order.down,
+    name: '20260429_200000_drop_teacher_representative_work_display_order',
   },
 ]
