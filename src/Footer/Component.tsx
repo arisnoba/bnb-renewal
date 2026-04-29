@@ -2,14 +2,15 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import Link from 'next/link'
 import React from 'react'
 
+import type { Footer as FooterType } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 
 export async function Footer() {
-  const footerData = await getCachedGlobal('footer', 1)().catch(() => null)
+  const footerData: FooterType | null = await getCachedGlobal('footer', 1)().catch(() => null)
 
-  const navItems = footerData?.navItems || []
+  const navItems: NonNullable<FooterType['navItems']> = footerData?.navItems || []
 
   return (
     <footer className="mt-auto border-t border-border bg-black dark:bg-card text-white">
