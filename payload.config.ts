@@ -42,7 +42,7 @@ const databaseURL =
 
 export default buildConfig({
   admin: {
-    dateFormat: 'yy.MM.dd HH:mm',
+    dateFormat: 'yyyy-MM-dd HH:mm',
     importMap: {
       baseDir: path.resolve(dirname, './src'),
       importMapFile: path.resolve(
