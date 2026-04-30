@@ -141,6 +141,7 @@ export const Profiles: CollectionConfig = {
 							components: {
 								Field: '@/components/payload/ProfileNameFields#ProfileNameFields',
 							},
+							disableListColumn: true,
 						},
 					},
 					{
@@ -232,6 +233,7 @@ export const Profiles: CollectionConfig = {
 							components: {
 								Field: '@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField',
 							},
+							disableListColumn: true,
 						},
 					},
 					...['photoImage2', 'photoImage3', 'photoImage4', 'photoImage5', 'photoImage6'].map(
@@ -244,6 +246,7 @@ export const Profiles: CollectionConfig = {
 									Field:
 										'@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotoHiddenField',
 								},
+								disableListColumn: true,
 							},
 						}),
 					),
