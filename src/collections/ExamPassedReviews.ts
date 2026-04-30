@@ -333,6 +333,16 @@ export const ExamPassedReviews: CollectionConfig = {
       name: "interviews",
       type: "array",
       label: "인터뷰",
+      labels: {
+        plural: "인터뷰",
+        singular: "인터뷰",
+      },
+      admin: {
+        components: {
+          RowLabel:
+            "@/components/payload/ExamPassedReviewInterviewRowLabel#ExamPassedReviewInterviewRowLabel",
+        },
+      },
       fields: [
         {
           name: "question",

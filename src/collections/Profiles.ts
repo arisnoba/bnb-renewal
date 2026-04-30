@@ -279,6 +279,11 @@ export const Profiles: CollectionConfig = {
 							plural: '경력',
 							singular: '경력',
 						},
+						admin: {
+							components: {
+								RowLabel: '@/components/payload/ProfileCareerRowLabel#ProfileCareerRowLabel',
+							},
+						},
 						fields: [
 							{
 								name: 'title',

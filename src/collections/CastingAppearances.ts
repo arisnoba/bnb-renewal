@@ -67,6 +67,10 @@ export const CastingAppearances: CollectionConfig = {
             },
             admin: {
               initCollapsed: false,
+              components: {
+                RowLabel:
+                  "@/components/payload/CastingAppearanceCastMemberRowLabel#CastingAppearanceCastMemberRowLabel",
+              },
             },
             fields: [
               adminRow([

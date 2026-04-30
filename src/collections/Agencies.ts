@@ -68,6 +68,15 @@ export const Agencies: CollectionConfig = {
             name: "actors",
             type: "array",
             label: "출신 배우",
+            labels: {
+              plural: "출신 배우",
+              singular: "출신 배우",
+            },
+            admin: {
+              components: {
+                RowLabel: "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel",
+              },
+            },
             fields: [
               adminRow([
                 {
