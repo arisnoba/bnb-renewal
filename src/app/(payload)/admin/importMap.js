@@ -40,9 +40,9 @@ import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b
 import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ProfileNameFields as ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb } from '@/components/payload/ProfileNameFields'
-import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 } from '@/components/payload/ProfileSlugField'
 import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de61 } from '@/components/payload/ProfileFilterField'
 import { ProfileCareerRowLabel as ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb } from '@/components/payload/ProfileCareerRowLabel'
+import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 } from '@/components/payload/ProfileSlugField'
 import { AgencyActorRowLabel as AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d } from '@/components/payload/AgencyActorRowLabel'
 import { CastingDirectorCareerRowLabel as CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6 } from '@/components/payload/CastingDirectorCareerRowLabel'
 import { CastingAppearanceCastMemberRowLabel as CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296 } from '@/components/payload/CastingAppearanceCastMemberRowLabel'
@@ -96,9 +96,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/payload/ProfileNameFields#ProfileNameFields": ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb,
-  "@/components/payload/ProfileSlugField#ProfileSlugField": ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8,
   "@/components/payload/ProfileFilterField#ProfileFilterField": ProfileFilterField_0c27d6f1f63313f291c972be4860de61,
   "@/components/payload/ProfileCareerRowLabel#ProfileCareerRowLabel": ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb,
+  "@/components/payload/ProfileSlugField#ProfileSlugField": ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8,
   "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel": AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d,
   "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel": CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6,
   "@/components/payload/CastingAppearanceCastMemberRowLabel#CastingAppearanceCastMemberRowLabel": CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296,

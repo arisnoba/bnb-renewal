@@ -7,7 +7,6 @@ import {
   adminTabs,
   authorNameField,
   centersField,
-  legacyCollapsible,
   sidebarFields,
 } from "./shared";
 
@@ -106,6 +105,5 @@ export const Agencies: CollectionConfig = {
         defaultValue: 0,
       },
     ]),
-    legacyCollapsible(),
   ],
 };

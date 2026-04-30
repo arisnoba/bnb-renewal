@@ -633,14 +633,7 @@ function examResultImagePath(doc: TestDoc) {
     return normalizeImagePath(value)
   }
 
-  return legacyAssetPath({
-    boTable: examResultBoTable(doc.sourceTable),
-    collection: 'exam-results',
-    path: value,
-    role: 'thumbnail',
-    sourceDb: doc.sourceDb,
-    sourceId: doc.sourceId,
-  })
+  return normalizeImagePath(value)
 }
 
 function relationshipLogoPath(value: unknown) {
@@ -706,20 +699,6 @@ function examPassedReviewStudentImagePath(doc: TestDoc) {
     sourceDb: doc.sourceDb,
     sourceId: doc.sourceId,
   })
-}
-
-function examResultBoTable(sourceTable: unknown) {
-  const value = stringify(sourceTable)
-
-  if (value === 'g5_write_victory10') {
-    return 'victory10'
-  }
-
-  if (value === 'g5_write_victory30') {
-    return 'victory30'
-  }
-
-  return boTableFromSourceTable(value)
 }
 
 function newsImagePath(doc: TestDoc) {

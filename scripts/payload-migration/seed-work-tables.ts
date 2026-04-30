@@ -72,24 +72,18 @@ const configs: TableConfig[] = [
   {
     collection: 'agencies',
     table: 'agencies',
+    uniqueField: 'subject',
     columns: [
-      'source_db',
-      'source_table',
-      'source_id',
-      'slug',
       'name',
       'subject',
       'summary',
       'actors',
       'display_order',
-      'legacy_meta',
     ],
     transform: (row) => ({
-      ...sourceDoc(row),
       actors: parseAgencyActors(row.actors),
       centers: ['art'],
       displayOrder: number(row.display_order),
-      legacyMeta: parseJsonValue(row.legacy_meta),
       name: text(row.name),
       subject: requiredText(row.subject, 'agencies.subject'),
       summary: text(row.summary),
@@ -111,6 +105,7 @@ const configs: TableConfig[] = [
       'agency_logo_path',
       'thumbnail_path',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -123,7 +118,7 @@ const configs: TableConfig[] = [
       generation: requiredText(row.generation, 'artist_press.generation'),
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
-      publishedAt: dateText(row.published_at),
+      ...legacyPublishedTimestamps(row),
       thumbnailPath: text(row.thumbnail_path),
       title: requiredText(row.title, 'artist_press.title'),
     }),
@@ -147,6 +142,7 @@ const configs: TableConfig[] = [
       'schedule_end_raw',
       'author_name',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -159,7 +155,7 @@ const configs: TableConfig[] = [
       eventType: text(row.event_type),
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
-      publishedAt: dateText(row.published_at),
+      ...legacyPublishedTimestamps(row),
       scheduleEndDate: dateText(row.schedule_end_date),
       scheduleEndRaw: requiredText(row.schedule_end_raw, 'audition_schedules.schedule_end_raw'),
       scheduleStartDate: dateText(row.schedule_start_date),
@@ -183,6 +179,7 @@ const configs: TableConfig[] = [
       'profile_image_path',
       'author_name',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -197,7 +194,7 @@ const configs: TableConfig[] = [
       legacyMeta: parseJsonValue(row.legacy_meta),
       personName: requiredText(row.person_name, 'castings.person_name'),
       profileImagePath: text(row.profile_image_path),
-      publishedAt: dateText(row.published_at),
+      ...legacyPublishedTimestamps(row),
     }),
   },
   {
@@ -219,6 +216,7 @@ const configs: TableConfig[] = [
       'casting_company',
       'thumbnail_path',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -237,7 +235,7 @@ const configs: TableConfig[] = [
         displayStatus: displayStatusFromPublic(row.is_public),
         legacyMeta,
         productionCompany: text(row.production_company),
-        publishedAt: dateText(row.published_at),
+        ...legacyPublishedTimestamps(row),
         thumbnailPath: text(row.thumbnail_path),
         title: requiredText(row.title, 'casting_appearances.title'),
         writers: text(row.writers),
@@ -260,6 +258,7 @@ const configs: TableConfig[] = [
       'school_logo_path',
       'student_image_path',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -269,7 +268,7 @@ const configs: TableConfig[] = [
       centers: centersFrom(row.center),
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
-      publishedAt: dateText(row.published_at),
+      ...legacyPublishedTimestamps(row),
       schoolLogoPath: text(row.school_logo_path),
       schoolLogoSlug: text(row.school_logo_slug),
       schoolName: requiredText(row.school_name, 'exam_passed_reviews.school_name'),
@@ -280,58 +279,22 @@ const configs: TableConfig[] = [
   {
     collection: 'exam-passed-videos',
     table: 'exam_passed_videos',
+    uniqueField: 'youtubeCode',
     columns: [
-      'source_db',
-      'source_table',
-      'source_id',
-      'slug',
       'title',
       'youtube_code',
       'youtube_url',
       'published_at',
+      'created_at',
       'is_public',
-      'legacy_meta',
     ],
     transform: (row) => ({
-      ...sourceDoc(row),
       centers: ['exam'],
       displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      publishedAt: dateText(row.published_at),
+      ...legacyPublishedTimestamps(row),
       title: requiredText(row.title, 'exam_passed_videos.title'),
       youtubeCode: requiredText(row.youtube_code, 'exam_passed_videos.youtube_code'),
       youtubeUrl: requiredText(row.youtube_url, 'exam_passed_videos.youtube_url'),
-    }),
-  },
-  {
-    collection: 'exam-results',
-    table: 'exam_results',
-    columns: [
-      'source_db',
-      'source_table',
-      'source_id',
-      'slug',
-      'center',
-      'result_type',
-      'title',
-      'body_html',
-      'thumbnail_path',
-      'thumbnail_source',
-      'published_at',
-      'is_public',
-      'legacy_meta',
-    ],
-    transform: (row) => ({
-      ...sourceDoc(row),
-      bodyHtml: text(row.body_html),
-      centers: centersFrom(row.center),
-      displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      publishedAt: dateText(row.published_at),
-      resultType: text(row.result_type),
-      thumbnailPath: text(row.thumbnail_path),
-      thumbnailSource: text(row.thumbnail_source),
-      title: requiredText(row.title, 'exam_results.title'),
     }),
   },
   {
@@ -348,6 +311,33 @@ const configs: TableConfig[] = [
       schoolSlug: requiredText(row.school_slug, 'exam_school_logos.school_slug'),
     }),
     uniqueField: 'schoolSlug',
+  },
+  {
+    collection: 'exam-results',
+    table: 'exam_results',
+    uniqueField: 'slug',
+    columns: [
+      'id',
+      'source_db',
+      'source_table',
+      'source_id',
+      'center',
+      'result_type',
+      'title',
+      'thumbnail_path',
+      'published_at',
+      'created_at',
+      'is_public',
+    ],
+    transform: (row) => ({
+      centers: centersFrom(row.center),
+      displayStatus: displayStatusFromPublic(row.is_public),
+      ...legacyPublishedTimestamps(row),
+      resultType: requiredText(row.result_type, 'exam_results.result_type'),
+      slug: requiredText(row.generated_slug, 'exam_results.generated_slug'),
+      thumbnailPath: text(row.local_thumbnail_path),
+      title: requiredText(row.title, 'exam_results.title'),
+    }),
   },
   {
     collection: 'news',
@@ -367,6 +357,7 @@ const configs: TableConfig[] = [
       'view_count',
       'is_public',
       'published_at',
+      'created_at',
       'legacy_meta',
     ],
     transform: (row) => ({
@@ -381,7 +372,7 @@ const configs: TableConfig[] = [
         attachments: parseJsonValue(row.attachments_json),
         ...(objectValue(parseJsonValue(row.legacy_meta)) ?? {}),
       },
-      publishedAt: dateText(row.published_at),
+      ...legacyPublishedTimestamps(row),
       title: requiredText(row.title, 'news.title'),
       viewCount: number(row.view_count),
     }),
@@ -405,6 +396,7 @@ const configs: TableConfig[] = [
       'body_html',
       'author_name',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -420,8 +412,8 @@ const configs: TableConfig[] = [
         displayStatus: displayStatusFromPublic(row.is_public),
         legacyMeta: legacyMetaWithPreviousSlug(row.legacy_meta, row.previous_slug),
         name: requiredText(row.name, 'profiles.name'),
-        publishedAt: dateText(row.published_at),
         profileImagePath: text(row.profile_image_path),
+        ...legacyPublishedTimestamps(row),
         weight: text(row.weight),
       }
     },
@@ -446,6 +438,7 @@ const configs: TableConfig[] = [
       'profile_image_path',
       'thumbnail_path',
       'published_at',
+      'created_at',
       'is_public',
       'legacy_meta',
     ],
@@ -461,9 +454,9 @@ const configs: TableConfig[] = [
       performerName: text(row.performer_name),
       profileImagePath: text(row.profile_image_path),
       projectTitle: text(row.project_title),
-      publishedAt: dateText(row.published_at),
       roleName: text(row.role_name),
       thumbnailPath: text(row.thumbnail_path),
+      ...legacyPublishedTimestamps(row),
       title: requiredText(row.title, 'screen_appearances.title'),
     }),
   },
@@ -589,6 +582,10 @@ async function main() {
 }
 
 function normalizeRowsForSeed(config: TableConfig, rows: WorkRow[]) {
+  if (config.collection === 'exam-results') {
+    return normalizeExamResultRowsForSeed(rows)
+  }
+
   if (config.collection === 'profiles') {
     return normalizeProfileRowsForSlug(rows)
   }
@@ -645,6 +642,55 @@ function normalizeProfileRowsForSlug(rows: WorkRow[]) {
       slug: refinedSlug,
     }
   })
+}
+
+function normalizeExamResultRowsForSeed(rows: WorkRow[]) {
+  const sorted = [...rows].sort(
+    (left, right) =>
+      compareText(dateText(left.published_at), dateText(right.published_at)) ||
+      number(left.id, Number.MAX_SAFE_INTEGER) - number(right.id, Number.MAX_SAFE_INTEGER),
+  )
+  const slugByRow = new Map<WorkRow, string>()
+
+  sorted.forEach((row, index) => {
+    slugByRow.set(row, `result-${index + 1}`)
+  })
+
+  return rows.map((row) => ({
+    ...row,
+    generated_slug: slugByRow.get(row),
+    local_thumbnail_path: examResultLocalThumbnailPath(row),
+  }))
+}
+
+function examResultLocalThumbnailPath(row: WorkRow) {
+  const value = text(row.thumbnail_path)
+
+  if (!value || value.startsWith('/legacy/exam-results/')) {
+    return value
+  }
+
+  const fileName = fileBasename(value)
+
+  if (!fileName) {
+    return value
+  }
+
+  return `/legacy/exam-results/${text(row.source_db) || 'bnbuniv'}/${examResultBoTable(row.source_table)}/${number(row.source_id)}/thumbnail/${fileName}`
+}
+
+function examResultBoTable(value: unknown) {
+  const sourceTable = text(value)
+
+  if (sourceTable === 'g5_write_victory10') {
+    return 'victory10'
+  }
+
+  if (sourceTable === 'g5_write_victory30') {
+    return 'victory30'
+  }
+
+  return sourceTable?.replace(/^g5_write_/, '') || 'exam-results'
 }
 
 function profileSlugFromEnglishName(value: unknown) {
@@ -1341,6 +1387,15 @@ function requiredText(value: unknown, fieldName: string) {
 
 function dateText(value: unknown) {
   return text(value)
+}
+
+function legacyPublishedTimestamps(row: WorkRow) {
+  const publishedAt = dateText(row.published_at)
+
+  return {
+    createdAt: dateText(row.created_at) ?? publishedAt,
+    publishedAt,
+  }
 }
 
 function number(value: unknown, fallback = 0) {

@@ -7,7 +7,6 @@ import {
   centerScopedBeforeValidate,
   centersField,
   isExamAdminMenuHidden,
-  legacyCollapsible,
   publishingFields,
   sidebarFields,
 } from "./shared";
@@ -34,6 +33,24 @@ const syncYouTubeFields: CollectionBeforeValidateHook = ({ data, originalDoc }) 
   return nextData;
 };
 
+const syncCreatedAtToPublishedAt: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+  if (!data) {
+    return data;
+  }
+
+  const publishedAt =
+    typeof data.publishedAt === "string"
+      ? data.publishedAt
+      : typeof originalDoc?.publishedAt === "string"
+        ? originalDoc.publishedAt
+        : new Date().toISOString();
+
+  return {
+    ...data,
+    createdAt: publishedAt,
+  };
+};
+
 export const ExamPassedVideos: CollectionConfig = {
   slug: "exam-passed-videos",
   labels: {
@@ -49,7 +66,7 @@ export const ExamPassedVideos: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [syncYouTubeFields, centerScopedBeforeValidate],
+    beforeValidate: [syncYouTubeFields, syncCreatedAtToPublishedAt, centerScopedBeforeValidate],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -89,6 +106,5 @@ export const ExamPassedVideos: CollectionConfig = {
       },
     },
     ...sidebarFields([centersField, ...publishingFields, authorNameField]),
-    legacyCollapsible(),
   ],
 };

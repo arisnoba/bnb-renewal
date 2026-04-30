@@ -26,7 +26,13 @@ import * as migration_20260430_120000_drop_agency_body_html from './20260430_120
 import * as migration_20260430_121000_drop_agency_actor_profile_image_path from './20260430_121000_drop_agency_actor_profile_image_path'
 import * as migration_20260430_122000_agency_logo_media from './20260430_122000_agency_logo_media'
 import * as migration_20260430_123000_drop_agency_profile_image_path from './20260430_123000_drop_agency_profile_image_path'
+import * as migration_20260430_124000_drop_agency_legacy_fields from './20260430_124000_drop_agency_legacy_fields'
+import * as migration_20260430_130000_exam_passed_video_dates_slugs from './20260430_130000_exam_passed_video_dates_slugs'
 import * as migration_20260430_140000_drop_unused_template_collections from './20260430_140000_drop_unused_template_collections'
+import * as migration_20260430_150000_align_legacy_created_at from './20260430_150000_align_legacy_created_at'
+import * as migration_20260430_160000_exam_result_slugs_local_paths from './20260430_160000_exam_result_slugs_local_paths'
+import * as migration_20260430_170000_drop_exam_result_legacy_fields from './20260430_170000_drop_exam_result_legacy_fields'
+import * as migration_20260430_180000_drop_exam_passed_video_legacy_fields from './20260430_180000_drop_exam_passed_video_legacy_fields'
 
 export const migrations = [
   {
@@ -170,8 +176,38 @@ export const migrations = [
     name: '20260430_123000_drop_agency_profile_image_path',
   },
   {
+    up: migration_20260430_124000_drop_agency_legacy_fields.up,
+    down: migration_20260430_124000_drop_agency_legacy_fields.down,
+    name: '20260430_124000_drop_agency_legacy_fields',
+  },
+  {
+    up: migration_20260430_130000_exam_passed_video_dates_slugs.up,
+    down: migration_20260430_130000_exam_passed_video_dates_slugs.down,
+    name: '20260430_130000_exam_passed_video_dates_slugs',
+  },
+  {
     up: migration_20260430_140000_drop_unused_template_collections.up,
     down: migration_20260430_140000_drop_unused_template_collections.down,
     name: '20260430_140000_drop_unused_template_collections',
+  },
+  {
+    up: migration_20260430_150000_align_legacy_created_at.up,
+    down: migration_20260430_150000_align_legacy_created_at.down,
+    name: '20260430_150000_align_legacy_created_at',
+  },
+  {
+    up: migration_20260430_160000_exam_result_slugs_local_paths.up,
+    down: migration_20260430_160000_exam_result_slugs_local_paths.down,
+    name: '20260430_160000_exam_result_slugs_local_paths',
+  },
+  {
+    up: migration_20260430_170000_drop_exam_result_legacy_fields.up,
+    down: migration_20260430_170000_drop_exam_result_legacy_fields.down,
+    name: '20260430_170000_drop_exam_result_legacy_fields',
+  },
+  {
+    up: migration_20260430_180000_drop_exam_passed_video_legacy_fields.up,
+    down: migration_20260430_180000_drop_exam_passed_video_legacy_fields.down,
+    name: '20260430_180000_drop_exam_passed_video_legacy_fields',
   },
 ]

@@ -49,7 +49,7 @@ SELECT
   'bnbuniv' AS `source_db`,
   'g5_write_new_shoot' AS `source_table`,
   `shoot`.`wr_id` AS `source_id`,
-  CONCAT('exam-passed-video-', `shoot`.`wr_id`) AS `slug`,
+  CONCAT('passedvideo-', `shoot`.`slug_index`) AS `slug`,
   NULLIF(TRIM(`shoot`.`wr_subject`), '') AS `title`,
   NULLIF(`shoot`.`wr_content`, '') AS `body_html`,
   NULLIF(TRIM(`shoot`.`wr_2`), '') AS `youtube_code`,
@@ -86,8 +86,15 @@ SELECT
       'link2Hit', `shoot`.`wr_link2_hit`
     )
   ) AS `legacy_meta`
-FROM `bnbuniv`.`g5_write_new_shoot` AS `shoot`
-WHERE `shoot`.`wr_is_comment` = 0
-  AND NULLIF(TRIM(`shoot`.`wr_subject`), '') IS NOT NULL
-  AND NULLIF(TRIM(`shoot`.`wr_2`), '') IS NOT NULL
+FROM (
+  SELECT
+    `source`.*,
+    ROW_NUMBER() OVER (
+      ORDER BY COALESCE(NULLIF(`source`.`wr_datetime`, '0000-00-00 00:00:00'), CURRENT_TIMESTAMP), `source`.`wr_id`
+    ) AS `slug_index`
+  FROM `bnbuniv`.`g5_write_new_shoot` AS `source`
+  WHERE `source`.`wr_is_comment` = 0
+    AND NULLIF(TRIM(`source`.`wr_subject`), '') IS NOT NULL
+    AND NULLIF(TRIM(`source`.`wr_2`), '') IS NOT NULL
+) AS `shoot`
 ORDER BY `shoot`.`wr_datetime` DESC, `shoot`.`wr_id` DESC;

@@ -24,6 +24,7 @@ import { Profiles } from './src/collections/Profiles'
 import { ScreenAppearances } from './src/collections/ScreenAppearances'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
+import { applyAdminTimestampFields } from './src/collections/adminTimestampFields'
 import { Footer } from './src/Footer/config'
 import { Header } from './src/Header/config'
 import { defaultLexical } from './src/fields/defaultLexical'
@@ -65,7 +66,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [
+  collections: applyAdminTimestampFields([
     Users,
     Pages,
     Posts,
@@ -84,7 +85,7 @@ export default buildConfig({
     ExamPassedVideos,
     ExamResults,
     ExamSchoolLogos,
-  ],
+  ]),
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {

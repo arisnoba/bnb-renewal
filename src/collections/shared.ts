@@ -8,7 +8,7 @@ type AdminTab = {
 
 export const adminDateConfig = {
   date: {
-    displayFormat: "yy.MM.dd",
+    displayFormat: "yyyy-MM-dd",
     pickerAppearance: "dayOnly" as const,
   },
 };

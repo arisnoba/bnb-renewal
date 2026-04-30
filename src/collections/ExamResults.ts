@@ -1,32 +1,23 @@
-import type {
-  CollectionAfterReadHook,
-  CollectionBeforeValidateHook,
-  CollectionConfig,
-  Field,
-} from "payload";
+import type { CollectionConfig, Field } from "payload";
 
 import {
   BlockquoteFeature,
-  convertHTMLToLexical,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { JSDOM } from "jsdom";
 import { slugField } from "payload";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
-  adminCollapsible,
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
   displayStatusOptions,
   imagePathField,
   isExamAdminMenuHidden,
-  legacyMetaField,
   publishedAtField,
   sidebarFields,
 } from "./shared";
@@ -52,116 +43,6 @@ const resultTypeOptions = [
 
 const examResultSlugify = createKoreanSlugifyWithFallback("exam-result");
 
-function hasLexicalContent(value: unknown) {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-
-  const root = (value as { root?: unknown }).root;
-
-  if (!root || typeof root !== "object") {
-    return false;
-  }
-
-  const children = (root as { children?: unknown }).children;
-
-  return Array.isArray(children) && children.length > 0;
-}
-
-function legacyHtmlFromDoc(value: unknown) {
-  if (!value || typeof value !== "object") {
-    return "";
-  }
-
-  const bodyHtml = (value as { bodyHtml?: unknown }).bodyHtml;
-
-  return typeof bodyHtml === "string" ? bodyHtml.trim() : "";
-}
-
-function isImageUrl(value: string) {
-  const pathname = value.split("?")[0] ?? "";
-
-  return /\.(avif|gif|jpe?g|png|svg|webp)$/i.test(pathname);
-}
-
-function legacyBodyWithoutImageLinks(html: string) {
-  const { document } = new JSDOM(html).window;
-  const bodyRoot = document.body.cloneNode(true) as Element;
-
-  bodyRoot.querySelectorAll("img").forEach((image) => image.remove());
-  bodyRoot.querySelectorAll("a[href]").forEach((link) => {
-    const href = link.getAttribute("href") ?? "";
-    const text = link.textContent?.trim() ?? "";
-
-    if (isImageUrl(href) || isImageUrl(text)) {
-      link.remove();
-    }
-  });
-
-  return bodyRoot.innerHTML.trim();
-}
-
-async function lexicalBodyFromLegacyHtml({
-  html,
-  req,
-}: {
-  html: string;
-  req: Parameters<CollectionBeforeValidateHook>[0]["req"];
-}) {
-  const adapter = await examResultBodyEditor({
-    config: req.payload.config,
-    parentIsLocalized: false,
-  });
-
-  return convertHTMLToLexical({
-    editorConfig: adapter.editorConfig,
-    html,
-    JSDOM,
-  });
-}
-
-const populateExamResultBodyFromLegacyHtmlBeforeValidate: CollectionBeforeValidateHook =
-  async ({ data, originalDoc, req }) => {
-    if (!data || hasLexicalContent(data.body)) {
-      return data;
-    }
-
-    const html = legacyHtmlFromDoc(data) || legacyHtmlFromDoc(originalDoc);
-
-    if (!html) {
-      return data;
-    }
-
-    return {
-      ...data,
-      body: await lexicalBodyFromLegacyHtml({
-        html: legacyBodyWithoutImageLinks(html),
-        req,
-      }),
-    };
-  };
-
-const populateExamResultBodyFromLegacyHtmlAfterRead: CollectionAfterReadHook =
-  async ({ doc, req }) => {
-    if (!doc || hasLexicalContent(doc.body)) {
-      return doc;
-    }
-
-    const html = legacyHtmlFromDoc(doc);
-
-    if (!html) {
-      return doc;
-    }
-
-    return {
-      ...doc,
-      body: await lexicalBodyFromLegacyHtml({
-        html: legacyBodyWithoutImageLinks(html),
-        req,
-      }),
-    };
-  };
-
 const examCentersField = {
   ...centersField,
   defaultValue: ["exam"],
@@ -182,25 +63,11 @@ export const ExamResults: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterRead: [populateExamResultBodyFromLegacyHtmlAfterRead],
-    beforeValidate: [
-      centerScopedBeforeValidate,
-      populateExamResultBodyFromLegacyHtmlBeforeValidate,
-    ],
+    beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
     imagePathField("thumbnailPath", "미디어"),
-    {
-      name: "thumbnailSource",
-      type: "text",
-      label: "썸네일 출처",
-      defaultValue: "admin",
-      required: true,
-      admin: {
-        hidden: true,
-      },
-    },
     {
       name: "resultType",
       type: "select",
@@ -228,35 +95,6 @@ export const ExamResults: CollectionConfig = {
       slugField({
         slugify: examResultSlugify,
       }),
-    ]),
-    adminCollapsible("레거시/원본", [
-      {
-        name: "sourceDb",
-        type: "text",
-        label: "원본 DB",
-        defaultValue: "payload",
-        required: true,
-      },
-      {
-        name: "sourceTable",
-        type: "text",
-        label: "원본 테이블",
-        defaultValue: "exam_results",
-        required: true,
-      },
-      {
-        name: "sourceId",
-        type: "number",
-        label: "원본 ID",
-        defaultValue: 0,
-        required: true,
-      },
-      {
-        name: "bodyHtml",
-        type: "textarea",
-        label: "레거시 본문 HTML",
-      },
-      legacyMetaField,
     ]),
   ],
 };

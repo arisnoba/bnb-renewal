@@ -1,21 +1,23 @@
 ---
 name: complete-migration-cleanup
-description: Project workflow for bnb-renewal migration cleanup completion. Use when the user says a migration table or media relation is cleaned up, asks for "마이그레이션 정제 완료", "대학 로고 정제 완료", "정제 끝났으니 검증 후 원격 반영", or wants Codex to verify local Postgres/Payload migration data, update the cleanup checklist, and safely prepare or execute remote Neon/R2 follow-up.
+description: Project workflow for bnb-renewal local migration cleanup completion. Use when the user says a collection/table cleanup is done, asks for "정제 끝났어", "마이그레이션 정제 완료", "레거시 DB 및 칼럼 정리", or wants Codex to verify local Postgres/Payload data and remove obsolete local legacy columns, fields, and migration-only code.
 ---
 
 # Complete Migration Cleanup
 
 ## Purpose
 
-Use this project skill to turn a user's "cleanup is done" claim into a verified migration gate.
+Use this project skill to turn a user's "cleanup is done" claim into a verified local Postgres cleanup.
 
 The workflow is:
 
-1. Verify the local MariaDB/Postgres/Payload state.
-2. Update the migration cleanup checklist only when evidence supports it.
-3. Run applicable local checks.
-4. Separate DB remote migration from media asset remote service.
-5. Report any follow-up work the user must do.
+1. Verify the local Postgres/Payload state with evidence.
+2. Identify legacy fields, migration-only columns, and transitional scripts that can be safely removed or narrowed.
+3. Make the smallest collection/schema/migration changes needed for the completed target.
+4. Apply the cleanup to local Postgres only.
+5. Run local checks and report what changed.
+
+This skill is not a remote deployment workflow. Do not push schema/data changes to remote Neon/Vercel/R2 from this skill.
 
 ## Project Context
 
@@ -27,12 +29,13 @@ Work from the repository root:
 
 Primary references:
 
+- `package.json`
+- target collection in `src/collections/`
+- relevant migrations in `src/migrations/`
+- relevant scripts in `scripts/payload-migration/`
+- `src/lib/postgresTest.ts`
 - `docs/06-마이그레이션-정제-체크리스트.md`
 - `docs/02-레거시-마이그레이션-정책.md`
-- `docs/03-Payload-admin-운영-UX.md`
-- `package.json`
-- `src/lib/postgresTest.ts`
-- `src/lib/mariaDbTest.ts`
 
 Use the user's Korean commit/message rules from `AGENTS.md` if committing.
 
@@ -61,13 +64,14 @@ If the target cannot be inferred, ask one concise question before changing files
 
 ## Safety Rules
 
-- Do not trust "done" without local evidence.
-- Do not run remote write commands until the target environment and command are explicit.
-- Do not treat DB relation completion as media service completion.
-- Do not mark R2/media asset service complete unless the storage account, bucket, token or configured upload path, and public base URL are verified.
-- Do not store developer R2 full URLs or `r2.dev` URLs as permanent DB values.
+- Do not trust "done" without local DB evidence.
+- Do not run remote write commands from this skill.
+- Do not run `npm run db:remote:migrate`, remote seed/sync scripts, R2 upload scripts, or deployment commands unless the user explicitly changes the task.
+- Do not remove source tracing fields until the target data has been verified locally and no remaining local script/runtime path needs them.
+- Do not remove media path fields before media relations are populated and verified.
 - Do not modify unrelated dirty files.
 - Do not revert user changes.
+- Keep cleanup reversible through a normal Payload migration `down` function when practical.
 
 ## Workflow
 
@@ -77,131 +81,173 @@ Read only the files needed for the target:
 
 ```bash
 git status --short
-rg -n "target-slug|target_table|media relation field" src scripts docs package.json
+rg -n "<target>|legacyCollapsible|legacyTab|sourceDb|sourceTable|sourceId|legacyMeta|bodyHtml|imagePath|profileImagePath|logoMedia" src scripts docs package.json
+ls -1 src/migrations
 ```
 
-For `exam-school-logos`, inspect:
+Inspect the target collection, related migration files, and target-specific migration scripts before deciding what to remove.
 
-- `src/collections/ExamSchoolLogos.ts`
-- `scripts/payload-migration/link-exam-school-logo-media.ts`
-- `src/lib/postgresTest.ts`
-- relevant migrations in `src/migrations/`
-- `docs/06-마이그레이션-정제-체크리스트.md`
+For example, for `agencies`, inspect:
+
+- `src/collections/Agencies.ts`
+- `scripts/payload-migration/seed-work-tables.ts`
+- `scripts/payload-migration/link-agency-logo-media.ts`
+- recent agency migrations in `src/migrations/`
+- local Postgres columns for `agencies` and `agencies_actors`
 
 ### 2. Verify Local Data
 
-Prefer existing project commands and test routes over ad hoc assumptions.
+Prefer existing project commands and direct local Postgres checks over assumptions.
 
-Run targeted checks when available:
+Start local Postgres when needed:
 
 ```bash
 npm run db:local:up
-npm run payload:legacy:link-exam-school-logo-media
 ```
 
-Use dry-run/default mode first if the script supports it. Only use `--write` when the user explicitly asked for writes or when the workflow already requires it and the target is local.
+If Docker uses Colima and the default socket is unavailable, use the project's existing Docker/Colima pattern and report that condition.
 
-For Postgres/Payload relation checks, use `npm run db:local:psql` or Payload scripts as appropriate. Verify at minimum:
+Use `psql` or `npm run db:local:psql` to verify at minimum:
 
 - target rows exist
-- required fields exist
-- source tracing fields remain where applicable
-- relation IDs point to existing `media` rows
-- media rows contain usable `url`, `filename`, and generated sizes when expected
-- `/test/postgres/<slug>` has enough data to manually inspect
+- required operational fields are populated
+- replacement fields or relations are populated
+- relation IDs point to existing rows, especially `media`
+- obsolete legacy columns are no longer needed by local runtime or scripts
+- `/test/postgres/<slug>` still has enough data for manual inspection when applicable
 
-For `exam-school-logos`, verify:
+For media relation cleanups, verify:
 
-- `exam_school_logos.school_name`
-- `exam_school_logos.school_slug`
-- `exam_school_logos.logo_media_id`
-- referenced `media.id`
-- `media.url` or `media.filename`
-- generated thumbnail/sizes when present
+- target relation column exists, for example `logo_media_id`
+- relation count matches expected target rows
+- referenced `media.id` rows exist
+- `media.url` or `media.filename` is usable locally
 
-### 3. Classify Completion
+### 3. Decide Cleanup Scope
 
-Use these labels internally and report them clearly:
+Use the smallest local cleanup that matches the completed target.
 
-- `정제 완료`: local Postgres/Payload data and relations are correct.
-- `원격 DB 반영 가능`: local checks pass and remote migration/data command is identified.
-- `원격 이미지 서비스 완료`: remote storage has the files and deployed app can load them.
-- `후속 필요`: missing R2/storage setup, missing backup, failed check, or unverified remote state remains.
+Common cleanup actions:
 
-Media relation rule:
+- remove legacy/admin fields from the target collection config
+- remove `legacyCollapsible()` or `legacyTab()` only for the completed target
+- add a Payload migration that drops obsolete local Postgres columns
+- drop obsolete unique indexes tied only to removed fields, such as a migration slug index
+- adjust migration/seed scripts so the target no longer requires removed fields
+- keep scripts for unfinished collections unchanged
 
-```text
-media relation exists + local media row exists = DB 정제 완료 가능
-media relation exists + no R2/storage verified = 원격 이미지 서비스 완료 아님
+Common fields to consider only after verification:
+
+- `source_db`
+- `source_table`
+- `source_id`
+- `slug` when it was only a migration/source key and no longer a public/admin identifier
+- `legacy_meta`
+- `body_html`
+- legacy image path columns replaced by media relations
+
+Do not remove fields still used by frontend fallback logic, admin custom fields, local test pages, or remaining migration scripts.
+
+### 4. Implement Local Cleanup
+
+Use existing project patterns for migrations.
+
+For field removal migrations:
+
+```ts
+import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
+
+export async function up({ db }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`
+    DROP INDEX IF EXISTS "<target>_slug_idx";
+
+    ALTER TABLE "<target>" DROP COLUMN IF EXISTS "source_db";
+    ALTER TABLE "<target>" DROP COLUMN IF EXISTS "source_table";
+    ALTER TABLE "<target>" DROP COLUMN IF EXISTS "source_id";
+    ALTER TABLE "<target>" DROP COLUMN IF EXISTS "slug";
+    ALTER TABLE "<target>" DROP COLUMN IF EXISTS "legacy_meta";
+  `)
+}
+
+export async function down({ db }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
+    ALTER TABLE "<target>" ADD COLUMN IF NOT EXISTS "source_db" varchar;
+    ALTER TABLE "<target>" ADD COLUMN IF NOT EXISTS "source_table" varchar;
+    ALTER TABLE "<target>" ADD COLUMN IF NOT EXISTS "source_id" numeric;
+    ALTER TABLE "<target>" ADD COLUMN IF NOT EXISTS "slug" varchar;
+    ALTER TABLE "<target>" ADD COLUMN IF NOT EXISTS "legacy_meta" jsonb;
+  `)
+}
 ```
 
-### 4. Update Checklist
+Match the existing migration style in `src/migrations/`. Add the migration to `src/migrations/index.ts`.
 
-Only update `docs/06-마이그레이션-정제-체크리스트.md` after verification.
+### 5. Apply To Local Postgres
 
-For a completed target, change only that target checkbox from `- [ ]` to `- [x]`. If common asset checks are also verified, update only those checked items.
+Apply only to local Postgres:
 
-If verification is partial, add a short note under the relevant section instead of checking the item.
+```bash
+npm run db:local:migrate
+```
 
-### 5. Run Project Checks
+If Payload warns that dev mode dynamically pushed changes, proceed only when the cleanup is local and expected. Use an interactive TTY if the command prompts.
+
+Do not run remote migration commands in this workflow.
+
+### 6. Verify Cleanup
+
+After local migration, verify with direct DB checks:
+
+```bash
+psql postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal -c "select column_name from information_schema.columns where table_schema = 'public' and table_name = '<target_table>' order by ordinal_position;"
+psql postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal -c "select name, batch, updated_at from payload_migrations where name like '%<target>%' order by updated_at;"
+```
+
+For relation-backed cleanup, also verify counts:
+
+```bash
+psql postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal -c "select count(*) as total, count(<relation_column>) as with_relation from <target_table>;"
+```
+
+### 7. Run Project Checks
 
 Run the highest-signal checks that match the change:
 
 ```bash
+npm run payload:generate-types
 npm run typecheck
 npm run lint
 npm run build
 ```
 
+If build-generated files change only as incidental artifacts, avoid leaving unrelated churn.
+
 If time or environment blocks a check, report the exact command not run and why.
 
-### 6. Remote DB Gate
+## Completion Classification
 
-Before remote DB write, verify:
+Use these labels internally and report them clearly:
 
-- `.env.local` is the intended remote Neon/Vercel DB environment.
-- local backup/snapshot exists or the user accepts proceeding without a new one.
-- migration list is known.
-- local checks passed.
+- `로컬 DB 정리 완료`: local Postgres schema/data is cleaned and verified for the target.
+- `코드 정리 완료`: collection config, migration index, and related local scripts match the cleaned schema.
+- `후속 필요`: local data is incomplete, a field is still used, a migration failed, or checks failed.
 
-Remote DB command:
-
-```bash
-npm run db:remote:migrate
-```
-
-If data copy/seed is required beyond schema migration, identify the exact command or script first. Do not invent a one-off destructive data sync without user confirmation.
-
-### 7. R2 / Media Asset Gate
-
-If the target has `media` relations, decide whether R2 is required for the current task:
-
-- For local cleanup and DB relation verification: R2 is not required.
-- For remote image display completion: R2 or an equivalent persistent storage path is required.
-
-Verify before asset upload:
-
-- account owner or intended R2 account
-- bucket name or object key policy
-- write token/access key availability
-- public base URL such as `R2_PUBLIC_BASE_URL`
-- no permanent DB values depend on developer-only full URLs
-
-If any item is missing, stop asset upload and report it as follow-up.
+Do not use remote completion labels in this skill.
 
 ## Final Response
 
 Lead with the result:
 
 - target collection
-- completion classification
+- local cleanup classification
+- local Postgres columns or relations verified
 - files changed
 - checks run and results
-- remote actions run or intentionally not run
-- follow-up work for the user, if any
+- remote actions intentionally not run
+- follow-up work, if any
 
-If follow-up exists, state it concretely. Example:
+Example:
 
 ```text
-후속 필요: R2 계정/버킷/공개 base URL이 아직 확인되지 않아 원격 이미지 서비스 완료로는 표시하지 않았습니다.
+에이전시 로컬 DB 정리 완료했습니다. 로컬 Postgres `agencies`에서 `source_db/source_table/source_id/slug/legacy_meta`가 제거됐고, `logo_media_id`는 78/78건 유지됐습니다. 원격 DB/R2는 건드리지 않았습니다.
 ```
