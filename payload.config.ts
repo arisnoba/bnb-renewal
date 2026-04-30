@@ -9,7 +9,6 @@ import sharp from 'sharp'
 import { Agencies } from './src/collections/Agencies'
 import { ArtistPress } from './src/collections/ArtistPress'
 import { AuditionSchedules } from './src/collections/AuditionSchedules'
-import { Categories } from './src/collections/Categories'
 import { CastingAppearances } from './src/collections/CastingAppearances'
 import { CastingDirectors } from './src/collections/CastingDirectors'
 import { Curriculums } from './src/collections/Curriculums'
@@ -71,7 +70,6 @@ export default buildConfig({
     Pages,
     Posts,
     Media,
-    Categories,
     Teachers,
     Curriculums,
     News,

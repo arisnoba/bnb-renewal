@@ -26,6 +26,7 @@ import * as migration_20260430_120000_drop_agency_body_html from './20260430_120
 import * as migration_20260430_121000_drop_agency_actor_profile_image_path from './20260430_121000_drop_agency_actor_profile_image_path'
 import * as migration_20260430_122000_agency_logo_media from './20260430_122000_agency_logo_media'
 import * as migration_20260430_123000_drop_agency_profile_image_path from './20260430_123000_drop_agency_profile_image_path'
+import * as migration_20260430_140000_drop_unused_template_collections from './20260430_140000_drop_unused_template_collections'
 
 export const migrations = [
   {
@@ -167,5 +168,10 @@ export const migrations = [
     up: migration_20260430_123000_drop_agency_profile_image_path.up,
     down: migration_20260430_123000_drop_agency_profile_image_path.down,
     name: '20260430_123000_drop_agency_profile_image_path',
+  },
+  {
+    up: migration_20260430_140000_drop_unused_template_collections.up,
+    down: migration_20260430_140000_drop_unused_template_collections.down,
+    name: '20260430_140000_drop_unused_template_collections',
   },
 ]

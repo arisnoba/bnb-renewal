@@ -22,13 +22,12 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
 
   const posts = await payload
     .find({
-      collection: 'search',
+      collection: 'posts',
       depth: 1,
       limit: 12,
       select: {
         title: true,
         slug: true,
-        categories: true,
         meta: true,
       },
       pagination: false,

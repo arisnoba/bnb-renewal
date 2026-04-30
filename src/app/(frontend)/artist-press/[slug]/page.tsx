@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
-import { PayloadRedirects } from '@/components/PayloadRedirects'
 import RichText from '@/components/RichText'
 import type { ArtistPress } from '@/payload-types'
 import {
@@ -14,6 +13,7 @@ import {
 } from '@/utilities/artistPressFallbacks'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import React, { cache } from 'react'
 
@@ -54,11 +54,10 @@ export async function generateStaticParams() {
 export default async function ArtistPressDetail({ params: paramsPromise }: Args) {
   const { slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const url = `/artist-press/${decodedSlug}`
   const artistPress = await queryArtistPressBySlug({ slug: decodedSlug }).catch(() => null)
 
   if (!artistPress) {
-    return <PayloadRedirects url={url} />
+    notFound()
   }
 
   const media = getArtistPressThumbnailMedia(artistPress)
@@ -70,7 +69,6 @@ export default async function ArtistPressDetail({ params: paramsPromise }: Args)
   return (
     <article className="pt-20 pb-24">
       <PageClient />
-      <PayloadRedirects disableNotFound url={url} />
 
       <header className="container max-w-5xl">
         <div className="mb-8 flex flex-wrap gap-2 text-sm text-muted-foreground">
