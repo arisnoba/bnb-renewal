@@ -41,6 +41,7 @@ import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997e
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ProfileNameFields as ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb } from '@/components/payload/ProfileNameFields'
 import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de61 } from '@/components/payload/ProfileFilterField'
+import { ProfileAdditionalPhotosField as ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
 import { ProfileCareerRowLabel as ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb } from '@/components/payload/ProfileCareerRowLabel'
 import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 } from '@/components/payload/ProfileSlugField'
 import { AgencyActorRowLabel as AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d } from '@/components/payload/AgencyActorRowLabel'
@@ -97,6 +98,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/payload/ProfileNameFields#ProfileNameFields": ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb,
   "@/components/payload/ProfileFilterField#ProfileFilterField": ProfileFilterField_0c27d6f1f63313f291c972be4860de61,
+  "@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField": ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
   "@/components/payload/ProfileCareerRowLabel#ProfileCareerRowLabel": ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb,
   "@/components/payload/ProfileSlugField#ProfileSlugField": ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8,
   "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel": AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d,

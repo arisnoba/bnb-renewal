@@ -77,7 +77,12 @@ async function uploadFile(file: File) {
 	return path;
 }
 
-export const TeacherAdditionalPhotosField = () => {
+type AdditionalPhotosFieldProps = {
+	emptyMessage: string;
+	helpText: string;
+};
+
+function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosFieldProps) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const photo1 = useField<string>({ path: 'photoImage1' });
 	const photo2 = useField<string>({ path: 'photoImage2' });
@@ -220,9 +225,7 @@ export const TeacherAdditionalPhotosField = () => {
 					<span style={{ color: 'var(--theme-text)', fontSize: 14, fontWeight: 600 }}>
 						{isProcessing ? '업로드 중...' : '이미지 업로드'}
 					</span>
-					<span style={{ fontSize: 12 }}>
-						프로필 이미지를 제외한 강사진 슬라이드 이미지를 등록합니다.
-					</span>
+					<span style={{ fontSize: 12 }}>{helpText}</span>
 				</button>
 				{message ? (
 					<p
@@ -247,7 +250,7 @@ export const TeacherAdditionalPhotosField = () => {
 							fontSize: 13,
 							padding: 'calc(var(--base) * 0.6)',
 						}}>
-						등록된 추가 사진이 없습니다.
+						{emptyMessage}
 					</div>
 				) : null}
 				{visibleValues.map((value, index) => {
@@ -359,7 +362,21 @@ export const TeacherAdditionalPhotosField = () => {
 			</div>
 		</section>
 	);
-};
+}
+
+export const TeacherAdditionalPhotosField = () => (
+	<AdditionalPhotosField
+		emptyMessage="등록된 추가 사진이 없습니다."
+		helpText="프로필 이미지를 제외한 강사진 슬라이드 이미지를 등록합니다."
+	/>
+);
+
+export const ProfileAdditionalPhotosField = () => (
+	<AdditionalPhotosField
+		emptyMessage="등록된 갤러리 이미지가 없습니다."
+		helpText="대표 이미지를 제외한 프로필 갤러리 이미지를 등록합니다."
+	/>
+);
 
 export const TeacherAdditionalPhotoHiddenField = () => null;
 

@@ -15,9 +15,13 @@ The workflow is:
 2. Identify legacy fields, migration-only columns, and transitional scripts that can be safely removed or narrowed.
 3. Make the smallest collection/schema/migration changes needed for the completed target.
 4. Apply the cleanup to local Postgres only.
-5. Run local checks and report what changed.
+5. Run local checks.
+6. Update the migration cleanup checklist.
+7. Report what changed.
 
 This skill is not a remote deployment workflow. Do not push schema/data changes to remote Neon/Vercel/R2 from this skill.
+
+`docs/06-마이그레이션-정제-체크리스트.md` is a required deliverable for this workflow. If a target reaches `로컬 DB 정리 완료` or `코드 정리 완료`, update that checklist before committing or reporting completion.
 
 ## Project Context
 
@@ -224,6 +228,18 @@ If build-generated files change only as incidental artifacts, avoid leaving unre
 
 If time or environment blocks a check, report the exact command not run and why.
 
+### 8. Update Cleanup Checklist
+
+Before committing or reporting completion, update `docs/06-마이그레이션-정제-체크리스트.md` for the target collection:
+
+- mark the target checklist item complete only after local DB evidence exists
+- update the target's `주요 확인` line if the final cleaned fields changed
+- record removed local columns, new relation/gallery/version fields, and applied migration names
+- record concrete counts from verification, such as total rows, relation counts, gallery counts, or missing-file counts
+- if a criterion does not apply because the final cleanup intentionally removed that field, explain the replacement evidence in the checklist
+
+Treat an unmodified checklist as an incomplete cleanup unless the target was already checked and the current work did not change its status or evidence.
+
 ## Completion Classification
 
 Use these labels internally and report them clearly:
@@ -242,6 +258,7 @@ Lead with the result:
 - local cleanup classification
 - local Postgres columns or relations verified
 - files changed
+- checklist update status
 - checks run and results
 - remote actions intentionally not run
 - follow-up work, if any

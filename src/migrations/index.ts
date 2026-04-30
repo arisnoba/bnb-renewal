@@ -33,6 +33,9 @@ import * as migration_20260430_150000_align_legacy_created_at from './20260430_1
 import * as migration_20260430_160000_exam_result_slugs_local_paths from './20260430_160000_exam_result_slugs_local_paths'
 import * as migration_20260430_170000_drop_exam_result_legacy_fields from './20260430_170000_drop_exam_result_legacy_fields'
 import * as migration_20260430_180000_drop_exam_passed_video_legacy_fields from './20260430_180000_drop_exam_passed_video_legacy_fields'
+import * as migration_20260430_190000_drop_profile_legacy_fields from './20260430_190000_drop_profile_legacy_fields'
+import * as migration_20260430_191000_profile_versions from './20260430_191000_profile_versions'
+import * as migration_20260430_192000_profile_gallery_images from './20260430_192000_profile_gallery_images'
 
 export const migrations = [
   {
@@ -209,5 +212,20 @@ export const migrations = [
     up: migration_20260430_180000_drop_exam_passed_video_legacy_fields.up,
     down: migration_20260430_180000_drop_exam_passed_video_legacy_fields.down,
     name: '20260430_180000_drop_exam_passed_video_legacy_fields',
+  },
+  {
+    up: migration_20260430_190000_drop_profile_legacy_fields.up,
+    down: migration_20260430_190000_drop_profile_legacy_fields.down,
+    name: '20260430_190000_drop_profile_legacy_fields',
+  },
+  {
+    up: migration_20260430_191000_profile_versions.up,
+    down: migration_20260430_191000_profile_versions.down,
+    name: '20260430_191000_profile_versions',
+  },
+  {
+    up: migration_20260430_192000_profile_gallery_images.up,
+    down: migration_20260430_192000_profile_gallery_images.down,
+    name: '20260430_192000_profile_gallery_images',
   },
 ]

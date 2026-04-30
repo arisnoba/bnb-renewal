@@ -21,6 +21,12 @@ CREATE TABLE `bnb_legacy_work`.`profiles` (
   `weight` varchar(64) DEFAULT NULL,
   `english_name` varchar(255) DEFAULT NULL,
   `profile_image_path` varchar(512) DEFAULT NULL,
+  `photo_image1` varchar(512) DEFAULT NULL,
+  `photo_image2` varchar(512) DEFAULT NULL,
+  `photo_image3` varchar(512) DEFAULT NULL,
+  `photo_image4` varchar(512) DEFAULT NULL,
+  `photo_image5` varchar(512) DEFAULT NULL,
+  `photo_image6` varchar(512) DEFAULT NULL,
   `body_html` mediumtext DEFAULT NULL,
   `author_name` varchar(255) DEFAULT NULL,
   `published_at` datetime NOT NULL,
@@ -115,6 +121,12 @@ INSERT INTO `bnb_legacy_work`.`profiles` (
   `weight`,
   `english_name`,
   `profile_image_path`,
+  `photo_image1`,
+  `photo_image2`,
+  `photo_image3`,
+  `photo_image4`,
+  `photo_image5`,
+  `photo_image6`,
   `body_html`,
   `author_name`,
   `published_at`,
@@ -158,6 +170,60 @@ SELECT
     ORDER BY `file_source`.`bf_no` ASC
     LIMIT 1
   ) AS `profile_image_path`,
+  (
+    SELECT CONCAT('/legacy/profiles/', `profile`.`source_db`, '/', REPLACE(`profile`.`source_table`, 'g5_write_', ''), '/', `profile`.`wr_id`, '/', `file_source`.`bf_file`)
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1 OFFSET 1
+  ) AS `photo_image1`,
+  (
+    SELECT CONCAT('/legacy/profiles/', `profile`.`source_db`, '/', REPLACE(`profile`.`source_table`, 'g5_write_', ''), '/', `profile`.`wr_id`, '/', `file_source`.`bf_file`)
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1 OFFSET 2
+  ) AS `photo_image2`,
+  (
+    SELECT CONCAT('/legacy/profiles/', `profile`.`source_db`, '/', REPLACE(`profile`.`source_table`, 'g5_write_', ''), '/', `profile`.`wr_id`, '/', `file_source`.`bf_file`)
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1 OFFSET 3
+  ) AS `photo_image3`,
+  (
+    SELECT CONCAT('/legacy/profiles/', `profile`.`source_db`, '/', REPLACE(`profile`.`source_table`, 'g5_write_', ''), '/', `profile`.`wr_id`, '/', `file_source`.`bf_file`)
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1 OFFSET 4
+  ) AS `photo_image4`,
+  (
+    SELECT CONCAT('/legacy/profiles/', `profile`.`source_db`, '/', REPLACE(`profile`.`source_table`, 'g5_write_', ''), '/', `profile`.`wr_id`, '/', `file_source`.`bf_file`)
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1 OFFSET 5
+  ) AS `photo_image5`,
+  (
+    SELECT CONCAT('/legacy/profiles/', `profile`.`source_db`, '/', REPLACE(`profile`.`source_table`, 'g5_write_', ''), '/', `profile`.`wr_id`, '/', `file_source`.`bf_file`)
+    FROM `tmp_profile_file_sources` AS `file_source`
+    WHERE `file_source`.`source_db` = `profile`.`source_db`
+      AND `file_source`.`bo_table` = REPLACE(`profile`.`source_table`, 'g5_write_', '')
+      AND `file_source`.`wr_id` = `profile`.`wr_id`
+    ORDER BY `file_source`.`bf_no` ASC
+    LIMIT 1 OFFSET 6
+  ) AS `photo_image6`,
   NULLIF(`profile`.`wr_content`, '') AS `body_html`,
   NULLIF(TRIM(`profile`.`wr_name`), '') AS `author_name`,
   COALESCE(NULLIF(`profile`.`wr_datetime`, '0000-00-00 00:00:00'), CURRENT_TIMESTAMP) AS `published_at`,
