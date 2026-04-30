@@ -7,7 +7,6 @@ import {
   adminTabs,
   authorNameField,
   centersField,
-  imagePathField,
   legacyCollapsible,
   sidebarFields,
 } from "./shared";
@@ -40,35 +39,35 @@ export const Agencies: CollectionConfig = {
             {
               name: "subject",
               type: "text",
-              label: "제목",
+              label: "회사명",
               required: true,
             },
             {
               name: "name",
               type: "text",
-              label: "이름",
+              label: "영문명",
             },
           ]),
+          {
+            name: "logoMedia",
+            type: "upload",
+            label: "회사 로고 이미지",
+            relationTo: "media",
+          },
           {
             name: "summary",
             type: "textarea",
             label: "요약",
           },
-          {
-            name: "bodyHtml",
-            type: "textarea",
-            label: "본문",
-          },
         ],
       },
       {
-        label: "회사 로고",
+        label: "출신 배우",
         fields: [
-          imagePathField("profileImagePath", "대표 이미지"),
           {
             name: "actors",
             type: "array",
-            label: "배우",
+            label: "출신 배우",
             fields: [
               adminRow([
                 {
@@ -83,9 +82,6 @@ export const Agencies: CollectionConfig = {
                   label: "기수",
                 },
               ]),
-              {
-                ...imagePathField("profileImagePath", "프로필 이미지"),
-              },
             ],
           },
         ],

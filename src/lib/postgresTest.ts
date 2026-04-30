@@ -538,14 +538,7 @@ function teacherRepresentativeWorkPath(doc: TestDoc) {
 }
 
 function agencyImagePath(doc: TestDoc) {
-  return legacyAssetPath({
-    boTable: 'g5_agency',
-    collection: 'agencies',
-    path: doc.profileImagePath,
-    role: 'profile',
-    sourceDb: doc.sourceDb,
-    sourceId: doc.sourceId,
-  })
+  return mediaImagePath(doc.logoMedia)
 }
 
 function artistPressImagePath(doc: TestDoc) {

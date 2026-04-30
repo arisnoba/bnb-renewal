@@ -136,11 +136,13 @@ FROM (
 ) AS `ranked_agencies`
 WHERE `representative_rank` = 1;
 
-DROP TEMPORARY TABLE IF EXISTS `tmp_agency_actor_slots`;
+DROP TEMPORARY TABLE IF EXISTS `tmp_agency_actor_slots_raw`;
 
-CREATE TEMPORARY TABLE `tmp_agency_actor_slots` AS
+CREATE TEMPORARY TABLE `tmp_agency_actor_slots_raw` AS
 SELECT
-  `tmp_agency_representatives`.`normalized_subject`,
+  `tmp_agencies_all`.`normalized_subject`,
+  `tmp_agencies_all`.`source_priority`,
+  `tmp_agencies_all`.`bn_id`,
   `actor_slots`.`actor_order`,
   NULLIF(TRIM(CASE `actor_slots`.`actor_order`
     WHEN 1 THEN `wr_1` WHEN 2 THEN `wr_3` WHEN 3 THEN `wr_5` WHEN 4 THEN `wr_7`
@@ -157,13 +159,8 @@ SELECT
     WHEN 13 THEN `wr_26` WHEN 14 THEN `wr_28` WHEN 15 THEN `wr_30` WHEN 16 THEN `wr_32`
     WHEN 17 THEN `wr_34` WHEN 18 THEN `wr_36` WHEN 19 THEN `wr_38` WHEN 20 THEN `wr_40`
     WHEN 21 THEN `wr_42`
-  END), '') AS `generation`,
-  NULLIF(TRIM(CASE `actor_slots`.`actor_order`
-    WHEN 1 THEN `pr_1` WHEN 2 THEN `pr_2` WHEN 3 THEN `pr_3` WHEN 4 THEN `pr_4`
-    WHEN 5 THEN `pr_5` WHEN 6 THEN `pr_6` WHEN 7 THEN `pr_7` WHEN 8 THEN `pr_8`
-    WHEN 9 THEN `pr_9`
-  END), '') AS `profile_image_path`
-FROM `tmp_agency_representatives`
+  END), '') AS `generation`
+FROM `tmp_agencies_all`
 CROSS JOIN (
   SELECT 1 AS `actor_order` UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
   UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8
@@ -173,10 +170,37 @@ CROSS JOIN (
   UNION ALL SELECT 21 UNION ALL SELECT 22
 ) AS `actor_slots`;
 
-DELETE FROM `tmp_agency_actor_slots`
+DELETE FROM `tmp_agency_actor_slots_raw`
 WHERE `actor_name` IS NULL
   OR `actor_name` REGEXP '\\.(gif|jpe?g|png|svg|webp)$'
   OR `actor_name` LIKE '%/img/%';
+
+DROP TEMPORARY TABLE IF EXISTS `tmp_agency_actor_slots`;
+
+CREATE TEMPORARY TABLE `tmp_agency_actor_slots` AS
+SELECT
+  `deduped`.`normalized_subject`,
+  `deduped`.`actor_order`,
+  `deduped`.`actor_name`,
+  `deduped`.`generation`,
+  `deduped`.`source_priority`,
+  `deduped`.`bn_id`
+FROM (
+  SELECT
+    `tmp_agency_actor_slots_raw`.*,
+    ROW_NUMBER() OVER (
+      PARTITION BY
+        `tmp_agency_actor_slots_raw`.`normalized_subject`,
+        `tmp_agency_actor_slots_raw`.`actor_name`,
+        COALESCE(`tmp_agency_actor_slots_raw`.`generation`, '')
+      ORDER BY
+        `tmp_agency_actor_slots_raw`.`source_priority`,
+        `tmp_agency_actor_slots_raw`.`bn_id`,
+        `tmp_agency_actor_slots_raw`.`actor_order`
+    ) AS `actor_rank`
+  FROM `tmp_agency_actor_slots_raw`
+) AS `deduped`
+WHERE `deduped`.`actor_rank` = 1;
 
 INSERT INTO `bnb_legacy_work`.`agencies` (
   `source_db`,
@@ -208,10 +232,9 @@ SELECT
       GROUP_CONCAT(
         JSON_OBJECT(
           'name', `actor`.`actor_name`,
-          'generation', `actor`.`generation`,
-          'profileImagePath', `actor`.`profile_image_path`
+          'generation', `actor`.`generation`
         )
-        ORDER BY `actor`.`actor_order`
+        ORDER BY `actor`.`source_priority`, `actor`.`bn_id`, `actor`.`actor_order`
         SEPARATOR ','
       ),
       ']'
@@ -243,17 +266,6 @@ SELECT
       WHERE `source`.`normalized_subject` = `representative`.`normalized_subject`
     ),
     'piece', NULLIF(`representative`.`piece`, ''),
-    'profileImagePaths', JSON_ARRAY(
-      NULLIF(TRIM(`representative`.`pr_1`), ''),
-      NULLIF(TRIM(`representative`.`pr_2`), ''),
-      NULLIF(TRIM(`representative`.`pr_3`), ''),
-      NULLIF(TRIM(`representative`.`pr_4`), ''),
-      NULLIF(TRIM(`representative`.`pr_5`), ''),
-      NULLIF(TRIM(`representative`.`pr_6`), ''),
-      NULLIF(TRIM(`representative`.`pr_7`), ''),
-      NULLIF(TRIM(`representative`.`pr_8`), ''),
-      NULLIF(TRIM(`representative`.`pr_9`), '')
-    ),
     'galleryImages', JSON_ARRAY(
       NULLIF(TRIM(`representative`.`it_img1`), ''),
       NULLIF(TRIM(`representative`.`it_img2`), ''),

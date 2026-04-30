@@ -80,21 +80,17 @@ const configs: TableConfig[] = [
       'name',
       'subject',
       'summary',
-      'body_html',
-      'profile_image_path',
       'actors',
       'display_order',
       'legacy_meta',
     ],
     transform: (row) => ({
       ...sourceDoc(row),
-      actors: parseJsonArray(row.actors),
-      bodyHtml: text(row.body_html),
+      actors: parseAgencyActors(row.actors),
       centers: ['art'],
       displayOrder: number(row.display_order),
       legacyMeta: parseJsonValue(row.legacy_meta),
       name: text(row.name),
-      profileImagePath: text(row.profile_image_path),
       subject: requiredText(row.subject, 'agencies.subject'),
       summary: text(row.summary),
     }),
@@ -998,6 +994,24 @@ function parseJsonArray(value: unknown): unknown[] {
   const parsed = parseJsonValue(value)
 
   return Array.isArray(parsed) ? parsed : []
+}
+
+function parseAgencyActors(value: unknown) {
+  return parseJsonArray(value)
+    .map((item) => {
+      const actor = objectValue(item)
+      const name = text(actor?.name)
+
+      if (!name) {
+        return undefined
+      }
+
+      return {
+        name,
+        generation: text(actor?.generation),
+      }
+    })
+    .filter(Boolean)
 }
 
 function buildRepresentativeWorks(rows: WorkRow[], teacherSourceDb: string) {

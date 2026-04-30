@@ -22,6 +22,10 @@ import * as migration_20260429_210000_curriculum_policy_restructure from './2026
 import * as migration_20260429_211000_curriculum_class_options from './20260429_211000_curriculum_class_options'
 import * as migration_20260429_212000_curriculum_capacity_default from './20260429_212000_curriculum_capacity_default'
 import * as migration_20260429_213000_drop_curriculum_legacy_fields from './20260429_213000_drop_curriculum_legacy_fields'
+import * as migration_20260430_120000_drop_agency_body_html from './20260430_120000_drop_agency_body_html'
+import * as migration_20260430_121000_drop_agency_actor_profile_image_path from './20260430_121000_drop_agency_actor_profile_image_path'
+import * as migration_20260430_122000_agency_logo_media from './20260430_122000_agency_logo_media'
+import * as migration_20260430_123000_drop_agency_profile_image_path from './20260430_123000_drop_agency_profile_image_path'
 
 export const migrations = [
   {
@@ -143,5 +147,25 @@ export const migrations = [
     up: migration_20260429_213000_drop_curriculum_legacy_fields.up,
     down: migration_20260429_213000_drop_curriculum_legacy_fields.down,
     name: '20260429_213000_drop_curriculum_legacy_fields',
+  },
+  {
+    up: migration_20260430_120000_drop_agency_body_html.up,
+    down: migration_20260430_120000_drop_agency_body_html.down,
+    name: '20260430_120000_drop_agency_body_html',
+  },
+  {
+    up: migration_20260430_121000_drop_agency_actor_profile_image_path.up,
+    down: migration_20260430_121000_drop_agency_actor_profile_image_path.down,
+    name: '20260430_121000_drop_agency_actor_profile_image_path',
+  },
+  {
+    up: migration_20260430_122000_agency_logo_media.up,
+    down: migration_20260430_122000_agency_logo_media.down,
+    name: '20260430_122000_agency_logo_media',
+  },
+  {
+    up: migration_20260430_123000_drop_agency_profile_image_path.up,
+    down: migration_20260430_123000_drop_agency_profile_image_path.down,
+    name: '20260430_123000_drop_agency_profile_image_path',
   },
 ]
