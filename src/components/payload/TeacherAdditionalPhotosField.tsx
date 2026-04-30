@@ -3,7 +3,7 @@
 import type { ChangeEvent } from 'react';
 
 import { useField } from '@payloadcms/ui';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { getTeacherImageSrc } from './teacherImageSrc';
@@ -206,13 +206,14 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 					type="file"
 				/>
 				<button
+					className="bnb-image-upload-trigger"
 					disabled={controlsDisabled || visibleValues.length >= photoFields.length}
 					onClick={() => inputRef.current?.click()}
 					style={{
-						background: 'var(--theme-elevation-50)',
-						border: '1px dashed var(--theme-border-color)',
+						background: 'var(--bnb-admin-upload-bg)',
+						border: '1px dashed var(--bnb-admin-upload-border)',
 						borderRadius: 'var(--style-radius-s)',
-						color: 'var(--theme-elevation-700)',
+						color: 'var(--bnb-admin-upload-text)',
 						cursor:
 							controlsDisabled || visibleValues.length >= photoFields.length ? 'not-allowed' : 'pointer',
 						display: 'grid',
@@ -222,10 +223,15 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 						width: '100%',
 					}}
 					type="button">
-					<span style={{ color: 'var(--theme-text)', fontSize: 14, fontWeight: 600 }}>
-						{isProcessing ? '업로드 중...' : '이미지 업로드'}
+					<span className="bnb-image-upload-trigger__title">
+						<span className="bnb-image-upload-trigger__icon">
+							<ImagePlus aria-hidden="true" size={16} strokeWidth={2} />
+						</span>
+						<span>{isProcessing ? '업로드 중...' : '이미지 업로드'}</span>
 					</span>
-					<span style={{ fontSize: 12 }}>{helpText}</span>
+					<span className="bnb-image-upload-trigger__help" style={{ fontSize: 12 }}>
+						{helpText}
+					</span>
 				</button>
 				{message ? (
 					<p

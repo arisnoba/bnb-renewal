@@ -36,6 +36,8 @@ import * as migration_20260430_180000_drop_exam_passed_video_legacy_fields from 
 import * as migration_20260430_190000_drop_profile_legacy_fields from './20260430_190000_drop_profile_legacy_fields'
 import * as migration_20260430_191000_profile_versions from './20260430_191000_profile_versions'
 import * as migration_20260430_192000_profile_gallery_images from './20260430_192000_profile_gallery_images'
+import * as migration_20260430_193000_teacher_cleanup_versions from './20260430_193000_teacher_cleanup_versions'
+import * as migration_20260430_194000_teacher_profile_image_required from './20260430_194000_teacher_profile_image_required'
 
 export const migrations = [
   {
@@ -227,5 +229,15 @@ export const migrations = [
     up: migration_20260430_192000_profile_gallery_images.up,
     down: migration_20260430_192000_profile_gallery_images.down,
     name: '20260430_192000_profile_gallery_images',
+  },
+  {
+    up: migration_20260430_193000_teacher_cleanup_versions.up,
+    down: migration_20260430_193000_teacher_cleanup_versions.down,
+    name: '20260430_193000_teacher_cleanup_versions',
+  },
+  {
+    up: migration_20260430_194000_teacher_profile_image_required.up,
+    down: migration_20260430_194000_teacher_profile_image_required.down,
+    name: '20260430_194000_teacher_profile_image_required',
   },
 ]

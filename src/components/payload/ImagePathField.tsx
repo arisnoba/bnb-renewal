@@ -5,6 +5,7 @@ import type { ChangeEvent } from 'react';
 
 import { useRef, useState } from 'react';
 import { useDocumentInfo, useField } from '@payloadcms/ui';
+import { ImagePlus } from 'lucide-react';
 
 import { getTeacherImageSrc } from './teacherImageSrc';
 
@@ -353,19 +354,28 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 				</div>
 			) : (
 				<button
+					className="bnb-image-upload-trigger"
 					disabled={controlsDisabled}
 					onClick={() => inputRef.current?.click()}
 					style={{
-						background: 'var(--theme-elevation-50)',
-						border: `1px dashed ${hasError ? 'var(--theme-error-500)' : 'var(--theme-border-color)'}`,
+						background: 'var(--bnb-admin-upload-bg)',
+						border: `1px dashed ${hasError ? 'var(--theme-error-500)' : 'var(--bnb-admin-upload-border)'}`,
 						borderRadius: 'var(--style-radius-s)',
-						color: 'var(--theme-elevation-600)',
+						color: 'var(--bnb-admin-upload-text)',
 						cursor: controlsDisabled ? 'not-allowed' : 'pointer',
+						display: 'inline-flex',
+						gap: 8,
+						alignItems: 'center',
 						padding: 'calc(var(--base) * 0.5)',
 						textAlign: 'left',
 					}}
 					type="button">
-					{isProcessing ? '업로드 중...' : '이미지 선택'}
+					<span className="bnb-image-upload-trigger__icon">
+						<ImagePlus aria-hidden="true" size={16} strokeWidth={2} />
+					</span>
+					<span className="bnb-image-upload-trigger__title">
+						{isProcessing ? '업로드 중...' : '이미지 선택'}
+					</span>
 				</button>
 			)}
 			{!hasValue ? (

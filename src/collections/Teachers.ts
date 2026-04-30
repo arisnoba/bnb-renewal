@@ -4,21 +4,14 @@ import { slugField } from "payload";
 import { allowAll, centerScopedCollectionAccess } from "./access";
 import { koreanSlugify } from "../utilities/koreanSlugify";
 import {
-  adminCollapsible,
   adminRow,
   adminTabs,
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
   imagePathField,
-  legacyMetaField,
   sidebarFields,
-  sourceFields,
 } from "./shared";
-
-const teacherLegacyFields = sourceFields.filter(
-  (field) => !("name" in field) || field.name !== "slug",
-);
 
 export const Teachers: CollectionConfig = {
   slug: "teachers",
@@ -38,6 +31,9 @@ export const Teachers: CollectionConfig = {
   defaultSort: "displayOrder",
   hooks: {
     beforeValidate: [centerScopedBeforeValidate],
+  },
+  versions: {
+    maxPerDoc: 15,
   },
   fields: [
     {
@@ -62,7 +58,7 @@ export const Teachers: CollectionConfig = {
               label: "전공/학교",
             },
           ]),
-          imagePathField("profileImagePath", "프로필 이미지"),
+          imagePathField("profileImagePath", "프로필 이미지", true),
           {
             name: "photoImage1",
             type: "text",
@@ -188,6 +184,5 @@ export const Teachers: CollectionConfig = {
       },
     ]),
     slugField({ slugify: koreanSlugify, useAsSlug: "name" }),
-    adminCollapsible("레거시/원본", [...teacherLegacyFields, legacyMetaField]),
   ],
 };
