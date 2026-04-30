@@ -49,3 +49,27 @@
   background: var(--theme-error-50);
   border-color: var(--theme-error-500);
 }
+
+.document-fields--has-sidebar
+  .document-fields__fields
+  > .tabs-field:not(.tabs-field--within-collapsible)
+  > .tabs-field__content-wrap {
+  padding-left: var(--main-gutter-h-left);
+  padding-right: var(--main-gutter-h-right);
+}
+
+.document-fields--has-sidebar
+  .document-fields__fields
+  > .tabs-field:not(.tabs-field--within-collapsible)
+  > .tabs-field__tabs-wrap
+  > .tabs-field__tabs::before {
+  width: var(--main-gutter-h-left);
+}
+
+.document-fields--has-sidebar
+  .document-fields__fields
+  > .tabs-field:not(.tabs-field--within-collapsible)
+  > .tabs-field__tabs-wrap
+  > .tabs-field__tabs::after {
+  width: var(--main-gutter-h-right);
+}
