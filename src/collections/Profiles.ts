@@ -3,17 +3,14 @@ import type { CollectionConfig } from 'payload';
 import { getDefaultProfileFilterValue, isKnownProfileFilterValue, isProfileFilterValueAllowed } from '../lib/profileFilters';
 import { centerScopedCollectionAccess } from './access';
 import {
-	adminCollapsible,
 	adminRow,
 	adminTabs,
 	authorNameField,
 	centerScopedBeforeValidate,
 	centersField,
 	imagePathField,
-	legacyMetaField,
 	publishingFields,
 	sidebarFields,
-	sourceFields,
 } from './shared';
 
 type ProfileFilterContext = {
@@ -34,8 +31,6 @@ type ProfileSlugPayload = {
 function profileFilterCenters({ data, originalDoc, siblingData }: ProfileFilterContext) {
 	return siblingData?.centers ?? data?.centers ?? originalDoc?.centers;
 }
-
-const profileLegacyFields = sourceFields.filter(field => !('name' in field) || field.name !== 'slug');
 
 function sanitizeProfileEnglishName(value: unknown) {
 	return String(value ?? '')
@@ -229,6 +224,29 @@ export const Profiles: CollectionConfig = {
 						},
 					]),
 					imagePathField('profileImagePath', '프로필 이미지', true),
+					{
+						name: 'photoImage1',
+						type: 'text',
+						label: '갤러리 이미지 업로드',
+						admin: {
+							components: {
+								Field: '@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField',
+							},
+						},
+					},
+					...['photoImage2', 'photoImage3', 'photoImage4', 'photoImage5', 'photoImage6'].map(
+						(name): NonNullable<CollectionConfig['fields']>[number] => ({
+							name,
+							type: 'text',
+							label: name,
+							admin: {
+								components: {
+									Field:
+										'@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotoHiddenField',
+								},
+							},
+						}),
+					),
 				],
 			},
 			{
@@ -306,6 +324,8 @@ export const Profiles: CollectionConfig = {
 			...publishingFields,
 			authorNameField,
 		]),
-		adminCollapsible('레거시/원본', [...profileLegacyFields, legacyMetaField]),
 	],
+	versions: {
+		maxPerDoc: 15,
+	},
 };
