@@ -1,4 +1,4 @@
-import { unlink } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
@@ -93,6 +93,42 @@ function getLocalFilePath(publicPath: string) {
   return filePath;
 }
 
+function canUseLocalUploadFallback() {
+  return process.env.NODE_ENV !== "production";
+}
+
+async function saveLocalUploadedFile({
+  body,
+  contentType,
+  fileName,
+  storagePath,
+}: {
+  body: Buffer;
+  contentType: string;
+  fileName: string;
+  storagePath: string;
+}) {
+  const relativePath = storagePath
+    .replace(/^admin-images\//, "")
+    .split("/")
+    .filter(Boolean);
+  const filePath = path.resolve(LOCAL_UPLOAD_ROOT, ...relativePath);
+
+  if (!filePath.startsWith(`${LOCAL_UPLOAD_ROOT}${path.sep}`)) {
+    throw new Error("로컬 이미지 저장 경로가 올바르지 않습니다.");
+  }
+
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, body);
+
+  return {
+    contentType,
+    fileName,
+    path: `${PUBLIC_UPLOAD_PREFIX}/${relativePath.join("/")}`,
+    storage: "local",
+  };
+}
+
 export async function POST(request: Request) {
   if (!(await requireAdmin(request))) {
     return jsonError("로그인이 필요합니다.", 401);
@@ -129,6 +165,22 @@ export async function POST(request: Request) {
       key: storagePath,
     });
   } catch (error) {
+    if (canUseLocalUploadFallback()) {
+      console.warn(
+        "R2 이미지 업로드에 실패해 로컬 저장소로 대체합니다.",
+        error,
+      );
+
+      return NextResponse.json(
+        await saveLocalUploadedFile({
+          body: fileBuffer,
+          contentType: file.type,
+          fileName,
+          storagePath,
+        }),
+      );
+    }
+
     return logStorageError("R2 이미지 업로드에 실패했습니다.", error);
   }
 

@@ -179,43 +179,6 @@ export const Profiles: CollectionConfig = {
 						},
 					},
 					{
-						name: 'slug',
-						type: 'text',
-						label: '슬러그',
-						required: true,
-						unique: true,
-						hooks: {
-							beforeValidate: [
-								async ({ originalDoc, req, siblingData, value }) => {
-									const baseSlug = profileSlugFromEnglishName(siblingData?.englishName) ?? profileSlugFromSlugValue(value);
-
-									if (!baseSlug) {
-										return value;
-									}
-
-									const previousBaseSlug = profileSlugFromEnglishName(originalDoc?.englishName);
-
-									if (previousBaseSlug === baseSlug && isGeneratedProfileSlugForBase(originalDoc?.slug, baseSlug)) {
-										return originalDoc?.slug;
-									}
-
-									return nextUniqueProfileSlug({
-										baseSlug,
-										currentId: originalDoc?.id,
-										payload: req.payload,
-									});
-								},
-							],
-						},
-						admin: {
-							components: {
-								Field: '@/components/payload/ProfileSlugField#ProfileSlugField',
-							},
-							placeholder: '영문명 입력 시 자동 입력됩니다.',
-							readOnly: true,
-						},
-					},
-					{
 						name: 'filter',
 						type: 'text',
 						label: '필터',
@@ -265,7 +228,7 @@ export const Profiles: CollectionConfig = {
 							label: '몸무게',
 						},
 					]),
-					imagePathField('profileImagePath', '프로필 이미지'),
+					imagePathField('profileImagePath', '프로필 이미지', true),
 				],
 			},
 			{
@@ -301,7 +264,48 @@ export const Profiles: CollectionConfig = {
 				],
 			},
 		]),
-		...sidebarFields([centersField, ...publishingFields, authorNameField]),
+		...sidebarFields([
+			centersField,
+			{
+				name: 'slug',
+				type: 'text',
+				label: '슬러그',
+				required: true,
+				unique: true,
+				hooks: {
+					beforeValidate: [
+						async ({ originalDoc, req, siblingData, value }) => {
+							const baseSlug = profileSlugFromEnglishName(siblingData?.englishName) ?? profileSlugFromSlugValue(value);
+
+							if (!baseSlug) {
+								return value;
+							}
+
+							const previousBaseSlug = profileSlugFromEnglishName(originalDoc?.englishName);
+
+							if (previousBaseSlug === baseSlug && isGeneratedProfileSlugForBase(originalDoc?.slug, baseSlug)) {
+								return originalDoc?.slug;
+							}
+
+							return nextUniqueProfileSlug({
+								baseSlug,
+								currentId: originalDoc?.id,
+								payload: req.payload,
+							});
+						},
+					],
+				},
+				admin: {
+					components: {
+						Field: '@/components/payload/ProfileSlugField#ProfileSlugField',
+					},
+					placeholder: '영문명 입력 시 자동 입력됩니다.',
+					readOnly: true,
+				},
+			},
+			...publishingFields,
+			authorNameField,
+		]),
 		adminCollapsible('레거시/원본', [...profileLegacyFields, legacyMetaField]),
 	],
 };

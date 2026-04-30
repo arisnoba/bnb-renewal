@@ -62,6 +62,10 @@ async function readErrorMessage(response: Response) {
 	}
 }
 
+function validateRequiredImagePath(value: unknown) {
+	return String(value ?? '').trim() ? true : '이 입력란은 필수입니다.';
+}
+
 export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFromProps }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { collectionSlug } = useDocumentInfo();
@@ -70,6 +74,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 	const [messageType, setMessageType] = useState<'error' | 'info'>('info');
 	const { disabled, errorMessage, path: fieldPath, setValue, showError, value } = useField<string>({
 		potentiallyStalePath: pathFromProps,
+		validate: field.required ? validateRequiredImagePath : undefined,
 	});
 	const { value: sourceDb } = useField<string>({ path: 'sourceDb' });
 	const { value: sourceId } = useField<string>({ path: 'sourceId' });
@@ -82,6 +87,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 			: getImageSrc(value);
 	const canPreview = imageSrc && isProbablyImage(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());
+	const hasError = Boolean(showError);
 	const fileName = imageSrc ? getFileName(imageSrc) : getFileName(fieldValue);
 	const controlsDisabled = disabled || isProcessing;
 
@@ -194,7 +200,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 					style={{
 						alignItems: 'center',
 						background: 'var(--theme-elevation-50)',
-						border: '1px solid var(--theme-border-color)',
+						border: `1px solid ${hasError ? 'var(--theme-error-500)' : 'var(--theme-border-color)'}`,
 						borderRadius: 'var(--style-radius-s)',
 						display: 'flex',
 						gap: 'calc(var(--base) / 2)',
@@ -351,7 +357,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 					onClick={() => inputRef.current?.click()}
 					style={{
 						background: 'var(--theme-elevation-50)',
-						border: '1px dashed var(--theme-border-color)',
+						border: `1px dashed ${hasError ? 'var(--theme-error-500)' : 'var(--theme-border-color)'}`,
 						borderRadius: 'var(--style-radius-s)',
 						color: 'var(--theme-elevation-600)',
 						cursor: controlsDisabled ? 'not-allowed' : 'pointer',
@@ -369,7 +375,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 					placeholder="이미지 경로 또는 URL"
 					style={{
 						background: 'var(--theme-input-bg, var(--theme-elevation-0))',
-						border: '1px solid var(--theme-border-color)',
+						border: `1px solid ${hasError ? 'var(--theme-error-500)' : 'var(--theme-border-color)'}`,
 						borderRadius: 'var(--style-radius-s)',
 						color: 'var(--theme-text)',
 						fontSize: 13,

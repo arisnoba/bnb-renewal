@@ -1,15 +1,9 @@
 'use client';
 
 import type { ChangeEvent, InputHTMLAttributes, KeyboardEvent } from 'react';
-import type { UIFieldClientComponent } from 'payload';
+import type { UIFieldClientComponent, Validate } from 'payload';
 
-import { TextInput, useFormFields } from '@payloadcms/ui';
-
-type FieldState = {
-	errorMessage?: string;
-	showError?: boolean;
-	value?: unknown;
-};
+import { TextInput, useField } from '@payloadcms/ui';
 
 function sanitizeProfileEnglishName(value: unknown) {
 	return String(value ?? '').replace(/[^A-Za-z,\s]/g, '');
@@ -36,21 +30,21 @@ const englishNameInputAttributes = {
 	spellCheck: false,
 } as unknown as InputHTMLAttributes<HTMLInputElement>;
 
-export const ProfileNameFields: UIFieldClientComponent = () => {
-	const fields = useFormFields(([formFields]) => formFields);
-	const dispatchFields = useFormFields(([, dispatch]) => dispatch);
-	const nameField = fields.name as FieldState | undefined;
-	const englishNameField = fields.englishName as FieldState | undefined;
-	const nameValue = typeof nameField?.value === 'string' ? nameField.value : '';
-	const englishNameValue = typeof englishNameField?.value === 'string' ? englishNameField.value : '';
+const requiredTextValidate: Validate<string> = value => {
+	return String(value ?? '').trim() ? true : '이 입력란은 필수입니다.';
+};
 
-	function setFieldValue(path: 'englishName' | 'name', value: string) {
-		dispatchFields({
-			path,
-			type: 'UPDATE',
-			value,
-		});
-	}
+export const ProfileNameFields: UIFieldClientComponent = () => {
+	const nameField = useField<string>({
+		path: 'name',
+		validate: requiredTextValidate,
+	});
+	const englishNameField = useField<string>({
+		path: 'englishName',
+		validate: requiredTextValidate,
+	});
+	const nameValue = typeof nameField.value === 'string' ? nameField.value : '';
+	const englishNameValue = typeof englishNameField.value === 'string' ? englishNameField.value : '';
 
 	return (
 		<div
@@ -63,19 +57,18 @@ export const ProfileNameFields: UIFieldClientComponent = () => {
 			<TextInput
 				label="이름"
 				onChange={(event: ChangeEvent<HTMLInputElement>) => {
-					setFieldValue('name', event.currentTarget.value);
+					nameField.setValue(event.currentTarget.value);
 				}}
 				path="name"
 				required
-				showError={nameField?.showError}
+				showError={nameField.showError}
 				value={nameValue}
-				Error={nameField?.showError && nameField.errorMessage ? <div style={{ color: 'var(--theme-error-700)', fontSize: 12 }}>{nameField.errorMessage}</div> : undefined}
 			/>
 			<TextInput
 				htmlAttributes={englishNameInputAttributes}
 				label="영문명"
 				onChange={(event: ChangeEvent<HTMLInputElement>) => {
-					setFieldValue('englishName', sanitizeProfileEnglishName(event.currentTarget.value));
+					englishNameField.setValue(sanitizeProfileEnglishName(event.currentTarget.value));
 				}}
 				onKeyDown={event => {
 					if (!isAllowedEnglishNameKey(event)) {
@@ -85,9 +78,8 @@ export const ProfileNameFields: UIFieldClientComponent = () => {
 				path="englishName"
 				placeholder="예: Kim Minji"
 				required
-				showError={englishNameField?.showError}
+				showError={englishNameField.showError}
 				value={englishNameValue}
-				Error={englishNameField?.showError && englishNameField.errorMessage ? <div style={{ color: 'var(--theme-error-700)', fontSize: 12 }}>{englishNameField.errorMessage}</div> : undefined}
 			/>
 		</div>
 	);
