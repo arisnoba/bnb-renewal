@@ -511,7 +511,13 @@ function teacherLegacyImagePath(doc: TestDoc, path: unknown) {
     return ''
   }
 
-  if (value.startsWith('/legacy/teachers/')) {
+  if (
+    value.startsWith('/api/') ||
+    value.startsWith('/legacy/teachers/') ||
+    value.startsWith('/media/') ||
+    value.startsWith('/uploads/') ||
+    value.startsWith('/_next/')
+  ) {
     return normalizeImagePath(value)
   }
 

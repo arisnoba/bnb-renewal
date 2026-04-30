@@ -224,7 +224,7 @@ export const Profiles: CollectionConfig = {
 							label: '몸무게',
 						},
 					]),
-					imagePathField('profileImagePath', '프로필 이미지', true),
+					imagePathField('profileImagePath', '프로필 이미지'),
 					{
 						name: 'photoImage1',
 						type: 'text',

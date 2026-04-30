@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { Button } from '@/components/ui/button'
 import { centers } from '@/lib/centers'
+import { postgresTestCollections } from '@/lib/postgresTest'
 import { testCollections } from '@/lib/testCollections'
 import Link from 'next/link'
 
@@ -53,6 +54,17 @@ const testGroups = [
     description: 'Payload 컬렉션의 최근 데이터와 이미지 경로를 확인하는 내부 검수 페이지입니다.',
     links: testCollections,
     title: '컬렉션 테스트',
+  },
+  {
+    description: 'Postgres 마이그레이션 결과를 컬렉션별로 확인하는 내부 검수 페이지입니다.',
+    links: [
+      {
+        description: `${postgresTestCollections.length}개 컬렉션 검수 목록`,
+        href: '/test/postgres',
+        label: 'Postgres 검수',
+      },
+    ],
+    title: 'Postgres 테스트',
   },
 ]
 
