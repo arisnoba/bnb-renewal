@@ -37,11 +37,12 @@ export const CastingAppearances: CollectionConfig = {
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
+    { name: "title", type: "text", label: "제목", required: true },
     ...adminTabs([
       {
         label: "작품 정보",
         fields: [
-          { name: "title", type: "text", label: "제목", required: true },
+          imagePathField("thumbnailPath", "썸네일"),
           { name: "castingStatus", type: "text", label: "캐스팅 상태" },
           adminRow([
             { name: "broadcaster", type: "text", label: "방송사" },
@@ -55,8 +56,9 @@ export const CastingAppearances: CollectionConfig = {
         ],
       },
       {
-        label: "출연자",
+        label: "캐스팅/출연자",
         fields: [
+          { name: "castingCompany", type: "text", label: "캐스팅 회사" },
           {
             name: "castMembers",
             type: "array",
@@ -87,15 +89,6 @@ export const CastingAppearances: CollectionConfig = {
               ]),
             ],
           },
-        ],
-      },
-      {
-        label: "미디어/캐스팅",
-        fields: [
-          adminRow([
-            imagePathField("thumbnailPath", "썸네일"),
-            { name: "castingCompany", type: "text", label: "캐스팅 회사" },
-          ]),
         ],
       },
     ]),

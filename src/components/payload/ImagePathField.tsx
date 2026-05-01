@@ -64,6 +64,38 @@ function getArtistPressImageSrc(
 	return `/legacy/artist-press/${sourceDb || 'baewoo'}/${boTable}/${sourceId}/${role}/${fileName}`;
 }
 
+function getCastingAppearanceImageSrc(
+	value: unknown,
+	{
+		sourceDb,
+		sourceId,
+	}: {
+		sourceDb?: string;
+		sourceId?: string;
+	},
+) {
+	const directSrc = getImageSrc(value);
+
+	if (!directSrc || directSrc.startsWith('/legacy/casting-appearances/')) {
+		return directSrc;
+	}
+
+	if (!sourceId) {
+		return directSrc;
+	}
+
+	const normalizedPath = directSrc.split('?')[0] ?? directSrc;
+	const parts = normalizedPath.split('/').filter(Boolean);
+	const fileName = parts.at(-1);
+	const boTable = parts.at(-2) || 'new_appear';
+
+	if (!fileName) {
+		return directSrc;
+	}
+
+	return `/legacy/casting-appearances/${sourceDb || 'baewoo'}/${boTable}/${sourceId}/thumbnail/${fileName}`;
+}
+
 function getFileName(src: string) {
 	const pathname = src.split('?')[0] ?? '';
 	const fileName = pathname.split('/').filter(Boolean).pop();
@@ -122,6 +154,8 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 			? getTeacherImageSrc(value, { sourceDb, sourceId, sourceTable })
 			: collectionSlug === 'artist-press' && (fieldPath === 'thumbnailPath' || fieldPath === 'agencyLogoPath')
 				? getArtistPressImageSrc(value, { fieldPath, sourceDb, sourceId })
+				: collectionSlug === 'casting-appearances' && fieldPath === 'thumbnailPath'
+					? getCastingAppearanceImageSrc(value, { sourceDb, sourceId })
 			: getImageSrc(value);
 	const canPreview = imageSrc && isProbablyImage(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());

@@ -67,7 +67,7 @@ test("profile career items use title row labels", () => {
 });
 
 test("casting appearance cast members use actor row labels", () => {
-  const field = getTabField(CastingAppearances, "출연자", "castMembers");
+  const field = getTabField(CastingAppearances, "캐스팅/출연자", "castMembers");
 
   assert.equal(field.type, "array");
   assert.deepEqual(field.labels, {
