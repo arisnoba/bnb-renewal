@@ -29,6 +29,41 @@ function getImageSrc(value: unknown) {
 	return `/${trimmed.replace(/^\/+/, '')}`;
 }
 
+function getArtistPressImageSrc(
+	value: unknown,
+	{
+		fieldPath,
+		sourceDb,
+		sourceId,
+	}: {
+		fieldPath: string;
+		sourceDb?: string;
+		sourceId?: string;
+	},
+) {
+	const directSrc = getImageSrc(value);
+
+	if (!directSrc || directSrc.startsWith('/legacy/artist-press/')) {
+		return directSrc;
+	}
+
+	if (!sourceId) {
+		return directSrc;
+	}
+
+	const normalizedPath = directSrc.split('?')[0] ?? directSrc;
+	const parts = normalizedPath.split('/').filter(Boolean);
+	const fileName = parts.at(-1);
+	const boTable = parts.at(-2) || 'new_shoot';
+	const role = fieldPath === 'agencyLogoPath' ? 'agency-logo' : 'thumbnail';
+
+	if (!fileName) {
+		return directSrc;
+	}
+
+	return `/legacy/artist-press/${sourceDb || 'baewoo'}/${boTable}/${sourceId}/${role}/${fileName}`;
+}
+
 function getFileName(src: string) {
 	const pathname = src.split('?')[0] ?? '';
 	const fileName = pathname.split('/').filter(Boolean).pop();
@@ -85,6 +120,8 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 	const imageSrc =
 		collectionSlug === 'teachers' && fieldPath === 'profileImagePath'
 			? getTeacherImageSrc(value, { sourceDb, sourceId, sourceTable })
+			: collectionSlug === 'artist-press' && (fieldPath === 'thumbnailPath' || fieldPath === 'agencyLogoPath')
+				? getArtistPressImageSrc(value, { fieldPath, sourceDb, sourceId })
 			: getImageSrc(value);
 	const canPreview = imageSrc && isProbablyImage(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());

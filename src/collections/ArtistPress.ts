@@ -199,17 +199,25 @@ export const ArtistPress: CollectionConfig = {
       {
         label: "미디어",
         fields: [
+          imagePathField("thumbnailPath", "썸네일 이미지"),
+          imagePathField("agencyLogoPath", "소속사 이미지"),
           {
             name: "thumbnailMedia",
             type: "upload",
             label: "썸네일 이미지",
             relationTo: "media",
+            admin: {
+              hidden: true,
+            },
           },
           {
             name: "agencyLogoMedia",
             type: "upload",
             label: "소속사 이미지",
             relationTo: "media",
+            admin: {
+              hidden: true,
+            },
           },
         ],
       },
@@ -265,8 +273,6 @@ export const ArtistPress: CollectionConfig = {
             type: "textarea",
             label: "레거시 본문 HTML",
           },
-          imagePathField("thumbnailPath", "레거시 썸네일 경로"),
-          imagePathField("agencyLogoPath", "레거시 소속사 로고 경로"),
           legacyMetaField,
         ],
       },
