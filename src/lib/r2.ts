@@ -9,6 +9,12 @@ type R2Config = {
   publicBaseUrl: string;
 };
 
+type R2ClientConfig = R2Config & {
+  accessKeyId: string;
+  endpoint: string;
+  secretAccessKey: string;
+};
+
 type UploadR2ObjectInput = {
   body: Buffer | Uint8Array;
   cacheControl?: string;
@@ -17,6 +23,14 @@ type UploadR2ObjectInput = {
 };
 
 let r2Client: S3Client | null = null;
+
+const R2_ENV_NAMES = [
+  "R2_ACCESS_KEY_ID",
+  "R2_BUCKET",
+  "R2_ENDPOINT",
+  "R2_PUBLIC_BASE_URL",
+  "R2_SECRET_ACCESS_KEY",
+] as const;
 
 function getRequiredEnv(name: string) {
   const value = process.env[name]?.trim();
@@ -32,6 +46,20 @@ export function getR2Config(): R2Config {
   return {
     bucket: getRequiredEnv("R2_BUCKET"),
     publicBaseUrl: getRequiredEnv("R2_PUBLIC_BASE_URL").replace(/\/+$/, ""),
+  };
+}
+
+export function hasR2Config() {
+  return R2_ENV_NAMES.every((name) => Boolean(process.env[name]?.trim()));
+}
+
+export function getR2ClientConfig(): R2ClientConfig {
+  return {
+    accessKeyId: getRequiredEnv("R2_ACCESS_KEY_ID"),
+    bucket: getRequiredEnv("R2_BUCKET"),
+    endpoint: getRequiredEnv("R2_ENDPOINT").replace(/\/+$/, ""),
+    publicBaseUrl: getRequiredEnv("R2_PUBLIC_BASE_URL").replace(/\/+$/, ""),
+    secretAccessKey: getRequiredEnv("R2_SECRET_ACCESS_KEY"),
   };
 }
 

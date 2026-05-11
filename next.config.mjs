@@ -10,6 +10,30 @@ const dirname = path.dirname(filename)
 const serverURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const r2PublicBaseURL = process.env.R2_PUBLIC_BASE_URL || ''
+
+function remotePatternFromURL(value) {
+  if (!value) {
+    return null
+  }
+
+  try {
+    const url = new URL(value)
+
+    return {
+      hostname: url.hostname,
+      pathname: url.pathname === '/' ? undefined : `${url.pathname.replace(/\/+$/, '')}/**`,
+      protocol: url.protocol.replace(':', ''),
+    }
+  } catch {
+    return null
+  }
+}
+
+const remotePatterns = [
+  remotePatternFromURL(serverURL),
+  remotePatternFromURL(r2PublicBaseURL),
+].filter(Boolean)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -20,12 +44,7 @@ const nextConfig = {
       },
     ],
     qualities: [100],
-    remotePatterns: [
-      {
-        hostname: new URL(serverURL).hostname,
-        protocol: new URL(serverURL).protocol.replace(':', ''),
-      },
-    ],
+    remotePatterns,
   },
   reactStrictMode: true,
   redirects,
