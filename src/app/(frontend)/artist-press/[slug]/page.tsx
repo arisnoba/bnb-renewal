@@ -6,8 +6,6 @@ import type { ArtistPress } from '@/payload-types'
 import {
   generateArtistPressMeta,
   getArtistPressDescription,
-  getArtistPressImageAlt,
-  getArtistPressLegacyThumbnailSrc,
   getArtistPressThumbnailMedia,
   hasArtistPressLexicalContent,
 } from '@/utilities/artistPressFallbacks'
@@ -61,7 +59,6 @@ export default async function ArtistPressDetail({ params: paramsPromise }: Args)
   }
 
   const media = getArtistPressThumbnailMedia(artistPress)
-  const legacySrc = media ? undefined : getArtistPressLegacyThumbnailSrc(artistPress)
   const description = getArtistPressDescription(artistPress)
   const publishedAt = formatDateTime(artistPress.publishedAt)
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
@@ -82,40 +79,23 @@ export default async function ArtistPressDetail({ params: paramsPromise }: Args)
         {description && <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{description}</p>}
       </header>
 
-      {(media || legacySrc) && (
+      {media && (
         <div className="container mt-10 max-w-5xl">
           <div className="overflow-hidden rounded-lg bg-muted">
-            {media ? (
-              <Media
-                imgClassName="h-auto w-full object-cover"
-                pictureClassName="block w-full"
-                priority
-                resource={media}
-                size="(max-width: 1024px) 100vw, 1024px"
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                alt={getArtistPressImageAlt(artistPress)}
-                className="h-auto w-full object-cover"
-                loading="eager"
-                src={legacySrc}
-              />
-            )}
+            <Media
+              imgClassName="h-auto w-full object-cover"
+              pictureClassName="block w-full"
+              priority
+              resource={media}
+              size="(max-width: 1024px) 100vw, 1024px"
+            />
           </div>
         </div>
       )}
 
       <div className="container mt-12">
         <div className="mx-auto max-w-3xl">
-          {body ? (
-            <RichText data={body} enableGutter={false} />
-          ) : artistPress.bodyHtml ? (
-            <div
-              className="payload-richtext prose md:prose-md dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: artistPress.bodyHtml }}
-            />
-          ) : null}
+          {body ? <RichText data={body} enableGutter={false} /> : null}
         </div>
       </div>
     </article>

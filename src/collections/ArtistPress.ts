@@ -1,8 +1,4 @@
-import type {
-  CollectionAfterReadHook,
-  CollectionBeforeValidateHook,
-  CollectionConfig,
-} from "payload";
+import type { CollectionConfig } from "payload";
 
 import {
   MetaDescriptionField,
@@ -13,14 +9,12 @@ import {
 } from "@payloadcms/plugin-seo/fields";
 import {
   BlockquoteFeature,
-  convertHTMLToLexical,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { JSDOM } from "jsdom";
 import { slugField } from "payload";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
@@ -32,8 +26,6 @@ import {
   centerScopedBeforeValidate,
   centersField,
   displayStatusOptions,
-  imagePathField,
-  legacyMetaField,
   publishedAtField,
   sidebarFields,
 } from "./shared";
@@ -53,87 +45,6 @@ const artistPressBodyEditor = lexicalEditor({
     InlineToolbarFeature(),
   ],
 });
-
-function hasLexicalContent(value: unknown) {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-
-  const root = (value as { root?: unknown }).root;
-
-  if (!root || typeof root !== "object") {
-    return false;
-  }
-
-  const children = (root as { children?: unknown }).children;
-
-  return Array.isArray(children) && children.length > 0;
-}
-
-function legacyHtmlFromDoc(value: unknown) {
-  if (!value || typeof value !== "object") {
-    return "";
-  }
-
-  const bodyHtml = (value as { bodyHtml?: unknown }).bodyHtml;
-
-  return typeof bodyHtml === "string" ? bodyHtml.trim() : "";
-}
-
-async function lexicalBodyFromLegacyHtml({
-  html,
-  req,
-}: {
-  html: string;
-  req: Parameters<CollectionBeforeValidateHook>[0]["req"];
-}) {
-  const adapter = await artistPressBodyEditor({
-    config: req.payload.config,
-    parentIsLocalized: false,
-  });
-
-  return convertHTMLToLexical({
-    editorConfig: adapter.editorConfig,
-    html,
-    JSDOM,
-  });
-}
-
-const populateArtistPressBodyFromLegacyHtmlBeforeValidate: CollectionBeforeValidateHook =
-  async ({ data, originalDoc, req }) => {
-    if (!data || hasLexicalContent(data.body)) {
-      return data;
-    }
-
-    const html = legacyHtmlFromDoc(data) || legacyHtmlFromDoc(originalDoc);
-
-    if (!html) {
-      return data;
-    }
-
-    return {
-      ...data,
-      body: await lexicalBodyFromLegacyHtml({ html, req }),
-    };
-  };
-
-const populateArtistPressBodyFromLegacyHtmlAfterRead: CollectionAfterReadHook =
-  async ({ doc, req }) => {
-    if (!doc || hasLexicalContent(doc.body)) {
-      return doc;
-    }
-
-    const html = legacyHtmlFromDoc(doc);
-
-    if (!html) {
-      return doc;
-    }
-
-    return {
-      ...doc,
-      body: await lexicalBodyFromLegacyHtml({ html, req }),
-    };
-  };
 
 export const ArtistPress: CollectionConfig = {
   slug: "artist-press",
@@ -157,11 +68,7 @@ export const ArtistPress: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterRead: [populateArtistPressBodyFromLegacyHtmlAfterRead],
-    beforeValidate: [
-      centerScopedBeforeValidate,
-      populateArtistPressBodyFromLegacyHtmlBeforeValidate,
-    ],
+    beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
     {
@@ -199,25 +106,17 @@ export const ArtistPress: CollectionConfig = {
       {
         label: "미디어",
         fields: [
-          imagePathField("thumbnailPath", "썸네일 이미지"),
-          imagePathField("agencyLogoPath", "소속사 이미지"),
           {
             name: "thumbnailMedia",
             type: "upload",
             label: "썸네일 이미지",
             relationTo: "media",
-            admin: {
-              hidden: true,
-            },
           },
           {
             name: "agencyLogoMedia",
             type: "upload",
-            label: "소속사 이미지",
+            label: "소속사 로고 이미지",
             relationTo: "media",
-            admin: {
-              hidden: true,
-            },
           },
         ],
       },
@@ -242,38 +141,6 @@ export const ArtistPress: CollectionConfig = {
             titlePath: "meta.title",
             descriptionPath: "meta.description",
           }),
-        ],
-      },
-      {
-        label: "레거시/원본",
-        fields: [
-          {
-            name: "sourceDb",
-            type: "text",
-            label: "원본 DB",
-            defaultValue: "payload",
-            required: true,
-          },
-          {
-            name: "sourceTable",
-            type: "text",
-            label: "원본 테이블",
-            defaultValue: "artist_press",
-            required: true,
-          },
-          {
-            name: "sourceId",
-            type: "number",
-            label: "원본 ID",
-            defaultValue: 0,
-            required: true,
-          },
-          {
-            name: "bodyHtml",
-            type: "textarea",
-            label: "레거시 본문 HTML",
-          },
-          legacyMetaField,
         ],
       },
     ]),

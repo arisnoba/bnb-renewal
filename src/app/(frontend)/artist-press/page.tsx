@@ -4,8 +4,6 @@ import { Media } from '@/components/Media/Renderer'
 import type { ArtistPress } from '@/payload-types'
 import {
   getArtistPressDescription,
-  getArtistPressImageAlt,
-  getArtistPressLegacyThumbnailSrc,
   getArtistPressThumbnailMedia,
   getArtistPressUrl,
 } from '@/utilities/artistPressFallbacks'
@@ -29,16 +27,11 @@ export default async function ArtistPressIndex() {
       overrideAccess: false,
       select: {
         actorName: true,
-        bodyHtml: true,
         generation: true,
-        legacyMeta: true,
         meta: true,
         publishedAt: true,
         slug: true,
-        sourceDb: true,
-        sourceId: true,
         thumbnailMedia: true,
-        thumbnailPath: true,
         title: true,
       },
       where: {
@@ -93,7 +86,6 @@ function ArtistPressCard({
   artistPress: Partial<ArtistPress> & Pick<ArtistPress, 'id' | 'slug' | 'title'>
 }) {
   const media = getArtistPressThumbnailMedia(artistPress)
-  const legacySrc = media ? undefined : getArtistPressLegacyThumbnailSrc(artistPress)
   const description = getArtistPressDescription(artistPress)
   const publishedAt = formatDate(artistPress.publishedAt)
 
@@ -107,14 +99,6 @@ function ArtistPressCard({
               pictureClassName="block h-full w-full"
               resource={media}
               size="(max-width: 768px) 100vw, 33vw"
-            />
-          ) : legacySrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={getArtistPressImageAlt(artistPress)}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              loading="lazy"
-              src={legacySrc}
             />
           ) : null}
         </div>

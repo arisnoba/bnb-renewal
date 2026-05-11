@@ -43,6 +43,7 @@ import * as migration_20260511_163000_exam_passed_review_structured_content from
 import * as migration_20260511_170000_drop_exam_passed_review_legacy_fields from './20260511_170000_drop_exam_passed_review_legacy_fields'
 import * as migration_20260511_180000_audition_schedule_event_type_select from './20260511_180000_audition_schedule_event_type_select'
 import * as migration_20260511_181000_drop_audition_schedule_legacy_fields from './20260511_181000_drop_audition_schedule_legacy_fields'
+import * as migration_20260511_200000_drop_artist_press_legacy_fields from './20260511_200000_drop_artist_press_legacy_fields'
 
 export const migrations = [
   {
@@ -269,5 +270,10 @@ export const migrations = [
     up: migration_20260511_181000_drop_audition_schedule_legacy_fields.up,
     down: migration_20260511_181000_drop_audition_schedule_legacy_fields.down,
     name: '20260511_181000_drop_audition_schedule_legacy_fields',
+  },
+  {
+    up: migration_20260511_200000_drop_artist_press_legacy_fields.up,
+    down: migration_20260511_200000_drop_artist_press_legacy_fields.down,
+    name: '20260511_200000_drop_artist_press_legacy_fields',
   },
 ]

@@ -95,33 +95,24 @@ const configs: TableConfig[] = [
     collection: 'artist-press',
     table: 'artist_press',
     columns: [
-      'source_db',
-      'source_table',
-      'source_id',
       'slug',
       'center',
       'title',
       'body_html',
       'actor_name',
       'generation',
-      'agency_logo_path',
-      'thumbnail_path',
       'published_at',
       'created_at',
       'is_public',
-      'legacy_meta',
     ],
     transform: (row) => ({
-      ...sourceDoc(row),
       actorName: requiredText(row.actor_name, 'artist_press.actor_name'),
-      agencyLogoPath: text(row.agency_logo_path),
-      bodyHtml: text(row.body_html),
+      body: lexicalPlainTextFromHtml(row.body_html),
       centers: centersFrom(row.center),
       generation: requiredText(row.generation, 'artist_press.generation'),
       displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
       ...legacyPublishedTimestamps(row),
-      thumbnailPath: text(row.thumbnail_path),
+      slug: requiredText(row.slug, 'artist_press.slug'),
       title: requiredText(row.title, 'artist_press.title'),
     }),
   },
@@ -738,6 +729,53 @@ function cleanLegacyText(value: string) {
     .map((line) => line.trim())
     .filter(Boolean)
     .join('\n')
+}
+
+function lexicalPlainTextFromHtml(value: unknown) {
+  const html = text(value)
+
+  if (!html) {
+    return undefined
+  }
+
+  const { document } = new JSDOM(html).window
+  document.querySelectorAll('script, style').forEach((element) => element.remove())
+  const paragraphs = cleanLegacyText(document.body.textContent ?? html)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  if (paragraphs.length === 0) {
+    return undefined
+  }
+
+  return {
+    root: {
+      children: paragraphs.map((paragraph) => ({
+        children: [
+          {
+            detail: 0,
+            format: 0,
+            mode: 'normal',
+            style: '',
+            text: paragraph,
+            type: 'text',
+            version: 1,
+          },
+        ],
+        direction: 'ltr',
+        format: '',
+        indent: 0,
+        type: 'paragraph',
+        version: 1,
+      })),
+      direction: 'ltr',
+      format: '',
+      indent: 0,
+      type: 'root',
+      version: 1,
+    },
+  }
 }
 
 function legacySummaryLabel(value: string) {
