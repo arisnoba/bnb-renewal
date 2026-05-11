@@ -11,7 +11,6 @@ import {
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
-  legacyCollapsible,
   publishingFields,
   sidebarFields,
 } from "./shared";
@@ -144,29 +143,6 @@ export const AuditionSchedules: CollectionConfig = {
       centersField,
       ...publishingFields,
       authorNameField,
-      {
-        name: "dedupeKey",
-        type: "text",
-        label: "중복 기준 키",
-        required: true,
-        unique: true,
-      },
-    ]),
-    legacyCollapsible([
-      adminRow([
-        {
-          name: "scheduleStartRaw",
-          type: "text",
-          label: "원본 시작일",
-          required: true,
-        },
-        {
-          name: "scheduleEndRaw",
-          type: "text",
-          label: "원본 종료일",
-          required: true,
-        },
-      ]),
     ]),
   ],
 };

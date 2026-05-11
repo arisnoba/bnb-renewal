@@ -128,40 +128,29 @@ const configs: TableConfig[] = [
   {
     collection: 'audition-schedules',
     table: 'audition_schedules',
+    lookupWhere: auditionScheduleLookupWhere,
+    uniqueField: 'title',
     columns: [
-      'source_db',
-      'source_table',
-      'source_id',
-      'slug',
-      'dedupe_key',
       'centers',
       'event_type',
       'title',
       'body_html',
       'schedule_start_date',
       'schedule_end_date',
-      'schedule_start_raw',
-      'schedule_end_raw',
       'author_name',
       'published_at',
       'created_at',
       'is_public',
-      'legacy_meta',
     ],
     transform: (row) => ({
-      ...sourceDoc(row),
       authorName: text(row.author_name),
       bodyHtml: text(row.body_html),
       centers: centersFrom(row.centers),
-      dedupeKey: requiredText(row.dedupe_key, 'audition_schedules.dedupe_key'),
       eventType: text(row.event_type),
       displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
       ...legacyPublishedTimestamps(row),
       scheduleEndDate: dateText(row.schedule_end_date),
-      scheduleEndRaw: requiredText(row.schedule_end_raw, 'audition_schedules.schedule_end_raw'),
       scheduleStartDate: dateText(row.schedule_start_date),
-      scheduleStartRaw: requiredText(row.schedule_start_raw, 'audition_schedules.schedule_start_raw'),
       title: requiredText(row.title, 'audition_schedules.title'),
     }),
   },
@@ -1163,6 +1152,24 @@ function sourceLookupWhere(doc: PayloadDoc): PayloadWhere {
       { sourceDb: { equals: requiredText(doc.sourceDb, 'sourceDb') } },
       { sourceTable: { equals: requiredText(doc.sourceTable, 'sourceTable') } },
       { sourceId: { equals: number(doc.sourceId) } },
+    ],
+  }
+}
+
+function auditionScheduleLookupWhere(doc: PayloadDoc): PayloadWhere {
+  return {
+    and: [
+      { title: { equals: requiredText(doc.title, 'audition_schedules.title') } },
+      {
+        scheduleStartDate: {
+          equals: requiredText(doc.scheduleStartDate, 'audition_schedules.scheduleStartDate'),
+        },
+      },
+      {
+        scheduleEndDate: {
+          equals: requiredText(doc.scheduleEndDate, 'audition_schedules.scheduleEndDate'),
+        },
+      },
     ],
   }
 }
