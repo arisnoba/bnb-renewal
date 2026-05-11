@@ -7,8 +7,6 @@ import {
   centerScopedBeforeValidate,
   centersField,
   displayStatusOptions,
-  imagePathField,
-  legacyCollapsible,
   publishedAtField,
   sidebarFields,
 } from "./shared";
@@ -114,9 +112,6 @@ export const CastingDirectors: CollectionConfig = {
         options: displayStatusOptions,
       },
       authorNameField,
-    ]),
-    legacyCollapsible([
-      imagePathField("profileImagePath", "레거시 프로필 이미지"),
     ]),
   ],
 };

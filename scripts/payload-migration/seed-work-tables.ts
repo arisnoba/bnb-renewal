@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 
+import { JSDOM } from 'jsdom'
 import type { Payload } from 'payload'
 
 import { authorNameFromCenters } from '../../src/collections/shared'
@@ -53,6 +54,7 @@ type TableConfig = {
 }
 
 type SeedContext = {
+  examSchoolLogoIdsBySlug: Map<string, number | string>
   teacherCentersBySlug: Map<string, string[]>
   teacherFilesByTeacherSlug: Map<string, WorkRow[]>
   teacherIdsBySlug: Map<string, number | string>
@@ -166,34 +168,26 @@ const configs: TableConfig[] = [
   {
     collection: 'casting-directors',
     table: 'castings',
+    uniqueField: 'personName',
     columns: [
-      'source_db',
-      'source_table',
-      'source_id',
-      'slug',
       'person_name',
       'company',
       'centers',
       'body_html',
       'category',
-      'profile_image_path',
       'author_name',
       'published_at',
       'created_at',
       'is_public',
-      'legacy_meta',
     ],
     transform: (row) => ({
-      ...sourceDoc(row),
       authorName: text(row.author_name),
       category: text(row.category),
       centers: centersFrom(row.centers),
       company: requiredText(row.company, 'castings.company'),
       careerItems: parseCastingDirectorCareerItems(row.body_html),
       displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
       personName: requiredText(row.person_name, 'castings.person_name'),
-      profileImagePath: text(row.profile_image_path),
       ...legacyPublishedTimestamps(row),
     }),
   },
@@ -245,36 +239,43 @@ const configs: TableConfig[] = [
   {
     collection: 'exam-passed-reviews',
     table: 'exam_passed_reviews',
+    uniqueField: 'title',
+    lookupWhere: (doc) => ({
+      and: [
+        { title: { equals: requiredText(doc.title, 'exam-passed-reviews.title') } },
+        { studentName: { equals: requiredText(doc.studentName, 'exam-passed-reviews.studentName') } },
+        { school: { equals: doc.school ?? null } },
+      ],
+    }),
     columns: [
       'source_db',
       'source_table',
       'source_id',
-      'slug',
-      'center',
-      'school_name',
       'school_logo_slug',
       'title',
       'body_html',
-      'school_logo_path',
       'student_image_path',
       'published_at',
       'created_at',
       'is_public',
-      'legacy_meta',
     ],
-    transform: (row) => ({
-      ...sourceDoc(row),
-      bodyHtml: text(row.body_html),
-      centers: centersFrom(row.center),
-      displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      ...legacyPublishedTimestamps(row),
-      schoolLogoPath: text(row.school_logo_path),
-      schoolLogoSlug: text(row.school_logo_slug),
-      schoolName: requiredText(row.school_name, 'exam_passed_reviews.school_name'),
-      studentImagePath: text(row.student_image_path),
-      title: requiredText(row.title, 'exam_passed_reviews.title'),
-    }),
+    transform: (row, context) => {
+      const title = requiredText(row.title, 'exam_passed_reviews.title')
+      const legacyContent = parseExamPassedReviewLegacyContent(row.body_html)
+
+      return {
+        centers: ['exam'],
+        cohort: legacyContent.cohort,
+        displayStatus: displayStatusFromPublic(row.is_public),
+        interviews: legacyContent.interviews,
+        ...legacyPublishedTimestamps(row),
+        resultSummary: legacyContent.resultSummary || title,
+        school: examSchoolLogoIdFromSlug(row.school_logo_slug, context),
+        studentImagePath: examPassedReviewLocalStudentImagePath(row),
+        studentName: requiredText(legacyContent.studentName, 'exam_passed_reviews.student_name'),
+        title,
+      }
+    },
   },
   {
     collection: 'exam-passed-videos',
@@ -561,36 +562,44 @@ async function main() {
   const options = parseArgs(process.argv.slice(2))
   const selected = selectConfigs(options.collections)
   const payload = options.dryRun ? null : await getPayloadClient()
-  const context = await buildSeedContext()
-  const summary: Record<string, { created: number; dryRun: number; updated: number }> = {}
+  try {
+    const context = await buildSeedContext()
+    const summary: Record<string, { created: number; dryRun: number; updated: number }> = {}
 
-  for (const config of selected) {
-    if (config.collection === 'curriculums' && payload) {
-      context.teacherIdsBySlug = await readPayloadTeacherIdsBySlug(payload)
-    }
-
-    const rows = normalizeRowsForSeed(config, await readWorkTable(config))
-    const limitedRows = options.limit === 'all' ? rows : rows.slice(0, options.limit)
-    const collectionSummary = { created: 0, dryRun: 0, updated: 0 }
-
-    for (const row of limitedRows) {
-      const doc = config.transform(row, context)
-      applyAuthorName(doc)
-
-      if (options.dryRun) {
-        collectionSummary.dryRun += 1
-        continue
+    for (const config of selected) {
+      if (config.collection === 'curriculums' && payload) {
+        context.teacherIdsBySlug = await readPayloadTeacherIdsBySlug(payload)
       }
 
-      const result = await upsertDoc(payload!, config, doc)
+      if (config.collection === 'exam-passed-reviews' && payload) {
+        context.examSchoolLogoIdsBySlug = await readPayloadExamSchoolLogoIdsBySlug(payload)
+      }
 
-      collectionSummary[result] += 1
+      const rows = normalizeRowsForSeed(config, await readWorkTable(config))
+      const limitedRows = options.limit === 'all' ? rows : rows.slice(0, options.limit)
+      const collectionSummary = { created: 0, dryRun: 0, updated: 0 }
+
+      for (const row of limitedRows) {
+        const doc = config.transform(row, context)
+        applyAuthorName(doc)
+
+        if (options.dryRun) {
+          collectionSummary.dryRun += 1
+          continue
+        }
+
+        const result = await upsertDoc(payload!, config, doc)
+
+        collectionSummary[result] += 1
+      }
+
+      summary[config.collection] = collectionSummary
     }
 
-    summary[config.collection] = collectionSummary
+    console.log(JSON.stringify({ dryRun: options.dryRun, summary }, null, 2))
+  } finally {
+    await payload?.destroy()
   }
-
-  console.log(JSON.stringify({ dryRun: options.dryRun, summary }, null, 2))
 }
 
 function normalizeRowsForSeed(config: TableConfig, rows: WorkRow[]) {
@@ -703,6 +712,111 @@ function examResultBoTable(value: unknown) {
   }
 
   return sourceTable?.replace(/^g5_write_/, '') || 'exam-results'
+}
+
+function examPassedReviewBoTable(value: unknown) {
+  const sourceTable = text(value)
+
+  if (sourceTable === 'g5_write_new_hoogi' || sourceTable === 'exam_passed_reviews') {
+    return 'new_hoogi'
+  }
+
+  return sourceTable?.replace(/^g5_write_/, '') || 'new_hoogi'
+}
+
+function examPassedReviewLocalStudentImagePath(row: WorkRow) {
+  const value = text(row.student_image_path)
+
+  if (!value || value.startsWith('/legacy/exam-passed-reviews/')) {
+    return value
+  }
+
+  const fileName = fileBasename(value.split('?')[0])
+
+  if (!fileName) {
+    return value
+  }
+
+  return `/legacy/exam-passed-reviews/${text(row.source_db) || 'bnbuniv'}/${examPassedReviewBoTable(row.source_table)}/${number(row.source_id)}/student/${fileName}`
+}
+
+function cleanLegacyText(value: string) {
+  return value
+    .replace(/\u00a0/g, ' ')
+    .replace(/[\u200b\ufeff]/g, '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join('\n')
+}
+
+function legacySummaryLabel(value: string) {
+  return cleanLegacyText(value).replace(/\s/g, '')
+}
+
+function parseExamPassedReviewLegacyContent(value: unknown) {
+  const html = text(value)
+  const summary = {
+    cohort: undefined as string | undefined,
+    resultSummary: undefined as string | undefined,
+    studentName: undefined as string | undefined,
+  }
+
+  if (!html) {
+    return {
+      ...summary,
+      interviews: [] as { answer: string; question: string }[],
+    }
+  }
+
+  const { document } = new JSDOM(html).window
+  const root = document.querySelector('.scene_wrap') ?? document
+
+  root.querySelectorAll('.scene > ul li, .scene ul li').forEach((item) => {
+    const labelElement = item.querySelector('.scene_title, span')
+    const label = legacySummaryLabel(labelElement?.textContent ?? '')
+
+    if (!labelElement || !label) {
+      return
+    }
+
+    const clone = item.cloneNode(true) as Element
+    clone.querySelector('.scene_title, span')?.remove()
+    const itemValue = cleanLegacyText(clone.textContent ?? '')
+
+    if (!itemValue) {
+      return
+    }
+
+    if (label === '이름') {
+      summary.studentName = itemValue
+      return
+    }
+
+    if (label === '기수') {
+      summary.cohort = itemValue
+      return
+    }
+
+    if (label === '합격현황') {
+      summary.resultSummary = itemValue
+    }
+  })
+
+  const interviews = Array.from(root.querySelectorAll('.scene_career'))
+    .map((item) => {
+      const question = cleanLegacyText(item.querySelector('span')?.textContent ?? '')
+      const answer = cleanLegacyText(item.querySelector('p')?.textContent ?? '')
+
+      return question && answer ? { question, answer } : undefined
+    })
+    .filter((item): item is { answer: string; question: string } => Boolean(item))
+
+  return {
+    ...summary,
+    interviews,
+  }
 }
 
 function profileSlugFromEnglishName(value: unknown) {
@@ -905,10 +1019,35 @@ async function buildSeedContext(): Promise<SeedContext> {
   }
 
   return {
+    examSchoolLogoIdsBySlug: new Map(),
     teacherCentersBySlug,
     teacherFilesByTeacherSlug,
     teacherIdsBySlug: new Map(),
   }
+}
+
+async function readPayloadExamSchoolLogoIdsBySlug(payload: Payload) {
+  const result = await (payload as unknown as {
+    find: (args: {
+      collection: string
+      depth: number
+      limit: number
+      overrideAccess: boolean
+      pagination: boolean
+    }) => Promise<{ docs: { id: number | string; schoolSlug?: unknown }[] }>
+  }).find({
+    collection: 'exam-school-logos',
+    depth: 0,
+    limit: 10000,
+    overrideAccess: true,
+    pagination: false,
+  })
+
+  return new Map(
+    result.docs
+      .map((doc) => [text(doc.schoolSlug), doc.id] as const)
+      .filter((entry): entry is readonly [string, number | string] => Boolean(entry[0])),
+  )
 }
 
 async function readPayloadTeacherIdsBySlug(payload: Payload) {
@@ -1192,6 +1331,22 @@ function teacherIdFromSlug(value: unknown, context: SeedContext) {
   return slug ? context.teacherIdsBySlug.get(slug) : undefined
 }
 
+function examSchoolLogoIdFromSlug(value: unknown, context: SeedContext) {
+  const slug = requiredText(value, 'exam_passed_reviews.school_logo_slug')
+
+  if (context.examSchoolLogoIdsBySlug.size === 0) {
+    return undefined
+  }
+
+  const id = context.examSchoolLogoIdsBySlug.get(slug)
+
+  if (!id) {
+    throw new Error(`학교 로고를 찾을 수 없습니다: ${slug}`)
+  }
+
+  return id
+}
+
 function teacherCentersFromSlug(value: unknown, sourceDb: unknown, context: SeedContext) {
   const slug = text(value)
 
@@ -1438,7 +1593,11 @@ function readRequiredValue(args: string[], index: number, name: string) {
   return value
 }
 
-void main().catch((error) => {
-  console.error(error)
-  process.exitCode = 1
-})
+void main()
+  .then(() => {
+    process.exit(0)
+  })
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })

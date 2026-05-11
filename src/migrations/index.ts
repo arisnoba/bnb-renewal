@@ -38,6 +38,9 @@ import * as migration_20260430_191000_profile_versions from './20260430_191000_p
 import * as migration_20260430_192000_profile_gallery_images from './20260430_192000_profile_gallery_images'
 import * as migration_20260430_193000_teacher_cleanup_versions from './20260430_193000_teacher_cleanup_versions'
 import * as migration_20260430_194000_teacher_profile_image_required from './20260430_194000_teacher_profile_image_required'
+import * as migration_20260511_160000_drop_casting_director_legacy_fields from './20260511_160000_drop_casting_director_legacy_fields'
+import * as migration_20260511_163000_exam_passed_review_structured_content from './20260511_163000_exam_passed_review_structured_content'
+import * as migration_20260511_170000_drop_exam_passed_review_legacy_fields from './20260511_170000_drop_exam_passed_review_legacy_fields'
 
 export const migrations = [
   {
@@ -239,5 +242,20 @@ export const migrations = [
     up: migration_20260430_194000_teacher_profile_image_required.up,
     down: migration_20260430_194000_teacher_profile_image_required.down,
     name: '20260430_194000_teacher_profile_image_required',
+  },
+  {
+    up: migration_20260511_160000_drop_casting_director_legacy_fields.up,
+    down: migration_20260511_160000_drop_casting_director_legacy_fields.down,
+    name: '20260511_160000_drop_casting_director_legacy_fields',
+  },
+  {
+    up: migration_20260511_163000_exam_passed_review_structured_content.up,
+    down: migration_20260511_163000_exam_passed_review_structured_content.down,
+    name: '20260511_163000_exam_passed_review_structured_content',
+  },
+  {
+    up: migration_20260511_170000_drop_exam_passed_review_legacy_fields.up,
+    down: migration_20260511_170000_drop_exam_passed_review_legacy_fields.down,
+    name: '20260511_170000_drop_exam_passed_review_legacy_fields',
   },
 ]

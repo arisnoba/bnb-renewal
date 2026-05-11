@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field } from "payload";
+import type { CollectionBeforeValidateHook, CollectionConfig, Field } from "payload";
 
 import {
   BlockquoteFeature,
@@ -13,7 +13,7 @@ import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
   authorNameField,
-  centerScopedBeforeValidate,
+  authorNameFromCenters,
   centersField,
   displayStatusOptions,
   imagePathField,
@@ -46,7 +46,43 @@ const examResultSlugify = createKoreanSlugifyWithFallback("exam-result");
 const examCentersField = {
   ...centersField,
   defaultValue: ["exam"],
+  admin: {
+    ...(centersField.admin ?? {}),
+    hidden: true,
+    readOnly: true,
+  },
 } as Field;
+
+function userDisplayName(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return undefined;
+  }
+
+  const name = (user as { name?: unknown }).name;
+  const email = (user as { email?: unknown }).email;
+
+  if (typeof name === "string" && name.trim()) {
+    return name.trim();
+  }
+
+  if (typeof email === "string" && email.trim()) {
+    return email.trim();
+  }
+
+  return undefined;
+}
+
+const setExamResultCenterBeforeValidate: CollectionBeforeValidateHook = ({ data, req }) => {
+  if (!data) {
+    return data;
+  }
+
+  return {
+    ...data,
+    authorName: userDisplayName(req.user) ?? data.authorName ?? authorNameFromCenters(["exam"]),
+    centers: ["exam"],
+  };
+};
 
 export const ExamResults: CollectionConfig = {
   slug: "exam-results",
@@ -63,7 +99,7 @@ export const ExamResults: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [setExamResultCenterBeforeValidate],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },

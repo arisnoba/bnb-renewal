@@ -1,10 +1,10 @@
-import type { CollectionBeforeValidateHook, CollectionConfig } from "payload";
+import type { CollectionBeforeValidateHook, CollectionConfig, Field } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
 import { extractYouTubeVideoId, youtubeWatchUrl } from "@/lib/youtube";
 import {
   authorNameField,
-  centerScopedBeforeValidate,
+  authorNameFromCenters,
   centersField,
   isExamAdminMenuHidden,
   publishingFields,
@@ -51,6 +51,47 @@ const syncCreatedAtToPublishedAt: CollectionBeforeValidateHook = ({ data, origin
   };
 };
 
+function userDisplayName(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return undefined;
+  }
+
+  const name = (user as { name?: unknown }).name;
+  const email = (user as { email?: unknown }).email;
+
+  if (typeof name === "string" && name.trim()) {
+    return name.trim();
+  }
+
+  if (typeof email === "string" && email.trim()) {
+    return email.trim();
+  }
+
+  return undefined;
+}
+
+const setExamPassedVideoCenterBeforeValidate: CollectionBeforeValidateHook = ({ data, req }) => {
+  if (!data) {
+    return data;
+  }
+
+  return {
+    ...data,
+    authorName: userDisplayName(req.user) ?? data.authorName ?? authorNameFromCenters(["exam"]),
+    centers: ["exam"],
+  };
+};
+
+const examCentersField = {
+  ...centersField,
+  defaultValue: ["exam"],
+  admin: {
+    ...(centersField.admin ?? {}),
+    hidden: true,
+    readOnly: true,
+  },
+} as Field;
+
 export const ExamPassedVideos: CollectionConfig = {
   slug: "exam-passed-videos",
   labels: {
@@ -66,7 +107,11 @@ export const ExamPassedVideos: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [syncYouTubeFields, syncCreatedAtToPublishedAt, centerScopedBeforeValidate],
+    beforeValidate: [
+      syncYouTubeFields,
+      syncCreatedAtToPublishedAt,
+      setExamPassedVideoCenterBeforeValidate,
+    ],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -105,6 +150,6 @@ export const ExamPassedVideos: CollectionConfig = {
         },
       },
     },
-    ...sidebarFields([centersField, ...publishingFields, authorNameField]),
+    ...sidebarFields([examCentersField, ...publishingFields, authorNameField]),
   ],
 };

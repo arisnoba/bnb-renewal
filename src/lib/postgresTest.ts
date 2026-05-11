@@ -348,7 +348,7 @@ function mapDocToRow(
     case 'exam-passed-reviews':
       return baseRow(doc, {
         imagePath: examPassedReviewImagePath(doc),
-        meta1: relationshipSchoolName(doc.school) || stringify(doc.schoolName),
+        meta1: relationshipSchoolName(doc.school),
         meta2: stringify(doc.centers),
         meta3: stringify(doc.publishedAt),
         title: stringify(doc.title),
@@ -693,18 +693,7 @@ function examPassedReviewStudentImagePath(doc: TestDoc) {
     return ''
   }
 
-  if (value.startsWith('/legacy/exam-passed-reviews/')) {
-    return normalizeImagePath(value)
-  }
-
-  return legacyAssetPath({
-    boTable: 'new_hoogi',
-    collection: 'exam-passed-reviews',
-    path: value,
-    role: 'student',
-    sourceDb: doc.sourceDb,
-    sourceId: doc.sourceId,
-  })
+  return normalizeImagePath(value)
 }
 
 function newsImagePath(doc: TestDoc) {
