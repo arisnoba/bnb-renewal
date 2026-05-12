@@ -44,6 +44,9 @@ import * as migration_20260511_170000_drop_exam_passed_review_legacy_fields from
 import * as migration_20260511_180000_audition_schedule_event_type_select from './20260511_180000_audition_schedule_event_type_select'
 import * as migration_20260511_181000_drop_audition_schedule_legacy_fields from './20260511_181000_drop_audition_schedule_legacy_fields'
 import * as migration_20260511_200000_drop_artist_press_legacy_fields from './20260511_200000_drop_artist_press_legacy_fields'
+import * as migration_20260512_140000_screen_appearance_local_image_paths from './20260512_140000_screen_appearance_local_image_paths'
+import * as migration_20260512_143000_media_external_url from './20260512_143000_media_external_url'
+import * as migration_20260512_150000_screen_appearance_field_types from './20260512_150000_screen_appearance_field_types'
 
 export const migrations = [
   {
@@ -275,5 +278,20 @@ export const migrations = [
     up: migration_20260511_200000_drop_artist_press_legacy_fields.up,
     down: migration_20260511_200000_drop_artist_press_legacy_fields.down,
     name: '20260511_200000_drop_artist_press_legacy_fields',
+  },
+  {
+    up: migration_20260512_140000_screen_appearance_local_image_paths.up,
+    down: migration_20260512_140000_screen_appearance_local_image_paths.down,
+    name: '20260512_140000_screen_appearance_local_image_paths',
+  },
+  {
+    up: migration_20260512_143000_media_external_url.up,
+    down: migration_20260512_143000_media_external_url.down,
+    name: '20260512_143000_media_external_url',
+  },
+  {
+    up: migration_20260512_150000_screen_appearance_field_types.up,
+    down: migration_20260512_150000_screen_appearance_field_types.down,
+    name: '20260512_150000_screen_appearance_field_types',
   },
 ]

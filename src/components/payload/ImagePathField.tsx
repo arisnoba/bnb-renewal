@@ -96,6 +96,40 @@ function getCastingAppearanceImageSrc(
 	return `/legacy/casting-appearances/${sourceDb || 'baewoo'}/${boTable}/${sourceId}/thumbnail/${fileName}`;
 }
 
+function getScreenAppearanceImageSrc(
+	value: unknown,
+	{
+		fieldPath,
+		sourceDb,
+		sourceId,
+	}: {
+		fieldPath: string;
+		sourceDb?: string;
+		sourceId?: string;
+	},
+) {
+	const directSrc = getImageSrc(value);
+
+	if (!directSrc || directSrc.startsWith('/legacy/screen-appearances/')) {
+		return directSrc;
+	}
+
+	if (!sourceId) {
+		return directSrc;
+	}
+
+	const normalizedPath = directSrc.split('?')[0] ?? directSrc;
+	const parts = normalizedPath.split('/').filter(Boolean);
+	const fileName = parts.at(-1);
+	const role = fieldPath === 'profileImagePath' ? 'profile' : 'thumbnail';
+
+	if (!fileName) {
+		return directSrc;
+	}
+
+	return `/legacy/screen-appearances/${sourceDb || 'baewoo'}/new_drama/${sourceId}/${role}/${fileName}`;
+}
+
 function getFileName(src: string) {
 	const pathname = src.split('?')[0] ?? '';
 	const fileName = pathname.split('/').filter(Boolean).pop();
@@ -156,7 +190,9 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 				? getArtistPressImageSrc(value, { fieldPath, sourceDb, sourceId })
 				: collectionSlug === 'casting-appearances' && fieldPath === 'thumbnailPath'
 					? getCastingAppearanceImageSrc(value, { sourceDb, sourceId })
-			: getImageSrc(value);
+					: collectionSlug === 'screen-appearances' && (fieldPath === 'profileImagePath' || fieldPath === 'thumbnailPath')
+						? getScreenAppearanceImageSrc(value, { fieldPath, sourceDb, sourceId })
+						: getImageSrc(value);
 	const canPreview = imageSrc && isProbablyImage(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());
 	const hasError = Boolean(showError);

@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionAfterReadHook, CollectionConfig } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -14,6 +14,20 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
+  const externalUrl = typeof doc?.externalUrl === 'string' ? doc.externalUrl.trim() : ''
+
+  if (!externalUrl) {
+    return doc
+  }
+
+  return {
+    ...doc,
+    thumbnailURL: externalUrl,
+    url: externalUrl,
+  }
+}
+
 export const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
@@ -23,11 +37,21 @@ export const Media: CollectionConfig = {
     read: anyone,
     update: authenticated,
   },
+  hooks: {
+    afterRead: [applyExternalUrlAfterRead],
+  },
   fields: [
     {
       name: 'alt',
       type: 'text',
       //required: true,
+    },
+    {
+      name: 'externalUrl',
+      type: 'text',
+      admin: {
+        hidden: true,
+      },
     },
     {
       name: 'caption',

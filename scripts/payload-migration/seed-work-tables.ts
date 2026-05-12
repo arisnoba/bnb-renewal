@@ -437,18 +437,19 @@ const configs: TableConfig[] = [
     ],
     transform: (row) => ({
       ...sourceDoc(row),
-      airDateLabel: text(row.air_date_label),
+      airDateLabel: legacyScreenAppearanceAirDate(row.air_date_label),
       appearanceType: text(row.appearance_type),
       bodyHtml: text(row.body_html),
       centers: centersFrom(row.center),
       className: text(row.class_name),
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
+      body: lexicalScreenAppearanceBodyFromHtml(row.body_html),
       performerName: text(row.performer_name),
-      profileImagePath: text(row.profile_image_path),
+      profileImagePath: screenAppearanceLocalImagePath(row, 'profile_image_path', 'profile'),
       projectTitle: text(row.project_title),
       roleName: text(row.role_name),
-      thumbnailPath: text(row.thumbnail_path),
+      thumbnailPath: screenAppearanceLocalImagePath(row, 'thumbnail_path', 'thumbnail'),
       ...legacyPublishedTimestamps(row),
       title: requiredText(row.title, 'screen_appearances.title'),
     }),
@@ -680,6 +681,76 @@ function examResultLocalThumbnailPath(row: WorkRow) {
   return `/legacy/exam-results/${text(row.source_db) || 'bnbuniv'}/${examResultBoTable(row.source_table)}/${number(row.source_id)}/thumbnail/${fileName}`
 }
 
+function screenAppearanceLocalImagePath(row: WorkRow, fieldName: string, role: 'profile' | 'thumbnail') {
+  const value = text(row[fieldName])
+
+  if (!value) {
+    return undefined
+  }
+
+  if (value.startsWith('/legacy/screen-appearances/')) {
+    return value
+  }
+
+  if (
+    value.startsWith('/api/') ||
+    value.startsWith('/media/') ||
+    value.startsWith('/uploads/') ||
+    value.startsWith('/_next/')
+  ) {
+    return value
+  }
+
+  if (/^https?:\/\//.test(value) && !value.includes('/web/data/file/new_drama/')) {
+    return value
+  }
+
+  const fileName = fileBasename(value)
+
+  if (!fileName) {
+    return value
+  }
+
+  return `/legacy/screen-appearances/${text(row.source_db) || 'baewoo'}/new_drama/${number(row.source_id)}/${role}/${fileName}`
+}
+
+function legacyScreenAppearanceAirDate(value: unknown) {
+  const trimmed = text(value)
+
+  if (!trimmed) {
+    return undefined
+  }
+
+  const normalized = trimmed.replace(/^2202(?=[.-])/, '2022').replace(/\.\.+/g, '.')
+  const fullYearMatch = normalized.match(/^(\d{4})\s*[.-]\s*(\d{1,2})\s*[.-]\s*(\d{1,2})/)
+  const shortYearMatch = normalized.match(/^(\d{2})\s*[.]\s*(\d{1,2})\s*[.]\s*(\d{1,2})/)
+  const match = fullYearMatch ?? shortYearMatch
+
+  if (!match) {
+    return undefined
+  }
+
+  const year = fullYearMatch ? Number(match[1]) : 2000 + Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return undefined
+  }
+
+  if (year < 1900 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
+    return undefined
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, day))
+
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    return undefined
+  }
+
+  return date.toISOString()
+}
+
 function examResultBoTable(value: unknown) {
   const sourceTable = text(value)
 
@@ -776,6 +847,116 @@ function lexicalPlainTextFromHtml(value: unknown) {
       version: 1,
     },
   }
+}
+
+function lexicalScreenAppearanceBodyFromHtml(value: unknown) {
+  const html = text(value)
+
+  if (!html) {
+    return undefined
+  }
+
+  const { document } = new JSDOM(html).window
+  document.querySelectorAll('script, style').forEach((element) => element.remove())
+  const imageSources = Array.from(document.querySelectorAll('img'))
+    .map((image) => normalizeLegacyScreenAppearanceBodyImageSrc(image.getAttribute('src')))
+    .filter((src): src is string => Boolean(src))
+  const paragraphs = cleanLegacyText(document.body.textContent ?? html)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  if (paragraphs.length === 0 && imageSources.length === 0) {
+    return undefined
+  }
+
+  let uploadIndex = 0
+  const children = [
+    ...paragraphs.map((paragraph) => ({
+      children: [
+        {
+          detail: 0,
+          format: 0,
+          mode: 'normal',
+          style: '',
+          text: paragraph,
+          type: 'text',
+          version: 1,
+        },
+      ],
+      direction: 'ltr',
+      format: '',
+      indent: 0,
+      type: 'paragraph',
+      version: 1,
+    })),
+    ...imageSources.map((src) => {
+      uploadIndex += 1
+
+      return {
+        children: [
+          {
+            format: '',
+            id: `screen-appearance-body-image-${uploadIndex}`,
+            pending: {
+              formID: `screen-appearance-body-image-${uploadIndex}`,
+              src,
+            },
+            type: 'upload',
+            version: 3,
+          },
+        ],
+        direction: 'ltr',
+        format: '',
+        indent: 0,
+        type: 'paragraph',
+        version: 1,
+      }
+    }),
+  ]
+
+  return {
+    root: {
+      children,
+      direction: 'ltr',
+      format: '',
+      indent: 0,
+      type: 'root',
+      version: 1,
+    },
+  }
+}
+
+function normalizeLegacyScreenAppearanceBodyImageSrc(value: string | null) {
+  const src = value?.trim()
+
+  if (!src) {
+    return undefined
+  }
+
+  if (/^https?:\/\//i.test(src)) {
+    try {
+      const url = new URL(src)
+
+      if (url.protocol === 'http:') {
+        url.protocol = 'https:'
+      }
+
+      return url.href
+    } catch {
+      return src
+    }
+  }
+
+  if (src.startsWith('//')) {
+    return `https:${src}`
+  }
+
+  if (src.startsWith('/')) {
+    return `https://www.baewoo.co.kr${src}`
+  }
+
+  return `https://www.baewoo.co.kr/${src.replace(/^\.?\//, '')}`
 }
 
 function legacySummaryLabel(value: string) {

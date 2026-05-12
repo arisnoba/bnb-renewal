@@ -1,9 +1,19 @@
 import type { CollectionConfig } from "payload";
 
+import {
+  BlockquoteFeature,
+  FixedToolbarFeature,
+  HeadingFeature,
+  HorizontalRuleFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from "@payloadcms/richtext-lexical";
+
 import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
+  adminDateConfig,
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
@@ -12,6 +22,25 @@ import {
   publishingFields,
   sidebarFields,
 } from "./shared";
+
+const screenAppearanceBodyEditor = lexicalEditor({
+  admin: {
+    placeholder: "본문을 입력하세요.",
+  },
+  features: ({ defaultFeatures }) => [
+    ...defaultFeatures,
+    HeadingFeature({ enabledHeadingSizes: ["h2", "h3", "h4"] }),
+    BlockquoteFeature(),
+    HorizontalRuleFeature(),
+    FixedToolbarFeature(),
+    InlineToolbarFeature(),
+  ],
+});
+
+const screenAppearanceTypeOptions = [
+  { label: "드라마", value: "drama" },
+  { label: "광고", value: "commercial" },
+];
 
 export const ScreenAppearances: CollectionConfig = {
   slug: "screen-appearances",
@@ -37,15 +66,16 @@ export const ScreenAppearances: CollectionConfig = {
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
+    { name: "title", type: "text", label: "제목", required: true },
     ...adminTabs([
       {
         label: "출연장면",
         fields: [
-          { name: "title", type: "text", label: "제목", required: true },
           {
             name: "appearanceType",
-            type: "text",
+            type: "select",
             label: "출연 유형",
+            options: screenAppearanceTypeOptions,
             required: true,
           },
           adminRow([
@@ -61,8 +91,18 @@ export const ScreenAppearances: CollectionConfig = {
             { name: "projectTitle", type: "text", label: "작품명" },
             { name: "roleName", type: "text", label: "역할" },
           ]),
-          { name: "airDateLabel", type: "text", label: "방영일 표시" },
-          { name: "bodyHtml", type: "textarea", label: "본문" },
+          {
+            name: "airDateLabel",
+            type: "date",
+            label: "방영일 표시",
+            admin: adminDateConfig,
+          },
+          {
+            name: "body",
+            type: "richText",
+            editor: screenAppearanceBodyEditor,
+            label: "본문",
+          },
         ],
       },
       {
