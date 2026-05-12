@@ -339,7 +339,7 @@ function mapDocToRow(
       })
     case 'casting-directors':
       return baseRow(doc, {
-        imagePath: '',
+        imagePath: mediaImagePath(doc.profileImageMedia),
         meta1: stringify(doc.company),
         meta2: stringify(doc.centers),
         meta3: stringify(doc.category),

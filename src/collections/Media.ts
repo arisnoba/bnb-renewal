@@ -14,11 +14,41 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+function normalizeLocalMediaURL(value: unknown) {
+  const url = typeof value === 'string' ? value.trim() : ''
+
+  if (!url) {
+    return ''
+  }
+
+  try {
+    const parsed = new URL(url)
+
+    if (parsed.pathname.startsWith('/api/media/file/')) {
+      return parsed.pathname
+    }
+  } catch {
+    return url
+  }
+
+  return url
+}
+
 const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
   const externalUrl = typeof doc?.externalUrl === 'string' ? doc.externalUrl.trim() : ''
 
   if (!externalUrl) {
-    return doc
+    const normalizedUrl = normalizeLocalMediaURL(doc?.url)
+    const normalizedThumbnailURL =
+      normalizeLocalMediaURL(doc?.thumbnailURL) ||
+      normalizeLocalMediaURL(doc?.sizes?.thumbnail?.url) ||
+      normalizedUrl
+
+    return {
+      ...doc,
+      ...(normalizedUrl ? { url: normalizedUrl } : {}),
+      ...(normalizedThumbnailURL ? { thumbnailURL: normalizedThumbnailURL } : {}),
+    }
   }
 
   return {

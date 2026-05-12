@@ -85,6 +85,8 @@ type DynamicPayload = {
   destroy: () => Promise<void>
 }
 
+const MEDIA_PREFIX = 'media/artist-press/body-images'
+
 const artistPressBodyEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
     ...defaultFeatures,
@@ -506,6 +508,7 @@ async function ensureMediaForImage({
       collection: 'media',
       data: {
         alt: entry.title || row.title || mediaFileName,
+        prefix: MEDIA_PREFIX,
       },
       filePath: tempPath,
       overrideAccess: true,

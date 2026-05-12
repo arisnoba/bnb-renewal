@@ -73,6 +73,8 @@ type DynamicPayload = {
   destroy: () => Promise<void>
 }
 
+const MEDIA_PREFIX = 'media/news/thumbnails'
+
 async function main() {
   const options = parseArgs(process.argv.slice(2))
 
@@ -410,6 +412,7 @@ async function createMediaFromLocalFile({
     collection: 'media',
     data: {
       alt: matched.originalName ?? title ?? matched.fileName,
+      prefix: MEDIA_PREFIX,
     },
     filePath: resolveProjectPath(matched.localPath),
     overrideAccess: true,

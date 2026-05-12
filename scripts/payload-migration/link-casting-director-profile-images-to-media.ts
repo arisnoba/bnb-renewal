@@ -73,6 +73,8 @@ type DynamicPayload = {
   destroy: () => Promise<void>
 }
 
+const MEDIA_PREFIX = 'media/casting-directors'
+
 async function main() {
   const options = parseArgs(process.argv.slice(2))
 
@@ -430,6 +432,7 @@ async function createMediaFromLocalFile({
       collection: 'media',
       data: {
         alt: title ?? matched.mediaFileName,
+        prefix: MEDIA_PREFIX,
       },
       filePath: tempPath,
       overrideAccess: true,

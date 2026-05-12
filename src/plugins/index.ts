@@ -24,11 +24,71 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
 
 const r2Enabled = hasR2Config()
 const mediaPrefix = 'media'
+const localMediaDir = path.resolve(process.cwd(), 'public/media')
+
+function localMediaPath(filename: string) {
+  const filePath = path.resolve(localMediaDir, path.basename(filename))
+
+  if (!filePath.startsWith(`${localMediaDir}${path.sep}`)) {
+    return null
+  }
+
+  return filePath
+}
+
+async function hasLocalMediaFile(filename: string) {
+  const filePath = localMediaPath(filename)
+
+  if (!filePath) {
+    return false
+  }
+
+  try {
+    const stat = await fs.stat(filePath)
+    return stat.isFile()
+  } catch {
+    return false
+  }
+}
+
+function localMediaURL(filename: string, prefix?: string) {
+  const query = prefix ? `?prefix=${encodeURIComponent(prefix)}` : ''
+
+  return `/api/media/file/${encodeURIComponent(filename)}${query}`
+}
+
+function mediaContentType(filename: string) {
+  const extension = path.extname(filename).toLowerCase()
+
+  switch (extension) {
+    case '.avif':
+      return 'image/avif'
+    case '.gif':
+      return 'image/gif'
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg'
+    case '.png':
+      return 'image/png'
+    case '.svg':
+      return 'image/svg+xml'
+    case '.webp':
+      return 'image/webp'
+    default:
+      return 'application/octet-stream'
+  }
+}
 
 const mediaR2Adapter: Adapter = ({ prefix = mediaPrefix }) => ({
   name: 'r2',
-  generateURL: ({ filename, prefix: storedPrefix }) => {
-    return getR2PublicUrl(path.posix.join(storedPrefix || prefix, filename))
+  generateURL: async ({ filename, prefix: storedPrefix }) => {
+    const resolvedPrefix = storedPrefix || prefix
+
+    if (await hasLocalMediaFile(filename)) {
+      return localMediaURL(filename, resolvedPrefix)
+    }
+
+    return getR2PublicUrl(path.posix.join(resolvedPrefix, filename))
   },
   handleDelete: async ({ doc, filename }) => {
     const objectKey = path.posix.join(doc.prefix || prefix, filename)
@@ -48,8 +108,26 @@ const mediaR2Adapter: Adapter = ({ prefix = mediaPrefix }) => ({
 
     return data
   },
-  staticHandler: (_req, args) => {
-    const objectKey = path.posix.join(args.params.prefix || prefix, args.params.filename)
+  staticHandler: async (_req, args) => {
+    const filename = String(args.params.filename ?? '')
+    const filePath = localMediaPath(filename)
+
+    if (filePath) {
+      try {
+        const body = await fs.readFile(filePath)
+
+        return new Response(new Uint8Array(body), {
+          headers: {
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Content-Type': mediaContentType(filename),
+          },
+        })
+      } catch {
+        // Fall through to R2 for media that only exists in object storage.
+      }
+    }
+
+    const objectKey = path.posix.join(args.params.prefix || prefix, filename)
 
     return Response.redirect(getR2PublicUrl(objectKey), 302)
   },
@@ -91,9 +169,14 @@ export const plugins: Plugin[] = [
     collections: {
       media: {
         adapter: r2Enabled ? mediaR2Adapter : null,
-        disablePayloadAccessControl: true,
-        generateFileURL: ({ filename, prefix }) => {
-          const objectKey = path.posix.join(prefix || mediaPrefix, filename)
+        generateFileURL: async ({ filename, prefix }) => {
+          const resolvedPrefix = prefix || mediaPrefix
+
+          if (await hasLocalMediaFile(filename)) {
+            return localMediaURL(filename, resolvedPrefix)
+          }
+
+          const objectKey = path.posix.join(resolvedPrefix, filename)
 
           return getR2PublicUrl(objectKey)
         },
