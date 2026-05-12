@@ -414,11 +414,11 @@ const configs: TableConfig[] = [
   {
     collection: 'screen-appearances',
     table: 'screen_appearances',
+    uniqueField: 'title',
+    lookupWhere: screenAppearanceLookupWhere,
     columns: [
       'source_db',
-      'source_table',
       'source_id',
-      'slug',
       'center',
       'appearance_type',
       'title',
@@ -433,24 +433,19 @@ const configs: TableConfig[] = [
       'published_at',
       'created_at',
       'is_public',
-      'legacy_meta',
     ],
     transform: (row) => {
       const structuredBody = screenAppearanceStructuredBodyFromHtml(row.body_html)
 
       return {
-        ...sourceDoc(row),
-        airDateLabel: legacyScreenAppearanceAirDate(row.air_date_label),
+        airDateLabel: legacyScreenAppearanceAirDate(row.air_date_label) ?? dateText(row.published_at),
         appearanceType: text(row.appearance_type),
-        bodyHtml: text(row.body_html),
         actorInputMode: 'manual',
         careerItems: structuredBody.careerItems,
         centers: centersFrom(row.center),
         className: text(row.class_name),
         displayStatus: displayStatusFromPublic(row.is_public),
         introText: structuredBody.introText,
-        legacyMeta: parseJsonValue(row.legacy_meta),
-        body: structuredBody.body,
         performerName: text(row.performer_name),
         profileImagePath: screenAppearanceLocalImagePath(row, 'profile_image_path', 'profile'),
         projectTitle: text(row.project_title),
@@ -1477,6 +1472,17 @@ function sourceLookupWhere(doc: PayloadDoc): PayloadWhere {
       { sourceDb: { equals: requiredText(doc.sourceDb, 'sourceDb') } },
       { sourceTable: { equals: requiredText(doc.sourceTable, 'sourceTable') } },
       { sourceId: { equals: number(doc.sourceId) } },
+    ],
+  }
+}
+
+function screenAppearanceLookupWhere(doc: PayloadDoc): PayloadWhere {
+  return {
+    and: [
+      { title: { equals: requiredText(doc.title, 'screen_appearances.title') } },
+      { performerName: { equals: text(doc.performerName) || null } },
+      { projectTitle: { equals: text(doc.projectTitle) || null } },
+      { roleName: { equals: text(doc.roleName) || null } },
     ],
   }
 }

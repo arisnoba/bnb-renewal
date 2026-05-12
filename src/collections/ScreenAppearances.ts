@@ -1,14 +1,5 @@
 import type { CollectionConfig, Validate } from "payload";
 
-import {
-  BlockquoteFeature,
-  FixedToolbarFeature,
-  HeadingFeature,
-  HorizontalRuleFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from "@payloadcms/richtext-lexical";
-
 import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
@@ -18,24 +9,9 @@ import {
   centerScopedBeforeValidate,
   centersField,
   imagePathField,
-  legacyCollapsible,
   publishingFields,
   sidebarFields,
 } from "./shared";
-
-const screenAppearanceBodyEditor = lexicalEditor({
-  admin: {
-    placeholder: "본문을 입력하세요.",
-  },
-  features: ({ defaultFeatures }) => [
-    ...defaultFeatures,
-    HeadingFeature({ enabledHeadingSizes: ["h2", "h3", "h4"] }),
-    BlockquoteFeature(),
-    HorizontalRuleFeature(),
-    FixedToolbarFeature(),
-    InlineToolbarFeature(),
-  ],
-});
 
 const screenAppearanceTypeOptions = [
   { label: "드라마", value: "drama" },
@@ -253,12 +229,6 @@ export const ScreenAppearances: CollectionConfig = {
               },
             ],
           },
-          {
-            name: "body",
-            type: "richText",
-            editor: screenAppearanceBodyEditor,
-            label: "기존 본문",
-          },
         ],
       },
       {
@@ -294,6 +264,5 @@ export const ScreenAppearances: CollectionConfig = {
       },
     ]),
     ...sidebarFields([...publishingFields, authorNameField]),
-    legacyCollapsible(),
   ],
 };

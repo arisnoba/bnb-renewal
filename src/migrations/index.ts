@@ -51,6 +51,8 @@ import * as migration_20260512_160000_screen_appearance_structured_body from './
 import * as migration_20260512_170000_screen_appearance_profile_links from './20260512_170000_screen_appearance_profile_links'
 import * as migration_20260512_171000_screen_appearance_profile_links_backfill from './20260512_171000_screen_appearance_profile_links_backfill'
 import * as migration_20260512_180000_screen_appearance_actor_input_mode from './20260512_180000_screen_appearance_actor_input_mode'
+import * as migration_20260512_190000_drop_screen_appearance_body_legacy_fields from './20260512_190000_drop_screen_appearance_body_legacy_fields'
+import * as migration_20260512_191000_backfill_screen_appearance_air_dates from './20260512_191000_backfill_screen_appearance_air_dates'
 
 export const migrations = [
   {
@@ -317,5 +319,15 @@ export const migrations = [
     up: migration_20260512_180000_screen_appearance_actor_input_mode.up,
     down: migration_20260512_180000_screen_appearance_actor_input_mode.down,
     name: '20260512_180000_screen_appearance_actor_input_mode',
+  },
+  {
+    up: migration_20260512_190000_drop_screen_appearance_body_legacy_fields.up,
+    down: migration_20260512_190000_drop_screen_appearance_body_legacy_fields.down,
+    name: '20260512_190000_drop_screen_appearance_body_legacy_fields',
+  },
+  {
+    up: migration_20260512_191000_backfill_screen_appearance_air_dates.up,
+    down: migration_20260512_191000_backfill_screen_appearance_air_dates.down,
+    name: '20260512_191000_backfill_screen_appearance_air_dates',
   },
 ]
