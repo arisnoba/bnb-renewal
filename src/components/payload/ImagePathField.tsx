@@ -279,28 +279,30 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 						padding: 'calc(var(--base) * 0.5)',
 						width: '100%',
 					}}>
-					<button
-						aria-label="이미지 교체"
-						disabled={controlsDisabled}
-						onClick={() => inputRef.current?.click()}
-						style={{
-							appearance: 'none',
-							alignItems: 'center',
-							background: 'var(--theme-elevation-100)',
-							border: '1px solid var(--theme-border-color)',
-							borderRadius: 'var(--style-radius-s)',
-							cursor: controlsDisabled ? 'not-allowed' : 'pointer',
-							display: 'flex',
-							flex: '0 0 40px',
-							height: 40,
-							justifyContent: 'center',
-							overflow: 'hidden',
-							padding: 0,
-							width: 40,
-						}}
-						type="button">
-						{canPreview ? (
-							// eslint-disable-next-line @next/next/no-img-element
+					{canPreview ? (
+						<a
+							aria-label="이미지 확인"
+							href={imageSrc}
+							rel="noreferrer"
+							style={{
+								appearance: 'none',
+								alignItems: 'center',
+								background: 'var(--theme-elevation-100)',
+								border: '1px solid var(--theme-border-color)',
+								borderRadius: 'var(--style-radius-s)',
+								cursor: 'pointer',
+								display: 'flex',
+								flex: '0 0 40px',
+								height: 40,
+								justifyContent: 'center',
+								overflow: 'hidden',
+								padding: 0,
+								textDecoration: 'none',
+								width: 40,
+							}}
+							target="_blank"
+							title="이미지 확인">
+							{/* eslint-disable-next-line @next/next/no-img-element */}
 							<img
 								alt=""
 								loading="lazy"
@@ -312,7 +314,26 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 									width: '100%',
 								}}
 							/>
-						) : (
+						</a>
+					) : (
+						<div
+							aria-label="이미지 미리보기 없음"
+							style={{
+								alignItems: 'center',
+								background: 'var(--theme-elevation-100)',
+								border: '1px solid var(--theme-border-color)',
+								borderRadius: 'var(--style-radius-s)',
+								color: 'var(--theme-elevation-500)',
+								display: 'flex',
+								flex: '0 0 40px',
+								fontSize: 11,
+								fontWeight: 600,
+								height: 40,
+								justifyContent: 'center',
+								overflow: 'hidden',
+								padding: 0,
+								width: 40,
+							}}>
 							<span
 								aria-hidden="true"
 								style={{
@@ -322,8 +343,8 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 								}}>
 								IMG
 							</span>
-						)}
-					</button>
+						</div>
+					)}
 					<div
 						style={{
 							display: 'grid',

@@ -277,27 +277,30 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 								gridTemplateColumns: '72px minmax(0, 1fr) auto auto',
 								padding: 'calc(var(--base) * 0.5)',
 							}}>
-							<a
-								href={imageSrc || undefined}
-								rel="noreferrer"
-								style={{
-									alignItems: 'center',
-									background: 'var(--theme-elevation-100)',
-									border: '1px solid var(--theme-border-color)',
-									borderRadius: 'var(--style-radius-s)',
-									color: 'var(--theme-elevation-500)',
-									display: 'flex',
-									fontSize: 11,
-									fontWeight: 600,
-									height: 72,
-									justifyContent: 'center',
-									overflow: 'hidden',
-									textDecoration: 'none',
-									width: 72,
-								}}
-								target="_blank">
-								{canPreview ? (
-									// eslint-disable-next-line @next/next/no-img-element
+							{canPreview ? (
+								<a
+									aria-label="이미지 확인"
+									href={imageSrc}
+									rel="noreferrer"
+									style={{
+										alignItems: 'center',
+										background: 'var(--theme-elevation-100)',
+										border: '1px solid var(--theme-border-color)',
+										borderRadius: 'var(--style-radius-s)',
+										color: 'var(--theme-elevation-500)',
+										cursor: 'pointer',
+										display: 'flex',
+										fontSize: 11,
+										fontWeight: 600,
+										height: 72,
+										justifyContent: 'center',
+										overflow: 'hidden',
+										textDecoration: 'none',
+										width: 72,
+									}}
+									target="_blank"
+									title="이미지 확인">
+									{/* eslint-disable-next-line @next/next/no-img-element */}
 									<img
 										alt=""
 										loading="lazy"
@@ -309,10 +312,27 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 											width: '100%',
 										}}
 									/>
-								) : (
-									'IMG'
-								)}
-							</a>
+								</a>
+							) : (
+								<div
+									aria-label="이미지 미리보기 없음"
+									style={{
+										alignItems: 'center',
+										background: 'var(--theme-elevation-100)',
+										border: '1px solid var(--theme-border-color)',
+										borderRadius: 'var(--style-radius-s)',
+										color: 'var(--theme-elevation-500)',
+										display: 'flex',
+										fontSize: 11,
+										fontWeight: 600,
+										height: 72,
+										justifyContent: 'center',
+										overflow: 'hidden',
+										width: 72,
+									}}>
+									IMG
+								</div>
+							)}
 							<div
 								style={{
 									color: 'var(--theme-text)',
