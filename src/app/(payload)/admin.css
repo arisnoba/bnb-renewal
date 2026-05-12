@@ -150,6 +150,14 @@ html[data-theme='dark'] {
   border-color: var(--theme-error-500);
 }
 
+.field-type.row .row__fields:has(> :first-child) {
+  margin-bottom: 0;
+}
+
+.field-type.row .row__fields + .row__fields {
+  margin-top: var(--base);
+}
+
 .document-fields--has-sidebar
   .document-fields__fields
   > .tabs-field:not(.tabs-field--within-collapsible)
