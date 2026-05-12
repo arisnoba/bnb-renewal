@@ -87,6 +87,17 @@ export const ScreenAppearances: CollectionConfig = {
             },
             { name: "className", type: "text", label: "반/클래스" },
           ]),
+          {
+            name: "linkedProfiles",
+            type: "relationship",
+            label: "연결된 프로필",
+            relationTo: "profiles",
+            hasMany: true,
+            admin: {
+              description:
+                "프로필과 연결만 저장합니다. 프로필의 경력관리에는 자동으로 등록되지 않습니다.",
+            },
+          },
           adminRow([
             { name: "projectTitle", type: "text", label: "작품명" },
             { name: "roleName", type: "text", label: "역할" },

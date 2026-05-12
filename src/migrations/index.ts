@@ -48,6 +48,8 @@ import * as migration_20260512_140000_screen_appearance_local_image_paths from '
 import * as migration_20260512_143000_media_external_url from './20260512_143000_media_external_url'
 import * as migration_20260512_150000_screen_appearance_field_types from './20260512_150000_screen_appearance_field_types'
 import * as migration_20260512_160000_screen_appearance_structured_body from './20260512_160000_screen_appearance_structured_body'
+import * as migration_20260512_170000_screen_appearance_profile_links from './20260512_170000_screen_appearance_profile_links'
+import * as migration_20260512_171000_screen_appearance_profile_links_backfill from './20260512_171000_screen_appearance_profile_links_backfill'
 
 export const migrations = [
   {
@@ -299,5 +301,15 @@ export const migrations = [
     up: migration_20260512_160000_screen_appearance_structured_body.up,
     down: migration_20260512_160000_screen_appearance_structured_body.down,
     name: '20260512_160000_screen_appearance_structured_body',
+  },
+  {
+    up: migration_20260512_170000_screen_appearance_profile_links.up,
+    down: migration_20260512_170000_screen_appearance_profile_links.down,
+    name: '20260512_170000_screen_appearance_profile_links',
+  },
+  {
+    up: migration_20260512_171000_screen_appearance_profile_links_backfill.up,
+    down: migration_20260512_171000_screen_appearance_profile_links_backfill.down,
+    name: '20260512_171000_screen_appearance_profile_links_backfill',
   },
 ]
