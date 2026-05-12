@@ -202,10 +202,10 @@ export const ScreenAppearances: CollectionConfig = {
           {
             name: "careerItems",
             type: "array",
-            label: "필모",
+            label: "필모그래피",
             labels: {
-              plural: "필모",
-              singular: "필모",
+              plural: "필모그래피",
+              singular: "필모그래피",
             },
             admin: {
               condition: (_data, siblingData) =>
