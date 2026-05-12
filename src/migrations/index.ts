@@ -47,6 +47,7 @@ import * as migration_20260511_200000_drop_artist_press_legacy_fields from './20
 import * as migration_20260512_140000_screen_appearance_local_image_paths from './20260512_140000_screen_appearance_local_image_paths'
 import * as migration_20260512_143000_media_external_url from './20260512_143000_media_external_url'
 import * as migration_20260512_150000_screen_appearance_field_types from './20260512_150000_screen_appearance_field_types'
+import * as migration_20260512_160000_screen_appearance_structured_body from './20260512_160000_screen_appearance_structured_body'
 
 export const migrations = [
   {
@@ -293,5 +294,10 @@ export const migrations = [
     up: migration_20260512_150000_screen_appearance_field_types.up,
     down: migration_20260512_150000_screen_appearance_field_types.down,
     name: '20260512_150000_screen_appearance_field_types',
+  },
+  {
+    up: migration_20260512_160000_screen_appearance_structured_body.up,
+    down: migration_20260512_160000_screen_appearance_structured_body.down,
+    name: '20260512_160000_screen_appearance_structured_body',
   },
 ]

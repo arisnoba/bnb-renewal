@@ -98,10 +98,43 @@ export const ScreenAppearances: CollectionConfig = {
             admin: adminDateConfig,
           },
           {
+            name: "introText",
+            type: "textarea",
+            label: "소개 문장",
+          },
+          {
+            name: "careerItems",
+            type: "array",
+            label: "필모",
+            labels: {
+              plural: "필모",
+              singular: "필모",
+            },
+            admin: {
+              components: {
+                RowLabel:
+                  "@/components/payload/ScreenAppearanceCareerRowLabel#ScreenAppearanceCareerRowLabel",
+              },
+            },
+            fields: [
+              {
+                name: "title",
+                type: "text",
+                label: "타이틀",
+                required: true,
+              },
+              {
+                name: "content",
+                type: "textarea",
+                label: "내용",
+              },
+            ],
+          },
+          {
             name: "body",
             type: "richText",
             editor: screenAppearanceBodyEditor,
-            label: "본문",
+            label: "기존 본문",
           },
         ],
       },
@@ -110,6 +143,30 @@ export const ScreenAppearances: CollectionConfig = {
         fields: [
           adminRow([imagePathField("profileImagePath", "프로필 이미지")]),
           adminRow([imagePathField("thumbnailPath", "썸네일")]),
+          {
+            name: "bodyImages",
+            type: "array",
+            label: "본문 이미지",
+            labels: {
+              plural: "본문 이미지",
+              singular: "본문 이미지",
+            },
+            admin: {
+              components: {
+                RowLabel:
+                  "@/components/payload/ScreenAppearanceBodyImageRowLabel#ScreenAppearanceBodyImageRowLabel",
+              },
+            },
+            fields: [
+              {
+                name: "image",
+                type: "upload",
+                label: "이미지",
+                relationTo: "media",
+                required: true,
+              },
+            ],
+          },
         ],
       },
     ]),

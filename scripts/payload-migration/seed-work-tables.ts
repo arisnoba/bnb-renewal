@@ -435,24 +435,30 @@ const configs: TableConfig[] = [
       'is_public',
       'legacy_meta',
     ],
-    transform: (row) => ({
-      ...sourceDoc(row),
-      airDateLabel: legacyScreenAppearanceAirDate(row.air_date_label),
-      appearanceType: text(row.appearance_type),
-      bodyHtml: text(row.body_html),
-      centers: centersFrom(row.center),
-      className: text(row.class_name),
-      displayStatus: displayStatusFromPublic(row.is_public),
-      legacyMeta: parseJsonValue(row.legacy_meta),
-      body: lexicalScreenAppearanceBodyFromHtml(row.body_html),
-      performerName: text(row.performer_name),
-      profileImagePath: screenAppearanceLocalImagePath(row, 'profile_image_path', 'profile'),
-      projectTitle: text(row.project_title),
-      roleName: text(row.role_name),
-      thumbnailPath: screenAppearanceLocalImagePath(row, 'thumbnail_path', 'thumbnail'),
-      ...legacyPublishedTimestamps(row),
-      title: requiredText(row.title, 'screen_appearances.title'),
-    }),
+    transform: (row) => {
+      const structuredBody = screenAppearanceStructuredBodyFromHtml(row.body_html)
+
+      return {
+        ...sourceDoc(row),
+        airDateLabel: legacyScreenAppearanceAirDate(row.air_date_label),
+        appearanceType: text(row.appearance_type),
+        bodyHtml: text(row.body_html),
+        careerItems: structuredBody.careerItems,
+        centers: centersFrom(row.center),
+        className: text(row.class_name),
+        displayStatus: displayStatusFromPublic(row.is_public),
+        introText: structuredBody.introText,
+        legacyMeta: parseJsonValue(row.legacy_meta),
+        body: structuredBody.body,
+        performerName: text(row.performer_name),
+        profileImagePath: screenAppearanceLocalImagePath(row, 'profile_image_path', 'profile'),
+        projectTitle: text(row.project_title),
+        roleName: text(row.role_name),
+        thumbnailPath: screenAppearanceLocalImagePath(row, 'thumbnail_path', 'thumbnail'),
+        ...legacyPublishedTimestamps(row),
+        title: requiredText(row.title, 'screen_appearances.title'),
+      }
+    },
   },
   {
     collection: 'teachers',
@@ -925,6 +931,105 @@ function lexicalScreenAppearanceBodyFromHtml(value: unknown) {
       version: 1,
     },
   }
+}
+
+const screenAppearanceCareerCategoryValues = new Set([
+  '드라마',
+  '영화',
+  '독립영화',
+  '상업영화',
+  '단편영화',
+  '웹드라마',
+  'CF',
+  '광고',
+  '방송',
+  '예능',
+  '연극',
+  '뮤지컬',
+  '뮤직비디오',
+  'MV',
+  '기타',
+])
+
+function screenAppearanceStructuredBodyFromHtml(value: unknown) {
+  const html = text(value)
+  const body = lexicalScreenAppearanceBodyFromHtml(html)
+
+  if (!html) {
+    return {
+      body,
+      careerItems: undefined,
+      introText: undefined,
+    }
+  }
+
+  const { document } = new JSDOM(html).window
+  document.querySelectorAll('script, style').forEach((element) => element.remove())
+  const lines = cleanLegacyText(document.body.textContent ?? html)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  return {
+    body,
+    careerItems: screenAppearanceCareerItemsFromLines(lines),
+    introText: screenAppearanceIntroTextFromLines(lines),
+  }
+}
+
+function screenAppearanceIntroTextFromLines(lines: string[]) {
+  return lines.find((line) => /캐스팅\s*되어?\s*출연/.test(line) || /캐스팅되어\s*출연/.test(line))
+}
+
+function screenAppearanceCareerItemsFromLines(lines: string[]) {
+  const startIndex = lines.findIndex((line) => line === '경력' || line.startsWith('경력'))
+
+  if (startIndex === -1) {
+    return undefined
+  }
+
+  const careerItems: Array<{ content?: string; title: string }> = []
+  let currentTitle: string | undefined
+  let currentLines: string[] = []
+
+  function flushCurrentItem() {
+    if (!currentTitle || currentLines.length === 0) {
+      return
+    }
+
+    careerItems.push({
+      title: currentTitle,
+      content: currentLines.join('\n'),
+    })
+  }
+
+  for (const line of lines.slice(startIndex + 1)) {
+    if (/캐스팅\s*되어?\s*출연/.test(line) || /캐스팅되어\s*출연/.test(line)) {
+      break
+    }
+
+    if (/^방영(기간|일자)?\s*:/.test(line) || /^외\s*다수$/.test(line)) {
+      continue
+    }
+
+    if (screenAppearanceCareerCategoryValues.has(line)) {
+      flushCurrentItem()
+      currentTitle = line
+      currentLines = []
+      continue
+    }
+
+    if (!currentTitle) {
+      currentTitle = '기타'
+      currentLines = []
+    }
+
+    currentLines.push(line)
+  }
+
+  flushCurrentItem()
+
+  return careerItems.length > 0 ? careerItems : undefined
 }
 
 function normalizeLegacyScreenAppearanceBodyImageSrc(value: string | null) {

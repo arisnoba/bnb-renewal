@@ -47,6 +47,8 @@ import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 }
 import { AgencyActorRowLabel as AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d } from '@/components/payload/AgencyActorRowLabel'
 import { CastingDirectorCareerRowLabel as CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6 } from '@/components/payload/CastingDirectorCareerRowLabel'
 import { CastingAppearanceCastMemberRowLabel as CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296 } from '@/components/payload/CastingAppearanceCastMemberRowLabel'
+import { ScreenAppearanceCareerRowLabel as ScreenAppearanceCareerRowLabel_7178f3eed2c874a197e506d98884ce36 } from '@/components/payload/ScreenAppearanceCareerRowLabel'
+import { ScreenAppearanceBodyImageRowLabel as ScreenAppearanceBodyImageRowLabel_0f979d8e6ff8830b19397b386d46f9f1 } from '@/components/payload/ScreenAppearanceBodyImageRowLabel'
 import { ExamPassedReviewInterviewRowLabel as ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f } from '@/components/payload/ExamPassedReviewInterviewRowLabel'
 import { YouTubePreviewField as YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d } from '@/components/payload/YouTubePreviewField'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
@@ -105,6 +107,8 @@ export const importMap = {
   "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel": AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d,
   "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel": CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6,
   "@/components/payload/CastingAppearanceCastMemberRowLabel#CastingAppearanceCastMemberRowLabel": CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296,
+  "@/components/payload/ScreenAppearanceCareerRowLabel#ScreenAppearanceCareerRowLabel": ScreenAppearanceCareerRowLabel_7178f3eed2c874a197e506d98884ce36,
+  "@/components/payload/ScreenAppearanceBodyImageRowLabel#ScreenAppearanceBodyImageRowLabel": ScreenAppearanceBodyImageRowLabel_0f979d8e6ff8830b19397b386d46f9f1,
   "@/components/payload/ExamPassedReviewInterviewRowLabel#ExamPassedReviewInterviewRowLabel": ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f,
   "@/components/payload/YouTubePreviewField#YouTubePreviewField": YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
