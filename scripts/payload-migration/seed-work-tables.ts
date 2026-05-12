@@ -443,6 +443,7 @@ const configs: TableConfig[] = [
         airDateLabel: legacyScreenAppearanceAirDate(row.air_date_label),
         appearanceType: text(row.appearance_type),
         bodyHtml: text(row.body_html),
+        actorInputMode: 'manual',
         careerItems: structuredBody.careerItems,
         centers: centersFrom(row.center),
         className: text(row.class_name),

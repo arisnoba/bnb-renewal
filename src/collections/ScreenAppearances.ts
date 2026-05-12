@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, Validate } from "payload";
 
 import {
   BlockquoteFeature,
@@ -42,6 +42,86 @@ const screenAppearanceTypeOptions = [
   { label: "광고", value: "commercial" },
 ];
 
+const actorInputModeOptions = [
+  { label: "프로필 선택", value: "profile" },
+  { label: "직접 입력", value: "manual" },
+];
+
+type ScreenAppearanceData = {
+  actorInputMode?: unknown;
+  centers?: unknown;
+};
+
+function hasRelationshipValue(value: unknown) {
+  return Array.isArray(value) ? value.length > 0 : Boolean(value);
+}
+
+function selectedCenterValues(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+
+  return values
+    .map((item) => String(item ?? "").trim())
+    .filter((item) => item && item !== "all");
+}
+
+function profileFilterForSelectedCenters({
+  data,
+  siblingData,
+}: {
+  data?: unknown;
+  siblingData?: unknown;
+}) {
+  const siblingCenters =
+    siblingData && typeof siblingData === "object"
+      ? (siblingData as ScreenAppearanceData).centers
+      : undefined;
+  const documentCenters =
+    data && typeof data === "object"
+      ? (data as ScreenAppearanceData).centers
+      : undefined;
+  const centers = selectedCenterValues(siblingCenters ?? documentCenters);
+
+  if (centers.length === 0) {
+    return true;
+  }
+
+  return {
+    or: centers.map((center) => ({
+      centers: {
+        contains: center,
+      },
+    })),
+  };
+}
+
+const validateLinkedProfiles: Validate<
+  unknown,
+  unknown,
+  ScreenAppearanceData
+> = (value, { siblingData }) => {
+  if (siblingData.actorInputMode === "manual") {
+    return true;
+  }
+
+  return hasRelationshipValue(value)
+    ? true
+    : "프로필 선택 방식에서는 연결된 프로필을 선택해야 합니다.";
+};
+
+const validateManualPerformerName: Validate<
+  string,
+  unknown,
+  ScreenAppearanceData
+> = (value, { siblingData }) => {
+  if (siblingData.actorInputMode !== "manual") {
+    return true;
+  }
+
+  return String(value ?? "").trim()
+    ? true
+    : "직접 입력 방식에서는 출연자명을 입력해야 합니다.";
+};
+
 export const ScreenAppearances: CollectionConfig = {
   slug: "screen-appearances",
   labels: {
@@ -72,36 +152,66 @@ export const ScreenAppearances: CollectionConfig = {
         label: "출연장면",
         fields: [
           {
-            name: "appearanceType",
-            type: "select",
-            label: "출연 유형",
-            options: screenAppearanceTypeOptions,
-            required: true,
+            ...centersField,
           },
-          adminRow([
-            {
-              name: "performerName",
-              type: "text",
-              label: "출연자",
-              required: true,
+          {
+            name: "actorInputMode",
+            type: "radio",
+            label: "출연자 입력 방식",
+            defaultValue: "profile",
+            options: actorInputModeOptions,
+            required: true,
+            admin: {
+              layout: "horizontal",
             },
-            { name: "className", type: "text", label: "반/클래스" },
-          ]),
+          },
           {
             name: "linkedProfiles",
             type: "relationship",
             label: "연결된 프로필",
             relationTo: "profiles",
             hasMany: true,
+            filterOptions: profileFilterForSelectedCenters,
+            validate: validateLinkedProfiles,
             admin: {
               description:
-                "프로필과 연결만 저장합니다. 프로필의 경력관리에는 자동으로 등록되지 않습니다.",
+                "선택한 센터의 프로필만 검색합니다. 프로필과 연결만 저장하며 경력관리에는 자동으로 등록되지 않습니다.",
+              condition: (_data, siblingData) =>
+                siblingData?.actorInputMode !== "manual",
             },
           },
+          adminRow([
+            {
+              name: "performerName",
+              type: "text",
+              label: "출연자",
+              validate: validateManualPerformerName,
+              admin: {
+                condition: (_data, siblingData) =>
+                  siblingData?.actorInputMode === "manual",
+              },
+            },
+            {
+              name: "className",
+              type: "text",
+              label: "반/클래스",
+              admin: {
+                condition: (_data, siblingData) =>
+                  siblingData?.actorInputMode === "manual",
+              },
+            },
+          ]),
           adminRow([
             { name: "projectTitle", type: "text", label: "작품명" },
             { name: "roleName", type: "text", label: "역할" },
           ]),
+          {
+            name: "appearanceType",
+            type: "select",
+            label: "출연 유형",
+            options: screenAppearanceTypeOptions,
+            required: true,
+          },
           {
             name: "airDateLabel",
             type: "date",
@@ -122,6 +232,8 @@ export const ScreenAppearances: CollectionConfig = {
               singular: "필모",
             },
             admin: {
+              condition: (_data, siblingData) =>
+                siblingData?.actorInputMode === "manual",
               components: {
                 RowLabel:
                   "@/components/payload/ScreenAppearanceCareerRowLabel#ScreenAppearanceCareerRowLabel",
@@ -181,7 +293,7 @@ export const ScreenAppearances: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields([centersField, ...publishingFields, authorNameField]),
+    ...sidebarFields([...publishingFields, authorNameField]),
     legacyCollapsible(),
   ],
 };

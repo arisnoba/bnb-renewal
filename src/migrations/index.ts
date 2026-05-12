@@ -50,6 +50,7 @@ import * as migration_20260512_150000_screen_appearance_field_types from './2026
 import * as migration_20260512_160000_screen_appearance_structured_body from './20260512_160000_screen_appearance_structured_body'
 import * as migration_20260512_170000_screen_appearance_profile_links from './20260512_170000_screen_appearance_profile_links'
 import * as migration_20260512_171000_screen_appearance_profile_links_backfill from './20260512_171000_screen_appearance_profile_links_backfill'
+import * as migration_20260512_180000_screen_appearance_actor_input_mode from './20260512_180000_screen_appearance_actor_input_mode'
 
 export const migrations = [
   {
@@ -311,5 +312,10 @@ export const migrations = [
     up: migration_20260512_171000_screen_appearance_profile_links_backfill.up,
     down: migration_20260512_171000_screen_appearance_profile_links_backfill.down,
     name: '20260512_171000_screen_appearance_profile_links_backfill',
+  },
+  {
+    up: migration_20260512_180000_screen_appearance_actor_input_mode.up,
+    down: migration_20260512_180000_screen_appearance_actor_input_mode.down,
+    name: '20260512_180000_screen_appearance_actor_input_mode',
   },
 ]
