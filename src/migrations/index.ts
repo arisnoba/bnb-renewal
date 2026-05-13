@@ -54,6 +54,7 @@ import * as migration_20260512_180000_screen_appearance_actor_input_mode from '.
 import * as migration_20260512_190000_drop_screen_appearance_body_legacy_fields from './20260512_190000_drop_screen_appearance_body_legacy_fields'
 import * as migration_20260512_191000_backfill_screen_appearance_air_dates from './20260512_191000_backfill_screen_appearance_air_dates'
 import * as migration_20260513_171500_casting_appearance_legacy_cleanup from './20260513_171500_casting_appearance_legacy_cleanup'
+import * as migration_20260513_190000_news_pre2020_draft from './20260513_190000_news_pre2020_draft'
 
 export const migrations = [
   {
@@ -335,5 +336,10 @@ export const migrations = [
     up: migration_20260513_171500_casting_appearance_legacy_cleanup.up,
     down: migration_20260513_171500_casting_appearance_legacy_cleanup.down,
     name: '20260513_171500_casting_appearance_legacy_cleanup',
+  },
+  {
+    up: migration_20260513_190000_news_pre2020_draft.up,
+    down: migration_20260513_190000_news_pre2020_draft.down,
+    name: '20260513_190000_news_pre2020_draft',
   },
 ]

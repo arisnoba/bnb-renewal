@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import os from 'node:os'
 import path from 'node:path'
 
 import { Pool } from 'pg'
@@ -17,6 +18,7 @@ type Options = {
   limit: 'all' | number
   outputPath: string
   overwrite: boolean
+  publishedFrom?: string
   write: boolean
 }
 
@@ -48,12 +50,15 @@ type MatchedThumbnail = {
 type RowResult = {
   action:
     | 'created-media-and-linked'
+    | 'created-media-from-repaired-file-and-linked'
     | 'dry-run'
     | 'linked-existing-media'
     | 'skipped-existing'
     | 'skipped-no-thumbnail'
     | 'unresolved-local-file'
     | 'unresolved-thumbnail-path'
+    | 'write-error'
+  errorMessage?: string
   existingMetaImageId?: number | null
   existingThumbnailMediaId?: number | null
   legacyPath?: string
@@ -138,6 +143,7 @@ function parseArgs(args: string[]): Options {
   let limit: Options['limit'] = 'all'
   let outputPath = 'tmp/legacy-assets/news-thumbnail-media-link-report.json'
   let overwrite = false
+  let publishedFrom: string | undefined
   let write = false
 
   for (let index = 0; index < args.length; index += 1) {
@@ -187,12 +193,23 @@ function parseArgs(args: string[]): Options {
       continue
     }
 
+    if (arg === '--published-from') {
+      publishedFrom = readRequiredValue(args, index, '--published-from')
+
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(publishedFrom)) {
+        throw new Error(`--published-from 값은 YYYY-MM-DD 형식이어야 합니다: ${publishedFrom}`)
+      }
+
+      index += 1
+      continue
+    }
+
     if (arg === '--write') {
       write = true
     }
   }
 
-  return { dryRun, ids, limit, outputPath, overwrite, write }
+  return { dryRun, ids, limit, outputPath, overwrite, publishedFrom, write }
 }
 
 function readRequiredValue(args: string[], index: number, name: string) {
@@ -212,6 +229,11 @@ async function readNewsRows(pool: Pool, options: Options): Promise<NewsRow[]> {
   if (options.ids.length > 0) {
     params.push(options.ids)
     where.push(`id::text = ANY($${params.length}::text[])`)
+  }
+
+  if (options.publishedFrom) {
+    params.push(options.publishedFrom)
+    where.push(`published_at >= $${params.length}::timestamptz`)
   }
 
   const limitSql = options.limit === 'all' ? '' : ` LIMIT ${options.limit}`
@@ -305,27 +327,62 @@ async function processRow({
     throw new Error('쓰기 모드에는 Payload client 가 필요합니다.')
   }
 
-  const mediaId =
-    existingMediaId ??
-    (await createMediaFromLocalFile({
-      matched,
-      payload,
-      title: text(row.title),
-    }))
+  try {
+    let repairedFilePath: string | undefined
+    let repaired = false
 
-  await linkNewsToMedia({
-    mediaId,
-    options,
-    pool,
-    row,
-  })
+    const mediaId =
+      existingMediaId ??
+      (await createMediaFromLocalFile({
+        matched,
+        payload,
+        title: text(row.title),
+      }).catch(async (error: unknown) => {
+        repairedFilePath = await repairImageForUpload(matched.localPath)
+        repaired = true
 
-  return {
-    ...base,
-    action: existingMediaId ? 'linked-existing-media' : 'created-media-and-linked',
-    legacyPath: matched.legacyPath,
-    localPath: matched.localPath,
-    mediaId,
+        try {
+          return await createMediaFromLocalFile({
+            filePath: repairedFilePath,
+            matched,
+            payload,
+            title: text(row.title),
+          })
+        } catch (repairError) {
+          throw repairError instanceof Error ? repairError : error
+        } finally {
+          if (repairedFilePath) {
+            await fs.unlink(repairedFilePath).catch(() => undefined)
+          }
+        }
+      }))
+
+    await linkNewsToMedia({
+      mediaId,
+      options,
+      pool,
+      row,
+    })
+
+    return {
+      ...base,
+      action: existingMediaId
+        ? 'linked-existing-media'
+        : repaired
+          ? 'created-media-from-repaired-file-and-linked'
+          : 'created-media-and-linked',
+      legacyPath: matched.legacyPath,
+      localPath: matched.localPath,
+      mediaId,
+    }
+  } catch (error) {
+    return {
+      ...base,
+      action: 'write-error',
+      errorMessage: error instanceof Error ? error.message : String(error),
+      legacyPath: matched.legacyPath,
+      localPath: matched.localPath,
+    }
   }
 }
 
@@ -400,10 +457,12 @@ async function findExistingMediaId(pool: Pool, fileName: string) {
 }
 
 async function createMediaFromLocalFile({
+  filePath,
   matched,
   payload,
   title,
 }: {
+  filePath?: string
   matched: MatchedThumbnail
   payload: DynamicPayload
   title?: string
@@ -414,7 +473,7 @@ async function createMediaFromLocalFile({
       alt: matched.originalName ?? title ?? matched.fileName,
       prefix: MEDIA_PREFIX,
     },
-    filePath: resolveProjectPath(matched.localPath),
+    filePath: filePath ?? resolveProjectPath(matched.localPath),
     overrideAccess: true,
   })
   const id = Number(created.id)
@@ -424,6 +483,17 @@ async function createMediaFromLocalFile({
   }
 
   return id
+}
+
+async function repairImageForUpload(localPath: string) {
+  const { default: sharp } = await import('sharp')
+  const repairedDir = path.join(os.tmpdir(), 'bnb-news-thumbnail-repair')
+  const repairedPath = path.join(repairedDir, `${Date.now()}-${path.basename(localPath)}`)
+
+  await fs.mkdir(repairedDir, { recursive: true })
+  await sharp(resolveProjectPath(localPath), { failOn: 'none' }).jpeg({ quality: 90 }).toFile(repairedPath)
+
+  return repairedPath
 }
 
 async function linkNewsToMedia({
@@ -506,12 +576,14 @@ function normalizeLocalPath(value: string | undefined | null) {
 function buildTotals(results: RowResult[]) {
   return {
     createdMediaAndLinked: count(results, 'created-media-and-linked'),
+    createdMediaFromRepairedFileAndLinked: count(results, 'created-media-from-repaired-file-and-linked'),
     dryRun: count(results, 'dry-run'),
     linkedExistingMedia: count(results, 'linked-existing-media'),
     rows: results.length,
     skippedExisting: count(results, 'skipped-existing'),
     unresolvedLocalFile: count(results, 'unresolved-local-file'),
     unresolvedThumbnailPath: count(results, 'unresolved-thumbnail-path'),
+    writeError: count(results, 'write-error'),
   }
 }
 
