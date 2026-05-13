@@ -53,6 +53,7 @@ import * as migration_20260512_171000_screen_appearance_profile_links_backfill f
 import * as migration_20260512_180000_screen_appearance_actor_input_mode from './20260512_180000_screen_appearance_actor_input_mode'
 import * as migration_20260512_190000_drop_screen_appearance_body_legacy_fields from './20260512_190000_drop_screen_appearance_body_legacy_fields'
 import * as migration_20260512_191000_backfill_screen_appearance_air_dates from './20260512_191000_backfill_screen_appearance_air_dates'
+import * as migration_20260513_171500_casting_appearance_legacy_cleanup from './20260513_171500_casting_appearance_legacy_cleanup'
 
 export const migrations = [
   {
@@ -329,5 +330,10 @@ export const migrations = [
     up: migration_20260512_191000_backfill_screen_appearance_air_dates.up,
     down: migration_20260512_191000_backfill_screen_appearance_air_dates.down,
     name: '20260512_191000_backfill_screen_appearance_air_dates',
+  },
+  {
+    up: migration_20260513_171500_casting_appearance_legacy_cleanup.up,
+    down: migration_20260513_171500_casting_appearance_legacy_cleanup.down,
+    name: '20260513_171500_casting_appearance_legacy_cleanup',
   },
 ]

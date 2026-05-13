@@ -8,7 +8,6 @@ import {
   centerScopedBeforeValidate,
   centersField,
   imagePathField,
-  legacyCollapsible,
   publishingFields,
   sidebarFields,
 } from "./shared";
@@ -52,7 +51,6 @@ export const CastingAppearances: CollectionConfig = {
             { name: "directors", type: "text", label: "감독" },
             { name: "writers", type: "text", label: "작가" },
           ]),
-          { name: "bodyHtml", type: "textarea", label: "본문" },
         ],
       },
       {
@@ -93,6 +91,5 @@ export const CastingAppearances: CollectionConfig = {
       },
     ]),
     ...sidebarFields([centersField, ...publishingFields, authorNameField]),
-    legacyCollapsible(),
   ],
 };

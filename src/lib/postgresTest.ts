@@ -491,6 +491,12 @@ function legacyAssetPath(input: {
   sourceDb?: unknown
   sourceId?: unknown
 }) {
+  const value = stringify(input.path)
+
+  if (value.startsWith('/legacy/')) {
+    return normalizeImagePath(value)
+  }
+
   const fileName = basename(input.path)
 
   if (!fileName) {
