@@ -31,6 +31,11 @@ const publicTestPages = [
     href: '/search',
     label: '검색',
   },
+  {
+    description: '저장 연결 전 오디션 지원 MVP 폼',
+    href: '/audition',
+    label: '오디션 지원하기',
+  },
 ]
 
 const centerNewsPages = Object.entries(centers).map(([slug, label]) => ({
