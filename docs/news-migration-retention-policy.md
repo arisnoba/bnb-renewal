@@ -79,10 +79,14 @@
 - `tmp/legacy-assets/news-media-allowlist-2020-plus.csv`: 3차 media 처리 확정 allowlist 5,894건
 - `tmp/legacy-assets/news-review-pre2020-or-invalid.csv`: 검토 큐 361건
 
-## 다음 단계
+## 최종 적용 결과
 
 3차에서는 `tmp/legacy-assets/news-media-allowlist-2020-plus.csv`에 포함된 news만 대상으로 썸네일 `thumbnailMedia`와 `meta.image`를 연결했다.
 
 적용 결과 2020년 이후 5,894건은 모두 썸네일 media relation을 가지며, 2019년 이전 또는 보정 날짜 draft 361건에는 media를 연결하지 않았다.
 
-4차에서는 보존 대상으로 확정된 2020년 이후 news의 본문 `bodyHtml` -> Lexical 저장 범위와 본문 이미지 처리 정책을 확정한다. 최종 fallback 제거는 public 목록/상세/SEO가 신규 필드만으로 동작하는 것을 확인한 뒤 진행한다.
+4차에서는 보존 대상으로 확정된 2020년 이후 5,894건의 `bodyHtml`을 Lexical `body`로 실제 저장했다. 본문 이미지 `pending` upload 노드 6,269개는 `media/news/body-images` media relation으로 연결했고, 최종 pending 노드는 0건이다. 이후 public 목록/상세/SEO에서 `thumbnailPath`, `legacyMeta`, `bodyHtml` fallback을 제거했고, 로컬 Postgres `news`와 `_news_v`에서 `source_db/source_table/source_id/body_html/thumbnail_path/legacy_meta` 계열 레거시 컬럼을 제거했다.
+
+적용 migration은 `20260514_150000_news_body_and_legacy_cleanup`이다.
+
+본문 이미지 처리 리포트는 `tmp/legacy-assets/news-body-media-backfill-write.json`, `tmp/legacy-assets/news-body-media-backfill-retry-write.json`이다.

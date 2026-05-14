@@ -2,8 +2,6 @@ import { Media } from '@/components/Media/Renderer'
 import type { News } from '@/payload-types'
 import {
   getNewsDescription,
-  getNewsImageAlt,
-  getNewsLegacyThumbnailSrc,
   getNewsThumbnailMedia,
   getNewsUrl,
 } from '@/utilities/newsFallbacks'
@@ -60,13 +58,10 @@ export async function NewsArchive({ center, title = '뉴스' }: NewsArchiveProps
       select: {
         category: true,
         excerpt: true,
-        legacyMeta: true,
         meta: true,
         publishedAt: true,
         slug: true,
-        sourceDb: true,
         thumbnailMedia: true,
-        thumbnailPath: true,
         title: true,
       },
       where,
@@ -107,7 +102,6 @@ export async function NewsArchive({ center, title = '뉴스' }: NewsArchiveProps
 
 function NewsCard({ news }: { news: Partial<News> & Pick<News, 'id' | 'slug' | 'title'> }) {
   const media = getNewsThumbnailMedia(news)
-  const legacySrc = media ? undefined : getNewsLegacyThumbnailSrc(news)
   const description = getNewsDescription(news)
   const publishedAt = formatDate(news.publishedAt)
 
@@ -121,14 +115,6 @@ function NewsCard({ news }: { news: Partial<News> & Pick<News, 'id' | 'slug' | '
               pictureClassName="block h-full w-full"
               resource={media}
               size="(max-width: 768px) 100vw, 33vw"
-            />
-          ) : legacySrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={getNewsImageAlt(news)}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              loading="lazy"
-              src={legacySrc}
             />
           ) : null}
         </div>

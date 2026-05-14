@@ -6,8 +6,6 @@ import type { News } from '@/payload-types'
 import {
   generateNewsMeta,
   getNewsDescription,
-  getNewsImageAlt,
-  getNewsLegacyThumbnailSrc,
   getNewsThumbnailMedia,
   hasLexicalContent,
 } from '@/utilities/newsFallbacks'
@@ -61,7 +59,6 @@ export default async function NewsDetail({ params: paramsPromise }: Args) {
   }
 
   const media = getNewsThumbnailMedia(news)
-  const legacySrc = media ? undefined : getNewsLegacyThumbnailSrc(news)
   const description = getNewsDescription(news)
   const publishedAt = formatDateTime(news.publishedAt)
   const body = hasLexicalContent(news.body) ? news.body : undefined
@@ -82,26 +79,16 @@ export default async function NewsDetail({ params: paramsPromise }: Args) {
         {description && <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{description}</p>}
       </header>
 
-      {(media || legacySrc) && (
+      {media && (
         <div className="container mt-10 max-w-5xl">
           <div className="overflow-hidden rounded-lg bg-muted">
-            {media ? (
-              <Media
-                imgClassName="h-auto w-full object-cover"
-                pictureClassName="block w-full"
-                priority
-                resource={media}
-                size="(max-width: 1024px) 100vw, 1024px"
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                alt={getNewsImageAlt(news)}
-                className="h-auto w-full object-cover"
-                loading="eager"
-                src={legacySrc}
-              />
-            )}
+            <Media
+              imgClassName="h-auto w-full object-cover"
+              pictureClassName="block w-full"
+              priority
+              resource={media}
+              size="(max-width: 1024px) 100vw, 1024px"
+            />
           </div>
         </div>
       )}
@@ -110,11 +97,6 @@ export default async function NewsDetail({ params: paramsPromise }: Args) {
         <div className="mx-auto max-w-3xl">
           {body ? (
             <RichText data={body} enableGutter={false} />
-          ) : news.bodyHtml ? (
-            <div
-              className="payload-richtext prose md:prose-md dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: news.bodyHtml }}
-            />
           ) : null}
         </div>
       </div>

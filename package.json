@@ -53,6 +53,7 @@
     "payload:legacy:backfill-profile-gallery": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-profile-gallery-images.ts",
     "payload:legacy:plan-news-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/plan-news-image-storage.ts",
     "payload:legacy:link-news-thumbnails": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-news-thumbnails-to-media.ts",
+    "payload:legacy:backfill-news-body-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-news-body-images-to-media.ts",
     "payload:legacy:link-casting-director-profile-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-casting-director-profile-images-to-media.ts",
     "payload:legacy:link-artist-press-media": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-artist-press-thumbnails-to-media.ts",
     "payload:legacy:link-artist-press-thumbnails": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-artist-press-thumbnails-to-media.ts",
