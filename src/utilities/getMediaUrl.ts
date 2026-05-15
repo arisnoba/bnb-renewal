@@ -15,5 +15,11 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     cacheTag = encodeURIComponent(cacheTag)
   }
 
-  return cacheTag ? `${url}?${cacheTag}` : url
+  if (!cacheTag) {
+    return url
+  }
+
+  const separator = url.includes('?') ? '&' : '?'
+
+  return `${url}${separator}${cacheTag}`
 }
