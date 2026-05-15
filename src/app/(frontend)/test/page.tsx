@@ -1,77 +1,11 @@
 import type { Metadata } from 'next'
 
-import { Button } from '@/components/ui/button'
-import { centers } from '@/lib/centers'
-import { postgresTestCollections } from '@/lib/postgresTest'
-import { testCollections } from '@/lib/testCollections'
-import Link from 'next/link'
+import { TestNavigation } from './_components/TestNavigation'
+import { testNavigationGroups } from './_components/testNavigationData'
 
 export const metadata: Metadata = {
   title: '테스트 페이지',
 }
-
-const publicTestPages = [
-  {
-    description: '최근 마이그레이션된 뉴스 컬렉션 공개 목록',
-    href: '/news',
-    label: '뉴스',
-  },
-  {
-    description: '출신 아티스트 언론/소개 콘텐츠 공개 목록',
-    href: '/artist-press',
-    label: '출신 아티스트',
-  },
-  {
-    description: '게시글 템플릿 목록',
-    href: '/posts',
-    label: '게시글',
-  },
-  {
-    description: '프론트 검색 화면',
-    href: '/search',
-    label: '검색',
-  },
-  {
-    description: '저장 연결 전 오디션 지원 MVP 폼',
-    href: '/audition',
-    label: '오디션 지원하기',
-  },
-]
-
-const centerNewsPages = Object.entries(centers).map(([slug, label]) => ({
-  description: `${label} 전용 뉴스 목록`,
-  href: `/${slug}/news`,
-  label: `${label} 뉴스`,
-}))
-
-const testGroups = [
-  {
-    description: '현재 프론트에서 직접 확인할 수 있는 공개 페이지입니다.',
-    links: publicTestPages,
-    title: '공개 페이지',
-  },
-  {
-    description: '센터 필터가 적용된 뉴스 목록입니다.',
-    links: centerNewsPages,
-    title: '센터별 뉴스',
-  },
-  {
-    description: 'Payload 컬렉션의 최근 데이터와 이미지 경로를 확인하는 내부 검수 페이지입니다.',
-    links: testCollections,
-    title: '컬렉션 테스트',
-  },
-  {
-    description: 'Postgres 마이그레이션 결과를 컬렉션별로 확인하는 내부 검수 페이지입니다.',
-    links: [
-      {
-        description: `${postgresTestCollections.length}개 컬렉션 검수 목록`,
-        href: '/test/postgres',
-        label: 'Postgres 검수',
-      },
-    ],
-    title: 'Postgres 테스트',
-  },
-]
 
 export default function TestPage() {
   return (
@@ -88,38 +22,25 @@ export default function TestPage() {
         </div>
       </section>
 
-      <div className="container mt-12 grid gap-12">
-        {testGroups.map((group) => (
-          <section key={group.title}>
-            <div className="mb-5">
-              <h2 className="text-2xl font-semibold tracking-normal">{group.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{group.description}</p>
+      <section className="container mt-10">
+        <TestNavigation groups={testNavigationGroups} />
+      </section>
+
+      <section className="container mt-10">
+        <div className="grid gap-4 md:grid-cols-3">
+          {testNavigationGroups.slice(2).map((group) => (
+            <div className="rounded-lg border border-border bg-card p-5" key={group.title}>
+              <h2 className="text-lg font-semibold tracking-normal">{group.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {group.description}
+              </p>
+              <p className="mt-4 font-mono text-sm text-muted-foreground">
+                {group.links.length}개 페이지
+              </p>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {group.links.map((link) => (
-                <Button
-                  asChild
-                  className="h-auto justify-start rounded-lg border-border bg-card px-5 py-4 text-left text-card-foreground shadow-none hover:bg-accent"
-                  key={link.href}
-                  variant="outline"
-                >
-                  <Link href={link.href}>
-                    <span className="grid gap-1">
-                      <span className="text-base font-semibold">{link.label}</span>
-                      <span className="whitespace-normal text-sm font-normal leading-6 text-muted-foreground">
-                        {link.description}
-                      </span>
-                      <span className="font-mono text-xs font-normal text-muted-foreground">
-                        {link.href}
-                      </span>
-                    </span>
-                  </Link>
-                </Button>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     </main>
   )
 }

@@ -9,6 +9,9 @@ import {
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { TestNavigation } from '../../_components/TestNavigation'
+import { testNavigationGroups } from '../../_components/testNavigationData'
+
 export const dynamic = 'force-dynamic'
 
 type Args = {
@@ -61,6 +64,10 @@ export default async function PostgresCollectionTestPage({ params: paramsPromise
             </Button>
           </div>
         </div>
+      </section>
+
+      <section className="container mt-10">
+        <TestNavigation groups={testNavigationGroups} />
       </section>
 
       <section className="container mt-10">
