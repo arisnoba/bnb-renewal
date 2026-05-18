@@ -41,6 +41,11 @@ const publicTestPages = [
     href: '/audition',
     label: '오디션 지원하기',
   },
+  {
+    description: 'Payload FAQ 센터별 노출 테스트 화면',
+    href: '/test/faq',
+    label: 'FAQ 테스트',
+  },
 ]
 
 const centerNewsPages = Object.entries(centers).map(([slug, label]) => ({

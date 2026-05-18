@@ -17,6 +17,7 @@ import { ExamPassedReviews } from './src/collections/ExamPassedReviews'
 import { ExamPassedVideos } from './src/collections/ExamPassedVideos'
 import { ExamResults } from './src/collections/ExamResults'
 import { ExamSchoolLogos } from './src/collections/ExamSchoolLogos'
+import { Faqs } from './src/collections/Faqs'
 import { Media } from './src/collections/Media'
 import { News } from './src/collections/News'
 import { Pages } from './src/collections/Pages'
@@ -77,6 +78,7 @@ export default buildConfig({
     Curriculums,
     HighteenSpecialClasses,
     News,
+    Faqs,
     Profiles,
     Agencies,
     ArtistPress,

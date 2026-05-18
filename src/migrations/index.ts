@@ -62,6 +62,9 @@ import * as migration_20260518_160000_direct_castings from './20260518_160000_di
 import * as migration_20260518_170000_direct_casting_thumbnail_media from './20260518_170000_direct_casting_thumbnail_media'
 import * as migration_20260518_180000_direct_casting_centers_and_body_html from './20260518_180000_direct_casting_centers_and_body_html'
 import * as migration_20260518_190000_drop_direct_casting_work_items from './20260518_190000_drop_direct_casting_work_items'
+import * as migration_20260518_201500_faqs from './20260518_201500_faqs'
+import * as migration_20260518_203000_drop_faq_source_fields from './20260518_203000_drop_faq_source_fields'
+import * as migration_20260518_204000_drop_faq_duplicate_question_fields from './20260518_204000_drop_faq_duplicate_question_fields'
 
 export const migrations = [
   {
@@ -383,5 +386,20 @@ export const migrations = [
     up: migration_20260518_190000_drop_direct_casting_work_items.up,
     down: migration_20260518_190000_drop_direct_casting_work_items.down,
     name: '20260518_190000_drop_direct_casting_work_items',
+  },
+  {
+    up: migration_20260518_201500_faqs.up,
+    down: migration_20260518_201500_faqs.down,
+    name: '20260518_201500_faqs',
+  },
+  {
+    up: migration_20260518_203000_drop_faq_source_fields.up,
+    down: migration_20260518_203000_drop_faq_source_fields.down,
+    name: '20260518_203000_drop_faq_source_fields',
+  },
+  {
+    up: migration_20260518_204000_drop_faq_duplicate_question_fields.up,
+    down: migration_20260518_204000_drop_faq_duplicate_question_fields.down,
+    name: '20260518_204000_drop_faq_duplicate_question_fields',
   },
 ]

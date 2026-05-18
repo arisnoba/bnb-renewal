@@ -41,6 +41,7 @@ import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b
 import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HighteenSpecialClassGalleryImageRowLabel as HighteenSpecialClassGalleryImageRowLabel_5663b03b9a54bf4afba9eb00b0bda3bb } from '@/components/payload/HighteenSpecialClassGalleryImageRowLabel'
+import { FaqAnswerVariantRowLabel as FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96 } from '@/components/payload/FaqAnswerVariantRowLabel'
 import { ProfileNameFields as ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb } from '@/components/payload/ProfileNameFields'
 import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de61 } from '@/components/payload/ProfileFilterField'
 import { ProfileAdditionalPhotosField as ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
@@ -102,6 +103,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel": HighteenSpecialClassGalleryImageRowLabel_5663b03b9a54bf4afba9eb00b0bda3bb,
+  "@/components/payload/FaqAnswerVariantRowLabel#FaqAnswerVariantRowLabel": FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96,
   "@/components/payload/ProfileNameFields#ProfileNameFields": ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb,
   "@/components/payload/ProfileFilterField#ProfileFilterField": ProfileFilterField_0c27d6f1f63313f291c972be4860de61,
   "@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField": ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
