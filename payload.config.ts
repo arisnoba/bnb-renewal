@@ -18,12 +18,14 @@ import { ExamPassedVideos } from './src/collections/ExamPassedVideos'
 import { ExamResults } from './src/collections/ExamResults'
 import { ExamSchoolLogos } from './src/collections/ExamSchoolLogos'
 import { Faqs } from './src/collections/Faqs'
+import { Histories } from './src/collections/Histories'
 import { Media } from './src/collections/Media'
 import { News } from './src/collections/News'
 import { Pages } from './src/collections/Pages'
 import { Posts } from './src/collections/Posts'
 import { Profiles } from './src/collections/Profiles'
 import { ScreenAppearances } from './src/collections/ScreenAppearances'
+import { StarCards } from './src/collections/StarCards'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
 import { applyAdminTimestampFields } from './src/collections/adminTimestampFields'
@@ -70,27 +72,29 @@ export default buildConfig({
     },
   },
   collections: applyAdminTimestampFields([
-    Users,
-    Pages,
-    Posts,
-    Media,
+    Histories,
     Teachers,
     Curriculums,
     HighteenSpecialClasses,
-    News,
-    Faqs,
-    Profiles,
     Agencies,
-    ArtistPress,
     AuditionSchedules,
     CastingDirectors,
     DirectCastings,
     CastingAppearances,
     ScreenAppearances,
+    Profiles,
+    ArtistPress,
     ExamPassedReviews,
     ExamPassedVideos,
     ExamResults,
     ExamSchoolLogos,
+    News,
+    Faqs,
+    StarCards,
+    Users,
+    Pages,
+    Posts,
+    Media,
   ]),
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),

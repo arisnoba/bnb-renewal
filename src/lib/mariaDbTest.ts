@@ -511,6 +511,31 @@ export const mariaDbTestCollections = [
       LIMIT 100
     `,
 	},
+	{
+		description: '스타카드 제휴업체 중복 통합 결과',
+		href: '/test/mariadb/star-cards',
+		label: 'Star Cards',
+		slug: 'star-cards',
+		table: 'star_cards',
+		sql: `
+      SELECT
+        ${baseColumns},
+        COALESCE(title, '') AS title,
+        COALESCE(centers, '') AS meta1,
+        COALESCE(map_url, '') AS meta2,
+        CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
+        CASE
+          WHEN COALESCE(logo_path, '') LIKE 'http://%' THEN REPLACE(logo_path, 'http://', 'https://')
+          WHEN COALESCE(logo_path, '') LIKE 'https://%' THEN logo_path
+          WHEN COALESCE(logo_path, '') LIKE '/%' THEN CONCAT('https://www.baewoo.co.kr', logo_path)
+          WHEN COALESCE(logo_path, '') != '' THEN CONCAT('https://www.baewoo.co.kr/', logo_path)
+          ELSE ''
+        END AS image_path
+      FROM bnb_legacy_work.star_cards
+      ORDER BY display_order ASC, id ASC
+      LIMIT 100
+    `,
+	},
 ] satisfies MariaDbTestCollection[];
 
 export function getMariaDbTestCollection(slug: string) {
@@ -537,11 +562,13 @@ export async function getMariaDbRows(collection: MariaDbTestCollection, options:
 				? buildProfileSql(options.center ?? 'all')
 					: collection.slug === 'news'
 						? buildNewsSql(options.center ?? 'all')
-						: collection.slug === 'screen-appearances'
-							? buildScreenAppearanceSql(options.center ?? 'all')
-							: collection.slug === 'casting-appearances'
-								? buildCastingAppearanceSql(options.center ?? 'all')
-								: collection.sql;
+						: collection.slug === 'star-cards'
+							? buildStarCardsSql(options.center ?? 'all')
+							: collection.slug === 'screen-appearances'
+								? buildScreenAppearanceSql(options.center ?? 'all')
+								: collection.slug === 'casting-appearances'
+									? buildCastingAppearanceSql(options.center ?? 'all')
+									: collection.sql;
 	const lines = await runMariaDbQuery(sql);
 	const rows = lines.map(parseRow);
 
@@ -633,6 +660,31 @@ function buildNewsSql(center: MariaDbRowsOptions['center']) {
     FROM bnb_legacy_work.news
     ${whereSql}
     ORDER BY published_at DESC, id DESC
+    LIMIT 100
+  `;
+}
+
+function buildStarCardsSql(center: MariaDbRowsOptions['center']) {
+	const centerFilter = center && center !== 'all' ? center : undefined;
+	const whereSql = centerFilter ? `WHERE JSON_CONTAINS(centers, JSON_QUOTE('${centerFilter}'))` : '';
+
+	return `
+    SELECT
+      ${baseColumns},
+      COALESCE(title, '') AS title,
+      COALESCE(centers, '') AS meta1,
+      COALESCE(map_url, '') AS meta2,
+      CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
+      CASE
+        WHEN COALESCE(logo_path, '') LIKE 'http://%' THEN REPLACE(logo_path, 'http://', 'https://')
+        WHEN COALESCE(logo_path, '') LIKE 'https://%' THEN logo_path
+        WHEN COALESCE(logo_path, '') LIKE '/%' THEN CONCAT('https://www.baewoo.co.kr', logo_path)
+        WHEN COALESCE(logo_path, '') != '' THEN CONCAT('https://www.baewoo.co.kr/', logo_path)
+        ELSE ''
+      END AS image_path
+    FROM bnb_legacy_work.star_cards
+    ${whereSql}
+    ORDER BY display_order ASC, id ASC
     LIMIT 100
   `;
 }

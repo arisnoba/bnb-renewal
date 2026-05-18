@@ -387,6 +387,43 @@ const configs: TableConfig[] = [
     }),
   },
   {
+    collection: 'star-cards',
+    table: 'star_cards',
+    lookupWhere: sourceLookupWhere,
+    columns: [
+      'source_db',
+      'source_table',
+      'source_id',
+      'slug',
+      'title',
+      'body_html',
+      'map_url',
+      'logo_path',
+      'centers',
+      'display_order',
+      'view_count',
+      'is_public',
+      'published_at',
+      'created_at',
+      'legacy_meta',
+    ],
+    transform: (row) => ({
+      ...sourceDoc(row),
+      body: lexicalStarCardBodyFromHtml(row.body_html),
+      bodyHtml: sanitizeStarCardBodyHtml(row.body_html),
+      bodyImages: parseStarCardBodyImages(row.body_html),
+      centers: centersFrom(row.centers),
+      displayOrder: number(row.display_order),
+      displayStatus: displayStatusFromPublic(row.is_public),
+      legacyMeta: parseJsonValue(row.legacy_meta),
+      logoPath: normalizeLegacyWebUrl(row.logo_path),
+      mapUrl: text(row.map_url),
+      ...legacyPublishedTimestamps(row),
+      title: requiredText(row.title, 'star_cards.title'),
+      viewCount: number(row.view_count),
+    }),
+  },
+  {
     collection: 'profiles',
     table: 'profiles',
     lookupWhere: sourceLookupWhere,
@@ -911,6 +948,59 @@ function lexicalPlainTextFromHtml(value: unknown) {
   }
 }
 
+function lexicalStarCardBodyFromHtml(value: unknown) {
+  const html = sanitizeStarCardBodyHtml(value)
+
+  if (!html) {
+    return undefined
+  }
+
+  return lexicalPlainTextFromHtml(html)
+}
+
+function sanitizeStarCardBodyHtml(value: unknown) {
+  const html = text(value)
+
+  if (!html) {
+    return undefined
+  }
+
+  const { document } = new JSDOM(html).window
+  document.querySelectorAll('script, style').forEach((element) => element.remove())
+  document.querySelectorAll('a').forEach((element) => {
+    if (cleanLegacyText(element.textContent ?? '') === '네이버지도보기') {
+      element.remove()
+    }
+  })
+  document.querySelectorAll('.jehyu_link').forEach((element) => element.remove())
+
+  return document.body.innerHTML
+}
+
+function parseStarCardBodyImages(value: unknown) {
+  const html = text(value)
+
+  if (!html) {
+    return []
+  }
+
+  const { document } = new JSDOM(html).window
+
+  return Array.from(document.querySelectorAll('img'))
+    .map((image) => {
+      const imagePath = normalizeLegacyWebUrl(image.getAttribute('src'))
+
+      if (!imagePath) {
+        return undefined
+      }
+
+      return {
+        imagePath,
+      }
+    })
+    .filter((image): image is { imagePath: string } => Boolean(image))
+}
+
 function lexicalScreenAppearanceBodyFromHtml(value: unknown) {
   const html = text(value)
 
@@ -1107,6 +1197,28 @@ function normalizeLegacyScreenAppearanceBodyImageSrc(value: string | null) {
     } catch {
       return src
     }
+  }
+
+  if (src.startsWith('//')) {
+    return `https:${src}`
+  }
+
+  if (src.startsWith('/')) {
+    return `https://www.baewoo.co.kr${src}`
+  }
+
+  return `https://www.baewoo.co.kr/${src.replace(/^\.?\//, '')}`
+}
+
+function normalizeLegacyWebUrl(value: unknown) {
+  const src = text(value)
+
+  if (!src) {
+    return undefined
+  }
+
+  if (/^https?:\/\//i.test(src)) {
+    return src.replace(/^http:\/\//i, 'https://')
   }
 
   if (src.startsWith('//')) {

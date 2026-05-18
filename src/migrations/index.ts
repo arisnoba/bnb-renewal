@@ -65,6 +65,11 @@ import * as migration_20260518_190000_drop_direct_casting_work_items from './202
 import * as migration_20260518_201500_faqs from './20260518_201500_faqs'
 import * as migration_20260518_203000_drop_faq_source_fields from './20260518_203000_drop_faq_source_fields'
 import * as migration_20260518_204000_drop_faq_duplicate_question_fields from './20260518_204000_drop_faq_duplicate_question_fields'
+import * as migration_20260518_210000_star_cards from './20260518_210000_star_cards'
+import * as migration_20260518_211000_star_card_body_images from './20260518_211000_star_card_body_images'
+import * as migration_20260518_212000_drop_star_card_summary_and_body_image_order from './20260518_212000_drop_star_card_summary_and_body_image_order'
+import * as migration_20260518_213000_drop_star_card_body_image_source_file from './20260518_213000_drop_star_card_body_image_source_file'
+import * as migration_20260518_214000_histories from './20260518_214000_histories'
 
 export const migrations = [
   {
@@ -401,5 +406,30 @@ export const migrations = [
     up: migration_20260518_204000_drop_faq_duplicate_question_fields.up,
     down: migration_20260518_204000_drop_faq_duplicate_question_fields.down,
     name: '20260518_204000_drop_faq_duplicate_question_fields',
+  },
+  {
+    up: migration_20260518_210000_star_cards.up,
+    down: migration_20260518_210000_star_cards.down,
+    name: '20260518_210000_star_cards',
+  },
+  {
+    up: migration_20260518_211000_star_card_body_images.up,
+    down: migration_20260518_211000_star_card_body_images.down,
+    name: '20260518_211000_star_card_body_images',
+  },
+  {
+    up: migration_20260518_212000_drop_star_card_summary_and_body_image_order.up,
+    down: migration_20260518_212000_drop_star_card_summary_and_body_image_order.down,
+    name: '20260518_212000_drop_star_card_summary_and_body_image_order',
+  },
+  {
+    up: migration_20260518_213000_drop_star_card_body_image_source_file.up,
+    down: migration_20260518_213000_drop_star_card_body_image_source_file.down,
+    name: '20260518_213000_drop_star_card_body_image_source_file',
+  },
+  {
+    up: migration_20260518_214000_histories.up,
+    down: migration_20260518_214000_histories.down,
+    name: '20260518_214000_histories',
   },
 ]

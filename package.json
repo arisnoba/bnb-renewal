@@ -45,6 +45,7 @@
     "legacy:work:news": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-news.sql",
     "legacy:work:profiles": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-profiles.sql",
     "legacy:work:screen-appearances": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-screen-appearances.sql",
+    "legacy:work:star-cards": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-star-cards.sql",
     "legacy:work:teachers": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-teachers.sql",
     "payload:legacy:snapshot": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/snapshot-pre-c0.ts",
     "payload:legacy:backup": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backup-pre-c0.ts",

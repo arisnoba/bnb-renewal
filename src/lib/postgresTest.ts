@@ -151,6 +151,13 @@ export const postgresTestCollections: PostgresTestCollection[] = [
     slug: 'news',
     table: 'news',
   },
+  {
+    description: 'Payload 스타카드 제휴업체 컬렉션 검수',
+    href: '/test/postgres/star-cards',
+    label: 'Star Cards',
+    slug: 'star-cards',
+    table: 'star_cards',
+  },
 ]
 
 const sortMap: Record<string, string> = {
@@ -169,6 +176,7 @@ const sortMap: Record<string, string> = {
   news: '-publishedAt',
   profiles: '-publishedAt',
   'screen-appearances': '-publishedAt',
+  'star-cards': 'displayOrder',
   teachers: 'displayOrder',
 }
 
@@ -235,6 +243,7 @@ function buildPublishedWhere(collectionSlug: string): Where | undefined {
       'news',
       'profiles',
       'screen-appearances',
+      'star-cards',
     ].includes(collectionSlug)
   ) {
     return {
@@ -441,6 +450,14 @@ function mapDocToRow(
         imagePath: newsImagePath(doc),
         meta1: stringify(doc.centers),
         meta2: stringify(doc.category),
+        meta3: stringify(doc.publishedAt),
+        title: stringify(doc.title),
+      })
+    case 'star-cards':
+      return baseRow(doc, {
+        imagePath: normalizeImagePath(doc.logoPath),
+        meta1: stringify(doc.centers),
+        meta2: stringify(doc.mapUrl),
         meta3: stringify(doc.publishedAt),
         title: stringify(doc.title),
       })
