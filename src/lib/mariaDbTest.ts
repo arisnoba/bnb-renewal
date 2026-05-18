@@ -320,7 +320,7 @@ export const mariaDbTestCollections = [
         ${baseColumns},
         COALESCE(title, '') AS title,
         COALESCE(company, '') AS meta1,
-        COALESCE(source_center, '') AS meta2,
+        COALESCE(centers, '') AS meta2,
         CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
         COALESCE(thumbnail_path, '') AS image_path
       FROM bnb_legacy_work.direct_castings

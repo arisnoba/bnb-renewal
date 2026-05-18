@@ -219,13 +219,15 @@ const configs: TableConfig[] = [
   {
     collection: 'direct-castings',
     table: 'direct_castings',
-    lookupWhere: sourceLookupWhere,
+    lookupWhere: directCastingLookupWhere,
+    uniqueField: 'title',
     columns: [
       'source_db',
       'source_table',
       'source_id',
       'slug',
       'source_center',
+      'centers',
       'company',
       'title',
       'year_label',
@@ -240,6 +242,8 @@ const configs: TableConfig[] = [
     transform: (row) => ({
       ...sourceDoc(row),
       body: lexicalPlainTextFromHtml(row.body_html),
+      bodyHtml: text(row.body_html),
+      centers: centersFrom(row.centers),
       company: requiredText(row.company, 'direct_castings.company'),
       displayStatus: displayStatusFromPublic(row.is_public),
       legacyMeta: parseJsonValue(row.legacy_meta),
@@ -248,7 +252,6 @@ const configs: TableConfig[] = [
       ...legacyPublishedTimestamps(row),
       thumbnailPath: text(row.thumbnail_path),
       title: requiredText(row.title, 'direct_castings.title'),
-      workItems: parseDirectCastingWorkItems(row.body_html),
       yearLabel: text(row.year_label),
     }),
   },
@@ -771,13 +774,6 @@ function screenAppearanceLocalImagePath(row: WorkRow, fieldName: string, role: '
   }
 
   return `/legacy/screen-appearances/${text(row.source_db) || 'baewoo'}/new_drama/${number(row.source_id)}/${role}/${fileName}`
-}
-
-function parseDirectCastingWorkItems(value: unknown) {
-  return parseCastingDirectorCareerItems(value).map((item) => ({
-    content: item.content,
-    year: item.title,
-  }))
 }
 
 function legacyScreenAppearanceAirDate(value: unknown) {
@@ -1536,6 +1532,15 @@ function sourceLookupWhere(doc: PayloadDoc): PayloadWhere {
       { sourceDb: { equals: requiredText(doc.sourceDb, 'sourceDb') } },
       { sourceTable: { equals: requiredText(doc.sourceTable, 'sourceTable') } },
       { sourceId: { equals: number(doc.sourceId) } },
+    ],
+  }
+}
+
+function directCastingLookupWhere(doc: PayloadDoc): PayloadWhere {
+  return {
+    and: [
+      { company: { equals: requiredText(doc.company, 'direct_castings.company') } },
+      { title: { equals: requiredText(doc.title, 'direct_castings.title') } },
     ],
   }
 }

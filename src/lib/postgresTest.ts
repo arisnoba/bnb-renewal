@@ -386,7 +386,7 @@ function mapDocToRow(
       return baseRow(doc, {
         imagePath: mediaImagePath(doc.thumbnailMedia) || stringify(doc.thumbnailPath),
         meta1: stringify(doc.company),
-        meta2: stringify(doc.sourceCenter),
+        meta2: stringify(doc.centers),
         meta3: stringify(doc.publishedAt),
         title: stringify(doc.title),
       })

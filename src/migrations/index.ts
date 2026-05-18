@@ -60,6 +60,8 @@ import * as migration_20260518_140000_highteen_special_classes from './20260518_
 import * as migration_20260518_143000_drop_highteen_special_class_view_count from './20260518_143000_drop_highteen_special_class_view_count'
 import * as migration_20260518_160000_direct_castings from './20260518_160000_direct_castings'
 import * as migration_20260518_170000_direct_casting_thumbnail_media from './20260518_170000_direct_casting_thumbnail_media'
+import * as migration_20260518_180000_direct_casting_centers_and_body_html from './20260518_180000_direct_casting_centers_and_body_html'
+import * as migration_20260518_190000_drop_direct_casting_work_items from './20260518_190000_drop_direct_casting_work_items'
 
 export const migrations = [
   {
@@ -371,5 +373,15 @@ export const migrations = [
     up: migration_20260518_170000_direct_casting_thumbnail_media.up,
     down: migration_20260518_170000_direct_casting_thumbnail_media.down,
     name: '20260518_170000_direct_casting_thumbnail_media',
+  },
+  {
+    up: migration_20260518_180000_direct_casting_centers_and_body_html.up,
+    down: migration_20260518_180000_direct_casting_centers_and_body_html.down,
+    name: '20260518_180000_direct_casting_centers_and_body_html',
+  },
+  {
+    up: migration_20260518_190000_drop_direct_casting_work_items.up,
+    down: migration_20260518_190000_drop_direct_casting_work_items.down,
+    name: '20260518_190000_drop_direct_casting_work_items',
   },
 ]

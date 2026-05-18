@@ -112,21 +112,6 @@ test("highteen special class gallery images use source file row labels", () => {
   );
 });
 
-test("direct casting work items use year row labels", () => {
-  const field = getTabField(DirectCastings, "연도별 이력", "workItems");
-
-  assert.equal(field.type, "array");
-  assert.deepEqual(field.labels, {
-    plural: "이력",
-    singular: "이력",
-  });
-  assert.equal(field.admin?.initCollapsed, true);
-  assert.equal(
-    field.admin?.components?.RowLabel,
-    "@/components/payload/DirectCastingWorkItemRowLabel#DirectCastingWorkItemRowLabel",
-  );
-});
-
 test("direct casting menu is hidden for exam managers only", () => {
   const hidden = DirectCastings.admin?.hidden;
 

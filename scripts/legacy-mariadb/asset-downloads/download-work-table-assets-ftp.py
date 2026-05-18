@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import posixpath
+import re
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -31,6 +33,19 @@ HOST_BY_DB = {
     "kidscenter": "https://www.baewoo.net",
     "bnbhighteen": "https://www.baewoo.me",
 }
+
+SOURCE_DB_BY_HOST = {
+    "baewoo.co.kr": "baewoo",
+    "www.baewoo.co.kr": "baewoo",
+    "baewoo.kr": "bnbuniv",
+    "www.baewoo.kr": "bnbuniv",
+    "baewoo.me": "bnbhighteen",
+    "www.baewoo.me": "bnbhighteen",
+    "baewoo.net": "kidscenter",
+    "www.baewoo.net": "kidscenter",
+}
+
+IMG_SRC_RE = re.compile(r"<img\b[^>]*\bsrc\s*=\s*(['\"])(?P<src>.*?)\1", re.IGNORECASE | re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -324,7 +339,137 @@ def read_entries(project_root: Path, collection_slug: str, collection: Collectio
             }
         )
 
+    if collection_slug == "direct-castings":
+        entries.extend(read_direct_casting_body_image_entries(project_root, collection.output_root))
+
     return entries
+
+
+def read_direct_casting_body_image_entries(project_root: Path, output_root: str) -> list[dict[str, Any]]:
+    query = """
+SELECT JSON_OBJECT(
+  'work_id', id,
+  'source_db', source_db,
+  'source_table', source_table,
+  'source_id', source_id,
+  'slug', slug,
+  'title', title,
+  'body_html', body_html
+)
+FROM `bnb_legacy_work`.`direct_castings`
+WHERE body_html IS NOT NULL
+  AND body_html REGEXP '<img'
+ORDER BY id
+"""
+    output = subprocess.check_output(
+        [
+            "docker",
+            "compose",
+            "exec",
+            "-T",
+            "legacy-mariadb",
+            "mariadb",
+            "-uroot",
+            "-proot",
+            "--batch",
+            "--raw",
+            "--skip-column-names",
+            "-e",
+            query.strip(),
+        ],
+        cwd=project_root,
+        text=True,
+    )
+    entries: list[dict[str, Any]] = []
+
+    for line in output.splitlines():
+        if not line.strip():
+            continue
+
+        row = json.loads(line)
+        body_html = str(row.get("body_html") or "")
+
+        for index, match in enumerate(IMG_SRC_RE.finditer(body_html), start=1):
+            original_src = html.unescape(match.group("src").strip())
+            resolved = resolve_body_image_source(str(row.get("source_db") or ""), original_src)
+
+            if resolved is None:
+                continue
+
+            source_db, remote_path, bo_table, source_url = resolved
+            file_name = posixpath.basename(remote_path)
+
+            if not file_name:
+                continue
+
+            local_path = build_local_path(
+                output_root,
+                source_db,
+                bo_table,
+                str(row.get("source_id") or row.get("work_id") or "unknown"),
+                f"body-{index}",
+                file_name,
+            )
+
+            entries.append(
+                {
+                    "assetRole": "body",
+                    "boTable": bo_table,
+                    "bytesInDb": 0,
+                    "collection": "direct-castings",
+                    "fileNo": index,
+                    "localPath": local_path,
+                    "localUrl": "/" + local_path.removeprefix("public/"),
+                    "normalizedUrl": source_url,
+                    "originalName": file_name,
+                    "originalSrc": original_src,
+                    "remotePath": remote_path,
+                    "slug": str(row.get("slug") or ""),
+                    "sourceDb": source_db,
+                    "sourceId": parse_int(row.get("source_id")),
+                    "sourceTable": str(row.get("source_table") or ""),
+                    "sourceUrl": source_url,
+                    "title": str(row.get("title") or ""),
+                    "workId": parse_int(row.get("work_id")),
+                }
+            )
+
+    return entries
+
+
+def resolve_body_image_source(row_source_db: str, src: str) -> tuple[str, str, str, str] | None:
+    if not src:
+        return None
+
+    if src.startswith("data:"):
+        return None
+
+    if src.startswith("http://") or src.startswith("https://"):
+        parsed = urlparse(src)
+        source_db = SOURCE_DB_BY_HOST.get((parsed.hostname or "").lower(), row_source_db)
+        remote_path = parsed.path.lstrip("/")
+        source_url_value = src
+    else:
+        source_db = row_source_db
+        remote_path = src.lstrip("/")
+        source_url_value = source_url(source_db, remote_path)
+
+    bo_table = bo_table_from_remote_path(remote_path)
+
+    return source_db, remote_path, bo_table, source_url_value
+
+
+def bo_table_from_remote_path(remote_path: str) -> str:
+    parts = [part for part in remote_path.split("/") if part]
+
+    for index, part in enumerate(parts):
+        if part == "editor":
+            return "editor"
+
+        if part == "file" and index + 1 < len(parts):
+            return parts[index + 1]
+
+    return "editor"
 
 
 def build_local_path(output_root: str, source_db: str, bo_table: str, source_id: str, asset_role: str, file_name: str) -> str:
@@ -431,6 +576,14 @@ def build_sources(config: dict[str, Any]) -> dict[str, FTPSource]:
 
 
 def candidate_dirs_for_bo_table(bo_table: str) -> list[str]:
+    if bo_table == "editor":
+        return [
+            "/web/data/editor",
+            "/data/editor",
+            "/web/editor",
+            "/editor",
+        ]
+
     return [
         f"/web/data/file/{bo_table}",
         f"/data/file/{bo_table}",

@@ -15,6 +15,7 @@ CREATE TABLE `bnb_legacy_work`.`direct_castings` (
   `source_id` int(11) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `source_center` varchar(32) NOT NULL,
+  `centers` longtext NOT NULL CHECK (JSON_VALID(`centers`)),
   `company` varchar(64) NOT NULL,
   `title` varchar(255) NOT NULL,
   `year_label` varchar(64) DEFAULT NULL,
@@ -56,7 +57,7 @@ UNION ALL
 SELECT
   'baewoo',
   'art',
-  'g5_write_new_casting_bx',
+  'g5_write_new_direct_bx',
   'bx-model-agency',
   `wr_id`, `wr_num`, `wr_parent`, `wr_is_comment`, `ca_name`, `wr_option`,
   `wr_subject`, `wr_content`, `wr_link1`, `wr_link2`, `wr_link1_hit`,
@@ -64,7 +65,7 @@ SELECT
   `wr_email`, `wr_homepage`, `wr_datetime`, `wr_file`, `wr_last`, `wr_ip`,
   `wr_facebook_user`, `wr_twitter_user`, `wr_1`, `wr_2`, `wr_3`, `wr_4`,
   `wr_5`, `wr_6`, `wr_7`, `wr_8`, `wr_9`, `wr_10`, NULL
-FROM `baewoo`.`g5_write_new_casting_bx`
+FROM `baewoo`.`g5_write_new_direct_bx`
 WHERE `wr_is_comment` = 0
 UNION ALL
 SELECT
@@ -98,7 +99,7 @@ UNION ALL
 SELECT
   'bnbhighteen',
   'highteen',
-  'g5_write_new_casting_enm',
+  'g5_write_new_direct_enm',
   'bnb-casting',
   `wr_id`, `wr_num`, `wr_parent`, `wr_is_comment`, `ca_name`, `wr_option`,
   `wr_subject`, `wr_content`, `wr_link1`, `wr_link2`, `wr_link1_hit`,
@@ -106,13 +107,13 @@ SELECT
   `wr_email`, `wr_homepage`, `wr_datetime`, `wr_file`, `wr_last`, `wr_ip`,
   `wr_facebook_user`, `wr_twitter_user`, `wr_1`, `wr_2`, `wr_3`, `wr_4`,
   `wr_5`, `wr_6`, `wr_7`, `wr_8`, `wr_9`, `wr_10`, `public`
-FROM `bnbhighteen`.`g5_write_new_casting_enm`
+FROM `bnbhighteen`.`g5_write_new_direct_enm`
 WHERE `wr_is_comment` = 0
 UNION ALL
 SELECT
   'bnbhighteen',
   'highteen',
-  'g5_write_new_casting_bx',
+  'g5_write_new_direct_bx',
   'bx-model-agency',
   `wr_id`, `wr_num`, `wr_parent`, `wr_is_comment`, `ca_name`, `wr_option`,
   `wr_subject`, `wr_content`, `wr_link1`, `wr_link2`, `wr_link1_hit`,
@@ -120,7 +121,7 @@ SELECT
   `wr_email`, `wr_homepage`, `wr_datetime`, `wr_file`, `wr_last`, `wr_ip`,
   `wr_facebook_user`, `wr_twitter_user`, `wr_1`, `wr_2`, `wr_3`, `wr_4`,
   `wr_5`, `wr_6`, `wr_7`, `wr_8`, `wr_9`, `wr_10`, `public`
-FROM `bnbhighteen`.`g5_write_new_casting_bx`
+FROM `bnbhighteen`.`g5_write_new_direct_bx`
 WHERE `wr_is_comment` = 0
 UNION ALL
 SELECT
@@ -154,7 +155,7 @@ UNION ALL
 SELECT
   'kidscenter',
   'kids',
-  'g5_write_new_casting_enm',
+  'g5_write_new_direct_enm',
   'bnb-casting',
   `wr_id`, `wr_num`, `wr_parent`, `wr_is_comment`, `ca_name`, `wr_option`,
   `wr_subject`, `wr_content`, `wr_link1`, `wr_link2`, `wr_link1_hit`,
@@ -162,13 +163,13 @@ SELECT
   `wr_email`, `wr_homepage`, `wr_datetime`, `wr_file`, `wr_last`, `wr_ip`,
   `wr_facebook_user`, `wr_twitter_user`, `wr_1`, `wr_2`, `wr_3`, `wr_4`,
   `wr_5`, `wr_6`, `wr_7`, `wr_8`, `wr_9`, `wr_10`, `public`
-FROM `kidscenter`.`g5_write_new_casting_enm`
+FROM `kidscenter`.`g5_write_new_direct_enm`
 WHERE `wr_is_comment` = 0
 UNION ALL
 SELECT
   'kidscenter',
   'kids',
-  'g5_write_new_casting_bx',
+  'g5_write_new_direct_bx',
   'bx-model-agency',
   `wr_id`, `wr_num`, `wr_parent`, `wr_is_comment`, `ca_name`, `wr_option`,
   `wr_subject`, `wr_content`, `wr_link1`, `wr_link2`, `wr_link1_hit`,
@@ -176,34 +177,16 @@ SELECT
   `wr_email`, `wr_homepage`, `wr_datetime`, `wr_file`, `wr_last`, `wr_ip`,
   `wr_facebook_user`, `wr_twitter_user`, `wr_1`, `wr_2`, `wr_3`, `wr_4`,
   `wr_5`, `wr_6`, `wr_7`, `wr_8`, `wr_9`, `wr_10`, `public`
-FROM `kidscenter`.`g5_write_new_casting_bx`
+FROM `kidscenter`.`g5_write_new_direct_bx`
 WHERE `wr_is_comment` = 0;
 
-INSERT INTO `bnb_legacy_work`.`direct_castings` (
-  `source_db`,
-  `source_table`,
-  `source_id`,
-  `slug`,
-  `source_center`,
-  `company`,
-  `title`,
-  `year_label`,
-  `project_info`,
-  `body_html`,
-  `thumbnail_url`,
-  `thumbnail_path`,
-  `thumbnail_original_name`,
-  `published_at`,
-  `is_public`,
-  `created_at`,
-  `updated_at`,
-  `legacy_meta`
-)
+DROP TEMPORARY TABLE IF EXISTS `tmp_direct_castings_enriched`;
+
+CREATE TEMPORARY TABLE `tmp_direct_castings_enriched` AS
 SELECT
   `direct`.`source_db`,
   `direct`.`source_table`,
   `direct`.`wr_id` AS `source_id`,
-  CONCAT('direct-casting-', `direct`.`source_db`, '-', REPLACE(`direct`.`source_table`, 'g5_write_', ''), '-', `direct`.`wr_id`) AS `slug`,
   `direct`.`source_center`,
   `direct`.`company`,
   NULLIF(TRIM(`direct`.`wr_subject`), '') AS `title`,
@@ -219,55 +202,39 @@ SELECT
     ELSE NULL
   END AS `thumbnail_path`,
   NULLIF(TRIM(`thumbnail`.`bf_source`), '') AS `thumbnail_original_name`,
+  `thumbnail`.`bf_file` AS `thumbnail_file`,
+  `thumbnail`.`bf_filesize` AS `thumbnail_filesize`,
   COALESCE(NULLIF(`direct`.`wr_datetime`, '0000-00-00 00:00:00'), '1970-01-01 00:00:00') AS `published_at`,
   IF(COALESCE(TRIM(`direct`.`public_value`), '') = '0' OR UPPER(COALESCE(TRIM(`direct`.`public_value`), '')) = 'N', 0, 1) AS `is_public`,
   COALESCE(NULLIF(`direct`.`wr_datetime`, '0000-00-00 00:00:00'), '1970-01-01 00:00:00') AS `created_at`,
   CURRENT_TIMESTAMP AS `updated_at`,
-  JSON_OBJECT(
-    'sourceDb', `direct`.`source_db`,
-    'sourceTable', `direct`.`source_table`,
-    'sourceId', `direct`.`wr_id`,
-    'sourceCenter', `direct`.`source_center`,
-    'company', `direct`.`company`,
-    'rawCategory', NULLIF(TRIM(`direct`.`ca_name`), ''),
-    'wrHit', `direct`.`wr_hit`,
-    'wrFile', `direct`.`wr_file`,
-    'wrParent', `direct`.`wr_parent`,
-    'wrNum', `direct`.`wr_num`,
-    'wrOption', NULLIF(TRIM(`direct`.`wr_option`), ''),
-    'public', NULLIF(TRIM(`direct`.`public_value`), ''),
-    'rawFields', JSON_OBJECT(
-      'wr1', `direct`.`wr_1`,
-      'wr2', `direct`.`wr_2`,
-      'wr3', `direct`.`wr_3`,
-      'wr4', `direct`.`wr_4`,
-      'wr5', `direct`.`wr_5`,
-      'wr6', `direct`.`wr_6`,
-      'wr7', `direct`.`wr_7`,
-      'wr8', `direct`.`wr_8`,
-      'wr9', `direct`.`wr_9`,
-      'wr10', `direct`.`wr_10`
-    ),
-    'thumbnail', JSON_OBJECT(
-      'url', CASE
-        WHEN `thumbnail`.`bf_file` IS NOT NULL THEN CONCAT(`host`.`base_url`, '/web/data/file/', REPLACE(`direct`.`source_table`, 'g5_write_', ''), '/', `thumbnail`.`bf_file`)
-        ELSE NULL
-      END,
-      'path', CASE
-        WHEN `thumbnail`.`bf_file` IS NOT NULL THEN CONCAT('/legacy/direct-castings/', `direct`.`source_db`, '/', REPLACE(`direct`.`source_table`, 'g5_write_', ''), '/', `direct`.`wr_id`, '/thumbnail/', `thumbnail`.`bf_file`)
-        ELSE NULL
-      END,
-      'originalName', NULLIF(TRIM(`thumbnail`.`bf_source`), ''),
-      'fileName', `thumbnail`.`bf_file`,
-      'filesize', `thumbnail`.`bf_filesize`
-    ),
-    'links', JSON_OBJECT(
-      'link1', NULLIF(TRIM(`direct`.`wr_link1`), ''),
-      'link2', NULLIF(TRIM(`direct`.`wr_link2`), ''),
-      'link1Hit', `direct`.`wr_link1_hit`,
-      'link2Hit', `direct`.`wr_link2_hit`
-    )
-  ) AS `legacy_meta`
+  CAST(
+    (
+      CHAR_LENGTH(LOWER(COALESCE(`direct`.`wr_content`, ''))) -
+      CHAR_LENGTH(REPLACE(LOWER(COALESCE(`direct`.`wr_content`, '')), '<img', ''))
+    ) / 4 AS UNSIGNED
+  ) AS `body_image_count`,
+  `direct`.`ca_name`,
+  `direct`.`wr_hit`,
+  `direct`.`wr_file`,
+  `direct`.`wr_parent`,
+  `direct`.`wr_num`,
+  `direct`.`wr_option`,
+  `direct`.`public_value`,
+  `direct`.`wr_1`,
+  `direct`.`wr_2`,
+  `direct`.`wr_3`,
+  `direct`.`wr_4`,
+  `direct`.`wr_5`,
+  `direct`.`wr_6`,
+  `direct`.`wr_7`,
+  `direct`.`wr_8`,
+  `direct`.`wr_9`,
+  `direct`.`wr_10`,
+  `direct`.`wr_link1`,
+  `direct`.`wr_link2`,
+  `direct`.`wr_link1_hit`,
+  `direct`.`wr_link2_hit`
 FROM `tmp_direct_castings_all` AS `direct`
 JOIN (
   SELECT 'baewoo' AS `source_db`, 'https://www.baewoo.co.kr' AS `base_url`
@@ -287,5 +254,134 @@ LEFT JOIN (
   AND `thumbnail`.`wr_id` = `direct`.`wr_id`
   AND `thumbnail`.`bf_no` = 0
   AND NULLIF(TRIM(`thumbnail`.`bf_file`), '') IS NOT NULL
-WHERE NULLIF(TRIM(`direct`.`wr_subject`), '') IS NOT NULL
-ORDER BY `direct`.`company`, `direct`.`source_db`, `direct`.`wr_datetime` DESC, `direct`.`wr_id` DESC;
+WHERE NULLIF(TRIM(`direct`.`wr_subject`), '') IS NOT NULL;
+
+DROP TEMPORARY TABLE IF EXISTS `tmp_direct_castings_ranked`;
+
+CREATE TEMPORARY TABLE `tmp_direct_castings_ranked` AS
+SELECT
+  `enriched`.*,
+  ROW_NUMBER() OVER (
+    PARTITION BY `enriched`.`company`, `enriched`.`title`
+    ORDER BY
+      `enriched`.`body_image_count` DESC,
+      CHAR_LENGTH(COALESCE(`enriched`.`body_html`, '')) DESC,
+      FIELD(`enriched`.`source_center`, 'highteen', 'kids', 'art') ASC,
+      `enriched`.`published_at` DESC,
+      `enriched`.`source_id` DESC
+  ) AS `row_rank`
+FROM `tmp_direct_castings_enriched` AS `enriched`;
+
+INSERT INTO `bnb_legacy_work`.`direct_castings` (
+  `source_db`,
+  `source_table`,
+  `source_id`,
+  `slug`,
+  `source_center`,
+  `centers`,
+  `company`,
+  `title`,
+  `year_label`,
+  `project_info`,
+  `body_html`,
+  `thumbnail_url`,
+  `thumbnail_path`,
+  `thumbnail_original_name`,
+  `published_at`,
+  `is_public`,
+  `created_at`,
+  `updated_at`,
+  `legacy_meta`
+)
+SELECT
+  `canonical`.`source_db`,
+  `canonical`.`source_table`,
+  `canonical`.`source_id`,
+  CONCAT('direct-casting-', `canonical`.`company`, '-', MD5(`canonical`.`title`)) AS `slug`,
+  `canonical`.`source_center`,
+  `groups`.`centers`,
+  `canonical`.`company`,
+  `canonical`.`title`,
+  `canonical`.`year_label`,
+  `canonical`.`project_info`,
+  `canonical`.`body_html`,
+  `canonical`.`thumbnail_url`,
+  `canonical`.`thumbnail_path`,
+  `canonical`.`thumbnail_original_name`,
+  `canonical`.`published_at`,
+  `groups`.`is_public`,
+  `canonical`.`created_at`,
+  CURRENT_TIMESTAMP,
+  JSON_OBJECT(
+    'sourceDb', `canonical`.`source_db`,
+    'sourceTable', `canonical`.`source_table`,
+    'sourceId', `canonical`.`source_id`,
+    'sourceCenter', `canonical`.`source_center`,
+    'centers', JSON_EXTRACT(`groups`.`centers`, '$'),
+    'sourceRecords', JSON_EXTRACT(`groups`.`source_records`, '$'),
+    'company', `canonical`.`company`,
+    'rawCategory', NULLIF(TRIM(`canonical`.`ca_name`), ''),
+    'wrHit', `canonical`.`wr_hit`,
+    'wrFile', `canonical`.`wr_file`,
+    'wrParent', `canonical`.`wr_parent`,
+    'wrNum', `canonical`.`wr_num`,
+    'wrOption', NULLIF(TRIM(`canonical`.`wr_option`), ''),
+    'public', NULLIF(TRIM(`canonical`.`public_value`), ''),
+    'rawFields', JSON_OBJECT(
+      'wr1', `canonical`.`wr_1`,
+      'wr2', `canonical`.`wr_2`,
+      'wr3', `canonical`.`wr_3`,
+      'wr4', `canonical`.`wr_4`,
+      'wr5', `canonical`.`wr_5`,
+      'wr6', `canonical`.`wr_6`,
+      'wr7', `canonical`.`wr_7`,
+      'wr8', `canonical`.`wr_8`,
+      'wr9', `canonical`.`wr_9`,
+      'wr10', `canonical`.`wr_10`
+    ),
+    'thumbnail', JSON_OBJECT(
+      'url', `canonical`.`thumbnail_url`,
+      'path', `canonical`.`thumbnail_path`,
+      'originalName', `canonical`.`thumbnail_original_name`,
+      'fileName', `canonical`.`thumbnail_file`,
+      'filesize', `canonical`.`thumbnail_filesize`
+    ),
+    'links', JSON_OBJECT(
+      'link1', NULLIF(TRIM(`canonical`.`wr_link1`), ''),
+      'link2', NULLIF(TRIM(`canonical`.`wr_link2`), ''),
+      'link1Hit', `canonical`.`wr_link1_hit`,
+      'link2Hit', `canonical`.`wr_link2_hit`
+    )
+  ) AS `legacy_meta`
+FROM `tmp_direct_castings_ranked` AS `canonical`
+JOIN (
+  SELECT
+    `company`,
+    `title`,
+    CONCAT(
+      '[',
+      GROUP_CONCAT(DISTINCT JSON_QUOTE(`source_center`) ORDER BY FIELD(`source_center`, 'art', 'kids', 'highteen') SEPARATOR ','),
+      ']'
+    ) AS `centers`,
+    MAX(`is_public`) AS `is_public`,
+    CONCAT(
+      '[',
+      GROUP_CONCAT(
+        JSON_OBJECT(
+          'sourceDb', `source_db`,
+          'sourceTable', `source_table`,
+          'sourceId', `source_id`,
+          'sourceCenter', `source_center`
+        )
+        ORDER BY FIELD(`source_center`, 'art', 'kids', 'highteen'), `source_db`, `source_table`, `source_id`
+        SEPARATOR ','
+      ),
+      ']'
+    ) AS `source_records`
+  FROM `tmp_direct_castings_enriched`
+  GROUP BY `company`, `title`
+) AS `groups`
+  ON `groups`.`company` = `canonical`.`company`
+  AND `groups`.`title` = `canonical`.`title`
+WHERE `canonical`.`row_rank` = 1
+ORDER BY `canonical`.`company`, `canonical`.`published_at` DESC, `canonical`.`source_id` DESC;

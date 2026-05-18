@@ -6,9 +6,9 @@ import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import {
   adminRow,
   adminTabs,
+  authorNameFromCenters,
   authorNameField,
   displayStatusOptions,
-  imagePathField,
   isGlobalAdminUser,
   publishedAtField,
   sidebarFields,
@@ -31,7 +31,31 @@ const sourceCenterOptions = [
   { label: '하이틴센터', value: 'highteen' },
 ]
 
+const directCastingCenterValues = new Set(sourceCenterOptions.map((option) => option.value))
+
 const nonExamAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return false
+  }
+
+  if (isGlobalAdminUser(req.user)) {
+    return true
+  }
+
+  const center = userCenterValue(req.user)
+
+  if (!center || center === 'exam') {
+    return false
+  }
+
+  return {
+    centers: {
+      contains: center,
+    },
+  }
+}
+
+const nonExamCreateAccess: Access = ({ req }) => {
   if (!req.user) {
     return false
   }
@@ -53,19 +77,51 @@ const isDirectCastingAdminMenuHidden = ({ user }: { user?: unknown }) => {
   return userCenterValue(user) === 'exam'
 }
 
-const setDirectCastingAuthorName: CollectionBeforeValidateHook = ({ data, req }) => {
+const setDirectCastingAuthorName: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
   if (!data) {
     return data
   }
 
-  if (req.user && !isGlobalAdminUser(req.user) && userCenterValue(req.user) === 'exam') {
+  const center = userCenterValue(req.user)
+
+  if (req.user && !isGlobalAdminUser(req.user) && center === 'exam') {
     throw new Error('입시센터 계정은 다이렉트캐스팅을 관리할 수 없습니다.')
   }
 
+  const originalCenters =
+    originalDoc && typeof originalDoc === 'object'
+      ? (originalDoc as { centers?: unknown }).centers
+      : undefined
+  const centers = normalizeDirectCastingCenters(
+    isGlobalAdminUser(req.user)
+      ? data.centers ?? originalCenters
+      : originalCenters ?? (center ? [center] : data.centers),
+  )
+
   return {
     ...data,
-    authorName: data.authorName ?? '배우앤배움 캐스팅/오디션',
+    centers,
+    authorName: data.authorName ?? authorNameFromCenters(centers),
   }
+}
+
+function normalizeDirectCastingCenters(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+  const centers = values
+    .map((item) => String(item ?? '').trim())
+    .filter(Boolean)
+
+  if (centers.length === 0) {
+    throw new Error('센터를 선택해야 합니다.')
+  }
+
+  const invalidCenter = centers.find((center) => !directCastingCenterValues.has(center))
+
+  if (invalidCenter) {
+    throw new Error(`다이렉트캐스팅에서 지원하지 않는 센터 값입니다: ${invalidCenter}`)
+  }
+
+  return Array.from(new Set(centers))
 }
 
 export const DirectCastings: CollectionConfig = {
@@ -75,7 +131,7 @@ export const DirectCastings: CollectionConfig = {
     singular: '다이렉트캐스팅',
   },
   access: {
-    create: nonExamAccess,
+    create: nonExamCreateAccess,
     delete: nonExamAccess,
     read: nonExamAccess,
     update: nonExamAccess,
@@ -84,7 +140,7 @@ export const DirectCastings: CollectionConfig = {
     defaultColumns: [
       'title',
       'company',
-      'sourceCenter',
+      'centers',
       'yearLabel',
       'displayStatus',
       'updatedAt',
@@ -115,13 +171,20 @@ export const DirectCastings: CollectionConfig = {
               label: '회사명',
               options: companyOptions,
               required: true,
+              admin: {
+                width: '50%',
+              },
             },
             {
-              name: 'sourceCenter',
+              name: 'centers',
               type: 'select',
-              label: '원본 센터',
+              label: '노출 센터',
+              hasMany: true,
               options: sourceCenterOptions,
               required: true,
+              admin: {
+                width: '50%',
+              },
             },
           ]),
           adminRow([
@@ -129,68 +192,43 @@ export const DirectCastings: CollectionConfig = {
               name: 'yearLabel',
               type: 'text',
               label: '연도',
+              admin: {
+                width: '50%',
+              },
             },
             {
               name: 'projectInfo',
               type: 'textarea',
               label: '작품 정보',
+              admin: {
+                width: '50%',
+              },
             },
           ]),
-          {
-            name: 'thumbnailMedia',
-            type: 'upload',
-            label: '대표 이미지 미디어',
-            relationTo: 'media',
-          },
-          imagePathField('thumbnailPath', '대표 이미지'),
+          adminRow([
+            {
+              name: 'thumbnailMedia',
+              type: 'upload',
+              label: '대표 이미지',
+              relationTo: 'media',
+              admin: {
+                width: '50%',
+              },
+            },
+          ]),
           {
             name: 'body',
             type: 'richText',
             editor: newsBodyEditor,
             label: '본문',
           },
-        ],
-      },
-      {
-        label: '연도별 이력',
-        fields: [
           {
-            name: 'workItems',
-            type: 'array',
-            label: '이력',
-            labels: {
-              plural: '이력',
-              singular: '이력',
-            },
+            name: 'bodyHtml',
+            type: 'textarea',
+            label: '레거시 본문 HTML',
             admin: {
-              components: {
-                RowLabel:
-                  '@/components/payload/DirectCastingWorkItemRowLabel#DirectCastingWorkItemRowLabel',
-              },
-              initCollapsed: true,
+              hidden: true,
             },
-            fields: [
-              adminRow([
-                {
-                  name: 'year',
-                  type: 'text',
-                  label: '연도',
-                  required: true,
-                  admin: {
-                    width: '25%',
-                  },
-                },
-                {
-                  name: 'content',
-                  type: 'textarea',
-                  label: '내용',
-                  required: true,
-                  admin: {
-                    width: '75%',
-                  },
-                },
-              ]),
-            ],
           },
         ],
       },
@@ -209,6 +247,23 @@ export const DirectCastings: CollectionConfig = {
     slugField({
       slugify: directCastingSlugify,
     }),
+    {
+      name: 'thumbnailPath',
+      type: 'text',
+      label: '대표 이미지 경로',
+      admin: {
+        hidden: true,
+      },
+    },
+    {
+      name: 'sourceCenter',
+      type: 'select',
+      label: '원본 센터',
+      options: sourceCenterOptions,
+      admin: {
+        hidden: true,
+      },
+    },
     {
       name: 'sourceDb',
       type: 'text',
