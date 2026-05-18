@@ -3,13 +3,21 @@
 import type { ChangeEvent } from 'react'
 import type { UIFieldClientComponent } from 'payload'
 
-import { useField } from '@payloadcms/ui'
+import { useField, useForm, useFormFields } from '@payloadcms/ui'
 import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 type BodyImage = {
   id?: string
   imagePath?: string | null
+}
+
+type FormFieldState = {
+  value?: unknown
+}
+
+type RowState = {
+  id?: string
 }
 
 const imageExtensions = new Set(['avif', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
@@ -93,27 +101,53 @@ function createRowId() {
   return globalThis.crypto?.randomUUID?.() ?? `body-image-${Date.now()}-${Math.random()}`
 }
 
-function normalizeBodyImages(value: unknown): BodyImage[] {
-  if (!Array.isArray(value)) {
-    return []
-  }
-
-  return value
-    .filter((item): item is BodyImage => typeof item === 'object' && item !== null)
-    .filter((item) => stringValue(item.imagePath))
-}
-
 export const StarCardBodyImagesField: UIFieldClientComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { disabled, setValue, value } = useField<BodyImage[]>({ path: 'bodyImages' })
+  const { disabled, path, rows = [] } = useField<number>({
+    hasRows: true,
+    path: 'bodyImages',
+  })
+  const { addFieldRow, moveFieldRow, removeFieldRow } = useForm()
   const [isProcessing, setIsProcessing] = useState(false)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'error' | 'info'>('info')
-  const rows = normalizeBodyImages(value)
+  const bodyImages = useFormFields(([fields]) =>
+    (rows as RowState[])
+      .map((row, index): BodyImage => {
+        const imagePathField = fields[`${path}.${index}.imagePath`] as FormFieldState | undefined
+        const idField = fields[`${path}.${index}.id`] as FormFieldState | undefined
+
+        return {
+          id: stringValue(idField?.value) || row.id,
+          imagePath: stringValue(imagePathField?.value),
+        }
+      })
+      .filter((row) => stringValue(row.imagePath)),
+  )
   const controlsDisabled = disabled || isProcessing
 
-  function updateRows(nextRows: BodyImage[]) {
-    setValue(nextRows)
+  function addImagePath(imagePath: string, rowIndex: number) {
+    const id = createRowId()
+
+    addFieldRow({
+      path,
+      rowIndex,
+      schemaPath: path,
+      subFieldState: {
+        id: {
+          initialValue: id,
+          passesCondition: true,
+          valid: true,
+          value: id,
+        },
+        imagePath: {
+          initialValue: undefined,
+          passesCondition: true,
+          valid: true,
+          value: imagePath,
+        },
+      },
+    })
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -136,13 +170,9 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
         uploadedPaths.push(await uploadFile(file))
       }
 
-      updateRows([
-        ...rows,
-        ...uploadedPaths.map((imagePath) => ({
-          id: createRowId(),
-          imagePath,
-        })),
-      ])
+      uploadedPaths.forEach((imagePath, offset) => {
+        addImagePath(imagePath, bodyImages.length + offset)
+      })
       setMessage(`${uploadedPaths.length}개 이미지가 추가되었습니다. 저장 버튼을 눌러 반영하세요.`)
     } catch (error) {
       setMessageType('error')
@@ -153,25 +183,24 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
   }
 
   function removeItem(index: number) {
-    updateRows(rows.filter((_, currentIndex) => currentIndex !== index))
+    removeFieldRow({
+      path,
+      rowIndex: index,
+    })
   }
 
   function moveItem(index: number, direction: -1 | 1) {
     const nextIndex = index + direction
 
-    if (nextIndex < 0 || nextIndex >= rows.length) {
+    if (nextIndex < 0 || nextIndex >= bodyImages.length) {
       return
     }
 
-    const nextRows = [...rows]
-    const [item] = nextRows.splice(index, 1)
-
-    if (!item) {
-      return
-    }
-
-    nextRows.splice(nextIndex, 0, item)
-    updateRows(nextRows)
+    moveFieldRow({
+      moveFromIndex: index,
+      moveToIndex: nextIndex,
+      path,
+    })
   }
 
   return (
@@ -244,7 +273,7 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
       </div>
 
       <div style={{ display: 'grid', gap: 'calc(var(--base) / 2)' }}>
-        {rows.length === 0 ? (
+        {bodyImages.length === 0 ? (
           <div
             style={{
               background: 'var(--theme-elevation-50)',
@@ -258,7 +287,7 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
             등록된 본문 이미지가 없습니다.
           </div>
         ) : null}
-        {rows.map((row, index) => {
+        {bodyImages.map((row, index) => {
           const imageSrc = getImageSrc(row.imagePath)
           const canPreview = imageSrc && isProbablyImage(imageSrc)
           const fileName = imageSrc ? getFileName(imageSrc) : getFileName(stringValue(row.imagePath))
@@ -362,9 +391,9 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
                 </button>
                 <button
                   aria-label="아래로 이동"
-                  disabled={controlsDisabled || index === rows.length - 1}
+                  disabled={controlsDisabled || index === bodyImages.length - 1}
                   onClick={() => moveItem(index, 1)}
-                  style={actionButtonStyle(controlsDisabled || index === rows.length - 1)}
+                  style={actionButtonStyle(controlsDisabled || index === bodyImages.length - 1)}
                   title="아래로 이동"
                   type="button"
                 >
