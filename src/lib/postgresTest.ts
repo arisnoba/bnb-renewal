@@ -384,7 +384,7 @@ function mapDocToRow(
       })
     case 'direct-castings':
       return baseRow(doc, {
-        imagePath: stringify(doc.thumbnailPath),
+        imagePath: mediaImagePath(doc.thumbnailMedia) || stringify(doc.thumbnailPath),
         meta1: stringify(doc.company),
         meta2: stringify(doc.sourceCenter),
         meta3: stringify(doc.publishedAt),

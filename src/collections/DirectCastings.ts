@@ -136,6 +136,12 @@ export const DirectCastings: CollectionConfig = {
               label: '작품 정보',
             },
           ]),
+          {
+            name: 'thumbnailMedia',
+            type: 'upload',
+            label: '대표 이미지 미디어',
+            relationTo: 'media',
+          },
           imagePathField('thumbnailPath', '대표 이미지'),
           {
             name: 'body',

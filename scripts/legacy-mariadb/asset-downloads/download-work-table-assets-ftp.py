@@ -568,6 +568,24 @@ WHERE 1 = 0
             ],
         ),
     ),
+    "direct-castings": CollectionConfig(
+        label="Direct Castings",
+        output_root="public/legacy/direct-castings",
+        sql=board_file_sql(
+            "direct_castings",
+            "direct_castings",
+            "direct_castings.title",
+            [
+                (
+                    "thumbnail",
+                    "direct_castings.source_db",
+                    "REPLACE(direct_castings.source_table, 'g5_write_', '')",
+                    "direct_castings.thumbnail_url",
+                    "'0'",
+                ),
+            ],
+        ),
+    ),
     "screen-appearances": CollectionConfig(
         label="Screen Appearances",
         output_root="public/legacy/screen-appearances",
