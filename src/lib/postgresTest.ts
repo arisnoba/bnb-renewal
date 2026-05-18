@@ -103,6 +103,13 @@ export const postgresTestCollections: PostgresTestCollection[] = [
     table: 'casting_appearances',
   },
   {
+    description: 'Payload direct-castings 컬렉션 검수',
+    href: '/test/postgres/direct-castings',
+    label: 'Direct Castings',
+    slug: 'direct-castings',
+    table: 'direct_castings',
+  },
+  {
     description: 'Payload casting-directors 컬렉션 검수',
     href: '/test/postgres/casting-directors',
     label: 'Casting Directors',
@@ -152,6 +159,7 @@ const sortMap: Record<string, string> = {
   'audition-schedules': '-scheduleStartDate',
   'casting-appearances': '-publishedAt',
   'casting-directors': 'personName',
+  'direct-castings': '-publishedAt',
   curriculums: 'title',
   'highteen-special-classes': '-publishedAt',
   'exam-passed-reviews': '-publishedAt',
@@ -219,6 +227,7 @@ function buildPublishedWhere(collectionSlug: string): Where | undefined {
       'audition-schedules',
       'casting-directors',
       'casting-appearances',
+      'direct-castings',
       'exam-passed-reviews',
       'exam-passed-videos',
       'exam-results',
@@ -370,6 +379,14 @@ function mapDocToRow(
         imagePath: castingAppearanceImagePath(doc),
         meta1: stringify(doc.centers),
         meta2: stringify(doc.castingStatus),
+        meta3: stringify(doc.publishedAt),
+        title: stringify(doc.title),
+      })
+    case 'direct-castings':
+      return baseRow(doc, {
+        imagePath: stringify(doc.thumbnailPath),
+        meta1: stringify(doc.company),
+        meta2: stringify(doc.sourceCenter),
         meta3: stringify(doc.publishedAt),
         title: stringify(doc.title),
       })

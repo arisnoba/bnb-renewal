@@ -58,6 +58,7 @@ import * as migration_20260513_190000_news_pre2020_draft from './20260513_190000
 import * as migration_20260514_150000_news_body_and_legacy_cleanup from './20260514_150000_news_body_and_legacy_cleanup'
 import * as migration_20260518_140000_highteen_special_classes from './20260518_140000_highteen_special_classes'
 import * as migration_20260518_143000_drop_highteen_special_class_view_count from './20260518_143000_drop_highteen_special_class_view_count'
+import * as migration_20260518_160000_direct_castings from './20260518_160000_direct_castings'
 
 export const migrations = [
   {
@@ -359,5 +360,10 @@ export const migrations = [
     up: migration_20260518_143000_drop_highteen_special_class_view_count.up,
     down: migration_20260518_143000_drop_highteen_special_class_view_count.down,
     name: '20260518_143000_drop_highteen_special_class_view_count',
+  },
+  {
+    up: migration_20260518_160000_direct_castings.up,
+    down: migration_20260518_160000_direct_castings.down,
+    name: '20260518_160000_direct_castings',
   },
 ]

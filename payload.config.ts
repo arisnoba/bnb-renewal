@@ -12,6 +12,7 @@ import { AuditionSchedules } from './src/collections/AuditionSchedules'
 import { CastingAppearances } from './src/collections/CastingAppearances'
 import { CastingDirectors } from './src/collections/CastingDirectors'
 import { Curriculums } from './src/collections/Curriculums'
+import { DirectCastings } from './src/collections/DirectCastings'
 import { ExamPassedReviews } from './src/collections/ExamPassedReviews'
 import { ExamPassedVideos } from './src/collections/ExamPassedVideos'
 import { ExamResults } from './src/collections/ExamResults'
@@ -81,6 +82,7 @@ export default buildConfig({
     ArtistPress,
     AuditionSchedules,
     CastingDirectors,
+    DirectCastings,
     CastingAppearances,
     ScreenAppearances,
     ExamPassedReviews,

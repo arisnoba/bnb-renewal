@@ -4,6 +4,7 @@ import test from "node:test";
 import type { CollectionConfig, Field, Tab } from "payload";
 
 import { CastingAppearances } from "./CastingAppearances";
+import { DirectCastings } from "./DirectCastings";
 import { ExamPassedReviews } from "./ExamPassedReviews";
 import { HighteenSpecialClasses } from "./HighteenSpecialClasses";
 import { Profiles } from "./Profiles";
@@ -109,6 +110,37 @@ test("highteen special class gallery images use source file row labels", () => {
     field.admin?.components?.RowLabel,
     "@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel",
   );
+});
+
+test("direct casting work items use year row labels", () => {
+  const field = getTabField(DirectCastings, "연도별 이력", "workItems");
+
+  assert.equal(field.type, "array");
+  assert.deepEqual(field.labels, {
+    plural: "이력",
+    singular: "이력",
+  });
+  assert.equal(field.admin?.initCollapsed, true);
+  assert.equal(
+    field.admin?.components?.RowLabel,
+    "@/components/payload/DirectCastingWorkItemRowLabel#DirectCastingWorkItemRowLabel",
+  );
+});
+
+test("direct casting menu is hidden for exam managers only", () => {
+  const hidden = DirectCastings.admin?.hidden;
+
+  assert.equal(typeof hidden, "function");
+
+  if (typeof hidden !== "function") {
+    return;
+  }
+
+  assert.equal(hidden({ user: { role: "manager", center: "exam" } } as never), true);
+  assert.equal(hidden({ user: { role: "manager", center: "art" } } as never), false);
+  assert.equal(hidden({ user: { role: "manager", center: "kids" } } as never), false);
+  assert.equal(hidden({ user: { role: "manager", center: "highteen" } } as never), false);
+  assert.equal(hidden({ user: { role: "admin", center: "exam" } } as never), false);
 });
 
 test("highteen special class menu is hidden outside highteen managers", () => {

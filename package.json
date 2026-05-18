@@ -37,6 +37,7 @@
     "legacy:work:audition-schedules": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-audition-schedules.sql",
     "legacy:work:castings": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-castings.sql",
     "legacy:work:casting-appearances": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-casting-appearances.sql",
+    "legacy:work:direct-castings": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-direct-castings.sql",
     "legacy:work:highteen-special-classes": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-highteen-special-classes.sql",
     "legacy:work:exam-results": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-exam-results.sql",
     "legacy:work:exam-passed-videos": "docker compose exec -T legacy-mariadb mariadb -uroot -proot < scripts/legacy-mariadb/build-work-exam-passed-videos.sql",

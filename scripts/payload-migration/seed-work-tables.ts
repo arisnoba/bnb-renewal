@@ -217,6 +217,42 @@ const configs: TableConfig[] = [
     },
   },
   {
+    collection: 'direct-castings',
+    table: 'direct_castings',
+    lookupWhere: sourceLookupWhere,
+    columns: [
+      'source_db',
+      'source_table',
+      'source_id',
+      'slug',
+      'source_center',
+      'company',
+      'title',
+      'year_label',
+      'project_info',
+      'body_html',
+      'thumbnail_path',
+      'published_at',
+      'created_at',
+      'is_public',
+      'legacy_meta',
+    ],
+    transform: (row) => ({
+      ...sourceDoc(row),
+      body: lexicalPlainTextFromHtml(row.body_html),
+      company: requiredText(row.company, 'direct_castings.company'),
+      displayStatus: displayStatusFromPublic(row.is_public),
+      legacyMeta: parseJsonValue(row.legacy_meta),
+      projectInfo: text(row.project_info),
+      sourceCenter: requiredText(row.source_center, 'direct_castings.source_center'),
+      ...legacyPublishedTimestamps(row),
+      thumbnailPath: text(row.thumbnail_path),
+      title: requiredText(row.title, 'direct_castings.title'),
+      workItems: parseDirectCastingWorkItems(row.body_html),
+      yearLabel: text(row.year_label),
+    }),
+  },
+  {
     collection: 'exam-passed-reviews',
     table: 'exam_passed_reviews',
     uniqueField: 'title',
@@ -735,6 +771,13 @@ function screenAppearanceLocalImagePath(row: WorkRow, fieldName: string, role: '
   }
 
   return `/legacy/screen-appearances/${text(row.source_db) || 'baewoo'}/new_drama/${number(row.source_id)}/${role}/${fileName}`
+}
+
+function parseDirectCastingWorkItems(value: unknown) {
+  return parseCastingDirectorCareerItems(value).map((item) => ({
+    content: item.content,
+    year: item.title,
+  }))
 }
 
 function legacyScreenAppearanceAirDate(value: unknown) {

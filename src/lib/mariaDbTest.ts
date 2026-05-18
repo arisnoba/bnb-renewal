@@ -310,6 +310,25 @@ export const mariaDbTestCollections = [
     `,
 	},
 	{
+		description: '캐스팅 회사별 다이렉트캐스팅 작품/이력 통합 결과',
+		href: '/test/mariadb/direct-castings',
+		label: 'Direct Castings',
+		slug: 'direct-castings',
+		table: 'direct_castings',
+		sql: `
+      SELECT
+        ${baseColumns},
+        COALESCE(title, '') AS title,
+        COALESCE(company, '') AS meta1,
+        COALESCE(source_center, '') AS meta2,
+        CAST(COALESCE(published_at, '') AS CHAR) AS meta3,
+        COALESCE(thumbnail_path, '') AS image_path
+      FROM bnb_legacy_work.direct_castings
+      ORDER BY published_at DESC, id DESC
+      LIMIT 100
+    `,
+	},
+	{
 		description: '캐스팅 담당자 통합 결과와 public 이미지',
 		href: '/test/mariadb/castings',
 		label: 'Castings',
