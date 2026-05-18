@@ -6,10 +6,12 @@ import type { CollectionConfig, Field, Tab } from "payload";
 import { CastingAppearances } from "./CastingAppearances";
 import { DirectCastings } from "./DirectCastings";
 import { ExamPassedReviews } from "./ExamPassedReviews";
+import { Histories } from "./Histories";
 import { HighteenSpecialClasses } from "./HighteenSpecialClasses";
 import { Profiles } from "./Profiles";
 
 type FieldWithName = Field & {
+  fields?: Field[];
   name: string;
   labels?: unknown;
   admin?: {
@@ -109,6 +111,35 @@ test("highteen special class gallery images use source file row labels", () => {
   assert.equal(
     field.admin?.components?.RowLabel,
     "@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel",
+  );
+});
+
+test("history months use month row labels", () => {
+  const field = getTopLevelField(Histories, "months");
+
+  assert.equal(field.type, "array");
+  assert.deepEqual(field.labels, {
+    plural: "월별 연혁",
+    singular: "월별 연혁",
+  });
+  assert.equal(field.admin?.initCollapsed, true);
+  assert.equal(
+    field.admin?.components?.RowLabel,
+    "@/components/payload/HistoryMonthRowLabel#HistoryMonthRowLabel",
+  );
+
+  const itemField = field.fields.find((item) => isNamedField(item, "items"));
+
+  assert.ok(itemField, "histories.months.items 필드가 있어야 합니다.");
+  assert.equal(itemField.type, "array");
+  assert.deepEqual(itemField.labels, {
+    plural: "항목",
+    singular: "항목",
+  });
+  assert.equal(itemField.admin?.initCollapsed, true);
+  assert.equal(
+    itemField.admin?.components?.RowLabel,
+    "@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel",
   );
 });
 

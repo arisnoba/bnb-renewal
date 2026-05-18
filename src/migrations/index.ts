@@ -70,6 +70,8 @@ import * as migration_20260518_211000_star_card_body_images from './20260518_211
 import * as migration_20260518_212000_drop_star_card_summary_and_body_image_order from './20260518_212000_drop_star_card_summary_and_body_image_order'
 import * as migration_20260518_213000_drop_star_card_body_image_source_file from './20260518_213000_drop_star_card_body_image_source_file'
 import * as migration_20260518_214000_histories from './20260518_214000_histories'
+import * as migration_20260518_215000_yearly_histories from './20260518_215000_yearly_histories'
+import * as migration_20260518_220000_drop_history_display_order from './20260518_220000_drop_history_display_order'
 
 export const migrations = [
   {
@@ -431,5 +433,15 @@ export const migrations = [
     up: migration_20260518_214000_histories.up,
     down: migration_20260518_214000_histories.down,
     name: '20260518_214000_histories',
+  },
+  {
+    up: migration_20260518_215000_yearly_histories.up,
+    down: migration_20260518_215000_yearly_histories.down,
+    name: '20260518_215000_yearly_histories',
+  },
+  {
+    up: migration_20260518_220000_drop_history_display_order.up,
+    down: migration_20260518_220000_drop_history_display_order.down,
+    name: '20260518_220000_drop_history_display_order',
   },
 ]

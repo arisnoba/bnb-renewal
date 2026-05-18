@@ -1,8 +1,24 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
 import { authenticated } from '../access/authenticated'
 import { anyone } from '../access/anyone'
-import { adminRow } from './shared'
+
+const normalizeHistory: CollectionBeforeValidateHook = ({ data }) => {
+  if (!data) {
+    return data
+  }
+
+  const year = Number(data.year)
+
+  if (!Number.isFinite(year)) {
+    return data
+  }
+
+  return {
+    ...data,
+    title: `${year}년`,
+  }
+}
 
 export const Histories: CollectionConfig = {
   slug: 'histories',
@@ -17,43 +33,77 @@ export const Histories: CollectionConfig = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['year', 'month', 'title', 'displayOrder', 'updatedAt'],
+    defaultColumns: ['title', 'year', 'updatedAt'],
     group: '회사정보',
     useAsTitle: 'title',
   },
-  defaultSort: 'displayOrder',
+  defaultSort: 'year',
+  hooks: {
+    beforeValidate: [normalizeHistory],
+  },
   fields: [
-    adminRow([
-      {
-        name: 'year',
-        type: 'number',
-        label: '연도',
-        required: true,
-        admin: {
-          width: '50%',
-        },
-      },
-      {
-        name: 'month',
-        type: 'number',
-        label: '월',
-        required: true,
-        admin: {
-          width: '50%',
-        },
-      },
-    ]),
     {
       name: 'title',
       type: 'text',
-      label: '내용',
+      label: '제목',
       required: true,
+      admin: {
+        readOnly: true,
+      },
     },
     {
-      name: 'displayOrder',
+      name: 'year',
       type: 'number',
-      label: '정렬',
-      defaultValue: 0,
+      label: '연도',
+      required: true,
+      unique: true,
+    },
+    {
+      name: 'months',
+      type: 'array',
+      label: '월별 연혁',
+      labels: {
+        plural: '월별 연혁',
+        singular: '월별 연혁',
+      },
+      admin: {
+        components: {
+          RowLabel: '@/components/payload/HistoryMonthRowLabel#HistoryMonthRowLabel',
+        },
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'month',
+          type: 'number',
+          label: '월',
+          required: true,
+        },
+        {
+          name: 'items',
+          type: 'array',
+          label: '항목',
+          labels: {
+            plural: '항목',
+            singular: '항목',
+          },
+          admin: {
+            components: {
+              RowLabel:
+                '@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel',
+            },
+            initCollapsed: true,
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              label: '내용',
+              required: true,
+            },
+          ],
+        },
+      ],
     },
   ],
 }

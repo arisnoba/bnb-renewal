@@ -1,3 +1,5 @@
+import { HistoryMonthItemRowLabel as HistoryMonthItemRowLabel_4e0cc1a03b1062528e5e10e749266102 } from '@/components/payload/HistoryMonthItemRowLabel'
+import { HistoryMonthRowLabel as HistoryMonthRowLabel_e8b54ef1d32045b98c739875fe8de3db } from '@/components/payload/HistoryMonthRowLabel'
 import { ImagePathField as ImagePathField_fcd3c3bfc986007a95eb590661ef5689 } from '@/components/payload/ImagePathField'
 import { TeacherAdditionalPhotosField as TeacherAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
 import { TeacherAdditionalPhotoHiddenField as TeacherAdditionalPhotoHiddenField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
@@ -62,6 +64,8 @@ import { CenterInfoRowLabel as CenterInfoRowLabel_1f6ff6ff633e3695d348f4f3c58f14
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
+  "@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel": HistoryMonthItemRowLabel_4e0cc1a03b1062528e5e10e749266102,
+  "@/components/payload/HistoryMonthRowLabel#HistoryMonthRowLabel": HistoryMonthRowLabel_e8b54ef1d32045b98c739875fe8de3db,
   "@/components/payload/ImagePathField#ImagePathField": ImagePathField_fcd3c3bfc986007a95eb590661ef5689,
   "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotosField": TeacherAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
   "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotoHiddenField": TeacherAdditionalPhotoHiddenField_92d5bd680f3dd09cb3cbebf273cd6ecc,
