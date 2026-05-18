@@ -22,3 +22,10 @@
 - 새 배열을 만들거나 기존 배열을 수정할 때는 관리자가 접힌 row만 보고도 항목을 구분할 수 있는 대표 텍스트 필드를 먼저 정하고, `admin.components.RowLabel` 또는 동등한 설정으로 그 값을 실제 row 제목에 연결한다.
 - `Actor 01`, `Item 01`처럼 Payload 기본 인덱스 라벨이 보이면 미완료 상태로 보고, 한국어 `labels`와 대표 필드 기반 `RowLabel`을 추가한다.
 - 대표 텍스트가 없는 배열은 가능한 한 `RowLabel` 컴포넌트나 동등한 관리자 표시 방식을 추가해 항목 식별이 되게 한다.
+
+## Payload media / R2 object key
+
+- 레거시 이미지를 Payload `media`로 생성하거나 R2에 올릴 때는 최종 R2 object key가 반드시 `/`로 구분된 폴더 구조를 가져야 한다.
+- `prefix`만 넣고 파일명을 `direct-castings-body-11-874bfd79b6-...jpg`처럼 평탄하게 만드는 방식은 불완전한 처리로 본다. 최종 key 샘플이 `media/direct-castings/body-images/{sourceDb}/{sourceTable}/{sourceId}/{role-or-index}/{filename}`처럼 보이는지 확인한다.
+- media 생성 스크립트를 작성하거나 수정할 때는 dry-run/write 결과에 `prefix`, `filename`, 최종 `objectKey` 또는 `prefix + filename` 샘플을 출력하고, 샘플 key에 `/` 구분이 남아 있는지 검증한다.
+- 원본 추적을 위해 원본 파일명은 보존하되, R2에서 관리하기 쉬운 폴더 구분은 object key에 반영한다. 같은 컬렉션 안에서도 대표 이미지, 본문 이미지, 갤러리, 로고는 서로 다른 경로 세그먼트를 사용한다.
