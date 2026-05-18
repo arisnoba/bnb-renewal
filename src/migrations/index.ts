@@ -56,6 +56,8 @@ import * as migration_20260512_191000_backfill_screen_appearance_air_dates from 
 import * as migration_20260513_171500_casting_appearance_legacy_cleanup from './20260513_171500_casting_appearance_legacy_cleanup'
 import * as migration_20260513_190000_news_pre2020_draft from './20260513_190000_news_pre2020_draft'
 import * as migration_20260514_150000_news_body_and_legacy_cleanup from './20260514_150000_news_body_and_legacy_cleanup'
+import * as migration_20260518_140000_highteen_special_classes from './20260518_140000_highteen_special_classes'
+import * as migration_20260518_143000_drop_highteen_special_class_view_count from './20260518_143000_drop_highteen_special_class_view_count'
 
 export const migrations = [
   {
@@ -347,5 +349,15 @@ export const migrations = [
     up: migration_20260514_150000_news_body_and_legacy_cleanup.up,
     down: migration_20260514_150000_news_body_and_legacy_cleanup.down,
     name: '20260514_150000_news_body_and_legacy_cleanup',
+  },
+  {
+    up: migration_20260518_140000_highteen_special_classes.up,
+    down: migration_20260518_140000_highteen_special_classes.down,
+    name: '20260518_140000_highteen_special_classes',
+  },
+  {
+    up: migration_20260518_143000_drop_highteen_special_class_view_count.up,
+    down: migration_20260518_143000_drop_highteen_special_class_view_count.down,
+    name: '20260518_143000_drop_highteen_special_class_view_count',
   },
 ]

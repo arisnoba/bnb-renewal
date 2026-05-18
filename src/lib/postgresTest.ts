@@ -54,6 +54,13 @@ export const postgresTestCollections: PostgresTestCollection[] = [
     table: 'curriculums',
   },
   {
+    description: 'Payload highteen-special-classes 컬렉션 검수',
+    href: '/test/postgres/highteen-special-classes',
+    label: 'Highteen Special Classes',
+    slug: 'highteen-special-classes',
+    table: 'highteen_special_classes',
+  },
+  {
     description: 'Payload agencies 컬렉션 검수',
     href: '/test/postgres/agencies',
     label: 'Agencies',
@@ -146,6 +153,7 @@ const sortMap: Record<string, string> = {
   'casting-appearances': '-publishedAt',
   'casting-directors': 'personName',
   curriculums: 'title',
+  'highteen-special-classes': '-publishedAt',
   'exam-passed-reviews': '-publishedAt',
   'exam-passed-videos': '-publishedAt',
   'exam-results': '-publishedAt',
@@ -214,6 +222,7 @@ function buildPublishedWhere(collectionSlug: string): Where | undefined {
       'exam-passed-reviews',
       'exam-passed-videos',
       'exam-results',
+      'highteen-special-classes',
       'news',
       'profiles',
       'screen-appearances',
@@ -288,6 +297,33 @@ function mapDocToRow(
         sourceDb: '',
         sourceId: '',
         sourceTable: '',
+      }
+    case 'highteen-special-classes':
+      return {
+        id: rowId(doc.id),
+        imagePath: stringify(doc.thumbnailPath),
+        meta1: stringify(doc.youtubeUrl),
+        meta2: stringify(doc.publishedAt),
+        meta3: stringify(doc.displayStatus),
+        relatedFiles: (Array.isArray(doc.galleryImages) ? doc.galleryImages : [])
+          .slice(0, 12)
+          .map((item) => {
+            const image = objectDoc(item)
+
+            return {
+              displayOrder: stringify(image.displayOrder),
+              imagePath: stringify(image.imagePath),
+              sourceDb: stringify(doc.sourceDb),
+              sourceId: stringify(doc.sourceId),
+              sourceTable: stringify(doc.sourceTable),
+              title: stringify(image.sourceFile),
+            }
+          }),
+        slug: stringify(doc.slug),
+        sourceDb: stringify(doc.sourceDb),
+        sourceId: stringify(doc.sourceId),
+        sourceTable: stringify(doc.sourceTable),
+        title: stringify(doc.title),
       }
     case 'agencies':
       return baseRow(doc, {

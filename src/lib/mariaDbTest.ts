@@ -141,6 +141,25 @@ export const mariaDbTestCollections = [
     `,
 	},
 	{
+		description: '하이틴센터 특강 원본 게시글',
+		href: '/test/mariadb/highteen-special-classes',
+		label: 'Highteen Special Classes',
+		slug: 'highteen-special-classes',
+		table: 'highteen_special_classes',
+		sql: `
+      SELECT
+        ${baseColumns},
+        COALESCE(title, '') AS title,
+        COALESCE(youtube_url, '') AS meta1,
+        COALESCE(published_at, '') AS meta2,
+        CASE WHEN is_public = 1 THEN 'published' ELSE 'archived' END AS meta3,
+        COALESCE(thumbnail_path, '') AS image_path
+      FROM bnb_legacy_work.highteen_special_classes
+      ORDER BY published_at DESC, id DESC
+      LIMIT 100
+    `,
+	},
+	{
 		description: '에이전시 통합 결과',
 		href: '/test/mariadb/agencies',
 		label: 'Agencies',

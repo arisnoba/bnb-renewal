@@ -528,6 +528,38 @@ const configs: TableConfig[] = [
       title: text(row.subject) ?? text(row.category) ?? '커리큘럼',
     }),
   },
+  {
+    collection: 'highteen-special-classes',
+    table: 'highteen_special_classes',
+    lookupWhere: sourceLookupWhere,
+    columns: [
+      'source_db',
+      'source_table',
+      'source_id',
+      'slug',
+      'title',
+      'body_html',
+      'youtube_url',
+      'thumbnail_path',
+      'gallery_images',
+      'published_at',
+      'created_at',
+      'is_public',
+      'legacy_meta',
+    ],
+    transform: (row) => ({
+      ...sourceDoc(row),
+      body: lexicalPlainTextFromHtml(row.body_html),
+      centers: ['highteen'],
+      displayStatus: displayStatusFromPublic(row.is_public),
+      galleryImages: parseHighteenSpecialClassGalleryImages(row.gallery_images),
+      legacyMeta: parseJsonValue(row.legacy_meta),
+      ...legacyPublishedTimestamps(row),
+      thumbnailPath: text(row.thumbnail_path),
+      title: requiredText(row.title, 'highteen_special_classes.title'),
+      youtubeUrl: text(row.youtube_url),
+    }),
+  },
 ]
 
 async function main() {
@@ -1627,6 +1659,17 @@ function buildCurriculumLessons(titleRaw: unknown, contentRaw: unknown) {
   }
 
   return lessons
+}
+
+function parseHighteenSpecialClassGalleryImages(value: unknown) {
+  return parseJsonArray(value)
+    .map((item) => objectValue(item))
+    .filter((item): item is Record<string, unknown> => Boolean(item))
+    .map((item) => ({
+      displayOrder: number(item.displayOrder),
+      imagePath: text(item.imagePath),
+      sourceFile: requiredText(item.sourceFile, 'highteen_special_classes.gallery_images.sourceFile'),
+    }))
 }
 
 function curriculumClassName(value: unknown) {

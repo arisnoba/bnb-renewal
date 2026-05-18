@@ -29,6 +29,7 @@ import { Footer } from './src/Footer/config'
 import { Header } from './src/Header/config'
 import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
+import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -73,6 +74,7 @@ export default buildConfig({
     Media,
     Teachers,
     Curriculums,
+    HighteenSpecialClasses,
     News,
     Profiles,
     Agencies,

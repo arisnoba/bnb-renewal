@@ -5,6 +5,7 @@ import type { CollectionConfig, Field, Tab } from "payload";
 
 import { CastingAppearances } from "./CastingAppearances";
 import { ExamPassedReviews } from "./ExamPassedReviews";
+import { HighteenSpecialClasses } from "./HighteenSpecialClasses";
 import { Profiles } from "./Profiles";
 
 type FieldWithName = Field & {
@@ -93,4 +94,33 @@ test("exam passed review interviews use question row labels", () => {
     field.admin?.components?.RowLabel,
     "@/components/payload/ExamPassedReviewInterviewRowLabel#ExamPassedReviewInterviewRowLabel",
   );
+});
+
+test("highteen special class gallery images use source file row labels", () => {
+  const field = getTabField(HighteenSpecialClasses, "이미지", "galleryImages");
+
+  assert.equal(field.type, "array");
+  assert.deepEqual(field.labels, {
+    plural: "첨부 이미지",
+    singular: "첨부 이미지",
+  });
+  assert.equal(field.admin?.initCollapsed, true);
+  assert.equal(
+    field.admin?.components?.RowLabel,
+    "@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel",
+  );
+});
+
+test("highteen special class menu is hidden outside highteen managers", () => {
+  const hidden = HighteenSpecialClasses.admin?.hidden;
+
+  assert.equal(typeof hidden, "function");
+
+  if (typeof hidden !== "function") {
+    return;
+  }
+
+  assert.equal(hidden({ user: { role: "manager", center: "art" } } as never), true);
+  assert.equal(hidden({ user: { role: "manager", center: "highteen" } } as never), false);
+  assert.equal(hidden({ user: { role: "admin", center: "art" } } as never), false);
 });

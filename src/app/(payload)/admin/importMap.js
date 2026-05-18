@@ -27,6 +27,7 @@ import { TeacherRepresentativeWorkRowLabel as TeacherRepresentativeWorkRowLabel_
 import { CentersField as CentersField_32f6973a336e54b2fbe5bbbe92a20938 } from '@/components/payload/CentersField'
 import { CurriculumEducationDaysField as CurriculumEducationDaysField_d209715e5564662e373d7df899295fcb } from '@/components/payload/CurriculumEducationDaysField'
 import { CurriculumLessonRowLabel as CurriculumLessonRowLabel_e176a12055efebae7761f51d1061f53e } from '@/components/payload/CurriculumLessonRowLabel'
+import { YouTubePreviewField as YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d } from '@/components/payload/YouTubePreviewField'
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -39,6 +40,7 @@ import { InlineCodeFeatureClient as InlineCodeFeatureClient_e70f5e05f09f93e00b99
 import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { HighteenSpecialClassGalleryImageRowLabel as HighteenSpecialClassGalleryImageRowLabel_5663b03b9a54bf4afba9eb00b0bda3bb } from '@/components/payload/HighteenSpecialClassGalleryImageRowLabel'
 import { ProfileNameFields as ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb } from '@/components/payload/ProfileNameFields'
 import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de61 } from '@/components/payload/ProfileFilterField'
 import { ProfileAdditionalPhotosField as ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
@@ -50,7 +52,6 @@ import { CastingAppearanceCastMemberRowLabel as CastingAppearanceCastMemberRowLa
 import { ScreenAppearanceCareerRowLabel as ScreenAppearanceCareerRowLabel_7178f3eed2c874a197e506d98884ce36 } from '@/components/payload/ScreenAppearanceCareerRowLabel'
 import { ScreenAppearanceBodyImageRowLabel as ScreenAppearanceBodyImageRowLabel_0f979d8e6ff8830b19397b386d46f9f1 } from '@/components/payload/ScreenAppearanceBodyImageRowLabel'
 import { ExamPassedReviewInterviewRowLabel as ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f } from '@/components/payload/ExamPassedReviewInterviewRowLabel'
-import { YouTubePreviewField as YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d } from '@/components/payload/YouTubePreviewField'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
 import { RowLabel as RowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
@@ -87,6 +88,7 @@ export const importMap = {
   "@/components/payload/CentersField#CentersField": CentersField_32f6973a336e54b2fbe5bbbe92a20938,
   "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysField": CurriculumEducationDaysField_d209715e5564662e373d7df899295fcb,
   "@/components/payload/CurriculumLessonRowLabel#CurriculumLessonRowLabel": CurriculumLessonRowLabel_e176a12055efebae7761f51d1061f53e,
+  "@/components/payload/YouTubePreviewField#YouTubePreviewField": YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d,
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -99,6 +101,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel": HighteenSpecialClassGalleryImageRowLabel_5663b03b9a54bf4afba9eb00b0bda3bb,
   "@/components/payload/ProfileNameFields#ProfileNameFields": ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb,
   "@/components/payload/ProfileFilterField#ProfileFilterField": ProfileFilterField_0c27d6f1f63313f291c972be4860de61,
   "@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField": ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
@@ -110,7 +113,6 @@ export const importMap = {
   "@/components/payload/ScreenAppearanceCareerRowLabel#ScreenAppearanceCareerRowLabel": ScreenAppearanceCareerRowLabel_7178f3eed2c874a197e506d98884ce36,
   "@/components/payload/ScreenAppearanceBodyImageRowLabel#ScreenAppearanceBodyImageRowLabel": ScreenAppearanceBodyImageRowLabel_0f979d8e6ff8830b19397b386d46f9f1,
   "@/components/payload/ExamPassedReviewInterviewRowLabel#ExamPassedReviewInterviewRowLabel": ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f,
-  "@/components/payload/YouTubePreviewField#YouTubePreviewField": YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
   "@/Footer/RowLabel#RowLabel": RowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
