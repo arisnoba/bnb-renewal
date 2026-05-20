@@ -60,7 +60,6 @@ const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  folders: true,
   access: {
     create: authenticated,
     delete: authenticated,
