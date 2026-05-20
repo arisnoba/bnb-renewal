@@ -63,7 +63,7 @@ export const ArtistPress: CollectionConfig = {
       "publishedAt",
       "updatedAt",
     ],
-    group: "매니지먼트",
+    group: "아티스트",
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",

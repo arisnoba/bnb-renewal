@@ -122,7 +122,7 @@ export const Profiles: CollectionConfig = {
 	access: centerScopedCollectionAccess,
 	admin: {
 		defaultColumns: ['name', 'centers', 'authorName', 'filter', 'publishedAt', 'updatedAt'],
-		group: '매니지먼트',
+		group: '아티스트',
 		useAsTitle: 'name',
 	},
 	defaultSort: '-publishedAt',
