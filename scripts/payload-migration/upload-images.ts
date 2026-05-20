@@ -2,14 +2,25 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { uploadR2Object } from '../../src/lib/r2'
+import {
+  buildR2MediaObjectKey,
+  buildCompactR2MediaFilename,
+  getR2MediaPrefix,
+  isR2MediaRole,
+  listR2MediaRoles,
+  type R2MediaRole,
+} from '../../src/lib/r2ObjectKeys'
 import { resolveProjectPath, writeJsonFile } from './runtime'
 
 type Options = {
   dryRun: boolean
   inputPath: string
   limit: 'all' | number
+  listMediaRoles: boolean
+  mediaRole?: R2MediaRole
   outputPath: string
-  prefix: string
+  prefix?: string
+  sourceId?: string
 }
 
 type ScanFile = {
@@ -44,6 +55,7 @@ type UploadSource = {
   localPath?: string
   normalizedUrl: string
   pathnameSource: string
+  sourceId?: number | string
   sourceUrl: string
   title?: string
 }
@@ -52,9 +64,11 @@ type UploadedEntry = {
   bytes?: number
   contentType?: string
   error?: string
+  mediaRole?: R2MediaRole
   normalizedUrl: string
   objectKey?: string
   pathname: string
+  prefix: string
   publicUrl?: string
   sourceUrl: string
   status: 'dry-run' | 'failed' | 'uploaded'
@@ -64,18 +78,38 @@ type UploadedEntry = {
 async function main() {
   const options = parseArgs(process.argv.slice(2))
 
+  if (options.listMediaRoles) {
+    console.log(JSON.stringify({ roles: listR2MediaRoles() }, null, 2))
+    return
+  }
+
+  const prefix = resolveUploadPrefix(options)
   const scanFile = await readScanFile(options.inputPath)
   const uploadSources = toUploadSources(scanFile)
   const urls = options.limit === 'all' ? uploadSources : uploadSources.slice(0, options.limit)
   const entries: UploadedEntry[] = []
 
   for (const item of urls) {
-    const pathname = buildObjectKey(options.prefix, item.pathnameSource)
+    const pathname = buildR2MediaObjectKey({
+      filename:
+        options.mediaRole && (options.sourceId ?? item.sourceId)
+          ? buildCompactR2MediaFilename({
+              filename: item.pathnameSource,
+              role: options.mediaRole,
+              sourceId: options.sourceId ?? item.sourceId ?? 'unknown',
+            })
+          : undefined,
+      prefix,
+      sourceId: options.sourceId ?? item.sourceId,
+      sourcePath: item.pathnameSource,
+    })
 
     if (options.dryRun) {
       entries.push({
+        mediaRole: options.mediaRole,
         normalizedUrl: item.normalizedUrl,
         pathname,
+        prefix,
         sourceUrl: item.sourceUrl,
         status: 'dry-run',
         title: item.title,
@@ -97,9 +131,11 @@ async function main() {
       entries.push({
         bytes: image.bytes,
         contentType: image.contentType,
+        mediaRole: options.mediaRole,
         normalizedUrl: item.normalizedUrl,
         objectKey: uploaded.objectKey,
         pathname,
+        prefix,
         publicUrl: uploaded.publicUrl,
         sourceUrl: item.sourceUrl,
         status: 'uploaded',
@@ -108,8 +144,10 @@ async function main() {
     } catch (error) {
       entries.push({
         error: error instanceof Error ? error.message : String(error),
+        mediaRole: options.mediaRole,
         normalizedUrl: item.normalizedUrl,
         pathname,
+        prefix,
         sourceUrl: item.sourceUrl,
         status: 'failed',
         title: item.title,
@@ -120,11 +158,16 @@ async function main() {
   const uploaded = entries.filter((entry) => entry.status === 'uploaded').length
   const failed = entries.filter((entry) => entry.status === 'failed').length
 
-  await writeJsonFile(resolveProjectPath(options.outputPath), {
+  await writeJsonFile(resolvePathArg(options.outputPath), {
     entries,
     generatedAt: new Date().toISOString(),
     inputPath: options.inputPath,
-    prefix: options.prefix,
+    mediaRole: options.mediaRole,
+    objectKeySamples: entries
+      .map((entry) => entry.objectKey ?? entry.pathname)
+      .filter(Boolean)
+      .slice(0, 5),
+    prefix,
     totals: {
       failed,
       uploaded,
@@ -136,7 +179,13 @@ async function main() {
     JSON.stringify(
       {
         failed,
+        mediaRole: options.mediaRole,
+        objectKeySamples: entries
+          .map((entry) => entry.objectKey ?? entry.pathname)
+          .filter(Boolean)
+          .slice(0, 5),
         outputPath: options.outputPath,
+        prefix,
         uploaded,
         urls: entries.length,
       },
@@ -150,8 +199,11 @@ function parseArgs(args: string[]): Options {
   let dryRun = false
   let inputPath = ''
   let limit: Options['limit'] = 'all'
+  let listMediaRoles = false
+  let mediaRole: R2MediaRole | undefined
   let outputPath = ''
-  let prefix = 'directings/sample'
+  let prefix: string | undefined
+  let sourceId: string | undefined
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
@@ -161,8 +213,29 @@ function parseArgs(args: string[]): Options {
       continue
     }
 
+    if (arg === '--list-media-roles') {
+      listMediaRoles = true
+      continue
+    }
+
     if (arg === '--input') {
       inputPath = readRequiredValue(args, index, '--input')
+      index += 1
+      continue
+    }
+
+    if (arg === '--media-role') {
+      const value = readRequiredValue(args, index, '--media-role')
+
+      if (!isR2MediaRole(value)) {
+        throw new Error(
+          `알 수 없는 --media-role 값입니다: ${value}\n허용 값: ${listR2MediaRoles()
+            .map((item) => item.role)
+            .join(', ')}`,
+        )
+      }
+
+      mediaRole = value
       index += 1
       continue
     }
@@ -175,6 +248,12 @@ function parseArgs(args: string[]): Options {
 
     if (arg === '--prefix') {
       prefix = readRequiredValue(args, index, '--prefix').replace(/^\/+|\/+$/g, '')
+      index += 1
+      continue
+    }
+
+    if (arg === '--source-id') {
+      sourceId = readRequiredValue(args, index, '--source-id')
       index += 1
       continue
     }
@@ -199,6 +278,19 @@ function parseArgs(args: string[]): Options {
     }
   }
 
+  if (listMediaRoles) {
+    return {
+      dryRun,
+      inputPath,
+      limit,
+      listMediaRoles,
+      mediaRole,
+      outputPath,
+      prefix,
+      sourceId,
+    }
+  }
+
   if (!inputPath) {
     throw new Error('`--input` 값이 필요합니다.')
   }
@@ -207,7 +299,36 @@ function parseArgs(args: string[]): Options {
     throw new Error('`--output` 값이 필요합니다.')
   }
 
-  return { dryRun, inputPath, limit, outputPath, prefix }
+  if (mediaRole && prefix) {
+    throw new Error('`--media-role` 과 `--prefix` 는 함께 사용할 수 없습니다.')
+  }
+
+  if (!mediaRole && !prefix) {
+    throw new Error('`--media-role` 또는 `--prefix` 값이 필요합니다.')
+  }
+
+  return {
+    dryRun,
+    inputPath,
+    limit,
+    listMediaRoles,
+    mediaRole,
+    outputPath,
+    prefix,
+    sourceId,
+  }
+}
+
+function resolveUploadPrefix(options: Options) {
+  if (options.mediaRole) {
+    return getR2MediaPrefix(options.mediaRole)
+  }
+
+  if (options.prefix) {
+    return options.prefix
+  }
+
+  throw new Error('`--media-role` 또는 `--prefix` 값이 필요합니다.')
 }
 
 function readRequiredValue(args: string[], index: number, name: string) {
@@ -221,7 +342,7 @@ function readRequiredValue(args: string[], index: number, name: string) {
 }
 
 async function readScanFile(inputPath: string): Promise<ScanFile> {
-  const raw = await fs.readFile(resolveProjectPath(inputPath), 'utf8')
+  const raw = await fs.readFile(resolvePathArg(inputPath), 'utf8')
   const parsed = JSON.parse(raw) as ScanFile
 
   if (!Array.isArray(parsed.uniqueUrls) && !Array.isArray(parsed.entries) && !Array.isArray(parsed.results)) {
@@ -231,11 +352,16 @@ async function readScanFile(inputPath: string): Promise<ScanFile> {
   return parsed
 }
 
+function resolvePathArg(filePath: string) {
+  return path.isAbsolute(filePath) ? filePath : resolveProjectPath(filePath)
+}
+
 function toUploadSources(input: ScanFile): UploadSource[] {
   if (Array.isArray(input.uniqueUrls)) {
     return input.uniqueUrls.map((item) => ({
       normalizedUrl: item.normalizedUrl,
       pathnameSource: item.normalizedUrl,
+      sourceId: item.samples?.[0]?.id,
       sourceUrl: item.url,
       title: item.samples?.[0]?.title,
     }))
@@ -250,14 +376,6 @@ function toUploadSources(input: ScanFile): UploadSource[] {
       sourceUrl: String(entry.sourcePath ?? entry.normalizedUrl),
       title: entry.title,
     }))
-}
-
-function buildObjectKey(prefix: string, source: string) {
-  const sourcePath = /^https?:\/\//i.test(source)
-    ? new URL(source).pathname.replace(/^\/+/, '')
-    : source.replace(/^\/+/, '')
-
-  return path.posix.join(prefix, sourcePath)
 }
 
 async function fetchImage(sourceUrl: string, normalizedUrl: string) {

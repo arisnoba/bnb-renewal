@@ -68,6 +68,7 @@
     "payload:legacy:replace-artist-press-body-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/replace-artist-press-body-image-paths.ts",
     "payload:legacy:link-exam-school-logo-media": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-exam-school-logo-media.ts",
     "payload:legacy:upload-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/upload-images.ts",
+    "payload:legacy:upload-images:r2": "node --env-file=.env.local --import tsx scripts/payload-migration/upload-images.ts",
     "payload:legacy:replace-image-paths": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/replace-image-paths.ts",
     "legacy:assets:teachers:manifest": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/export-teacher-image-manifest.ts",
     "legacy:assets:teachers:dry-run": "python3 scripts/legacy-mariadb/asset-downloads/download-teacher-images-ftp.py --dry-run",
