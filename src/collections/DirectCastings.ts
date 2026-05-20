@@ -222,14 +222,6 @@ export const DirectCastings: CollectionConfig = {
             editor: newsBodyEditor,
             label: '본문',
           },
-          {
-            name: 'bodyHtml',
-            type: 'textarea',
-            label: '레거시 본문 HTML',
-            admin: {
-              hidden: true,
-            },
-          },
         ],
       },
     ]),
@@ -247,54 +239,5 @@ export const DirectCastings: CollectionConfig = {
     slugField({
       slugify: directCastingSlugify,
     }),
-    {
-      name: 'thumbnailPath',
-      type: 'text',
-      label: '대표 이미지 경로',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceCenter',
-      type: 'select',
-      label: '원본 센터',
-      options: sourceCenterOptions,
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceDb',
-      type: 'text',
-      label: '원본 DB',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceTable',
-      type: 'text',
-      label: '원본 테이블',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceId',
-      type: 'number',
-      label: '원본 ID',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'legacyMeta',
-      type: 'json',
-      label: '레거시 메타',
-      admin: {
-        hidden: true,
-      },
-    },
   ],
 }

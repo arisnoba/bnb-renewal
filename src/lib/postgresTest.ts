@@ -319,7 +319,7 @@ function mapDocToRow(
     case 'highteen-special-classes':
       return {
         id: rowId(doc.id),
-        imagePath: stringify(doc.thumbnailPath),
+        imagePath: mediaImagePath(doc.thumbnailMedia),
         meta1: stringify(doc.youtubeUrl),
         meta2: stringify(doc.publishedAt),
         meta3: stringify(doc.displayStatus),
@@ -330,17 +330,17 @@ function mapDocToRow(
 
             return {
               displayOrder: stringify(image.displayOrder),
-              imagePath: stringify(image.imagePath),
-              sourceDb: stringify(doc.sourceDb),
-              sourceId: stringify(doc.sourceId),
-              sourceTable: stringify(doc.sourceTable),
+              imagePath: mediaImagePath(image.imageMedia),
+              sourceDb: '',
+              sourceId: '',
+              sourceTable: '',
               title: stringify(image.sourceFile),
             }
           }),
         slug: stringify(doc.slug),
-        sourceDb: stringify(doc.sourceDb),
-        sourceId: stringify(doc.sourceId),
-        sourceTable: stringify(doc.sourceTable),
+        sourceDb: '',
+        sourceId: '',
+        sourceTable: '',
         title: stringify(doc.title),
       }
     case 'agencies':
@@ -393,7 +393,7 @@ function mapDocToRow(
       })
     case 'direct-castings':
       return baseRow(doc, {
-        imagePath: mediaImagePath(doc.thumbnailMedia) || stringify(doc.thumbnailPath),
+        imagePath: mediaImagePath(doc.thumbnailMedia),
         meta1: stringify(doc.company),
         meta2: stringify(doc.centers),
         meta3: stringify(doc.publishedAt),

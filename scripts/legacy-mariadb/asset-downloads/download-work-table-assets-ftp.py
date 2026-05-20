@@ -813,6 +813,52 @@ WHERE NULLIF(TRIM(COALESCE(thumbnail_path, thumbnail_url, '')), '') IS NOT NULL
 ORDER BY id
 """,
     ),
+    "highteen-special-classes": CollectionConfig(
+        label="Highteen Special Classes",
+        output_root="public/legacy/highteen-special-classes",
+        sql="""
+SELECT
+  CAST(id AS CHAR) AS work_id,
+  CONVERT(source_db USING utf8mb4) COLLATE utf8mb4_unicode_ci AS source_db,
+  CONVERT(source_table USING utf8mb4) COLLATE utf8mb4_unicode_ci AS source_table,
+  CAST(source_id AS CHAR) AS source_id,
+  CONVERT(slug USING utf8mb4) COLLATE utf8mb4_unicode_ci AS slug,
+  CONVERT(title USING utf8mb4) COLLATE utf8mb4_unicode_ci AS title,
+  _utf8mb4'thumbnail' COLLATE utf8mb4_unicode_ci AS asset_role,
+  CONVERT(REPLACE(source_table, 'g5_write_', '') USING utf8mb4) COLLATE utf8mb4_unicode_ci AS bo_table,
+  _utf8mb4'0' COLLATE utf8mb4_unicode_ci AS file_no,
+  _utf8mb4'' COLLATE utf8mb4_unicode_ci AS original_name,
+  CONVERT(SUBSTRING_INDEX(thumbnail_path, '/', -1) USING utf8mb4) COLLATE utf8mb4_unicode_ci AS path_or_url,
+  _utf8mb4'0' COLLATE utf8mb4_unicode_ci AS bytes_in_db
+FROM bnb_legacy_work.highteen_special_classes
+WHERE NULLIF(TRIM(thumbnail_path), '') IS NOT NULL
+UNION ALL
+SELECT
+  CAST(classes.id AS CHAR) AS work_id,
+  CONVERT(classes.source_db USING utf8mb4) COLLATE utf8mb4_unicode_ci AS source_db,
+  CONVERT(classes.source_table USING utf8mb4) COLLATE utf8mb4_unicode_ci AS source_table,
+  CAST(classes.source_id AS CHAR) AS source_id,
+  CONVERT(classes.slug USING utf8mb4) COLLATE utf8mb4_unicode_ci AS slug,
+  CONVERT(classes.title USING utf8mb4) COLLATE utf8mb4_unicode_ci AS title,
+  _utf8mb4'gallery' COLLATE utf8mb4_unicode_ci AS asset_role,
+  CONVERT(REPLACE(classes.source_table, 'g5_write_', '') USING utf8mb4) COLLATE utf8mb4_unicode_ci AS bo_table,
+  CAST(gallery.ord AS CHAR) AS file_no,
+  CONVERT(COALESCE(gallery.source_file, '') USING utf8mb4) COLLATE utf8mb4_unicode_ci AS original_name,
+  CONVERT(SUBSTRING_INDEX(gallery.image_path, '/', -1) USING utf8mb4) COLLATE utf8mb4_unicode_ci AS path_or_url,
+  _utf8mb4'0' COLLATE utf8mb4_unicode_ci AS bytes_in_db
+FROM bnb_legacy_work.highteen_special_classes AS classes
+JOIN JSON_TABLE(
+  classes.gallery_images,
+  '$[*]' COLUMNS (
+    ord FOR ORDINALITY,
+    source_file varchar(255) PATH '$.sourceFile',
+    image_path varchar(1024) PATH '$.imagePath'
+  )
+) AS gallery
+WHERE NULLIF(TRIM(gallery.image_path), '') IS NOT NULL
+ORDER BY work_id, asset_role, file_no
+""",
+    ),
     "news": CollectionConfig(
         label="News",
         output_root="public/legacy/news",

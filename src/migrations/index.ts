@@ -72,6 +72,9 @@ import * as migration_20260518_213000_drop_star_card_body_image_source_file from
 import * as migration_20260518_214000_histories from './20260518_214000_histories'
 import * as migration_20260518_215000_yearly_histories from './20260518_215000_yearly_histories'
 import * as migration_20260518_220000_drop_history_display_order from './20260518_220000_drop_history_display_order'
+import * as migration_20260520_120000_drop_direct_casting_legacy_fields from './20260520_120000_drop_direct_casting_legacy_fields'
+import * as migration_20260520_121000_highteen_special_class_media_fields from './20260520_121000_highteen_special_class_media_fields'
+import * as migration_20260520_122000_drop_highteen_special_class_legacy_fields from './20260520_122000_drop_highteen_special_class_legacy_fields'
 
 export const migrations = [
   {
@@ -443,5 +446,20 @@ export const migrations = [
     up: migration_20260518_220000_drop_history_display_order.up,
     down: migration_20260518_220000_drop_history_display_order.down,
     name: '20260518_220000_drop_history_display_order',
+  },
+  {
+    up: migration_20260520_120000_drop_direct_casting_legacy_fields.up,
+    down: migration_20260520_120000_drop_direct_casting_legacy_fields.down,
+    name: '20260520_120000_drop_direct_casting_legacy_fields',
+  },
+  {
+    up: migration_20260520_121000_highteen_special_class_media_fields.up,
+    down: migration_20260520_121000_highteen_special_class_media_fields.down,
+    name: '20260520_121000_highteen_special_class_media_fields',
+  },
+  {
+    up: migration_20260520_122000_drop_highteen_special_class_legacy_fields.up,
+    down: migration_20260520_122000_drop_highteen_special_class_legacy_fields.down,
+    name: '20260520_122000_drop_highteen_special_class_legacy_fields',
   },
 ]

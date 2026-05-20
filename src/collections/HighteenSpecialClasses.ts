@@ -10,7 +10,6 @@ import {
   authorNameFromCenters,
   centerOptions,
   displayStatusOptions,
-  imagePathField,
   isGlobalAdminUser,
   publishedAtField,
   sidebarFields,
@@ -116,7 +115,12 @@ export const HighteenSpecialClasses: CollectionConfig = {
       {
         label: '이미지',
         fields: [
-          imagePathField('thumbnailPath', '대표 이미지'),
+          {
+            name: 'thumbnailMedia',
+            type: 'upload',
+            label: '대표 이미지',
+            relationTo: 'media',
+          },
           {
             name: 'galleryImages',
             type: 'array',
@@ -139,7 +143,12 @@ export const HighteenSpecialClasses: CollectionConfig = {
                 label: '원본 파일명',
                 required: true,
               },
-              imagePathField('imagePath', '이미지 경로'),
+              {
+                name: 'imageMedia',
+                type: 'upload',
+                label: '이미지',
+                relationTo: 'media',
+              },
               {
                 name: 'displayOrder',
                 type: 'number',
@@ -177,37 +186,5 @@ export const HighteenSpecialClasses: CollectionConfig = {
     slugField({
       slugify: highteenSpecialClassSlugify,
     }),
-    {
-      name: 'sourceDb',
-      type: 'text',
-      label: '원본 DB',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceTable',
-      type: 'text',
-      label: '원본 테이블',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceId',
-      type: 'number',
-      label: '원본 ID',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'legacyMeta',
-      type: 'json',
-      label: '레거시 메타',
-      admin: {
-        hidden: true,
-      },
-    },
   ],
 }
