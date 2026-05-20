@@ -3,7 +3,14 @@
 import { RowLabelProps, useRowLabel } from '@payloadcms/ui'
 
 type BodyImage = {
-  imagePath?: string | null
+  imageMedia?:
+    | number
+    | string
+    | {
+        alt?: string | null
+        filename?: string | null
+      }
+    | null
 }
 
 function getFileName(src: string) {
@@ -23,8 +30,12 @@ function getFileName(src: string) {
 
 export const StarCardBodyImageRowLabel: React.FC<RowLabelProps> = () => {
   const { data, rowNumber } = useRowLabel<BodyImage>()
-  const imagePath = String(data?.imagePath ?? '').trim()
+  const imageMedia = data?.imageMedia
+  const imageLabel =
+    imageMedia && typeof imageMedia === 'object'
+      ? String(imageMedia.filename || imageMedia.alt || '').trim()
+      : ''
   const fallback = rowNumber !== undefined ? `본문 이미지 ${rowNumber + 1}` : '본문 이미지'
 
-  return <div>{imagePath ? getFileName(imagePath) : fallback}</div>
+  return <div>{imageLabel ? getFileName(imageLabel) : fallback}</div>
 }

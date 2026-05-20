@@ -455,7 +455,7 @@ function mapDocToRow(
       })
     case 'star-cards':
       return baseRow(doc, {
-        imagePath: normalizeImagePath(doc.logoPath),
+        imagePath: mediaImagePath(doc.logoMedia),
         meta1: stringify(doc.centers),
         meta2: stringify(doc.mapUrl),
         meta3: stringify(doc.publishedAt),

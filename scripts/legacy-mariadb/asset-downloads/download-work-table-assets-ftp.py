@@ -341,6 +341,8 @@ def read_entries(project_root: Path, collection_slug: str, collection: Collectio
 
     if collection_slug == "direct-castings":
         entries.extend(read_direct_casting_body_image_entries(project_root, collection.output_root))
+    elif collection_slug == "star-cards":
+        entries.extend(read_star_card_body_image_entries(project_root, collection.output_root))
 
     return entries
 
@@ -437,6 +439,98 @@ ORDER BY id
     return entries
 
 
+def read_star_card_body_image_entries(project_root: Path, output_root: str) -> list[dict[str, Any]]:
+    query = """
+SELECT JSON_OBJECT(
+  'work_id', id,
+  'source_db', source_db,
+  'source_table', source_table,
+  'source_id', source_id,
+  'slug', slug,
+  'title', title,
+  'body_html', body_html
+)
+FROM `bnb_legacy_work`.`star_cards`
+WHERE body_html IS NOT NULL
+  AND body_html REGEXP '<img'
+ORDER BY id
+"""
+    output = subprocess.check_output(
+        [
+            "docker",
+            "compose",
+            "exec",
+            "-T",
+            "legacy-mariadb",
+            "mariadb",
+            "-uroot",
+            "-proot",
+            "--batch",
+            "--raw",
+            "--skip-column-names",
+            "-e",
+            query.strip(),
+        ],
+        cwd=project_root,
+        text=True,
+    )
+    entries: list[dict[str, Any]] = []
+
+    for line in output.splitlines():
+        if not line.strip():
+            continue
+
+        row = json.loads(line)
+        body_html = str(row.get("body_html") or "")
+
+        for index, match in enumerate(IMG_SRC_RE.finditer(body_html), start=1):
+            original_src = html.unescape(match.group("src").strip())
+            resolved = resolve_body_image_source(str(row.get("source_db") or ""), original_src)
+
+            if resolved is None:
+                continue
+
+            source_db, remote_path, bo_table, source_url_value = resolved
+            file_name = posixpath.basename(remote_path)
+
+            if not file_name:
+                continue
+
+            local_path = build_local_path(
+                output_root,
+                source_db,
+                bo_table,
+                str(row.get("source_id") or row.get("work_id") or "unknown"),
+                f"body-{index}",
+                file_name,
+            )
+
+            entries.append(
+                {
+                    "assetRole": "body",
+                    "boTable": bo_table,
+                    "bytesInDb": 0,
+                    "collection": "star-cards",
+                    "fileNo": index,
+                    "localPath": local_path,
+                    "localUrl": "/" + local_path.removeprefix("public/"),
+                    "normalizedUrl": source_url_value,
+                    "originalName": file_name,
+                    "originalSrc": original_src,
+                    "remotePath": remote_path,
+                    "slug": str(row.get("slug") or ""),
+                    "sourceDb": source_db,
+                    "sourceId": parse_int(row.get("source_id")),
+                    "sourceTable": str(row.get("source_table") or ""),
+                    "sourceUrl": source_url_value,
+                    "title": str(row.get("title") or ""),
+                    "workId": parse_int(row.get("work_id")),
+                }
+            )
+
+    return entries
+
+
 def resolve_body_image_source(row_source_db: str, src: str) -> tuple[str, str, str, str] | None:
     if not src:
         return None
@@ -461,6 +555,9 @@ def resolve_body_image_source(row_source_db: str, src: str) -> tuple[str, str, s
 
 def bo_table_from_remote_path(remote_path: str) -> str:
     parts = [part for part in remote_path.split("/") if part]
+
+    if len(parts) >= 2 and parts[0] == "web" and parts[1] == "img":
+        return "web-img"
 
     for index, part in enumerate(parts):
         if part == "editor":
@@ -500,6 +597,9 @@ def resolve_remote_path(bo_table: str, path_or_url: str) -> str:
 
     if value.startswith("web/data/") or value.startswith("data/"):
         return value
+
+    if bo_table == "web-img":
+        return value if value.startswith("web/img/") else f"web/img/{value}"
 
     if bo_table == "g5_agency":
         return f"data/agency/{value}"
@@ -576,6 +676,12 @@ def build_sources(config: dict[str, Any]) -> dict[str, FTPSource]:
 
 
 def candidate_dirs_for_bo_table(bo_table: str) -> list[str]:
+    if bo_table == "web-img":
+        return [
+            "/web/img",
+            "/img",
+        ]
+
     if bo_table == "editor":
         return [
             "/web/data/editor",
@@ -891,6 +997,28 @@ JOIN (
   AND files.wr_id = news.source_id
 WHERE NULLIF(TRIM(files.bf_file), '') IS NOT NULL
 ORDER BY news.id, files.bf_no
+""",
+    ),
+    "star-cards": CollectionConfig(
+        label="Star Cards",
+        output_root="public/legacy/star-cards",
+        sql="""
+SELECT
+  CAST(id AS CHAR) AS work_id,
+  source_db,
+  source_table,
+  CAST(source_id AS CHAR) AS source_id,
+  slug,
+  REPLACE(REPLACE(REPLACE(COALESCE(title, ''), CHAR(9), ' '), CHAR(10), ' '), CHAR(13), ' ') AS title,
+  'logo' AS asset_role,
+  'web-img' AS bo_table,
+  '0' AS file_no,
+  '' AS original_name,
+  SUBSTRING_INDEX(logo_path, '/', -1) AS path_or_url,
+  '0' AS bytes_in_db
+FROM bnb_legacy_work.star_cards
+WHERE NULLIF(TRIM(logo_path), '') IS NOT NULL
+ORDER BY id
 """,
     ),
 }

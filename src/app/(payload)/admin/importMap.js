@@ -53,7 +53,6 @@ import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { ExamPassedReviewInterviewRowLabel as ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f } from '@/components/payload/ExamPassedReviewInterviewRowLabel'
 import { FaqAnswerVariantRowLabel as FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96 } from '@/components/payload/FaqAnswerVariantRowLabel'
-import { StarCardBodyImagesField as StarCardBodyImagesField_4651afda955252646e70363072999e1a } from '@/components/payload/StarCardBodyImagesField'
 import { StarCardBodyImageRowLabel as StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e } from '@/components/payload/StarCardBodyImageRowLabel'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { FolderTableCell as FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -120,7 +119,6 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@/components/payload/ExamPassedReviewInterviewRowLabel#ExamPassedReviewInterviewRowLabel": ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f,
   "@/components/payload/FaqAnswerVariantRowLabel#FaqAnswerVariantRowLabel": FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96,
-  "@/components/payload/StarCardBodyImagesField#StarCardBodyImagesField": StarCardBodyImagesField_4651afda955252646e70363072999e1a,
   "@/components/payload/StarCardBodyImageRowLabel#StarCardBodyImageRowLabel": StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/next/rsc#FolderTableCell": FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,

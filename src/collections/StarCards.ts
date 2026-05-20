@@ -11,7 +11,6 @@ import {
   centerScopedBeforeValidate,
   centersField,
   displayStatusOptions,
-  imagePathField,
   publishedAtField,
   sidebarFields,
 } from './shared'
@@ -73,7 +72,12 @@ export const StarCards: CollectionConfig = {
       {
         label: '이미지',
         fields: [
-          imagePathField('logoPath', '대표 이미지'),
+          {
+            name: 'logoMedia',
+            type: 'upload',
+            label: '대표 이미지',
+            relationTo: 'media',
+          },
           {
             name: 'bodyImages',
             type: 'array',
@@ -84,15 +88,18 @@ export const StarCards: CollectionConfig = {
             },
             admin: {
               components: {
-                Field:
-                  '@/components/payload/StarCardBodyImagesField#StarCardBodyImagesField',
                 RowLabel:
                   '@/components/payload/StarCardBodyImageRowLabel#StarCardBodyImageRowLabel',
               },
               initCollapsed: true,
             },
             fields: [
-              imagePathField('imagePath', '이미지 경로', true),
+              {
+                name: 'imageMedia',
+                type: 'upload',
+                label: '이미지',
+                relationTo: 'media',
+              },
             ],
           },
         ],
@@ -119,54 +126,5 @@ export const StarCards: CollectionConfig = {
     slugField({
       slugify: starCardSlugify,
     }),
-    {
-      name: 'sourceDb',
-      type: 'text',
-      label: '원본 DB',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceTable',
-      type: 'text',
-      label: '원본 테이블',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'sourceId',
-      type: 'number',
-      label: '원본 ID',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'bodyHtml',
-      type: 'textarea',
-      label: '레거시 HTML',
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'viewCount',
-      type: 'number',
-      label: '조회수',
-      defaultValue: 0,
-      admin: {
-        hidden: true,
-      },
-    },
-    {
-      name: 'legacyMeta',
-      type: 'json',
-      label: '레거시 메타',
-      admin: {
-        hidden: true,
-      },
-    },
   ],
 }
