@@ -45,12 +45,13 @@ import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de
 import { ProfileAdditionalPhotosField as ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
 import { ProfileCareerRowLabel as ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb } from '@/components/payload/ProfileCareerRowLabel'
 import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 } from '@/components/payload/ProfileSlugField'
-import { ArtistPressAgencyAliasRowLabel as ArtistPressAgencyAliasRowLabel_932fe46703a0808542dbba0ba8454e0c } from '@/components/payload/ArtistPressAgencyAliasRowLabel'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { ArtistPressAgencyLinkedArtistsCell as ArtistPressAgencyLinkedArtistsCell_2ab3f207b1fa04c8f4ae0ac9a328076f } from '@/components/payload/ArtistPressAgencyLinkedArtistsField'
+import { ArtistPressAgencyLinkedArtistsField as ArtistPressAgencyLinkedArtistsField_2ab3f207b1fa04c8f4ae0ac9a328076f } from '@/components/payload/ArtistPressAgencyLinkedArtistsField'
 import { ExamPassedReviewInterviewRowLabel as ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f } from '@/components/payload/ExamPassedReviewInterviewRowLabel'
 import { FaqAnswerVariantRowLabel as FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96 } from '@/components/payload/FaqAnswerVariantRowLabel'
 import { StarCardBodyImageRowLabel as StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e } from '@/components/payload/StarCardBodyImageRowLabel'
@@ -111,12 +112,13 @@ export const importMap = {
   "@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField": ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
   "@/components/payload/ProfileCareerRowLabel#ProfileCareerRowLabel": ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb,
   "@/components/payload/ProfileSlugField#ProfileSlugField": ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8,
-  "@/components/payload/ArtistPressAgencyAliasRowLabel#ArtistPressAgencyAliasRowLabel": ArtistPressAgencyAliasRowLabel_932fe46703a0808542dbba0ba8454e0c,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@/components/payload/ArtistPressAgencyLinkedArtistsField#ArtistPressAgencyLinkedArtistsCell": ArtistPressAgencyLinkedArtistsCell_2ab3f207b1fa04c8f4ae0ac9a328076f,
+  "@/components/payload/ArtistPressAgencyLinkedArtistsField#ArtistPressAgencyLinkedArtistsField": ArtistPressAgencyLinkedArtistsField_2ab3f207b1fa04c8f4ae0ac9a328076f,
   "@/components/payload/ExamPassedReviewInterviewRowLabel#ExamPassedReviewInterviewRowLabel": ExamPassedReviewInterviewRowLabel_f16a89a3ed275a5f4bf582d873c4211f,
   "@/components/payload/FaqAnswerVariantRowLabel#FaqAnswerVariantRowLabel": FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96,
   "@/components/payload/StarCardBodyImageRowLabel#StarCardBodyImageRowLabel": StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e,
