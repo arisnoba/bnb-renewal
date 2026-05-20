@@ -107,6 +107,16 @@ export const ArtistPress: CollectionConfig = {
         label: "미디어",
         fields: [
           {
+            name: "agency",
+            type: "relationship",
+            label: "소속사",
+            relationTo: "artist-press-agencies",
+            admin: {
+              description:
+                "소속사가 검색되지 않으면 먼저 출신 아티스트 소속사 설정에 등록하세요.",
+            },
+          },
+          {
             name: "thumbnailMedia",
             type: "upload",
             label: "썸네일 이미지",
@@ -117,6 +127,9 @@ export const ArtistPress: CollectionConfig = {
             type: "upload",
             label: "소속사 로고 이미지",
             relationTo: "media",
+            admin: {
+              hidden: true,
+            },
           },
         ],
       },

@@ -45,6 +45,7 @@ import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de
 import { ProfileAdditionalPhotosField as ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc } from '@/components/payload/TeacherAdditionalPhotosField'
 import { ProfileCareerRowLabel as ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb } from '@/components/payload/ProfileCareerRowLabel'
 import { ProfileSlugField as ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8 } from '@/components/payload/ProfileSlugField'
+import { ArtistPressAgencyAliasRowLabel as ArtistPressAgencyAliasRowLabel_932fe46703a0808542dbba0ba8454e0c } from '@/components/payload/ArtistPressAgencyAliasRowLabel'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -111,6 +112,7 @@ export const importMap = {
   "@/components/payload/TeacherAdditionalPhotosField#ProfileAdditionalPhotosField": ProfileAdditionalPhotosField_92d5bd680f3dd09cb3cbebf273cd6ecc,
   "@/components/payload/ProfileCareerRowLabel#ProfileCareerRowLabel": ProfileCareerRowLabel_b660c62c80f213970e78978269ff65cb,
   "@/components/payload/ProfileSlugField#ProfileSlugField": ProfileSlugField_40edf23073b8e8df343d89c9600e5bd8,
+  "@/components/payload/ArtistPressAgencyAliasRowLabel#ArtistPressAgencyAliasRowLabel": ArtistPressAgencyAliasRowLabel_932fe46703a0808542dbba0ba8454e0c,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,

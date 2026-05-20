@@ -8,6 +8,7 @@ import sharp from 'sharp'
 
 import { Agencies } from './src/collections/Agencies'
 import { ArtistPress } from './src/collections/ArtistPress'
+import { ArtistPressAgencies } from './src/collections/ArtistPressAgencies'
 import { AuditionSchedules } from './src/collections/AuditionSchedules'
 import { CastingAppearances } from './src/collections/CastingAppearances'
 import { CastingDirectors } from './src/collections/CastingDirectors'
@@ -83,6 +84,7 @@ export default buildConfig({
     CastingAppearances,
     ScreenAppearances,
     Profiles,
+    ArtistPressAgencies,
     ArtistPress,
     ExamPassedReviews,
     ExamPassedVideos,
