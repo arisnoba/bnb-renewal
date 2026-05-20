@@ -87,12 +87,29 @@ export const ArtistPress: CollectionConfig = {
               type: "text",
               label: "배우명",
               required: true,
+              admin: {
+                width: "33.333%",
+              },
+            },
+            {
+              name: "agency",
+              type: "relationship",
+              label: "소속사",
+              relationTo: "artist-press-agencies",
+              admin: {
+                description:
+                  "소속사가 검색되지 않으면 먼저 소속사 로고 설정에 등록하세요.",
+                width: "33.333%",
+              },
             },
             {
               name: "generation",
               type: "text",
               label: "기수",
               required: true,
+              admin: {
+                width: "33.333%",
+              },
             },
           ]),
           {
@@ -106,16 +123,6 @@ export const ArtistPress: CollectionConfig = {
       {
         label: "미디어",
         fields: [
-          {
-            name: "agency",
-            type: "relationship",
-            label: "소속사",
-            relationTo: "artist-press-agencies",
-            admin: {
-              description:
-                "소속사가 검색되지 않으면 먼저 출신 아티스트 소속사 설정에 등록하세요.",
-            },
-          },
           {
             name: "thumbnailMedia",
             type: "upload",

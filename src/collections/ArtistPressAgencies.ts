@@ -44,8 +44,8 @@ function validateNormalizedKey(value: unknown) {
 export const ArtistPressAgencies: CollectionConfig = {
   slug: 'artist-press-agencies',
   labels: {
-    plural: '출신 아티스트 소속사 설정',
-    singular: '출신 아티스트 소속사 설정',
+    plural: '소속사 로고 설정',
+    singular: '소속사 로고 설정',
   },
   access: centerScopedCollectionAccess,
   admin: {
@@ -94,6 +94,16 @@ export const ArtistPressAgencies: CollectionConfig = {
         { label: '확인 완료', value: 'confirmed' },
       ],
       required: true,
+    },
+    {
+      name: 'linkedArtists',
+      type: 'ui',
+      admin: {
+        components: {
+          Field:
+            '@/components/payload/ArtistPressAgencyLinkedArtistsField#ArtistPressAgencyLinkedArtistsField',
+        },
+      },
     },
     {
       name: 'legacyAliases',
