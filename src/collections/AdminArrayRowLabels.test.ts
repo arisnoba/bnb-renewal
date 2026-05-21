@@ -3,6 +3,7 @@ import test from "node:test";
 
 import type { CollectionConfig, Field, Tab } from "payload";
 
+import { ArtistPressAgencies } from "./ArtistPressAgencies";
 import { CastingAppearances } from "./CastingAppearances";
 import { DirectCastings } from "./DirectCastings";
 import { ExamPassedReviews } from "./ExamPassedReviews";
@@ -62,6 +63,10 @@ function getTopLevelField(collection: CollectionConfig, fieldName: string) {
   assert.ok(field, `${collection.slug}.${fieldName} 필드가 있어야 합니다.`);
 
   return field;
+}
+
+function hasTopLevelField(collection: CollectionConfig, fieldName: string) {
+  return collection.fields.some((item) => isNamedField(item, fieldName));
 }
 
 test("profile career items use title row labels", () => {
@@ -129,6 +134,16 @@ test("highteen special class uses one content tab with thumbnail below YouTube U
     thumbnailMedia.admin?.description,
     "이미지를 등록하지 않으면 유튜브 썸네일이 대표 이미지로 표시됩니다.",
   );
+});
+
+test("artist press agency settings use slug and omit legacy filenames", () => {
+  const slug = getTopLevelField(ArtistPressAgencies, "slug");
+
+  assert.equal(slug.type, "text");
+  assert.equal(slug.label, "슬러그");
+  assert.equal(slug.required, true);
+  assert.equal(hasTopLevelField(ArtistPressAgencies, "normalizedKey"), false);
+  assert.equal(hasTopLevelField(ArtistPressAgencies, "legacyAliases"), false);
 });
 
 test("history months use month row labels", () => {

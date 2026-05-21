@@ -99,9 +99,9 @@ const HANGUL_FINALS = [
   't',
 ]
 
-type ArtistPressAgencyNormalizedKeyDoc = {
+type ArtistPressAgencySlugDoc = {
   id?: number | string
-  normalizedKey?: unknown
+  slug?: unknown
 }
 
 const isArtistAdminMenuHidden = ({ user }: { user?: unknown }) => {
@@ -141,7 +141,7 @@ function romanizeHangul(value: string) {
   }).join('')
 }
 
-function normalizedKeyFromAgencyName(value: unknown) {
+function slugFromAgencyName(value: unknown) {
   const agencyName = String(value ?? '').trim()
   const latinKey = normalizeKeyValue(agencyName.replace(/[가-힣]+/g, ' '))
 
@@ -152,18 +152,18 @@ function normalizedKeyFromAgencyName(value: unknown) {
   return normalizeKeyValue(romanizeHangul(agencyName)) || 'agency'
 }
 
-function isGeneratedNormalizedKey(value: unknown) {
+function isGeneratedSlug(value: unknown) {
   const key = String(value ?? '').trim()
 
   return !key || key.startsWith('legacy-') || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key)
 }
 
-async function nextUniqueNormalizedKey({
-  baseKey,
+async function nextUniqueSlug({
+  baseSlug,
   currentId,
   payload,
 }: {
-  baseKey: string
+  baseSlug: string
   currentId?: unknown
   payload?: {
     find: (args: {
@@ -172,11 +172,11 @@ async function nextUniqueNormalizedKey({
       limit: number
       overrideAccess: boolean
       pagination: false
-    }) => Promise<{ docs: ArtistPressAgencyNormalizedKeyDoc[] }>
+    }) => Promise<{ docs: ArtistPressAgencySlugDoc[] }>
   }
 }) {
   if (!payload) {
-    return baseKey
+    return baseSlug
   }
 
   const result = await payload.find({
@@ -189,24 +189,24 @@ async function nextUniqueNormalizedKey({
   const usedKeys = new Set(
     result.docs
       .filter((doc) => !sameId(doc.id, currentId))
-      .map((doc) => String(doc.normalizedKey ?? '').trim())
+      .map((doc) => String(doc.slug ?? '').trim())
       .filter(Boolean),
   )
 
-  if (!usedKeys.has(baseKey)) {
-    return baseKey
+  if (!usedKeys.has(baseSlug)) {
+    return baseSlug
   }
 
   let suffix = 2
 
-  while (usedKeys.has(`${baseKey}-${suffix}`)) {
+  while (usedKeys.has(`${baseSlug}-${suffix}`)) {
     suffix += 1
   }
 
-  return `${baseKey}-${suffix}`
+  return `${baseSlug}-${suffix}`
 }
 
-const normalizeAgencyKey: CollectionBeforeValidateHook = async ({
+const normalizeAgencySlug: CollectionBeforeValidateHook = async ({
   data,
   operation,
   originalDoc,
@@ -216,34 +216,34 @@ const normalizeAgencyKey: CollectionBeforeValidateHook = async ({
     return data
   }
 
-  const currentKey = data.normalizedKey ?? originalDoc?.normalizedKey
-  const shouldGenerateKey = operation === 'create' || isGeneratedNormalizedKey(currentKey)
+  const currentSlug = data.slug ?? originalDoc?.slug
+  const shouldGenerateSlug = operation === 'create' || isGeneratedSlug(currentSlug)
 
-  if (!shouldGenerateKey) {
+  if (!shouldGenerateSlug) {
     return data
   }
 
-  const baseKey = normalizedKeyFromAgencyName(data.agencyName ?? originalDoc?.agencyName)
+  const baseSlug = slugFromAgencyName(data.agencyName ?? originalDoc?.agencyName)
 
   return {
     ...data,
-    normalizedKey: await nextUniqueNormalizedKey({
-      baseKey,
+    slug: await nextUniqueSlug({
+      baseSlug,
       currentId: data.id ?? originalDoc?.id,
       payload: req.payload,
     }),
   }
 }
 
-function validateNormalizedKey(value: unknown) {
-  const key = String(value ?? '').trim()
+function validateSlug(value: unknown) {
+  const slug = String(value ?? '').trim()
 
-  if (!key) {
-    return '정규화 키를 입력하세요.'
+  if (!slug) {
+    return '슬러그를 입력하세요.'
   }
 
-  if (!/^[a-z0-9-]+$/.test(key)) {
-    return '정규화 키는 영문 소문자, 숫자, 하이픈(-)만 입력할 수 있습니다.'
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    return '슬러그는 영문 소문자, 숫자, 하이픈(-)만 입력할 수 있습니다.'
   }
 
   return true
@@ -264,7 +264,7 @@ export const ArtistPressAgencies: CollectionConfig = {
   },
   defaultSort: 'agencyName',
   hooks: {
-    beforeValidate: [normalizeAgencyKey, forceArtCenter],
+    beforeValidate: [normalizeAgencySlug, forceArtCenter],
   },
   fields: [
     {
@@ -277,15 +277,15 @@ export const ArtistPressAgencies: CollectionConfig = {
       },
     },
     {
-      name: 'normalizedKey',
+      name: 'slug',
       type: 'text',
-      label: '정규화 키',
+      label: '슬러그',
       required: true,
       unique: true,
       admin: {
         hidden: true,
       },
-      validate: validateNormalizedKey,
+      validate: validateSlug,
     },
     {
       name: 'logoMedia',
@@ -305,43 +305,6 @@ export const ArtistPressAgencies: CollectionConfig = {
             '@/components/payload/ArtistPressAgencyLinkedArtistsField#ArtistPressAgencyLinkedArtistsField',
         },
       },
-    },
-    {
-      name: 'legacyAliases',
-      type: 'array',
-      label: '레거시 파일명',
-      labels: {
-        plural: '레거시 파일명',
-        singular: '레거시 파일명',
-      },
-      admin: {
-        hidden: true,
-        initCollapsed: true,
-      },
-      fields: [
-        {
-          name: 'originalName',
-          type: 'text',
-          label: '원본 파일명',
-          required: true,
-        },
-        {
-          name: 'useCount',
-          type: 'number',
-          label: '사용 건수',
-          admin: {
-            readOnly: true,
-          },
-        },
-        {
-          name: 'sampleTitle',
-          type: 'text',
-          label: '대표 글 제목',
-          admin: {
-            readOnly: true,
-          },
-        },
-      ],
     },
     ...sidebarFields([
       {

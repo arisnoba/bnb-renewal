@@ -39,11 +39,11 @@ type AgencyGroup = {
   isAmbiguous: boolean
   legacyRows: LegacyArtistPressRow[]
   logoMediaId: number | null
-  normalizedKey: string
   originalName: string
   postIds: number[]
   sampleTitle?: string
   shouldAutoLink: boolean
+  slug: string
 }
 
 async function main() {
@@ -107,10 +107,10 @@ async function main() {
         isAmbiguous: group.isAmbiguous,
         linked: group.shouldAutoLink ? group.postIds.length : 0,
         logoMediaId: group.logoMediaId,
-        normalizedKey: group.normalizedKey,
         originalName: group.originalName,
         sampleTitle: group.sampleTitle,
         shouldAutoLink: group.shouldAutoLink,
+        slug: group.slug,
         useCount: group.legacyRows.length,
       })
     }
@@ -275,7 +275,7 @@ function buildAgencyGroups(
       const postRows = rows
         .map((row) => findArtistPressRow(row, artistPressBySlug, artistPressByTitle))
         .filter((row): row is ArtistPressRow => Boolean(row))
-      const normalizedKey = uniqueNormalizedKey(normalizedKeyFromOriginalName(originalName), usedKeys)
+      const slug = uniqueSlug(slugFromOriginalName(originalName), usedKeys)
       const isAmbiguous = isAmbiguousOriginalName(originalName)
       const shouldAutoLink = !isAmbiguous && rows.length >= 2
 
@@ -284,11 +284,11 @@ function buildAgencyGroups(
         isAmbiguous,
         legacyRows: rows,
         logoMediaId: postRows.find((row) => row.agency_logo_media_id)?.agency_logo_media_id ?? null,
-        normalizedKey,
         originalName,
         postIds: postRows.map((row) => row.id),
         sampleTitle: cleanText(rows[0]?.title),
         shouldAutoLink,
+        slug,
       }
     })
     .sort((a, b) => b.legacyRows.length - a.legacyRows.length || a.agencyName.localeCompare(b.agencyName))
@@ -329,14 +329,14 @@ async function upsertAgencyGroup(pool: Pool, group: AgencyGroup) {
     `
       INSERT INTO artist_press_agencies (
         agency_name,
-        normalized_key,
+        slug,
         logo_media_id,
         author_name,
         updated_at,
         created_at
       )
       VALUES ($1, $2, $3, '배우앤배움 아트센터', now(), now())
-      ON CONFLICT (normalized_key)
+      ON CONFLICT (slug)
       DO UPDATE SET
         agency_name = EXCLUDED.agency_name,
         logo_media_id = COALESCE(artist_press_agencies.logo_media_id, EXCLUDED.logo_media_id),
@@ -345,7 +345,7 @@ async function upsertAgencyGroup(pool: Pool, group: AgencyGroup) {
     `,
     [
       group.agencyName,
-      group.normalizedKey,
+      group.slug,
       group.logoMediaId,
     ],
   )
@@ -353,7 +353,7 @@ async function upsertAgencyGroup(pool: Pool, group: AgencyGroup) {
   const agencyId = rows[0]?.id
 
   if (!agencyId) {
-    throw new Error(`${group.normalizedKey} 소속사 설정을 저장하지 못했습니다.`)
+    throw new Error(`${group.slug} 소속사 설정을 저장하지 못했습니다.`)
   }
 
   await pool.query('DELETE FROM artist_press_agencies_centers WHERE parent_id = $1', [agencyId])
@@ -363,28 +363,6 @@ async function upsertAgencyGroup(pool: Pool, group: AgencyGroup) {
       VALUES (0, $1, 'art')
     `,
     [agencyId],
-  )
-
-  await pool.query('DELETE FROM artist_press_agencies_legacy_aliases WHERE _parent_id = $1', [agencyId])
-  await pool.query(
-    `
-      INSERT INTO artist_press_agencies_legacy_aliases (
-        "_order",
-        "_parent_id",
-        "id",
-        "original_name",
-        "use_count",
-        "sample_title"
-      )
-      VALUES (0, $1, $2, $3, $4, $5)
-    `,
-    [
-      agencyId,
-      `${agencyId}-${group.normalizedKey}`,
-      group.originalName,
-      group.legacyRows.length,
-      group.sampleTitle ?? null,
-    ],
   )
 
   return agencyId
@@ -438,7 +416,7 @@ function agencyNameFromOriginalName(originalName: string) {
   return cleaned || basename.trim() || originalName
 }
 
-function normalizedKeyFromOriginalName(originalName: string) {
+function slugFromOriginalName(originalName: string) {
   const base = agencyNameFromOriginalName(originalName)
     .normalize('NFKD')
     .toLowerCase()
@@ -454,18 +432,18 @@ function normalizedKeyFromOriginalName(originalName: string) {
   return romanized || `legacy-${hashString(originalName)}`
 }
 
-function uniqueNormalizedKey(key: string, usedKeys: Set<string>) {
-  let nextKey = key
+function uniqueSlug(slug: string, usedKeys: Set<string>) {
+  let nextSlug = slug
   let suffix = 2
 
-  while (usedKeys.has(nextKey)) {
-    nextKey = `${key}-${suffix}`
+  while (usedKeys.has(nextSlug)) {
+    nextSlug = `${slug}-${suffix}`
     suffix += 1
   }
 
-  usedKeys.add(nextKey)
+  usedKeys.add(nextSlug)
 
-  return nextKey
+  return nextSlug
 }
 
 function isAmbiguousOriginalName(originalName: string) {
