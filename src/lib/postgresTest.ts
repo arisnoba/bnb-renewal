@@ -1,4 +1,5 @@
 import { getPayloadClient } from '@/lib/payload'
+import { youtubeThumbnailUrl } from '@/lib/youtube'
 import type { Where } from 'payload'
 
 export type PostgresTestCollection = {
@@ -319,24 +320,11 @@ function mapDocToRow(
     case 'highteen-special-classes':
       return {
         id: rowId(doc.id),
-        imagePath: mediaImagePath(doc.thumbnailMedia),
+        imagePath: mediaImagePath(doc.thumbnailMedia) || youtubeThumbnailUrl(doc.youtubeUrl),
         meta1: stringify(doc.youtubeUrl),
         meta2: stringify(doc.publishedAt),
         meta3: stringify(doc.displayStatus),
-        relatedFiles: (Array.isArray(doc.galleryImages) ? doc.galleryImages : [])
-          .slice(0, 12)
-          .map((item) => {
-            const image = objectDoc(item)
-
-            return {
-              displayOrder: stringify(image.displayOrder),
-              imagePath: mediaImagePath(image.imageMedia),
-              sourceDb: '',
-              sourceId: '',
-              sourceTable: '',
-              title: stringify(image.sourceFile),
-            }
-          }),
+        relatedFiles: [],
         slug: stringify(doc.slug),
         sourceDb: '',
         sourceId: '',

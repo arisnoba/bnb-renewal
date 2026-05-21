@@ -628,7 +628,6 @@ const configs: TableConfig[] = [
       body: lexicalPlainTextFromHtml(row.body_html),
       centers: ['highteen'],
       displayStatus: displayStatusFromPublic(row.is_public),
-      galleryImages: parseHighteenSpecialClassGalleryImages(row.gallery_images),
       legacyMeta: parseJsonValue(row.legacy_meta),
       ...legacyPublishedTimestamps(row),
       thumbnailPath: text(row.thumbnail_path),
@@ -1819,17 +1818,6 @@ function buildCurriculumLessons(titleRaw: unknown, contentRaw: unknown) {
   }
 
   return lessons
-}
-
-function parseHighteenSpecialClassGalleryImages(value: unknown) {
-  return parseJsonArray(value)
-    .map((item) => objectValue(item))
-    .filter((item): item is Record<string, unknown> => Boolean(item))
-    .map((item) => ({
-      displayOrder: number(item.displayOrder),
-      imagePath: text(item.imagePath),
-      sourceFile: requiredText(item.sourceFile, 'highteen_special_classes.gallery_images.sourceFile'),
-    }))
 }
 
 function curriculumClassName(value: unknown) {

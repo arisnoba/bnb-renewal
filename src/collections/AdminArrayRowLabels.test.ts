@@ -36,10 +36,16 @@ function getTabs(collection: CollectionConfig) {
   return tabsField.tabs;
 }
 
-function getTabField(collection: CollectionConfig, tabLabel: string, fieldName: string) {
+function getTab(collection: CollectionConfig, tabLabel: string) {
   const tab = getTabs(collection).find((item) => item.label === tabLabel);
 
   assert.ok(tab, `${collection.slug} 컬렉션에 ${tabLabel} 탭이 있어야 합니다.`);
+
+  return tab;
+}
+
+function getTabField(collection: CollectionConfig, tabLabel: string, fieldName: string) {
+  const tab = getTab(collection, tabLabel);
 
   const field = tab.fields.find((item) => isNamedField(item, fieldName));
 
@@ -99,19 +105,22 @@ test("exam passed review interviews use question row labels", () => {
   );
 });
 
-test("highteen special class gallery images use source file row labels", () => {
-  const field = getTabField(HighteenSpecialClasses, "이미지", "galleryImages");
+test("highteen special class uses one content tab with thumbnail below YouTube URL", () => {
+  const tabs = getTabs(HighteenSpecialClasses);
+  const contentTab = getTab(HighteenSpecialClasses, "콘텐츠");
+  const fieldNames = contentTab.fields
+    .filter((field): field is FieldWithName => "name" in field)
+    .map((field) => field.name);
+  const thumbnailMedia = getTabField(HighteenSpecialClasses, "콘텐츠", "thumbnailMedia");
 
-  assert.equal(field.type, "array");
-  assert.deepEqual(field.labels, {
-    plural: "첨부 이미지",
-    singular: "첨부 이미지",
-  });
-  assert.equal(field.admin?.initCollapsed, true);
-  assert.equal(
-    field.admin?.components?.RowLabel,
-    "@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel",
+  assert.deepEqual(
+    tabs.map((tab) => tab.label),
+    ["콘텐츠"],
   );
+  assert.deepEqual(fieldNames, ["youtubeUrl", "thumbnailMedia", "youtubePreview", "body"]);
+  assert.equal(thumbnailMedia.type, "upload");
+  assert.equal(thumbnailMedia.label, "대표 이미지");
+  assert.equal(thumbnailMedia.relationTo, "media");
 });
 
 test("history months use month row labels", () => {

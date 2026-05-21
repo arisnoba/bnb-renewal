@@ -96,6 +96,12 @@ export const HighteenSpecialClasses: CollectionConfig = {
             },
           },
           {
+            name: 'thumbnailMedia',
+            type: 'upload',
+            label: '대표 이미지',
+            relationTo: 'media',
+          },
+          {
             name: 'youtubePreview',
             type: 'ui',
             admin: {
@@ -109,53 +115,6 @@ export const HighteenSpecialClasses: CollectionConfig = {
             type: 'richText',
             editor: newsBodyEditor,
             label: '본문',
-          },
-        ],
-      },
-      {
-        label: '이미지',
-        fields: [
-          {
-            name: 'thumbnailMedia',
-            type: 'upload',
-            label: '대표 이미지',
-            relationTo: 'media',
-          },
-          {
-            name: 'galleryImages',
-            type: 'array',
-            label: '첨부 이미지',
-            labels: {
-              plural: '첨부 이미지',
-              singular: '첨부 이미지',
-            },
-            admin: {
-              components: {
-                RowLabel:
-                  '@/components/payload/HighteenSpecialClassGalleryImageRowLabel#HighteenSpecialClassGalleryImageRowLabel',
-              },
-              initCollapsed: true,
-            },
-            fields: [
-              {
-                name: 'sourceFile',
-                type: 'text',
-                label: '원본 파일명',
-                required: true,
-              },
-              {
-                name: 'imageMedia',
-                type: 'upload',
-                label: '이미지',
-                relationTo: 'media',
-              },
-              {
-                name: 'displayOrder',
-                type: 'number',
-                label: '정렬',
-                defaultValue: 0,
-              },
-            ],
           },
         ],
       },

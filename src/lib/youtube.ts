@@ -54,3 +54,9 @@ export function youtubeWatchUrl(videoId: string) {
 export function youtubeEmbedUrl(videoId: string) {
   return `https://www.youtube.com/embed/${videoId}`;
 }
+
+export function youtubeThumbnailUrl(value: unknown) {
+  const videoId = extractYouTubeVideoId(value);
+
+  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
+}
