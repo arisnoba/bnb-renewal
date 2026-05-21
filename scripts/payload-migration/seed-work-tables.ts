@@ -284,7 +284,6 @@ const configs: TableConfig[] = [
 
       return {
         centers: ['exam'],
-        cohort: legacyContent.cohort,
         displayStatus: displayStatusFromPublic(row.is_public),
         interviews: legacyContent.interviews,
         ...legacyPublishedTimestamps(row),
@@ -1237,7 +1236,6 @@ function legacySummaryLabel(value: string) {
 function parseExamPassedReviewLegacyContent(value: unknown) {
   const html = text(value)
   const summary = {
-    cohort: undefined as string | undefined,
     resultSummary: undefined as string | undefined,
     studentName: undefined as string | undefined,
   }
@@ -1270,11 +1268,6 @@ function parseExamPassedReviewLegacyContent(value: unknown) {
 
     if (label === '이름') {
       summary.studentName = itemValue
-      return
-    }
-
-    if (label === '기수') {
-      summary.cohort = itemValue
       return
     }
 

@@ -112,6 +112,15 @@ test("exam passed review interviews use question row labels", () => {
   );
 });
 
+test("exam passed review omits cohort field", () => {
+  const studentName = getTopLevelField(ExamPassedReviews, "studentName");
+
+  assert.equal(studentName.type, "text");
+  assert.equal(studentName.label, "학생명");
+  assert.equal(studentName.required, true);
+  assert.equal(hasTopLevelField(ExamPassedReviews, "cohort"), false);
+});
+
 test("highteen special class uses one content tab with thumbnail below YouTube URL", () => {
   const tabs = getTabs(HighteenSpecialClasses);
   const contentTab = getTab(HighteenSpecialClasses, "콘텐츠");

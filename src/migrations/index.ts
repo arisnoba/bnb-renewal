@@ -80,6 +80,7 @@ import * as migration_20260520_124000_star_card_media_fields from './20260520_12
 import * as migration_20260520_125000_drop_star_card_legacy_fields from './20260520_125000_drop_star_card_legacy_fields'
 import * as migration_20260521_120000_drop_teacher_bio_html from './20260521_120000_drop_teacher_bio_html'
 import * as migration_20260521_130000_artist_press_agency_slug_cleanup from './20260521_130000_artist_press_agency_slug_cleanup'
+import * as migration_20260521_140000_drop_exam_passed_review_cohort from './20260521_140000_drop_exam_passed_review_cohort'
 
 export const migrations = [
   {
@@ -491,5 +492,10 @@ export const migrations = [
     up: migration_20260521_130000_artist_press_agency_slug_cleanup.up,
     down: migration_20260521_130000_artist_press_agency_slug_cleanup.down,
     name: '20260521_130000_artist_press_agency_slug_cleanup',
+  },
+  {
+    up: migration_20260521_140000_drop_exam_passed_review_cohort.up,
+    down: migration_20260521_140000_drop_exam_passed_review_cohort.down,
+    name: '20260521_140000_drop_exam_passed_review_cohort',
   },
 ]

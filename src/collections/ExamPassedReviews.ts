@@ -15,7 +15,6 @@ import {
 
 import { centerScopedCollectionAccess } from "./access";
 import {
-  adminRow,
   authorNameFromCenters,
   centersField,
   displayStatusOptions,
@@ -112,19 +111,12 @@ export const ExamPassedReviews: CollectionConfig = {
       },
     },
     imagePathField("studentImagePath", "학생이미지", true),
-    adminRow([
-      {
-        name: "studentName",
-        type: "text",
-        label: "학생명",
-        required: true,
-      },
-      {
-        name: "cohort",
-        type: "text",
-        label: "기수",
-      },
-    ]),
+    {
+      name: "studentName",
+      type: "text",
+      label: "학생명",
+      required: true,
+    },
     {
       name: "resultSummary",
       type: "textarea",
