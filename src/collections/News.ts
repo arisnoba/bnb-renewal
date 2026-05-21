@@ -3,7 +3,6 @@ import type { CollectionConfig } from "payload";
 import {
   MetaDescriptionField,
   MetaImageField,
-  MetaTitleField,
   OverviewField,
   PreviewField,
 } from "@payloadcms/plugin-seo/fields";
@@ -28,6 +27,7 @@ import {
   publishedAtField,
   sidebarFields,
 } from "./shared";
+import { seoTitleField } from "./seoFields";
 
 const newsSlugify = createKoreanSlugifyWithFallback("news");
 
@@ -118,9 +118,7 @@ export const News: CollectionConfig = {
             descriptionPath: "meta.description",
             imagePath: "meta.image",
           }),
-          MetaTitleField({
-            hasGenerateFn: true,
-          }),
+          seoTitleField(),
           MetaImageField({
             relationTo: "media",
           }),

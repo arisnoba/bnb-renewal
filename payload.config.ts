@@ -69,6 +69,9 @@ export default buildConfig({
           createdAt: '등록일',
           updatedAt: '수정일',
         },
+        'plugin-seo': {
+          charactersLeftOver: '{{characters}} 자 남음',
+        },
       },
     },
   },

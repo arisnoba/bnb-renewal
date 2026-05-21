@@ -22,11 +22,11 @@ import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
 import {
   MetaDescriptionField,
   MetaImageField,
-  MetaTitleField,
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
+import { seoTitleField } from '../seoFields'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -132,9 +132,7 @@ export const Posts: CollectionConfig<'posts'> = {
               descriptionPath: 'meta.description',
               imagePath: 'meta.image',
             }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
+            seoTitleField(),
             MetaImageField({
               relationTo: 'media',
             }),
