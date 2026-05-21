@@ -67,6 +67,7 @@ export const Teachers: CollectionConfig = {
               components: {
                 Field: "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotosField",
               },
+              disableListColumn: true,
             },
           },
           ...["photoImage2", "photoImage3", "photoImage4", "photoImage5", "photoImage6"].map(
@@ -79,19 +80,10 @@ export const Teachers: CollectionConfig = {
                   Field:
                     "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotoHiddenField",
                 },
+                disableListColumn: true,
               },
             }),
           ),
-          {
-            name: "bioHtml",
-            type: "textarea",
-            label: "소개",
-            defaultValue: "-",
-            required: true,
-            admin: {
-              hidden: true,
-            },
-          },
         ],
       },
       {

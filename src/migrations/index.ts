@@ -78,6 +78,7 @@ import * as migration_20260520_122000_drop_highteen_special_class_legacy_fields 
 import * as migration_20260520_123000_artist_press_agencies from './20260520_123000_artist_press_agencies'
 import * as migration_20260520_124000_star_card_media_fields from './20260520_124000_star_card_media_fields'
 import * as migration_20260520_125000_drop_star_card_legacy_fields from './20260520_125000_drop_star_card_legacy_fields'
+import * as migration_20260521_120000_drop_teacher_bio_html from './20260521_120000_drop_teacher_bio_html'
 
 export const migrations = [
   {
@@ -479,5 +480,10 @@ export const migrations = [
     up: migration_20260520_125000_drop_star_card_legacy_fields.up,
     down: migration_20260520_125000_drop_star_card_legacy_fields.down,
     name: '20260520_125000_drop_star_card_legacy_fields',
+  },
+  {
+    up: migration_20260521_120000_drop_teacher_bio_html.up,
+    down: migration_20260521_120000_drop_teacher_bio_html.down,
+    name: '20260521_120000_drop_teacher_bio_html',
   },
 ]
