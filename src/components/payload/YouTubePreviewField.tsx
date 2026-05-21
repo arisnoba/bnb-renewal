@@ -18,7 +18,7 @@ export const YouTubePreviewField: UIFieldClientComponent = () => {
   const videoId = extractYouTubeVideoId(youtubeUrl);
 
   return (
-    <div style={{ display: "grid", gap: "calc(var(--base) / 4)" }}>
+    <div style={{ display: "grid", gap: "calc(var(--base) / 4)", marginBottom: 20 }}>
       <div
         style={{
           color: "var(--theme-text)",

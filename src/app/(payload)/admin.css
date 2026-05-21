@@ -42,21 +42,6 @@
 	margin-left: 4px;
 }
 
-.field-type.upload > .field-label::before {
-	background-color: var(--bnb-admin-upload-icon-bg);
-	background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.08 10.5h5.84c.64 0 .96-.32.96-.96V4.46c0-.64-.32-.96-.96-.96H4.08c-.64 0-.96.32-.96.96v5.08c0 .64.32.96.96.96Z' fill='none' stroke='%23126db7' stroke-width='1.3'/%3E%3Cpath d='m3.5 9.34 2.16-2.16 1.48 1.48 1.1-1.1 2.26 2.26' fill='none' stroke='%23126db7' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='8.88' cy='5.56' r='.72' fill='%23126db7'/%3E%3C/svg%3E");
-	background-position: center;
-	background-repeat: no-repeat;
-	border: 1px solid var(--bnb-admin-upload-border);
-	border-radius: 999px;
-	content: '';
-	display: inline-block;
-	height: 18px;
-	margin-right: 7px;
-	vertical-align: -4px;
-	width: 18px;
-}
-
 .field-type.upload .dropzone,
 .bnb-image-upload-trigger {
 	background: var(--bnb-admin-upload-bg);

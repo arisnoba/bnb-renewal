@@ -91,6 +91,7 @@ export const HighteenSpecialClasses: CollectionConfig = {
             name: 'youtubeUrl',
             type: 'text',
             label: '유튜브 URL',
+            required: true,
             admin: {
               width: '50%',
             },
@@ -100,6 +101,9 @@ export const HighteenSpecialClasses: CollectionConfig = {
             type: 'upload',
             label: '대표 이미지',
             relationTo: 'media',
+            admin: {
+              description: '이미지를 등록하지 않으면 유튜브 썸네일이 대표 이미지로 표시됩니다.',
+            },
           },
           {
             name: 'youtubePreview',

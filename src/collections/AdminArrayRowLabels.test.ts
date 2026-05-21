@@ -14,10 +14,12 @@ type FieldWithName = Field & {
   fields?: Field[];
   name: string;
   labels?: unknown;
+  required?: boolean;
   admin?: {
     components?: {
       RowLabel?: unknown;
     };
+    description?: unknown;
     initCollapsed?: boolean;
   };
 };
@@ -111,6 +113,7 @@ test("highteen special class uses one content tab with thumbnail below YouTube U
   const fieldNames = contentTab.fields
     .filter((field): field is FieldWithName => "name" in field)
     .map((field) => field.name);
+  const youtubeUrl = getTabField(HighteenSpecialClasses, "콘텐츠", "youtubeUrl");
   const thumbnailMedia = getTabField(HighteenSpecialClasses, "콘텐츠", "thumbnailMedia");
 
   assert.deepEqual(
@@ -118,9 +121,14 @@ test("highteen special class uses one content tab with thumbnail below YouTube U
     ["콘텐츠"],
   );
   assert.deepEqual(fieldNames, ["youtubeUrl", "thumbnailMedia", "youtubePreview", "body"]);
+  assert.equal(youtubeUrl.required, true);
   assert.equal(thumbnailMedia.type, "upload");
   assert.equal(thumbnailMedia.label, "대표 이미지");
   assert.equal(thumbnailMedia.relationTo, "media");
+  assert.equal(
+    thumbnailMedia.admin?.description,
+    "이미지를 등록하지 않으면 유튜브 썸네일이 대표 이미지로 표시됩니다.",
+  );
 });
 
 test("history months use month row labels", () => {
