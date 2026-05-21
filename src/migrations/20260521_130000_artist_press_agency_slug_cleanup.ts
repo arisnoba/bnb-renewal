@@ -5,9 +5,24 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     ALTER TABLE "artist_press_agencies"
       ADD COLUMN IF NOT EXISTS "slug" varchar;
 
-    UPDATE "artist_press_agencies"
-    SET "slug" = coalesce(nullif("slug", ''), nullif("normalized_key", ''), concat('agency-', "id"))
-    WHERE "slug" IS NULL OR "slug" = '';
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'artist_press_agencies'
+          AND column_name = 'normalized_key'
+      ) THEN
+        UPDATE "artist_press_agencies"
+        SET "slug" = coalesce(nullif("slug", ''), nullif("normalized_key", ''), concat('agency-', "id"))
+        WHERE "slug" IS NULL OR "slug" = '';
+      ELSE
+        UPDATE "artist_press_agencies"
+        SET "slug" = coalesce(nullif("slug", ''), concat('agency-', "id"))
+        WHERE "slug" IS NULL OR "slug" = '';
+      END IF;
+    END $$;
 
     ALTER TABLE "artist_press_agencies"
       ALTER COLUMN "slug" SET NOT NULL;
