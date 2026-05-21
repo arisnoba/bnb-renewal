@@ -1,29 +1,23 @@
 'use client';
 
-import type { TextFieldClientComponent } from 'payload';
+import type { DefaultCellComponentProps, TextFieldClientComponent } from 'payload';
 
 import { FieldError, FieldLabel, useField } from '@payloadcms/ui';
 
-type DayOption = {
-	label: string;
-	path: string;
-};
-
-const dayOptions: DayOption[] = [
-	{ label: '월', path: 'educationDayMonday' },
-	{ label: '화', path: 'educationDayTuesday' },
-	{ label: '수', path: 'educationDayWednesday' },
-	{ label: '목', path: 'educationDayThursday' },
-	{ label: '금', path: 'educationDayFriday' },
-	{ label: '토', path: 'educationDaySaturday' },
-	{ label: '일', path: 'educationDaySunday' },
-];
+import {
+	curriculumEducationDayOptions,
+	formatCurriculumEducationDays,
+} from '../../lib/curriculumEducationDays';
 
 function useDayField(path: string) {
 	return useField<boolean>({
 		path,
 	});
 }
+
+export const CurriculumEducationDaysCell = ({ rowData }: DefaultCellComponentProps) => {
+	return <span>{formatCurriculumEducationDays(rowData)}</span>;
+};
 
 export const CurriculumEducationDaysField: TextFieldClientComponent = () => {
 	const educationDaysField = useField<string>({
@@ -37,13 +31,13 @@ export const CurriculumEducationDaysField: TextFieldClientComponent = () => {
 	const saturdayField = useDayField('educationDaySaturday');
 	const sundayField = useDayField('educationDaySunday');
 	const fields = [
-		{ ...dayOptions[0], field: mondayField },
-		{ ...dayOptions[1], field: tuesdayField },
-		{ ...dayOptions[2], field: wednesdayField },
-		{ ...dayOptions[3], field: thursdayField },
-		{ ...dayOptions[4], field: fridayField },
-		{ ...dayOptions[5], field: saturdayField },
-		{ ...dayOptions[6], field: sundayField },
+		{ ...curriculumEducationDayOptions[0], field: mondayField },
+		{ ...curriculumEducationDayOptions[1], field: tuesdayField },
+		{ ...curriculumEducationDayOptions[2], field: wednesdayField },
+		{ ...curriculumEducationDayOptions[3], field: thursdayField },
+		{ ...curriculumEducationDayOptions[4], field: fridayField },
+		{ ...curriculumEducationDayOptions[5], field: saturdayField },
+		{ ...curriculumEducationDayOptions[6], field: sundayField },
 	];
 	const isDisabled = fields.some(({ field }) => field.disabled);
 	const selectedValues = fields
@@ -76,7 +70,7 @@ export const CurriculumEducationDaysField: TextFieldClientComponent = () => {
 				gap: 8,
 				margin: '0 0 20px',
 			}}>
-			<FieldLabel label="교육횟수" path={educationDaysField.path} />
+			<FieldLabel label="수업요일" path={educationDaysField.path} />
 			<div
 				className="field-type__wrap"
 				style={{

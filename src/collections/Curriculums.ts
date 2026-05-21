@@ -32,6 +32,11 @@ const educationDayFieldNames = [
 ] as const;
 
 const requiredMessage = "이 입력란은 필수입니다.";
+const educationDayListAdmin = {
+  disableListColumn: true,
+  disableListFilter: true,
+  hidden: true,
+} as const;
 
 function isEmptyValue(value: unknown) {
   return (
@@ -51,7 +56,7 @@ const validateEducationDays = (_value: unknown, { siblingData }: { siblingData?:
     (fieldName) => siblingData?.[fieldName] === true,
   );
 
-  return hasEducationDay ? true : "교육횟수를 하나 이상 선택해야 합니다.";
+  return hasEducationDay ? true : "수업요일을 하나 이상 선택해야 합니다.";
 };
 
 export const Curriculums: CollectionConfig = {
@@ -66,6 +71,7 @@ export const Curriculums: CollectionConfig = {
       "title",
       "className",
       "teacher",
+      "educationDays",
       "educationStartDate",
       "capacity",
       "updatedAt",
@@ -117,12 +123,14 @@ export const Curriculums: CollectionConfig = {
           {
             name: "educationDays",
             type: "text",
-            label: "교육횟수",
+            label: "수업요일",
             validate: validateEducationDays,
             virtual: true,
             admin: {
               className: "bnb-admin-required-field",
               components: {
+                Cell:
+                  "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysCell",
                 Field:
                   "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysField",
               },
@@ -133,63 +141,49 @@ export const Curriculums: CollectionConfig = {
             type: "checkbox",
             label: "월",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           {
             name: "educationDayTuesday",
             type: "checkbox",
             label: "화",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           {
             name: "educationDayWednesday",
             type: "checkbox",
             label: "수",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           {
             name: "educationDayThursday",
             type: "checkbox",
             label: "목",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           {
             name: "educationDayFriday",
             type: "checkbox",
             label: "금",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           {
             name: "educationDaySaturday",
             type: "checkbox",
             label: "토",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           {
             name: "educationDaySunday",
             type: "checkbox",
             label: "일",
             defaultValue: false,
-            admin: {
-              hidden: true,
-            },
+            admin: educationDayListAdmin,
           },
           adminRow([
             {

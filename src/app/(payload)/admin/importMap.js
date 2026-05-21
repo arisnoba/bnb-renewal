@@ -7,6 +7,7 @@ import { TeacherFilmographyRowLabel as TeacherFilmographyRowLabel_1e6826d43328c1
 import { TeacherRepresentativeWorkRowLabel as TeacherRepresentativeWorkRowLabel_d628a446f2ef335398d7c73186843abd } from '@/components/payload/TeacherRepresentativeWorkRowLabel'
 import { CentersField as CentersField_32f6973a336e54b2fbe5bbbe92a20938 } from '@/components/payload/CentersField'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { CurriculumEducationDaysCell as CurriculumEducationDaysCell_d209715e5564662e373d7df899295fcb } from '@/components/payload/CurriculumEducationDaysField'
 import { CurriculumEducationDaysField as CurriculumEducationDaysField_d209715e5564662e373d7df899295fcb } from '@/components/payload/CurriculumEducationDaysField'
 import { CurriculumLessonRowLabel as CurriculumLessonRowLabel_e176a12055efebae7761f51d1061f53e } from '@/components/payload/CurriculumLessonRowLabel'
 import { YouTubePreviewField as YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d } from '@/components/payload/YouTubePreviewField'
@@ -71,6 +72,7 @@ export const importMap = {
   "@/components/payload/TeacherRepresentativeWorkRowLabel#TeacherRepresentativeWorkRowLabel": TeacherRepresentativeWorkRowLabel_d628a446f2ef335398d7c73186843abd,
   "@/components/payload/CentersField#CentersField": CentersField_32f6973a336e54b2fbe5bbbe92a20938,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
+  "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysCell": CurriculumEducationDaysCell_d209715e5564662e373d7df899295fcb,
   "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysField": CurriculumEducationDaysField_d209715e5564662e373d7df899295fcb,
   "@/components/payload/CurriculumLessonRowLabel#CurriculumLessonRowLabel": CurriculumLessonRowLabel_e176a12055efebae7761f51d1061f53e,
   "@/components/payload/YouTubePreviewField#YouTubePreviewField": YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d,

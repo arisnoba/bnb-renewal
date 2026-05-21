@@ -3,6 +3,7 @@ import test from "node:test";
 
 import type { Field, Tab } from "payload";
 
+import { formatCurriculumEducationDays } from "../lib/curriculumEducationDays";
 import { Curriculums } from "./Curriculums";
 
 type FieldWithName = Field & { name: string };
@@ -10,6 +11,8 @@ type FieldWithLabel = FieldWithName & { label?: unknown };
 type FieldWithAdmin = Field & {
   admin?: {
     className?: string;
+    disableListColumn?: boolean;
+    disableListFilter?: boolean;
     hidden?: boolean;
     width?: string;
   };
@@ -84,6 +87,7 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
     "title",
     "className",
     "teacher",
+    "educationDays",
     "educationStartDate",
     "capacity",
     "updatedAt",
@@ -169,12 +173,16 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
     isNamedField(field, "educationDays"),
   ) as FieldWithName | undefined;
 
-  assert.ok(educationDaysField, "교육횟수 UI 필드가 있어야 합니다.");
+  assert.ok(educationDaysField, "수업요일 UI 필드가 있어야 합니다.");
   assert.equal(educationDaysField.type, "text");
-  assert.equal(educationDaysField.label, "교육횟수");
+  assert.equal(educationDaysField.label, "수업요일");
   assert.equal(educationDaysField.virtual, true);
   assertFieldValidate(educationDaysField);
   assert.equal(adminClassName(educationDaysField), "bnb-admin-required-field");
+  assert.equal(
+    educationDaysField.admin?.components?.Cell,
+    "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysCell",
+  );
   assert.equal(
     educationDaysField.admin?.components?.Field,
     "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysField",
@@ -193,6 +201,8 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   ) as (FieldWithAdmin | undefined)[];
 
   assert.ok(dayFields.every((field) => field?.admin?.hidden === true));
+  assert.ok(dayFields.every((field) => field?.admin?.disableListColumn === true));
+  assert.ok(dayFields.every((field) => field?.admin?.disableListFilter === true));
 
   const dateCapacityRow = lectureInfoTab.fields.find(
     (field) =>
@@ -278,4 +288,17 @@ test("curriculum lessons use topic-driven row labels", () => {
     ),
     ["topic", "content"],
   );
+});
+
+test("curriculum education day formatter uses compact Korean weekday labels", () => {
+  assert.equal(
+    formatCurriculumEducationDays({
+      educationDayMonday: true,
+      educationDayTuesday: false,
+      educationDayWednesday: true,
+      educationDayThursday: true,
+    }),
+    "월,수,목",
+  );
+  assert.equal(formatCurriculumEducationDays({}), "-");
 });
