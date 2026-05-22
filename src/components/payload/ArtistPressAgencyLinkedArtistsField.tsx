@@ -40,10 +40,10 @@ export const ArtistPressAgencyLinkedArtistsCell: FC<DefaultCellComponentProps> =
 }) => {
   const agencyId = rowData?.id
   const [totalDocs, setTotalDocs] = useState<number | undefined>(undefined)
+  const displayTotalDocs = agencyId ? totalDocs : 0
 
   useEffect(() => {
     if (!agencyId) {
-      setTotalDocs(0)
       return
     }
 
@@ -77,7 +77,7 @@ export const ArtistPressAgencyLinkedArtistsCell: FC<DefaultCellComponentProps> =
     return () => controller.abort()
   }, [agencyId])
 
-  return <span>{totalDocs ?? '-'}</span>
+  return <span>{displayTotalDocs ?? '-'}</span>
 }
 
 export const ArtistPressAgencyLinkedArtistsField: UIFieldClientComponent = () => {
@@ -85,11 +85,12 @@ export const ArtistPressAgencyLinkedArtistsField: UIFieldClientComponent = () =>
   const [docs, setDocs] = useState<ArtistPressDoc[]>([])
   const [totalDocs, setTotalDocs] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const visibleDocs = id ? docs : []
+  const visibleTotalDocs = id ? totalDocs : 0
+  const visibleIsLoading = id ? isLoading : false
 
   useEffect(() => {
     if (!id) {
-      setDocs([])
-      setTotalDocs(0)
       return
     }
 
@@ -150,7 +151,7 @@ export const ArtistPressAgencyLinkedArtistsField: UIFieldClientComponent = () =>
           연결된 출신 아티스트
         </div>
         <div style={{ color: 'var(--theme-elevation-600)', fontSize: 12 }}>
-          {isLoading ? '불러오는 중' : `${totalDocs}건`}
+          {visibleIsLoading ? '불러오는 중' : `${visibleTotalDocs}건`}
         </div>
       </div>
       <div
@@ -160,9 +161,9 @@ export const ArtistPressAgencyLinkedArtistsField: UIFieldClientComponent = () =>
           overflow: 'hidden',
         }}
       >
-        {docs.length > 0 ? (
+        {visibleDocs.length > 0 ? (
           <div style={{ display: 'grid' }}>
-            {docs.map((doc) => {
+            {visibleDocs.map((doc) => {
               const meta = [doc.actorName, doc.generation].filter(Boolean).join(' | ')
 
               return (

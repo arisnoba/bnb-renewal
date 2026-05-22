@@ -12,7 +12,7 @@ import {
   writeJsonFile,
 } from './runtime'
 
-type Role = 'agency-logo' | 'thumbnail'
+type Role = 'agency-logo' | 'body-image' | 'thumbnail'
 
 type Options = {
   dryRun: boolean
@@ -24,6 +24,7 @@ type Options = {
 type MediaRow = {
   artist_press_id: number
   filename: string
+  local_path?: string
   media_id: number
   prefix: string | null
   role: Role
@@ -34,6 +35,7 @@ type MediaRow = {
   sizes_square_filename: string | null
   sizes_thumbnail_filename: string | null
   sizes_xlarge_filename: string | null
+  source_url?: string
   title: string | null
 }
 
@@ -42,6 +44,7 @@ type UploadFile = {
   localPath: string
   objectKey: string
   sizeName: string
+  sourceUrl?: string
 }
 
 type Entry = {
@@ -61,8 +64,10 @@ type SizeColumn = Extract<keyof MediaRow, `sizes_${string}_filename`>
 
 const ROLE_PREFIX: Record<Role, string> = {
   'agency-logo': 'media/artist-press/agency-logos',
+  'body-image': 'media/artist-press/body-images',
   thumbnail: 'media/artist-press/thumbnails',
 }
+const BODY_MEDIA_BACKFILL_REPORT = 'tmp/legacy-assets/artist-press-body-media-backfill-write.json'
 
 const SIZE_COLUMNS: Array<{ column: SizeColumn; name: string }> = [
   { column: 'sizes_thumbnail_filename', name: 'thumbnail' },
@@ -194,7 +199,7 @@ function readRequiredValue(args: string[], index: number, name: string) {
 }
 
 function toRole(value: string): Role {
-  if (value === 'thumbnail' || value === 'agency-logo') {
+  if (value === 'thumbnail' || value === 'agency-logo' || value === 'body-image') {
     return value
   }
 
@@ -202,6 +207,7 @@ function toRole(value: string): Role {
 }
 
 async function readRows(pool: Pool, roles: Role[]) {
+  const rows: MediaRow[] = []
   const selects: string[] = []
 
   if (roles.includes('thumbnail')) {
@@ -230,12 +236,149 @@ async function readRows(pool: Pool, roles: Role[]) {
     `)
   }
 
-  const result = await pool.query<MediaRow>(`
-    ${selects.join('\nUNION ALL\n')}
-    ORDER BY role, artist_press_id
-  `)
+  if (selects.length > 0) {
+    const result = await pool.query<MediaRow>(`
+      ${selects.join('\nUNION ALL\n')}
+      ORDER BY role, artist_press_id
+    `)
 
-  return result.rows
+    rows.push(...result.rows)
+  }
+
+  if (roles.includes('body-image')) {
+    rows.push(...(await readBodyImageRows(pool)))
+  }
+
+  return rows.sort((left, right) => left.role.localeCompare(right.role) || left.artist_press_id - right.artist_press_id)
+}
+
+async function readBodyImageRows(pool: Pool) {
+  const sourceByMediaId = await readBodyMediaSourceMap()
+  const docs = await pool.query<{ body: unknown; id: number; title: string | null }>(`
+    SELECT id, title, body
+    FROM artist_press
+    WHERE body IS NOT NULL
+    ORDER BY id
+  `)
+  const docIdByMediaId = new Map<number, { artistPressId: number; title: string | null }>()
+
+  for (const doc of docs.rows) {
+    for (const mediaId of collectUploadMediaIds(doc.body)) {
+      if (!docIdByMediaId.has(mediaId)) {
+        docIdByMediaId.set(mediaId, {
+          artistPressId: doc.id,
+          title: doc.title,
+        })
+      }
+    }
+  }
+
+  const mediaIds = [...docIdByMediaId.keys()]
+
+  if (mediaIds.length === 0) {
+    return []
+  }
+
+  const media = await pool.query<Omit<MediaRow, 'artist_press_id' | 'role' | 'title'>>(
+    `
+      SELECT
+        media.id AS media_id,
+        media.filename,
+        media.prefix,
+        media.sizes_thumbnail_filename,
+        media.sizes_square_filename,
+        media.sizes_small_filename,
+        media.sizes_medium_filename,
+        media.sizes_large_filename,
+        media.sizes_xlarge_filename,
+        media.sizes_og_filename
+      FROM media
+      WHERE media.id = ANY($1::int[])
+      ORDER BY media.id
+    `,
+    [mediaIds],
+  )
+
+  return media.rows.map((row) => {
+    const source = docIdByMediaId.get(row.media_id)
+
+    if (!source) {
+      throw new Error(`artist_press body media 참조를 찾을 수 없습니다: ${row.media_id}`)
+    }
+
+    return {
+      ...row,
+      artist_press_id: source.artistPressId,
+      local_path: sourceByMediaId.get(row.media_id)?.localPath,
+      role: 'body-image' as const,
+      source_url: sourceByMediaId.get(row.media_id)?.sourceUrl,
+      title: source.title,
+    }
+  })
+}
+
+async function readBodyMediaSourceMap() {
+  const map = new Map<number, { localPath?: string; sourceUrl?: string }>()
+
+  try {
+    const raw = await fs.readFile(resolveProjectPath(BODY_MEDIA_BACKFILL_REPORT), 'utf8')
+    const parsed = JSON.parse(raw) as {
+      rows?: Array<{
+        images?: Array<{
+          localPath?: string
+          mediaId?: number
+          remoteSrc?: string
+          src?: string
+        }>
+      }>
+    }
+
+    for (const row of parsed.rows ?? []) {
+      for (const image of row.images ?? []) {
+        if (Number.isFinite(image.mediaId)) {
+          map.set(Number(image.mediaId), {
+            localPath: image.localPath,
+            sourceUrl: image.remoteSrc ?? image.src,
+          })
+        }
+      }
+    }
+  } catch {
+    // Fallback to public/media below when the historical report is unavailable.
+  }
+
+  return map
+}
+
+function collectUploadMediaIds(value: unknown, output: number[] = []) {
+  if (!value || typeof value !== 'object') {
+    return output
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectUploadMediaIds(item, output)
+    }
+
+    return output
+  }
+
+  const record = value as Record<string, unknown>
+
+  if (record.relationTo === 'media' && record.value != null) {
+    const rawValue = typeof record.value === 'object' ? (record.value as { id?: unknown }).id : record.value
+    const mediaId = Number(rawValue)
+
+    if (Number.isFinite(mediaId)) {
+      output.push(mediaId)
+    }
+  }
+
+  for (const item of Object.values(record)) {
+    collectUploadMediaIds(item, output)
+  }
+
+  return output
 }
 
 async function processRow({ options, pool, row }: { options: Options; pool: Pool; row: MediaRow }) {
@@ -259,20 +402,17 @@ async function processRow({ options, pool, row }: { options: Options; pool: Pool
 
   try {
     for (const file of files) {
-      const body = await fs.readFile(file.localPath)
+      const image = await readUploadFile(file)
       await uploadR2Object({
-        body,
+        body: image.body,
         cacheControl: 'public, max-age=31536000, immutable',
-        contentType: contentTypeFor(file.filename),
+        contentType: image.contentType,
         key: file.objectKey,
       })
       entry.uploaded += 1
     }
 
-    await pool.query('UPDATE media SET prefix = $1, updated_at = NOW() WHERE id = $2', [
-      targetPrefix,
-      row.media_id,
-    ])
+    await updateMediaRow({ pool, row, targetPrefix })
 
     return entry
   } catch (error) {
@@ -283,22 +423,96 @@ async function processRow({ options, pool, row }: { options: Options; pool: Pool
 }
 
 function buildUploadFiles(row: MediaRow, targetPrefix: string): UploadFile[] {
-  const fileNames = [{ filename: row.filename, sizeName: 'original' }]
+  const fileNames = [
+    {
+      filename: row.filename,
+      localPath: row.local_path,
+      sizeName: 'original',
+      sourceUrl: row.source_url,
+    },
+  ]
+
+  if (row.role === 'body-image') {
+    return fileNames.map((file) => ({
+      filename: file.filename,
+      localPath: resolveSourceFilePath(file.localPath, file.filename),
+      objectKey: path.posix.join(targetPrefix, file.filename),
+      sizeName: file.sizeName,
+      sourceUrl: file.sourceUrl,
+    }))
+  }
 
   for (const item of SIZE_COLUMNS) {
     const filename = row[item.column]
 
     if (filename) {
-      fileNames.push({ filename, sizeName: item.name })
+      fileNames.push({ filename, localPath: undefined, sizeName: item.name, sourceUrl: undefined })
     }
   }
 
   return fileNames.map((file) => ({
     filename: file.filename,
-    localPath: resolveProjectPath('public/media', file.filename),
+    localPath: resolveSourceFilePath(file.localPath, file.filename),
     objectKey: path.posix.join(targetPrefix, file.filename),
     sizeName: file.sizeName,
+    sourceUrl: file.sourceUrl,
   }))
+}
+
+function resolveSourceFilePath(localPath: string | undefined, filename: string) {
+  return localPath ? resolveProjectPath(localPath) : resolveProjectPath('public/media', filename)
+}
+
+async function readUploadFile(file: UploadFile) {
+  try {
+    return {
+      body: await fs.readFile(file.localPath),
+      contentType: contentTypeFor(file.filename),
+    }
+  } catch (error) {
+    if (!file.sourceUrl) {
+      throw error
+    }
+  }
+
+  const response = await fetch(file.sourceUrl)
+
+  if (!response.ok) {
+    throw new Error(`원격 원본 이미지를 가져오지 못했습니다: ${response.status} ${file.sourceUrl}`)
+  }
+
+  return {
+    body: Buffer.from(await response.arrayBuffer()),
+    contentType: response.headers.get('content-type') ?? contentTypeFor(file.filename),
+  }
+}
+
+async function updateMediaRow({ pool, row, targetPrefix }: { pool: Pool; row: MediaRow; targetPrefix: string }) {
+  if (row.role !== 'body-image') {
+    await pool.query('UPDATE media SET prefix = $1, updated_at = NOW() WHERE id = $2', [
+      targetPrefix,
+      row.media_id,
+    ])
+    return
+  }
+
+  await pool.query(
+    `
+      UPDATE media
+      SET
+        prefix = $1,
+        sizes_thumbnail_filename = NULL,
+        sizes_square_filename = NULL,
+        sizes_small_filename = NULL,
+        sizes_medium_filename = NULL,
+        sizes_large_filename = NULL,
+        sizes_xlarge_filename = NULL,
+        sizes_og_filename = NULL,
+        updated_at = NOW()
+      WHERE id = $2
+    `,
+    [targetPrefix, row.media_id],
+  )
 }
 
 function contentTypeFor(filename: string) {
