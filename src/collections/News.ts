@@ -14,7 +14,6 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { slugField } from "payload";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
 import { centerScopedCollectionAccess } from "./access";
@@ -26,6 +25,7 @@ import {
   displayStatusOptions,
   publishedAtField,
   sidebarFields,
+  slugField,
 } from "./shared";
 import { seoTitleField } from "./seoFields";
 

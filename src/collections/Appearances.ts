@@ -35,6 +35,7 @@ export const Appearances: CollectionConfig = {
     {
       name: 'slug',
       type: 'text',
+      label: '슬러그',
       required: true,
       unique: true,
     },

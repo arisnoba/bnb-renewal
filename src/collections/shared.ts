@@ -1,4 +1,7 @@
 import type { CollectionBeforeValidateHook, Field } from "payload";
+import { slugField as payloadSlugField } from "payload";
+
+type PayloadSlugFieldArgs = Parameters<typeof payloadSlugField>[0];
 
 type AdminTab = {
   fields: Field[];
@@ -252,6 +255,26 @@ export const sourceFields: Field[] = [
     unique: true,
   },
 ];
+
+export function slugField(args?: PayloadSlugFieldArgs): ReturnType<typeof payloadSlugField> {
+  return payloadSlugField({
+    ...args,
+    overrides: (field) => {
+      const nextField = args?.overrides ? args.overrides(field) : field;
+      const slugFieldName = args?.name ?? "slug";
+      const slugTextField = nextField.fields.find(
+        (item): item is Extract<Field, { name: string }> =>
+          "name" in item && item.name === slugFieldName,
+      );
+
+      if (slugTextField) {
+        slugTextField.label = "슬러그";
+      }
+
+      return nextField;
+    },
+  });
+}
 
 export const publishedAtField: Field = {
   name: "publishedAt",

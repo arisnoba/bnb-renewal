@@ -4,8 +4,6 @@ import type {
   Validate,
 } from 'payload'
 
-import { slugField } from 'payload'
-
 import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedCollectionAccess } from './access'
 import {
@@ -16,6 +14,7 @@ import {
   displayStatusOptions,
   publishedAtField,
   sidebarFields,
+  slugField,
 } from './shared'
 
 const faqSlugify = createKoreanSlugifyWithFallback('faq')

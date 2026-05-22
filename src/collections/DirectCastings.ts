@@ -1,7 +1,5 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
-import { slugField } from 'payload'
-
 import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import {
   adminRow,
@@ -12,6 +10,7 @@ import {
   isGlobalAdminUser,
   publishedAtField,
   sidebarFields,
+  slugField,
   userCenterValue,
 } from './shared'
 import { newsBodyEditor } from './News'

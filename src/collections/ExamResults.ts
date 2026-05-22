@@ -8,7 +8,6 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { slugField } from "payload";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
@@ -20,6 +19,7 @@ import {
   isExamAdminMenuHidden,
   publishedAtField,
   sidebarFields,
+  slugField,
 } from "./shared";
 
 const examResultBodyEditor = lexicalEditor({

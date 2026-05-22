@@ -1,5 +1,4 @@
 import type { CollectionConfig } from "payload";
-import { slugField } from "payload";
 
 import { allowAll, centerScopedCollectionAccess } from "./access";
 import { koreanSlugify } from "../utilities/koreanSlugify";
@@ -11,6 +10,7 @@ import {
   centersField,
   imagePathField,
   sidebarFields,
+  slugField,
 } from "./shared";
 
 export const Teachers: CollectionConfig = {

@@ -14,7 +14,6 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { slugField } from "payload";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
 import { centerScopedCollectionAccess } from "./access";
@@ -27,6 +26,7 @@ import {
   displayStatusOptions,
   publishedAtField,
   sidebarFields,
+  slugField,
 } from "./shared";
 import { seoTitleField } from "./seoFields";
 
@@ -113,20 +113,9 @@ export const ArtistPress: CollectionConfig = {
             },
           ]),
           {
-            name: "body",
-            type: "richText",
-            editor: artistPressBodyEditor,
-            label: "본문",
-          },
-        ],
-      },
-      {
-        label: "미디어",
-        fields: [
-          {
             name: "thumbnailMedia",
             type: "upload",
-            label: "썸네일 이미지",
+            label: "대표 이미지",
             relationTo: "media",
           },
           {
@@ -137,6 +126,12 @@ export const ArtistPress: CollectionConfig = {
             admin: {
               hidden: true,
             },
+          },
+          {
+            name: "body",
+            type: "richText",
+            editor: artistPressBodyEditor,
+            label: "본문",
           },
         ],
       },

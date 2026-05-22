@@ -3,16 +3,28 @@ import test from "node:test";
 
 import type { CollectionConfig, Field, Tab } from "payload";
 
+import { Appearances } from "./Appearances";
+import { AppearancesExtra } from "./AppearancesExtra";
+import { ArtistPress } from "./ArtistPress";
 import { ArtistPressAgencies } from "./ArtistPressAgencies";
 import { CastingAppearances } from "./CastingAppearances";
+import { Directings } from "./Directings";
 import { DirectCastings } from "./DirectCastings";
+import { Dramas } from "./Dramas";
 import { ExamPassedReviews } from "./ExamPassedReviews";
 import { Histories } from "./Histories";
 import { HighteenSpecialClasses } from "./HighteenSpecialClasses";
+import { Lineups } from "./Lineups";
+import { Movies } from "./Movies";
 import { Profiles } from "./Profiles";
+import { Reviews } from "./Reviews";
+import { Shoots } from "./Shoots";
+import { slugField } from "./shared";
+import { TeacherFiles } from "./TeacherFiles";
 
 type FieldWithName = Field & {
   fields?: Field[];
+  label?: unknown;
   name: string;
   labels?: unknown;
   required?: boolean;
@@ -145,6 +157,24 @@ test("highteen special class uses one content tab with thumbnail below YouTube U
   );
 });
 
+test("artist press uses content and SEO tabs with thumbnail above body", () => {
+  const tabs = getTabs(ArtistPress);
+  const contentTab = getTab(ArtistPress, "콘텐츠");
+  const fieldNames = contentTab.fields
+    .filter((field): field is FieldWithName => "name" in field)
+    .map((field) => field.name);
+  const thumbnailMedia = getTabField(ArtistPress, "콘텐츠", "thumbnailMedia");
+
+  assert.deepEqual(
+    tabs.map((tab) => tab.label),
+    ["콘텐츠", "SEO"],
+  );
+  assert.deepEqual(fieldNames, ["thumbnailMedia", "agencyLogoMedia", "body"]);
+  assert.equal(thumbnailMedia.type, "upload");
+  assert.equal(thumbnailMedia.label, "대표 이미지");
+  assert.equal(thumbnailMedia.relationTo, "media");
+});
+
 test("artist press agency settings use slug and omit legacy filenames", () => {
   const slug = getTopLevelField(ArtistPressAgencies, "slug");
 
@@ -153,6 +183,35 @@ test("artist press agency settings use slug and omit legacy filenames", () => {
   assert.equal(slug.required, true);
   assert.equal(hasTopLevelField(ArtistPressAgencies, "normalizedKey"), false);
   assert.equal(hasTopLevelField(ArtistPressAgencies, "legacyAliases"), false);
+});
+
+test("shared slug field uses Korean admin label", () => {
+  const field = slugField();
+  const slugTextField = field.fields.find((item) => isNamedField(item, "slug"));
+
+  assert.ok(slugTextField, "공통 slugField에 slug 텍스트 필드가 있어야 합니다.");
+  assert.equal(slugTextField.label, "슬러그");
+});
+
+test("legacy direct slug fields use Korean labels", () => {
+  const collections = [
+    Appearances,
+    AppearancesExtra,
+    Directings,
+    Dramas,
+    Lineups,
+    Movies,
+    Reviews,
+    Shoots,
+    TeacherFiles,
+  ];
+
+  for (const collection of collections) {
+    const slug = getTopLevelField(collection, "slug");
+
+    assert.equal(slug.type, "text", `${collection.slug}.slug 타입`);
+    assert.equal(slug.label, "슬러그", `${collection.slug}.slug 라벨`);
+  }
 });
 
 test("history months use month row labels", () => {
