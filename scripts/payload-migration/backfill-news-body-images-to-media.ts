@@ -63,6 +63,16 @@ const HOST_BY_SOURCE_DB: Record<string, string> = {
   bnbuniv: 'https://www.baewoo.kr',
   kidscenter: 'https://www.baewoo.net',
 }
+const SOURCE_DB_BY_NEWS_SLUG_PREFIX: Record<string, string> = {
+  art: 'baewoo',
+  baewoo: 'baewoo',
+  bnbhighteen: 'bnbhighteen',
+  bnbuniv: 'bnbuniv',
+  exam: 'bnbuniv',
+  highteen: 'bnbhighteen',
+  kids: 'kidscenter',
+  kidscenter: 'kidscenter',
+}
 const CANONICAL_HOST_BY_HOST: Record<string, string> = {
   'baewoo.co.kr': 'www.baewoo.co.kr',
   'baewoobaewoo.cafe24.com': 'www.baewoo.co.kr',
@@ -721,7 +731,8 @@ function canonicalizeUrl(value: string) {
 }
 
 function hostForNews(row: NewsRow) {
-  const sourceDb = row.slug?.match(/^news-([a-z]+)-\d+$/)?.[1]
+  const slugPrefix = row.slug?.match(/^news-([a-z]+)-\d+$/)?.[1]
+  const sourceDb = slugPrefix ? SOURCE_DB_BY_NEWS_SLUG_PREFIX[slugPrefix] : undefined
 
   return sourceDb ? (HOST_BY_SOURCE_DB[sourceDb] ?? HOST_BY_SOURCE_DB.baewoo) : HOST_BY_SOURCE_DB.baewoo
 }

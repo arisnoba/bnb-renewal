@@ -155,7 +155,18 @@ SELECT
   `news`.`source_db`,
   `news`.`source_table`,
   `news`.`wr_id` AS `source_id`,
-  CONCAT('news-', `news`.`source_db`, '-', `news`.`wr_id`) AS `slug`,
+  CONCAT(
+    'news-',
+    CASE `news`.`source_db`
+      WHEN 'baewoo' THEN 'art'
+      WHEN 'bnbuniv' THEN 'exam'
+      WHEN 'bnbhighteen' THEN 'highteen'
+      WHEN 'kidscenter' THEN 'kids'
+      ELSE `news`.`source_db`
+    END,
+    '-',
+    `news`.`wr_id`
+  ) AS `slug`,
   `news`.`center`,
   NULLIF(TRIM(`news`.`ca_name`), '') AS `category`,
   NULLIF(TRIM(`news`.`wr_subject`), '') AS `title`,

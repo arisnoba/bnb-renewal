@@ -86,9 +86,10 @@ export const News: CollectionConfig = {
             label: "분류",
           },
           {
-            name: "excerpt",
-            type: "textarea",
-            label: "요약",
+            name: "thumbnailMedia",
+            type: "upload",
+            label: "대표 이미지",
+            relationTo: "media",
           },
           {
             name: "body",
@@ -96,16 +97,10 @@ export const News: CollectionConfig = {
             editor: newsBodyEditor,
             label: "본문",
           },
-        ],
-      },
-      {
-        label: "미디어",
-        fields: [
           {
-            name: "thumbnailMedia",
-            type: "upload",
-            label: "썸네일 이미지",
-            relationTo: "media",
+            name: "excerpt",
+            type: "textarea",
+            label: "요약",
           },
         ],
       },

@@ -16,6 +16,7 @@ import { Histories } from "./Histories";
 import { HighteenSpecialClasses } from "./HighteenSpecialClasses";
 import { Lineups } from "./Lineups";
 import { Movies } from "./Movies";
+import { News } from "./News";
 import { Profiles } from "./Profiles";
 import { Reviews } from "./Reviews";
 import { Shoots } from "./Shoots";
@@ -170,6 +171,24 @@ test("artist press uses content and SEO tabs with thumbnail above body", () => {
     ["콘텐츠", "SEO"],
   );
   assert.deepEqual(fieldNames, ["thumbnailMedia", "agencyLogoMedia", "body"]);
+  assert.equal(thumbnailMedia.type, "upload");
+  assert.equal(thumbnailMedia.label, "대표 이미지");
+  assert.equal(thumbnailMedia.relationTo, "media");
+});
+
+test("news uses content and SEO tabs with thumbnail above body", () => {
+  const tabs = getTabs(News);
+  const contentTab = getTab(News, "콘텐츠");
+  const fieldNames = contentTab.fields
+    .filter((field): field is FieldWithName => "name" in field)
+    .map((field) => field.name);
+  const thumbnailMedia = getTabField(News, "콘텐츠", "thumbnailMedia");
+
+  assert.deepEqual(
+    tabs.map((tab) => tab.label),
+    ["콘텐츠", "SEO"],
+  );
+  assert.deepEqual(fieldNames, ["category", "thumbnailMedia", "body", "excerpt"]);
   assert.equal(thumbnailMedia.type, "upload");
   assert.equal(thumbnailMedia.label, "대표 이미지");
   assert.equal(thumbnailMedia.relationTo, "media");
