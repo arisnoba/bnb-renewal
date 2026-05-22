@@ -1,7 +1,9 @@
 import crypto from 'node:crypto'
+import { execFile } from 'node:child_process'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { promisify } from 'node:util'
 
 import {
   BlockquoteFeature,
@@ -86,6 +88,7 @@ type DynamicPayload = {
 }
 
 const MEDIA_PREFIX = 'media/artist-press/body-images'
+const execFileAsync = promisify(execFile)
 
 const artistPressBodyEditor = lexicalEditor({
   features: ({ defaultFeatures }) => [
@@ -245,6 +248,12 @@ function readRequiredValue(args: string[], index: number, name: string) {
 }
 
 async function readArtistPressRows(pool: Pool, options: Options) {
+  const hasBodyHtml = await hasTableColumn(pool, 'artist_press', 'body_html')
+
+  if (!hasBodyHtml) {
+    return readArtistPressRowsWithLegacyBodyHtml(pool, options)
+  }
+
   const values: unknown[] = []
   const conditions = ["body_html IS NOT NULL", "trim(body_html) <> ''"]
 
@@ -270,6 +279,100 @@ async function readArtistPressRows(pool: Pool, options: Options) {
   )
 
   return result.rows
+}
+
+async function hasTableColumn(pool: Pool, tableName: string, columnName: string) {
+  const result = await pool.query<{ exists: boolean }>(
+    `
+      SELECT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = $1
+          AND column_name = $2
+      )
+    `,
+    [tableName, columnName],
+  )
+
+  return result.rows[0]?.exists === true
+}
+
+async function readArtistPressRowsWithLegacyBodyHtml(pool: Pool, options: Options) {
+  const values: unknown[] = []
+  const conditions = ['TRUE']
+
+  if (!options.overwrite) {
+    conditions.push("(body IS NULL OR body::text = 'null' OR body::text = '\"null\"')")
+  }
+
+  if (options.ids.length > 0) {
+    values.push(options.ids)
+    conditions.push(`id = ANY($${values.length}::int[])`)
+  }
+
+  const limitClause = options.limit === 'all' ? '' : ` LIMIT ${options.limit}`
+  const result = await pool.query<Omit<ArtistPressRow, 'body_html'>>(
+    `
+      SELECT id, slug, title, body
+      FROM artist_press
+      WHERE ${conditions.join(' AND ')}
+      ORDER BY id ASC
+      ${limitClause}
+    `,
+    values,
+  )
+
+  const legacyBodyHtmlBySlug = await readLegacyBodyHtmlBySlug()
+
+  return result.rows
+    .map((row) => ({
+      ...row,
+      body_html: row.slug ? legacyBodyHtmlBySlug.get(row.slug) ?? null : null,
+    }))
+    .filter((row) => row.body_html && row.body_html.trim())
+}
+
+async function readLegacyBodyHtmlBySlug() {
+  const query = `
+    SELECT JSON_OBJECT(
+      'slug', slug,
+      'body_html', body_html
+    )
+    FROM bnb_legacy_work.artist_press
+    WHERE body_html IS NOT NULL
+      AND TRIM(body_html) <> ''
+    ORDER BY slug
+  `
+  const { stdout } = await execFileAsync(
+    'docker',
+    [
+      'compose',
+      'exec',
+      '-T',
+      'legacy-mariadb',
+      'mariadb',
+      '-uroot',
+      '-proot',
+      '--batch',
+      '--raw',
+      '--skip-column-names',
+      '--execute',
+      query,
+    ],
+    { maxBuffer: 1024 * 1024 * 128 },
+  )
+  const rows = stdout
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as { body_html?: unknown; slug?: unknown })
+
+  return new Map(
+    rows
+      .map((row) => [String(row.slug ?? '').trim(), String(row.body_html ?? '')] as const)
+      .filter(([slug, bodyHtml]) => slug && bodyHtml.trim()),
+  )
 }
 
 async function readDownloadReportEntries(inputPath: string): Promise<DownloadReportEntry[]> {
