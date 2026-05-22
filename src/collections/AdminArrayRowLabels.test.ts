@@ -12,6 +12,7 @@ import { Directings } from "./Directings";
 import { DirectCastings } from "./DirectCastings";
 import { Dramas } from "./Dramas";
 import { ExamPassedReviews } from "./ExamPassedReviews";
+import { ExamPassedVideos } from "./ExamPassedVideos";
 import { Histories } from "./Histories";
 import { HighteenSpecialClasses } from "./HighteenSpecialClasses";
 import { Lineups } from "./Lineups";
@@ -82,6 +83,32 @@ function hasTopLevelField(collection: CollectionConfig, fieldName: string) {
   return collection.fields.some((item) => isNamedField(item, fieldName));
 }
 
+function findNamedFieldDeep(fields: Field[], fieldName: string): FieldWithName | undefined {
+  for (const field of fields) {
+    if (isNamedField(field, fieldName)) {
+      return field;
+    }
+
+    if ("fields" in field && Array.isArray(field.fields)) {
+      const nestedField = findNamedFieldDeep(field.fields, fieldName);
+
+      if (nestedField) {
+        return nestedField;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function getFieldDeep(collection: CollectionConfig, fieldName: string) {
+  const field = findNamedFieldDeep(collection.fields, fieldName);
+
+  assert.ok(field, `${collection.slug}.${fieldName} 필드가 있어야 합니다.`);
+
+  return field;
+}
+
 test("profile career items use title row labels", () => {
   const field = getTabField(Profiles, "경력관리", "careerItems");
 
@@ -132,6 +159,16 @@ test("exam passed review omits cohort field", () => {
   assert.equal(studentName.label, "학생명");
   assert.equal(studentName.required, true);
   assert.equal(hasTopLevelField(ExamPassedReviews, "cohort"), false);
+});
+
+test("exam passed content collections expose slug fields", () => {
+  for (const collection of [ExamPassedReviews, ExamPassedVideos]) {
+    const slug = getFieldDeep(collection, "slug");
+
+    assert.equal(slug.type, "text", `${collection.slug}.slug 타입`);
+    assert.equal(slug.label, "슬러그", `${collection.slug}.slug 라벨`);
+    assert.equal(slug.required, true, `${collection.slug}.slug 필수 여부`);
+  }
 });
 
 test("highteen special class uses one content tab with thumbnail below YouTube URL", () => {
@@ -210,6 +247,27 @@ test("shared slug field uses Korean admin label", () => {
 
   assert.ok(slugTextField, "공통 slugField에 slug 텍스트 필드가 있어야 합니다.");
   assert.equal(slugTextField.label, "슬러그");
+});
+
+test("shared slug field normalizes manual slug input", () => {
+  const field = slugField();
+  const slugTextField = field.fields.find((item) => isNamedField(item, "slug")) as
+    | (FieldWithName & {
+        hooks?: {
+          beforeValidate?: Array<(args: { value: unknown }) => unknown>;
+        };
+      })
+    | undefined;
+
+  assert.ok(slugTextField?.hooks?.beforeValidate?.length, "slug 정규화 hook이 있어야 합니다.");
+
+  const normalize = slugTextField.hooks.beforeValidate.at(-1) as
+    | ((args: { value: unknown }) => unknown)
+    | undefined;
+
+  assert.ok(normalize, "slug 정규화 hook을 찾을 수 있어야 합니다.");
+  assert.equal(normalize({ value: "Hello World" }), "hello-world");
+  assert.equal(normalize({ value: "JTBC 서른, 아홉" }), "jtbc-서른-아홉");
 });
 
 test("legacy direct slug fields use Korean labels", () => {

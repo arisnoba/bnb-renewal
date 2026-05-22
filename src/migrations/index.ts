@@ -82,6 +82,10 @@ import * as migration_20260521_120000_drop_teacher_bio_html from './20260521_120
 import * as migration_20260521_130000_artist_press_agency_slug_cleanup from './20260521_130000_artist_press_agency_slug_cleanup'
 import * as migration_20260521_140000_drop_exam_passed_review_cohort from './20260521_140000_drop_exam_passed_review_cohort'
 import * as migration_20260522_150000_news_center_slug_prefixes from './20260522_150000_news_center_slug_prefixes'
+import * as migration_20260522_160000_exam_passed_content_slugs from './20260522_160000_exam_passed_content_slugs'
+import * as migration_20260522_170000_direct_casting_title_slugs from './20260522_170000_direct_casting_title_slugs'
+import * as migration_20260522_180000_direct_casting_title_aliases from './20260522_180000_direct_casting_title_aliases'
+import * as migration_20260522_190000_direct_casting_broadcast_title_names from './20260522_190000_direct_casting_broadcast_title_names'
 
 export const migrations = [
   {
@@ -503,5 +507,25 @@ export const migrations = [
     up: migration_20260522_150000_news_center_slug_prefixes.up,
     down: migration_20260522_150000_news_center_slug_prefixes.down,
     name: '20260522_150000_news_center_slug_prefixes',
+  },
+  {
+    up: migration_20260522_160000_exam_passed_content_slugs.up,
+    down: migration_20260522_160000_exam_passed_content_slugs.down,
+    name: '20260522_160000_exam_passed_content_slugs',
+  },
+  {
+    up: migration_20260522_170000_direct_casting_title_slugs.up,
+    down: migration_20260522_170000_direct_casting_title_slugs.down,
+    name: '20260522_170000_direct_casting_title_slugs',
+  },
+  {
+    up: migration_20260522_180000_direct_casting_title_aliases.up,
+    down: migration_20260522_180000_direct_casting_title_aliases.down,
+    name: '20260522_180000_direct_casting_title_aliases',
+  },
+  {
+    up: migration_20260522_190000_direct_casting_broadcast_title_names.up,
+    down: migration_20260522_190000_direct_casting_broadcast_title_names.down,
+    name: '20260522_190000_direct_casting_broadcast_title_names',
   },
 ]

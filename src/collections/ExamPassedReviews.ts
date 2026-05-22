@@ -13,6 +13,7 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 
+import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
   authorNameFromCenters,
@@ -22,7 +23,10 @@ import {
   isExamAdminMenuHidden,
   publishedAtField,
   sidebarFields,
+  slugField,
 } from "./shared";
+
+const examPassedReviewSlugify = createKoreanSlugifyWithFallback("exam-passed-review");
 
 const examPassedReviewBodyEditor = lexicalEditor({
   admin: {
@@ -88,7 +92,7 @@ export const ExamPassedReviews: CollectionConfig = {
   },
   access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["title", "centers", "authorName", "school", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "slug", "centers", "authorName", "school", "publishedAt", "updatedAt"],
     group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "title",
@@ -175,6 +179,9 @@ export const ExamPassedReviews: CollectionConfig = {
           readOnly: true,
         },
       },
+      slugField({
+        slugify: examPassedReviewSlugify,
+      }),
     ]),
   ],
   versions: {

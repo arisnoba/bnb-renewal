@@ -189,7 +189,44 @@ SELECT
   `direct`.`wr_id` AS `source_id`,
   `direct`.`source_center`,
   `direct`.`company`,
-  NULLIF(TRIM(`direct`.`wr_subject`), '') AS `title`,
+  NULLIF(TRIM(
+    REPLACE(
+      REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  REPLACE(
+                    CASE NULLIF(TRIM(`direct`.`wr_subject`), '')
+                      WHEN 'JTBC 서른,아홉' THEN 'JTBC 서른, 아홉'
+                      ELSE COALESCE(NULLIF(TRIM(`direct`.`wr_subject`), ''), '')
+                    END,
+                    '넷플릭스',
+                    'Netflix'
+                  ),
+                  'NETFLIX',
+                  'Netflix'
+                ),
+                'Netfilx',
+                'Netflix'
+              ),
+              '채널 A',
+              '채널A'
+            ),
+            'COUPANG PLAY',
+            'Coupang Play'
+          ),
+          'coupang play',
+          'Coupang Play'
+        ),
+        '쿠팡플레이',
+        'Coupang Play'
+      ),
+      '카카오 TV',
+      'KakaoTV'
+    )
+  ), '') AS `title`,
   NULLIF(TRIM(`direct`.`ca_name`), '') AS `year_label`,
   NULLIF(TRIM(`direct`.`wr_2`), '') AS `project_info`,
   NULLIF(`direct`.`wr_content`, '') AS `body_html`,
@@ -272,6 +309,43 @@ SELECT
   ) AS `row_rank`
 FROM `tmp_direct_castings_enriched` AS `enriched`;
 
+DROP TEMPORARY TABLE IF EXISTS `tmp_direct_castings_title_counts`;
+
+CREATE TEMPORARY TABLE `tmp_direct_castings_title_counts` AS
+SELECT
+  `title`,
+  COUNT(*) AS `title_count`
+FROM `tmp_direct_castings_ranked`
+WHERE `row_rank` = 1
+GROUP BY `title`;
+
+DROP TEMPORARY TABLE IF EXISTS `tmp_direct_castings_slugged`;
+
+CREATE TEMPORARY TABLE `tmp_direct_castings_slugged` AS
+SELECT
+  `slug_source`.*,
+  CASE
+    WHEN `slug_source`.`title_count` > 1 THEN CONCAT(`slug_source`.`title_slug`, '-', `slug_source`.`company_slug`)
+    ELSE `slug_source`.`title_slug`
+  END AS `generated_slug`
+FROM (
+  SELECT
+    `canonical`.*,
+    `title_counts`.`title_count`,
+    COALESCE(
+      NULLIF(TRIM(BOTH '-' FROM REGEXP_REPLACE(REGEXP_REPLACE(LOWER(COALESCE(`canonical`.`title`, '')), '[^[:alnum:]]+', '-'), '-+', '-')), ''),
+      CONCAT('direct-casting-', `canonical`.`source_id`)
+    ) AS `title_slug`,
+    COALESCE(
+      NULLIF(TRIM(BOTH '-' FROM REGEXP_REPLACE(REGEXP_REPLACE(LOWER(COALESCE(`canonical`.`company`, '')), '[^[:alnum:]]+', '-'), '-+', '-')), ''),
+      `canonical`.`company`
+    ) AS `company_slug`
+  FROM `tmp_direct_castings_ranked` AS `canonical`
+  JOIN `tmp_direct_castings_title_counts` AS `title_counts`
+    ON `title_counts`.`title` = `canonical`.`title`
+  WHERE `canonical`.`row_rank` = 1
+) AS `slug_source`;
+
 INSERT INTO `bnb_legacy_work`.`direct_castings` (
   `source_db`,
   `source_table`,
@@ -297,7 +371,7 @@ SELECT
   `canonical`.`source_db`,
   `canonical`.`source_table`,
   `canonical`.`source_id`,
-  CONCAT('direct-casting-', `canonical`.`company`, '-', MD5(`canonical`.`title`)) AS `slug`,
+  `canonical`.`generated_slug` AS `slug`,
   `canonical`.`source_center`,
   `groups`.`centers`,
   `canonical`.`company`,
@@ -353,7 +427,7 @@ SELECT
       'link2Hit', `canonical`.`wr_link2_hit`
     )
   ) AS `legacy_meta`
-FROM `tmp_direct_castings_ranked` AS `canonical`
+FROM `tmp_direct_castings_slugged` AS `canonical`
 JOIN (
   SELECT
     `company`,
@@ -383,5 +457,4 @@ JOIN (
 ) AS `groups`
   ON `groups`.`company` = `canonical`.`company`
   AND `groups`.`title` = `canonical`.`title`
-WHERE `canonical`.`row_rank` = 1
 ORDER BY `canonical`.`company`, `canonical`.`published_at` DESC, `canonical`.`source_id` DESC;

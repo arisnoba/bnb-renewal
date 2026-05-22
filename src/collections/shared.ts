@@ -1,6 +1,8 @@
 import type { CollectionBeforeValidateHook, Field } from "payload";
 import { slugField as payloadSlugField } from "payload";
 
+import { koreanSlugify } from "../utilities/koreanSlugify";
+
 type PayloadSlugFieldArgs = Parameters<typeof payloadSlugField>[0];
 
 type AdminTab = {
@@ -268,7 +270,24 @@ export function slugField(args?: PayloadSlugFieldArgs): ReturnType<typeof payloa
       );
 
       if (slugTextField) {
+        const slugTextFieldWithHooks = slugTextField as typeof slugTextField & {
+          hooks?: {
+            beforeValidate?: Array<(args: { value: unknown }) => unknown>;
+          };
+        };
+
         slugTextField.label = "슬러그";
+        slugTextFieldWithHooks.hooks = {
+          ...slugTextFieldWithHooks.hooks,
+          beforeValidate: [
+            ...(slugTextFieldWithHooks.hooks?.beforeValidate ?? []),
+            ({ value }: { value: unknown }) => {
+              const normalized = koreanSlugify({ valueToSlugify: value });
+
+              return normalized || value;
+            },
+          ],
+        };
       }
 
       return nextField;

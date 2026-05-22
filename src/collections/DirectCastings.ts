@@ -1,6 +1,6 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
-import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
+import { createKoreanSlugifyWithFallback, koreanSlugify } from '../utilities/koreanSlugify'
 import {
   adminRow,
   adminTabs,
@@ -31,6 +31,21 @@ const sourceCenterOptions = [
 ]
 
 const directCastingCenterValues = new Set(sourceCenterOptions.map((option) => option.value))
+
+const directCastingTitleAliases = new Map([
+  ['JTBC 서른,아홉', 'JTBC 서른, 아홉'],
+])
+
+function normalizeDirectCastingBroadcastName(value: string) {
+  return value
+    .replace(/넷플릭스/g, 'Netflix')
+    .replace(/\bnetflix\b/gi, 'Netflix')
+    .replace(/\bnetfilx\b/gi, 'Netflix')
+    .replace(/채널\s+A/g, '채널A')
+    .replace(/coupang\s+play/gi, 'Coupang Play')
+    .replace(/쿠팡플레이/g, 'Coupang Play')
+    .replace(/카카오\s+TV/gi, 'KakaoTV')
+}
 
 const nonExamAccess: Access = ({ req }) => {
   if (!req.user) {
@@ -104,6 +119,50 @@ const setDirectCastingAuthorName: CollectionBeforeValidateHook = ({ data, origin
   }
 }
 
+const setDirectCastingSlug: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
+  if (!data) {
+    return data
+  }
+
+  const shouldGenerateSlug = data.generateSlug ?? originalDoc?.generateSlug ?? true
+
+  if (shouldGenerateSlug === false && (data.slug || originalDoc?.slug)) {
+    return data
+  }
+
+  const title = String(data.title ?? originalDoc?.title ?? '').trim()
+  const company = String(data.company ?? originalDoc?.company ?? '').trim()
+  const titleSlug = directCastingSlugify({ valueToSlugify: title })
+  const companySlug = koreanSlugify({ valueToSlugify: company })
+  const originalId = originalDoc?.id
+  const titleCandidate = titleSlug || `direct-casting-${Date.now()}`
+
+  const slug = await nextUniqueDirectCastingSlug({
+    baseSlug: titleCandidate,
+    fallbackSlug: companySlug ? `${titleCandidate}-${companySlug}` : titleCandidate,
+    originalId,
+    req,
+  })
+
+  return {
+    ...data,
+    slug,
+  }
+}
+
+const normalizeDirectCastingTitle: CollectionBeforeValidateHook = ({ data }) => {
+  if (!data || typeof data.title !== 'string') {
+    return data
+  }
+
+  return {
+    ...data,
+    title: normalizeDirectCastingBroadcastName(
+      directCastingTitleAliases.get(data.title.trim()) ?? data.title,
+    ),
+  }
+}
+
 function normalizeDirectCastingCenters(value: unknown) {
   const values = Array.isArray(value) ? value : value ? [value] : []
   const centers = values
@@ -150,7 +209,7 @@ export const DirectCastings: CollectionConfig = {
   },
   defaultSort: '-publishedAt',
   hooks: {
-    beforeValidate: [setDirectCastingAuthorName],
+    beforeValidate: [setDirectCastingAuthorName, normalizeDirectCastingTitle, setDirectCastingSlug],
   },
   fields: [
     {
@@ -239,4 +298,59 @@ export const DirectCastings: CollectionConfig = {
       slugify: directCastingSlugify,
     }),
   ],
+}
+
+async function nextUniqueDirectCastingSlug({
+  baseSlug,
+  fallbackSlug,
+  originalId,
+  req,
+}: {
+  baseSlug: string
+  fallbackSlug: string
+  originalId?: unknown
+  req: Parameters<CollectionBeforeValidateHook>[0]['req']
+}) {
+  if (!(await directCastingSlugExists({ originalId, req, slug: baseSlug }))) {
+    return baseSlug
+  }
+
+  if (!(await directCastingSlugExists({ originalId, req, slug: fallbackSlug }))) {
+    return fallbackSlug
+  }
+
+  for (let suffix = 2; suffix < 100; suffix += 1) {
+    const slug = `${fallbackSlug}-${suffix}`
+
+    if (!(await directCastingSlugExists({ originalId, req, slug }))) {
+      return slug
+    }
+  }
+
+  return `${fallbackSlug}-${Date.now().toString(36)}`
+}
+
+async function directCastingSlugExists({
+  originalId,
+  req,
+  slug,
+}: {
+  originalId?: unknown
+  req: Parameters<CollectionBeforeValidateHook>[0]['req']
+  slug: string
+}) {
+  const result = await req.payload.find({
+    collection: 'direct-castings',
+    depth: 0,
+    limit: 2,
+    overrideAccess: true,
+    pagination: false,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  return result.docs.some((doc) => String(doc.id) !== String(originalId ?? ''))
 }

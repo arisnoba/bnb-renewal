@@ -2,6 +2,7 @@ import type { CollectionBeforeValidateHook, CollectionConfig, Field } from "payl
 
 import { centerScopedCollectionAccess } from "./access";
 import { extractYouTubeVideoId, youtubeWatchUrl } from "@/lib/youtube";
+import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import {
   authorNameField,
   authorNameFromCenters,
@@ -9,7 +10,10 @@ import {
   isExamAdminMenuHidden,
   publishingFields,
   sidebarFields,
+  slugField,
 } from "./shared";
+
+const examPassedVideoSlugify = createKoreanSlugifyWithFallback("passedvideo");
 
 const syncYouTubeFields: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
   if (!data) {
@@ -100,7 +104,7 @@ export const ExamPassedVideos: CollectionConfig = {
   },
   access: centerScopedCollectionAccess,
   admin: {
-    defaultColumns: ["title", "centers", "authorName", "youtubeUrl", "publishedAt", "updatedAt"],
+    defaultColumns: ["title", "slug", "centers", "authorName", "youtubeUrl", "publishedAt", "updatedAt"],
     group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
     useAsTitle: "title",
@@ -150,6 +154,13 @@ export const ExamPassedVideos: CollectionConfig = {
         },
       },
     },
-    ...sidebarFields([examCentersField, ...publishingFields, authorNameField]),
+    ...sidebarFields([
+      examCentersField,
+      ...publishingFields,
+      authorNameField,
+      slugField({
+        slugify: examPassedVideoSlugify,
+      }),
+    ]),
   ],
 };
