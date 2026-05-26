@@ -35,7 +35,7 @@ export const StarCardBodyImageRowLabel: React.FC<RowLabelProps> = () => {
     imageMedia && typeof imageMedia === 'object'
       ? String(imageMedia.filename || imageMedia.alt || '').trim()
       : ''
-  const fallback = rowNumber !== undefined ? `본문 이미지 ${rowNumber + 1}` : '본문 이미지'
+  const fallback = rowNumber !== undefined ? `이미지 ${rowNumber + 1}` : '이미지'
 
   return <div>{imageLabel ? getFileName(imageLabel) : fallback}</div>
 }

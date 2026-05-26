@@ -89,6 +89,8 @@ import * as migration_20260522_190000_direct_casting_broadcast_title_names from 
 import * as migration_20260526_130000_teacher_profile_image_media from './20260526_130000_teacher_profile_image_media'
 import * as migration_20260526_150000_profile_image_media from './20260526_150000_profile_image_media'
 import * as migration_20260526_200000_restore_screen_appearances_centers from './20260526_200000_restore_screen_appearances_centers'
+import * as migration_20260526_210000_drop_star_card_logo_media from './20260526_210000_drop_star_card_logo_media'
+import * as migration_20260526_211000_star_card_discount_rate from './20260526_211000_star_card_discount_rate'
 
 export const migrations = [
   {
@@ -545,5 +547,15 @@ export const migrations = [
     up: migration_20260526_200000_restore_screen_appearances_centers.up,
     down: migration_20260526_200000_restore_screen_appearances_centers.down,
     name: '20260526_200000_restore_screen_appearances_centers',
+  },
+  {
+    up: migration_20260526_210000_drop_star_card_logo_media.up,
+    down: migration_20260526_210000_drop_star_card_logo_media.down,
+    name: '20260526_210000_drop_star_card_logo_media',
+  },
+  {
+    up: migration_20260526_211000_star_card_discount_rate.up,
+    down: migration_20260526_211000_star_card_discount_rate.down,
+    name: '20260526_211000_star_card_discount_rate',
   },
 ]

@@ -40,7 +40,6 @@ export const StarCards: CollectionConfig = {
   hooks: {
     afterChange: [
       normalizeUploadedMediaPrefixes([
-        { path: 'logoMedia', role: 'star-cards.image' },
         { path: 'bodyImages.*.imageMedia', role: 'star-cards.image' },
       ]),
     ],
@@ -66,6 +65,14 @@ export const StarCards: CollectionConfig = {
                 width: '50%',
               },
             },
+            {
+              name: 'discountRate',
+              type: 'text',
+              label: '할인율',
+              admin: {
+                width: '50%',
+              },
+            },
           ]),
           {
             name: 'body',
@@ -79,18 +86,12 @@ export const StarCards: CollectionConfig = {
         label: '이미지',
         fields: [
           {
-            name: 'logoMedia',
-            type: 'upload',
-            label: '대표 이미지',
-            relationTo: 'media',
-          },
-          {
             name: 'bodyImages',
             type: 'array',
-            label: '본문 이미지',
+            label: '이미지',
             labels: {
-              plural: '본문 이미지',
-              singular: '본문 이미지',
+              plural: '이미지',
+              singular: '이미지',
             },
             admin: {
               components: {

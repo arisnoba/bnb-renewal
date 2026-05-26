@@ -72,6 +72,7 @@
     "payload:legacy:upload-screen-appearance-body-images:r2": "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal DATABASE_URL_UNPOOLED=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal POSTGRES_URL=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal node --env-file=.env.local --import tsx scripts/payload-migration/upload-screen-appearance-body-images-to-r2.ts",
     "payload:legacy:link-highteen-special-class-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-highteen-special-class-images-to-media.ts",
     "payload:legacy:link-star-card-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-star-card-images-to-media.ts",
+    "payload:legacy:sync-star-card-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/sync-star-card-images-from-local-folders.ts",
     "payload:legacy:replace-artist-press-body-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/replace-artist-press-body-image-paths.ts",
     "payload:legacy:link-exam-school-logo-media": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-exam-school-logo-media.ts",
     "payload:legacy:upload-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/upload-images.ts",

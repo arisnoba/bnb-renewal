@@ -350,7 +350,7 @@ export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
             marginBottom: 8,
           }}
         >
-          본문 이미지
+          이미지
         </div>
         <input
           accept="image/avif,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
@@ -386,7 +386,7 @@ export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
             <span>{isProcessing ? '업로드 중...' : '이미지 업로드'}</span>
           </span>
           <span className="bnb-image-upload-trigger__help" style={{ fontSize: 12 }}>
-            스타카드 본문에 사용할 이미지를 바로 등록합니다.
+            첫 번째 이미지는 목록과 상세의 대표 이미지로 사용됩니다.
           </span>
         </button>
         {message ? (
@@ -414,7 +414,7 @@ export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
               padding: 'calc(var(--base) * 0.6)',
             }}
           >
-            등록된 본문 이미지가 없습니다.
+            등록된 이미지가 없습니다.
           </div>
         ) : null}
         {bodyImages.map((row, index) => {

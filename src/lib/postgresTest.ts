@@ -443,7 +443,7 @@ function mapDocToRow(
       })
     case 'star-cards':
       return baseRow(doc, {
-        imagePath: mediaImagePath(doc.logoMedia),
+        imagePath: starCardImagePath(doc),
         meta1: stringify(doc.centers),
         meta2: stringify(doc.mapUrl),
         meta3: stringify(doc.publishedAt),
@@ -609,6 +609,17 @@ function teacherRepresentativeWorkPath(doc: TestDoc) {
 
 function agencyImagePath(doc: TestDoc) {
   return mediaImagePath(doc.logoMedia)
+}
+
+function starCardImagePath(doc: TestDoc) {
+  const bodyImages = Array.isArray(doc.bodyImages) ? doc.bodyImages : []
+  const firstImage = bodyImages[0]
+
+  if (!firstImage || typeof firstImage !== 'object') {
+    return ''
+  }
+
+  return mediaImagePath((firstImage as TestDoc).imageMedia)
 }
 
 function artistPressImagePath(doc: TestDoc) {
