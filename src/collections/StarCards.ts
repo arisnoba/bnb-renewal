@@ -87,6 +87,8 @@ export const StarCards: CollectionConfig = {
             },
             admin: {
               components: {
+                Field:
+                  '@/components/payload/StarCardBodyImagesField#StarCardBodyImagesField',
                 RowLabel:
                   '@/components/payload/StarCardBodyImageRowLabel#StarCardBodyImageRowLabel',
               },

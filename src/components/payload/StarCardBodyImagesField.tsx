@@ -1,15 +1,24 @@
 'use client'
 
 import type { ChangeEvent } from 'react'
-import type { UIFieldClientComponent } from 'payload'
+import type { ArrayFieldClientComponent } from 'payload'
 
 import { useField, useForm, useFormFields } from '@payloadcms/ui'
 import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type BodyImage = {
   id?: string
-  imagePath?: string | null
+  imageMedia?: MediaSummary | number | string | null
+  rowIndex: number
+}
+
+type MediaSummary = {
+  alt?: string | null
+  filename?: string | null
+  id: number | string
+  thumbnailURL?: string | null
+  url?: string | null
 }
 
 type FormFieldState = {
@@ -21,23 +30,62 @@ type RowState = {
 }
 
 const imageExtensions = new Set(['avif', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
+const mediaPrefix = 'media/star-cards/images'
 
 function stringValue(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function getImageSrc(value: unknown) {
-  const trimmed = stringValue(value)
+function mediaId(value: unknown) {
+  if (typeof value === 'number' || typeof value === 'string') {
+    const id = String(value).trim()
 
-  if (!trimmed) {
+    return id || ''
+  }
+
+  if (value && typeof value === 'object' && 'id' in value) {
+    const id = String((value as { id?: unknown }).id ?? '').trim()
+
+    return id || ''
+  }
+
+  return ''
+}
+
+function mediaFromValue(value: unknown): MediaSummary | null {
+  if (!value || typeof value !== 'object' || !('id' in value)) {
+    return null
+  }
+
+  const id = mediaId(value)
+
+  if (!id) {
+    return null
+  }
+
+  const media = value as Partial<MediaSummary>
+
+  return {
+    alt: media.alt,
+    filename: media.filename,
+    id,
+    thumbnailURL: media.thumbnailURL,
+    url: media.url,
+  }
+}
+
+function getImageSrc(media?: MediaSummary | null) {
+  const src = stringValue(media?.thumbnailURL) || stringValue(media?.url)
+
+  if (!src) {
     return ''
   }
 
-  if (/^(https?:)?\/\//.test(trimmed) || trimmed.startsWith('/')) {
-    return trimmed
+  if (/^(https?:)?\/\//.test(src) || src.startsWith('/')) {
+    return src
   }
 
-  return `/${trimmed.replace(/^\/+/, '')}`
+  return `/${src.replace(/^\/+/, '')}`
 }
 
 function getFileName(src: string) {
@@ -77,8 +125,15 @@ async function readErrorMessage(response: Response) {
 async function uploadFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
+  formData.append(
+    '_payload',
+    JSON.stringify({
+      alt: file.name,
+      prefix: mediaPrefix,
+    }),
+  )
 
-  const response = await fetch('/api/admin-images', {
+  const response = await fetch('/api/media', {
     body: formData,
     method: 'POST',
   })
@@ -87,21 +142,21 @@ async function uploadFile(file: File) {
     throw new Error(await readErrorMessage(response))
   }
 
-  const body = (await response.json()) as { path?: unknown }
-  const path = typeof body.path === 'string' ? body.path : ''
+  const body = (await response.json()) as { doc?: unknown }
+  const media = mediaFromValue(body.doc ?? body)
 
-  if (!path) {
-    throw new Error('업로드 응답에 이미지 경로가 없습니다.')
+  if (!media) {
+    throw new Error('업로드 응답에 media ID가 없습니다.')
   }
 
-  return path
+  return media
 }
 
 function createRowId() {
   return globalThis.crypto?.randomUUID?.() ?? `body-image-${Date.now()}-${Math.random()}`
 }
 
-export const StarCardBodyImagesField: UIFieldClientComponent = () => {
+export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const { disabled, path, rows = [] } = useField<number>({
     hasRows: true,
@@ -109,25 +164,87 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
   })
   const { addFieldRow, moveFieldRow, removeFieldRow } = useForm()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [mediaById, setMediaById] = useState<Record<string, MediaSummary>>({})
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'error' | 'info'>('info')
   const bodyImages = useFormFields(([fields]) =>
     (rows as RowState[])
       .map((row, index): BodyImage => {
-        const imagePathField = fields[`${path}.${index}.imagePath`] as FormFieldState | undefined
+        const imageMediaField = fields[`${path}.${index}.imageMedia`] as FormFieldState | undefined
         const idField = fields[`${path}.${index}.id`] as FormFieldState | undefined
+        const imageMedia = imageMediaField?.value ?? null
+        const id = mediaId(imageMedia)
 
         return {
           id: stringValue(idField?.value) || row.id,
-          imagePath: stringValue(imagePathField?.value),
+          imageMedia: mediaFromValue(imageMedia) ?? (id || null),
+          rowIndex: index,
         }
       })
-      .filter((row) => stringValue(row.imagePath)),
+      .filter((row) => mediaId(row.imageMedia)),
   )
+  const mediaIds = bodyImages.map((row) => mediaId(row.imageMedia)).filter(Boolean)
+  const mediaIdsKey = mediaIds.join('|')
   const controlsDisabled = disabled || isProcessing
 
-  function addImagePath(imagePath: string, rowIndex: number) {
+  useEffect(() => {
+    const ids = mediaIdsKey ? mediaIdsKey.split('|') : []
+    const missingIds = ids.filter((id) => !mediaById[id])
+
+    if (missingIds.length === 0) {
+      return
+    }
+
+    let ignore = false
+
+    async function loadMedia() {
+      const entries = await Promise.all(
+        missingIds.map(async (id): Promise<[string, MediaSummary] | null> => {
+          const response = await fetch(`/api/media/${encodeURIComponent(id)}?depth=0`)
+
+          if (!response.ok) {
+            return null
+          }
+
+          const media = mediaFromValue(await response.json())
+
+          return media ? [String(media.id), media] : null
+        }),
+      )
+
+      if (ignore) {
+        return
+      }
+
+      setMediaById((current) => {
+        const next = { ...current }
+
+        for (const entry of entries) {
+          if (entry) {
+            const [id, media] = entry
+
+            next[id] = media
+          }
+        }
+
+        return next
+      })
+    }
+
+    void loadMedia()
+
+    return () => {
+      ignore = true
+    }
+  }, [mediaById, mediaIdsKey])
+
+  function addMedia(media: MediaSummary, rowIndex: number) {
     const id = createRowId()
+
+    setMediaById((current) => ({
+      ...current,
+      [String(media.id)]: media,
+    }))
 
     addFieldRow({
       path,
@@ -140,11 +257,11 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
           valid: true,
           value: id,
         },
-        imagePath: {
+        imageMedia: {
           initialValue: undefined,
           passesCondition: true,
           valid: true,
-          value: imagePath,
+          value: media.id,
         },
       },
     })
@@ -164,16 +281,16 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
     setMessageType('info')
 
     try {
-      const uploadedPaths = []
+      const uploadedMedia = []
 
       for (const file of files) {
-        uploadedPaths.push(await uploadFile(file))
+        uploadedMedia.push(await uploadFile(file))
       }
 
-      uploadedPaths.forEach((imagePath, offset) => {
-        addImagePath(imagePath, bodyImages.length + offset)
+      uploadedMedia.forEach((media, offset) => {
+        addMedia(media, (rows as RowState[]).length + offset)
       })
-      setMessage(`${uploadedPaths.length}개 이미지가 추가되었습니다. 저장 버튼을 눌러 반영하세요.`)
+      setMessage(`${uploadedMedia.length}개 이미지가 추가되었습니다. 저장 버튼을 눌러 반영하세요.`)
     } catch (error) {
       setMessageType('error')
       setMessage(error instanceof Error ? error.message : String(error))
@@ -183,9 +300,15 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
   }
 
   function removeItem(index: number) {
+    const row = bodyImages[index]
+
+    if (!row) {
+      return
+    }
+
     removeFieldRow({
       path,
-      rowIndex: index,
+      rowIndex: row.rowIndex,
     })
   }
 
@@ -196,9 +319,16 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
       return
     }
 
+    const row = bodyImages[index]
+    const nextRow = bodyImages[nextIndex]
+
+    if (!row || !nextRow) {
+      return
+    }
+
     moveFieldRow({
-      moveFromIndex: index,
-      moveToIndex: nextIndex,
+      moveFromIndex: row.rowIndex,
+      moveToIndex: nextRow.rowIndex,
       path,
     })
   }
@@ -256,7 +386,7 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
             <span>{isProcessing ? '업로드 중...' : '이미지 업로드'}</span>
           </span>
           <span className="bnb-image-upload-trigger__help" style={{ fontSize: 12 }}>
-            스타카드 본문에 사용할 이미지를 등록합니다.
+            스타카드 본문에 사용할 이미지를 바로 등록합니다.
           </span>
         </button>
         {message ? (
@@ -288,13 +418,18 @@ export const StarCardBodyImagesField: UIFieldClientComponent = () => {
           </div>
         ) : null}
         {bodyImages.map((row, index) => {
-          const imageSrc = getImageSrc(row.imagePath)
+          const id = mediaId(row.imageMedia)
+          const media = mediaFromValue(row.imageMedia) ?? mediaById[id]
+          const imageSrc = getImageSrc(media)
           const canPreview = imageSrc && isProbablyImage(imageSrc)
-          const fileName = imageSrc ? getFileName(imageSrc) : getFileName(stringValue(row.imagePath))
+          const fileName =
+            stringValue(media?.filename) ||
+            stringValue(media?.alt) ||
+            (imageSrc ? getFileName(imageSrc) : `media ${id}`)
 
           return (
             <article
-              key={row.id || `${row.imagePath}-${index}`}
+              key={row.id || `${id}-${index}`}
               style={{
                 alignItems: 'center',
                 background: 'var(--theme-elevation-50)',

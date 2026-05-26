@@ -193,6 +193,7 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 						fontSize: 13,
 						fontWeight: 600,
 						marginBottom: 8,
+						marginTop:20,
 					}}>
 					갤러리 이미지 업로드
 				</div>
