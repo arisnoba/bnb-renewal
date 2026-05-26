@@ -134,6 +134,43 @@ const center = domainMap[host] ?? subdomain
 - canonical은 sitemap과 같은 URL 체계를 사용한다.
 - 동일 콘텐츠가 공통/센터 경로에 중복될 경우 대표 URL 하나를 canonical로 지정한다.
 
+## 레거시 URL 마이그레이션 전략
+
+현재 운영 중인 사이트는 **그누보드** 기반으로, URL 구조가 아래와 같다.
+
+```
+/web/bbs/board.php?bo_table=new_notice          ← 목록
+/web/bbs/board.php?bo_table=new_notice&wr_id=3052  ← 상세
+```
+
+### 결정: A안 — 목록 페이지로 일괄 301
+
+게시글 단위 매핑 없이, `bo_table` 기준으로 해당 섹션 목록 페이지로 일괄 리다이렉트한다.
+
+| bo_table 값 | 리다이렉트 대상 |
+|-------------|----------------|
+| `new_notice` | `/art/news` |
+| 추가 테이블은 오픈 전 목록화 후 채운다 | |
+
+`wr_id`가 있든 없든 목록 URL로 동일하게 처리한다.
+
+```js
+// next.config.js
+redirects: [
+  {
+    source: '/web/bbs/board.php',
+    has: [{ type: 'query', key: 'bo_table', value: 'new_notice' }],
+    destination: '/art/news',
+    permanent: true,
+  },
+  // 추가 bo_table 항목...
+]
+```
+
+### 후속 모니터링
+
+오픈 후 Google Search Console에서 404 및 유입 경로를 확인해, 외부 백링크가 확인된 게시글은 수동으로 개별 매핑을 추가한다.
+
 ## 아트센터 IA 및 URL 구조표
 
 > 기준: 배우앤배움 아트센터 (`/art`)
