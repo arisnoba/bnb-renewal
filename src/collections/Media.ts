@@ -17,7 +17,6 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 const mediaStaticDir = path.resolve(dirname, '../../public/media')
-const variantThresholdBytes = 1024 * 1024
 const imageFormatOptions = {
   format: 'webp' as const,
   options: {
@@ -127,15 +126,6 @@ function imageSizeFilenames(doc: Record<string, unknown>) {
     .filter(Boolean)
 }
 
-function hasOriginalOnlyPrefix(value: unknown) {
-  const segments = String(value || '')
-    .split('/')
-    .map((segment) => segment.trim())
-    .filter(Boolean)
-
-  return segments.includes('body-images') || segments.includes('thumbnails')
-}
-
 async function deleteGeneratedVariant({ filename, prefix }: { filename: string; prefix?: unknown }) {
   if (hasR2Config()) {
     await deleteR2Object(path.posix.join(String(prefix || 'media'), filename)).catch(() => undefined)
@@ -172,18 +162,8 @@ const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
   }
 }
 
-const removeSmallImageVariantsAfterChange: CollectionAfterChangeHook = async ({ doc, req }) => {
+const removeGeneratedImageVariantsAfterChange: CollectionAfterChangeHook = async ({ doc, req }) => {
   if (req.context?.skipSmallImageVariantCleanup) {
-    return doc
-  }
-
-  const filesize = Number(doc?.filesize ?? 0)
-  const originalOnlyPrefix = hasOriginalOnlyPrefix(doc?.prefix)
-
-  if (
-    !originalOnlyPrefix &&
-    (!Number.isFinite(filesize) || filesize <= 0 || filesize >= variantThresholdBytes)
-  ) {
     return doc
   }
 
@@ -239,7 +219,7 @@ export const Media: CollectionConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [removeSmallImageVariantsAfterChange],
+    afterChange: [removeGeneratedImageVariantsAfterChange],
     afterRead: [applyExternalUrlAfterRead],
   },
   fields: [

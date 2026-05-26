@@ -152,7 +152,7 @@ function parseArgs(args: string[]): Options {
   let concurrency = DEFAULT_CONCURRENCY
   let ids: string[] = []
   let limit: Options['limit'] = 'all'
-  let mode: CleanupMode = 'policy'
+  let mode: CleanupMode = 'all'
   let outputPath = 'tmp/legacy-assets/media-variant-cleanup-plan.json'
   let prefix: string | undefined
   let progressEvery = DEFAULT_PROGRESS_EVERY
