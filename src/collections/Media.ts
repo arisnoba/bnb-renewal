@@ -127,6 +127,15 @@ function imageSizeFilenames(doc: Record<string, unknown>) {
     .filter(Boolean)
 }
 
+function hasOriginalOnlyPrefix(value: unknown) {
+  const segments = String(value || '')
+    .split('/')
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+
+  return segments.includes('body-images') || segments.includes('thumbnails')
+}
+
 async function deleteGeneratedVariant({ filename, prefix }: { filename: string; prefix?: unknown }) {
   if (hasR2Config()) {
     await deleteR2Object(path.posix.join(String(prefix || 'media'), filename)).catch(() => undefined)
@@ -169,8 +178,12 @@ const removeSmallImageVariantsAfterChange: CollectionAfterChangeHook = async ({ 
   }
 
   const filesize = Number(doc?.filesize ?? 0)
+  const originalOnlyPrefix = hasOriginalOnlyPrefix(doc?.prefix)
 
-  if (!Number.isFinite(filesize) || filesize <= 0 || filesize >= variantThresholdBytes) {
+  if (
+    !originalOnlyPrefix &&
+    (!Number.isFinite(filesize) || filesize <= 0 || filesize >= variantThresholdBytes)
+  ) {
     return doc
   }
 

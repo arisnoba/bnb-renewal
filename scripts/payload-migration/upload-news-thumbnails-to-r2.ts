@@ -425,12 +425,12 @@ function hasSizeFilenames(row: NewsMediaRow) {
   return SIZE_COLUMNS.some((item) => Boolean(row[item.column]))
 }
 
-function shouldIncludeSizeVariants(row: NewsMediaRow, options: Options) {
+function shouldIncludeSizeVariants(_row: NewsMediaRow, options: Options) {
   if (options.includeSizes) {
     return true
   }
 
-  return Number(row.filesize ?? 0) >= options.variantAboveBytes
+  return false
 }
 
 async function prepareUploadFile({

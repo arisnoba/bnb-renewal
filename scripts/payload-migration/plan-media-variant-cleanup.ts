@@ -331,7 +331,7 @@ function cleanupModeCondition(options: Options, params: unknown[]) {
   }
 
   if (options.mode === 'body-images') {
-    return `media.prefix LIKE '%/body-images/%'`
+    return originalOnlyPrefixSql('body-images')
   }
 
   params.push(options.belowBytes)
@@ -341,7 +341,11 @@ function cleanupModeCondition(options: Options, params: unknown[]) {
     return belowThreshold
   }
 
-  return `(${belowThreshold} OR media.prefix LIKE '%/body-images/%')`
+  return `(${belowThreshold} OR ${originalOnlyPrefixSql('body-images')} OR ${originalOnlyPrefixSql('thumbnails')})`
+}
+
+function originalOnlyPrefixSql(segment: string) {
+  return `(media.prefix LIKE '%/${segment}' OR media.prefix LIKE '%/${segment}/%')`
 }
 
 function toCleanupEntry(row: MediaVariantRow, options: Options): CleanupEntry {
@@ -421,8 +425,12 @@ function cleanupReasons({
     reasons.push('below-threshold')
   }
 
-  if (prefix.includes('/body-images/')) {
+  if (hasPrefixSegment(prefix, 'body-images')) {
     reasons.push('body-images-original-only')
+  }
+
+  if (hasPrefixSegment(prefix, 'thumbnails')) {
+    reasons.push('thumbnails-original-only')
   }
 
   if (options.mode === 'all') {
@@ -430,6 +438,10 @@ function cleanupReasons({
   }
 
   return reasons
+}
+
+function hasPrefixSegment(prefix: string, segment: string) {
+  return prefix.split('/').includes(segment)
 }
 
 function normalizePrefix(value: unknown) {
