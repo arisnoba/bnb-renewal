@@ -17,6 +17,7 @@ import {
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
 import { centerScopedCollectionAccess } from "./access";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminRow,
   adminTabs,
@@ -68,6 +69,13 @@ export const ArtistPress: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: "thumbnailMedia", role: "artist-press.thumbnail" },
+        { path: "agencyLogoMedia", role: "artist-press.agency-logo" },
+        { path: "body", role: "artist-press.body-image", type: "richText" },
+      ]),
+    ],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

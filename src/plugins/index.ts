@@ -1,6 +1,7 @@
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import type { Adapter } from '@payloadcms/plugin-cloud-storage/types'
 import { seoPlugin } from '@payloadcms/plugin-seo'
+import type { FileData, TypeWithID } from 'payload'
 import { Plugin } from 'payload'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import fs from 'node:fs/promises'
@@ -8,6 +9,7 @@ import path from 'node:path'
 
 import type { Page, Post } from '@/payload-types'
 import { deleteR2Object, getR2PublicUrl, hasR2Config, uploadR2Object } from '@/lib/r2'
+import { R2_MEDIA_PREFIX_BY_ROLE } from '@/lib/r2ObjectKeys'
 import { getServerSideURL } from '@/utilities/getURL'
 import { withSiteTitle } from '@/utilities/siteMetadata'
 
@@ -24,6 +26,22 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
 const r2Enabled = hasR2Config()
 const mediaPrefix = 'media'
 const localMediaDir = path.resolve(process.cwd(), 'public/media')
+const mediaIdScopedPrefixes = new Set([mediaPrefix, ...Object.values(R2_MEDIA_PREFIX_BY_ROLE)])
+
+function mediaIdScopedPrefix(prefix: string | undefined, mediaId: unknown) {
+  const normalizedPrefix = path.posix
+    .join(prefix || mediaPrefix)
+    .replace(/^\/+|\/+$/g, '')
+  const id = String(mediaId ?? '').trim()
+
+  if (!id || normalizedPrefix.split('/').at(-1) === id) {
+    return normalizedPrefix
+  }
+
+  return mediaIdScopedPrefixes.has(normalizedPrefix)
+    ? path.posix.join(normalizedPrefix, id)
+    : normalizedPrefix
+}
 
 function localMediaPath(filename: string) {
   const filePath = path.resolve(localMediaDir, path.basename(filename))
@@ -95,7 +113,8 @@ const mediaR2Adapter: Adapter = ({ prefix = mediaPrefix }) => ({
     await deleteR2Object(objectKey)
   },
   handleUpload: async ({ data, file }) => {
-    const objectKey = path.posix.join(data.prefix || prefix, file.filename)
+    const resolvedPrefix = mediaIdScopedPrefix(data.prefix || prefix, data.id)
+    const objectKey = path.posix.join(resolvedPrefix, file.filename)
     const body = file.tempFilePath ? await fs.readFile(file.tempFilePath) : file.buffer
 
     await uploadR2Object({
@@ -105,7 +124,9 @@ const mediaR2Adapter: Adapter = ({ prefix = mediaPrefix }) => ({
       key: objectKey,
     })
 
-    return data
+    return {
+      prefix: resolvedPrefix,
+    } as unknown as Partial<FileData & TypeWithID>
   },
   staticHandler: async (_req, args) => {
     const filename = String(args.params.filename ?? '')

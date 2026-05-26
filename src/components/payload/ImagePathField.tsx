@@ -1,7 +1,7 @@
 'use client';
 
 import type { TextFieldClientComponent } from 'payload';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, DragEvent } from 'react';
 
 import { useRef, useState } from 'react';
 import { useDocumentInfo, useField } from '@payloadcms/ui';
@@ -172,6 +172,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { collectionSlug } = useDocumentInfo();
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [isDragOver, setIsDragOver] = useState(false);
 	const [message, setMessage] = useState('');
 	const [messageType, setMessageType] = useState<'error' | 'info'>('info');
 	const { disabled, errorMessage, path: fieldPath, setValue, showError, value } = useField<string>({
@@ -231,6 +232,32 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 			setMessage(error instanceof Error ? error.message : String(error));
 		} finally {
 			setIsProcessing(false);
+		}
+	}
+
+	function handleDragOver(event: DragEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		if (!controlsDisabled) {
+			setIsDragOver(true);
+		}
+	}
+
+	function handleDragLeave() {
+		setIsDragOver(false);
+	}
+
+	async function handleDrop(event: DragEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		setIsDragOver(false);
+
+		if (controlsDisabled) {
+			return;
+		}
+
+		const file = event.dataTransfer.files?.[0];
+
+		if (file) {
+			await uploadFile(file);
 		}
 	}
 
@@ -485,9 +512,12 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 					className="bnb-image-upload-trigger"
 					disabled={controlsDisabled}
 					onClick={() => inputRef.current?.click()}
+					onDragLeave={handleDragLeave}
+					onDragOver={handleDragOver}
+					onDrop={handleDrop}
 					style={{
-						background: 'var(--bnb-admin-upload-bg)',
-						border: `1px dashed ${hasError ? 'var(--theme-error-500)' : 'var(--bnb-admin-upload-border)'}`,
+						background: isDragOver ? 'var(--theme-elevation-100)' : 'var(--bnb-admin-upload-bg)',
+						border: `1px dashed ${hasError ? 'var(--theme-error-500)' : isDragOver ? 'var(--theme-text)' : 'var(--bnb-admin-upload-border)'}`,
 						borderRadius: 'var(--style-radius-s)',
 						color: 'var(--bnb-admin-upload-text)',
 						cursor: controlsDisabled ? 'not-allowed' : 'pointer',
@@ -496,13 +526,14 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 						alignItems: 'center',
 						padding: 'calc(var(--base) * 0.5)',
 						textAlign: 'left',
+						transition: 'background 0.15s, border-color 0.15s',
 					}}
 					type="button">
 					<span className="bnb-image-upload-trigger__icon">
 						<ImagePlus aria-hidden="true" size={16} strokeWidth={2} />
 					</span>
 					<span className="bnb-image-upload-trigger__title">
-						{isProcessing ? '업로드 중...' : '이미지 선택'}
+						{isProcessing ? '업로드 중...' : isDragOver ? '여기에 놓기' : '이미지 선택'}
 					</span>
 				</button>
 			)}

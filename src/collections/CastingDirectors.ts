@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminRow,
   authorNameField,
@@ -32,6 +33,11 @@ export const CastingDirectors: CollectionConfig = {
   },
   defaultSort: "personName",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: "profileImageMedia", role: "casting-directors.profile-image" },
+      ]),
+    ],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

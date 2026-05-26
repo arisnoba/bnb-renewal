@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedCollectionAccess } from './access'
+import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   adminRow,
   adminTabs,
@@ -37,6 +38,12 @@ export const StarCards: CollectionConfig = {
   },
   defaultSort: 'displayOrder',
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: 'logoMedia', role: 'star-cards.image' },
+        { path: 'bodyImages.*.imageMedia', role: 'star-cards.image' },
+      ]),
+    ],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

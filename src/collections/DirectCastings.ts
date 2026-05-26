@@ -14,6 +14,7 @@ import {
   userCenterValue,
 } from './shared'
 import { newsBodyEditor } from './News'
+import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 
 const directCastingSlugify = createKoreanSlugifyWithFallback('direct-casting')
 
@@ -209,6 +210,12 @@ export const DirectCastings: CollectionConfig = {
   },
   defaultSort: '-publishedAt',
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: 'thumbnailMedia', role: 'direct-castings.thumbnail' },
+        { path: 'body', role: 'direct-castings.body-image', type: 'richText' },
+      ]),
+    ],
     beforeValidate: [setDirectCastingAuthorName, normalizeDirectCastingTitle, setDirectCastingSlug],
   },
   fields: [

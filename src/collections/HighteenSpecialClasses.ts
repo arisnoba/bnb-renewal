@@ -2,6 +2,7 @@ import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'pay
 
 import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedAccess, centerScopedReadAccess } from './access'
+import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   adminTabs,
   authorNameField,
@@ -73,6 +74,12 @@ export const HighteenSpecialClasses: CollectionConfig = {
   },
   defaultSort: '-publishedAt',
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: 'thumbnailMedia', role: 'highteen-special-classes.image' },
+        { path: 'body', role: 'highteen-special-classes.image', type: 'richText' },
+      ]),
+    ],
     beforeValidate: [forceHighteenCenter],
   },
   fields: [

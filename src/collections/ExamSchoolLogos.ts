@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminRow,
   authorNameField,
@@ -39,6 +40,9 @@ export const ExamSchoolLogos: CollectionConfig = {
   },
   defaultSort: "schoolName",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([{ path: "logoMedia", role: "exam-school-logos.logo" }]),
+    ],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

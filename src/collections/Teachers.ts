@@ -2,6 +2,7 @@ import type { CollectionConfig } from "payload";
 
 import { allowAll, centerScopedCollectionAccess } from "./access";
 import { koreanSlugify } from "../utilities/koreanSlugify";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminRow,
   adminTabs,
@@ -30,6 +31,9 @@ export const Teachers: CollectionConfig = {
   },
   defaultSort: "displayOrder",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([{ path: "profileImageMedia", role: "teachers.profile-image" }]),
+    ],
     beforeValidate: [centerScopedBeforeValidate],
   },
   versions: {

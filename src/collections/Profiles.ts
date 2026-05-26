@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload';
 
 import { getDefaultProfileFilterValue, isKnownProfileFilterValue, isProfileFilterValueAllowed } from '../lib/profileFilters';
 import { centerScopedCollectionAccess } from './access';
+import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization';
 import {
 	adminRow,
 	adminTabs,
@@ -126,6 +127,9 @@ export const Profiles: CollectionConfig = {
 	},
 	defaultSort: '-publishedAt',
 	hooks: {
+		afterChange: [
+			normalizeUploadedMediaPrefixes([{ path: 'profileImageMedia', role: 'profiles.profile-image' }]),
+		],
 		beforeValidate: [centerScopedBeforeValidate],
 	},
 	fields: [

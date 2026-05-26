@@ -9,6 +9,7 @@ import {
   centersField,
   sidebarFields,
 } from "./shared";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 
 export const Agencies: CollectionConfig = {
   slug: "agencies",
@@ -27,6 +28,9 @@ export const Agencies: CollectionConfig = {
   },
   defaultSort: "displayOrder",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([{ path: "logoMedia", role: "agencies.logo" }]),
+    ],
     beforeValidate: [allCentersBeforeValidate],
   },
   fields: [

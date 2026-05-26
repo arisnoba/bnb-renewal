@@ -1,6 +1,7 @@
 import type { CollectionBeforeValidateHook, CollectionConfig, SelectField, Validate } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminRow,
   adminTabs,
@@ -164,6 +165,11 @@ export const ScreenAppearances: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: "bodyImages.*.image", role: "screen-appearances.body-image" },
+      ]),
+    ],
     beforeValidate: [screenAppearanceBeforeValidate],
   },
   fields: [

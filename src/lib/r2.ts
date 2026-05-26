@@ -1,4 +1,5 @@
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -137,6 +138,36 @@ export async function uploadR2Object(input: UploadR2ObjectInput) {
   return {
     objectKey: input.key,
     publicUrl: getR2PublicUrl(input.key, config),
+  };
+}
+
+export async function copyR2Object({
+  fromKey,
+  toKey,
+}: {
+  fromKey: string;
+  toKey: string;
+}) {
+  if (fromKey === toKey) {
+    return {
+      objectKey: toKey,
+      publicUrl: getR2PublicUrl(toKey),
+    };
+  }
+
+  const config = getR2Config();
+
+  await getR2Client().send(
+    new CopyObjectCommand({
+      Bucket: config.bucket,
+      CopySource: `/${config.bucket}/${encodeURIComponent(fromKey).replace(/%2F/g, "/")}`,
+      Key: toKey,
+    }),
+  );
+
+  return {
+    objectKey: toKey,
+    publicUrl: getR2PublicUrl(toKey, config),
   };
 }
 

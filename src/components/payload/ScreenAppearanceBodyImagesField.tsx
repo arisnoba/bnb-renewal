@@ -30,7 +30,7 @@ type RowState = {
 }
 
 const imageExtensions = new Set(['avif', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
-const mediaPrefix = 'media/screen-appearances/images'
+const mediaPrefix = 'media/screen-appearances/body-images'
 
 function stringValue(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''

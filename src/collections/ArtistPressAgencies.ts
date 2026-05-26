@@ -1,6 +1,7 @@
 import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
 import { centerScopedCollectionAccess } from './access'
+import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   authorNameField,
   authorNameFromCenters,
@@ -264,6 +265,9 @@ export const ArtistPressAgencies: CollectionConfig = {
   },
   defaultSort: 'agencyName',
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([{ path: 'logoMedia', role: 'artist-press.agency-logo' }]),
+    ],
     beforeValidate: [normalizeAgencySlug, forceArtCenter],
   },
   fields: [

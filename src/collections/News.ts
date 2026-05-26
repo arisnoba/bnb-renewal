@@ -17,6 +17,7 @@ import {
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
 import { centerScopedCollectionAccess } from "./access";
+import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminTabs,
   authorNameField,
@@ -67,6 +68,12 @@ export const News: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
+    afterChange: [
+      normalizeUploadedMediaPrefixes([
+        { path: "thumbnailMedia", role: "news.thumbnail" },
+        { path: "body", role: "news.body-image", type: "richText" },
+      ]),
+    ],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

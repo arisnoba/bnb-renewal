@@ -1,6 +1,6 @@
 'use client';
 
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, DragEvent } from 'react';
 
 import { useField } from '@payloadcms/ui';
 import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react';
@@ -94,6 +94,7 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 	const { value: sourceId } = useField<string>({ path: 'sourceId' });
 	const { value: sourceTable } = useField<string>({ path: 'sourceTable' });
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [isDragOver, setIsDragOver] = useState(false);
 	const [message, setMessage] = useState('');
 	const [messageType, setMessageType] = useState<'error' | 'info'>('info');
 	const photoFields: PhotoField[] = [photo1, photo2, photo3, photo4, photo5, photo6];
@@ -107,11 +108,38 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 		});
 	}
 
+	function handleDragOver(event: DragEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		const isFull = visibleValues.length >= photoFields.length;
+		if (!controlsDisabled && !isFull) {
+			setIsDragOver(true);
+		}
+	}
+
+	function handleDragLeave() {
+		setIsDragOver(false);
+	}
+
+	async function handleDrop(event: DragEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		setIsDragOver(false);
+
+		if (controlsDisabled || visibleValues.length >= photoFields.length) {
+			return;
+		}
+
+		await processFiles(Array.from(event.dataTransfer.files));
+	}
+
 	async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
 		const files = Array.from(event.currentTarget.files ?? []);
 
 		event.currentTarget.value = '';
 
+		await processFiles(files);
+	}
+
+	async function processFiles(files: File[]) {
 		if (files.length === 0) {
 			return;
 		}
@@ -210,9 +238,12 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 					className="bnb-image-upload-trigger"
 					disabled={controlsDisabled || visibleValues.length >= photoFields.length}
 					onClick={() => inputRef.current?.click()}
+					onDragLeave={handleDragLeave}
+					onDragOver={handleDragOver}
+					onDrop={handleDrop}
 					style={{
-						background: 'var(--bnb-admin-upload-bg)',
-						border: '1px dashed var(--bnb-admin-upload-border)',
+						background: isDragOver ? 'var(--theme-elevation-100)' : 'var(--bnb-admin-upload-bg)',
+						border: `1px dashed ${isDragOver ? 'var(--theme-text)' : 'var(--bnb-admin-upload-border)'}`,
 						borderRadius: 'var(--style-radius-s)',
 						color: 'var(--bnb-admin-upload-text)',
 						cursor:
@@ -221,6 +252,7 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 						gap: 6,
 						padding: 'calc(var(--base) * 0.85)',
 						textAlign: 'left',
+						transition: 'background 0.15s, border-color 0.15s',
 						width: '100%',
 					}}
 					type="button">
@@ -228,7 +260,7 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 						<span className="bnb-image-upload-trigger__icon">
 							<ImagePlus aria-hidden="true" size={16} strokeWidth={2} />
 						</span>
-						<span>{isProcessing ? '업로드 중...' : '이미지 업로드'}</span>
+						<span>{isProcessing ? '업로드 중...' : isDragOver ? '여기에 놓기' : '이미지 업로드'}</span>
 					</span>
 					<span className="bnb-image-upload-trigger__help" style={{ fontSize: 12 }}>
 						{helpText}
