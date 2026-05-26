@@ -635,6 +635,12 @@ function artistPressImagePath(doc: TestDoc) {
 }
 
 function profileImagePath(doc: TestDoc) {
+  const mediaPath = mediaImagePath(doc.profileImageMedia)
+
+  if (mediaPath) {
+    return mediaPath
+  }
+
   const value = stringify(doc.profileImagePath)
 
   if (!value) {

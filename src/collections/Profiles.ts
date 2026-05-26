@@ -8,7 +8,6 @@ import {
 	authorNameField,
 	centerScopedBeforeValidate,
 	centersField,
-	imagePathField,
 	publishingFields,
 	sidebarFields,
 } from './shared';
@@ -224,7 +223,24 @@ export const Profiles: CollectionConfig = {
 							label: '몸무게',
 						},
 					]),
-					imagePathField('profileImagePath', '프로필 이미지'),
+					{
+						name: 'profileImageMedia',
+						type: 'upload',
+						label: '프로필 이미지',
+						relationTo: 'media',
+						required: false,
+					},
+					{
+						name: 'profileImagePath',
+						type: 'text',
+						label: '프로필 이미지 (레거시)',
+						admin: {
+							components: {
+								Field: '@/components/payload/ImagePathField#ImagePathField',
+							},
+							hidden: true,
+						},
+					},
 					{
 						name: 'photoImage1',
 						type: 'text',

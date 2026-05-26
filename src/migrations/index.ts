@@ -87,6 +87,7 @@ import * as migration_20260522_170000_direct_casting_title_slugs from './2026052
 import * as migration_20260522_180000_direct_casting_title_aliases from './20260522_180000_direct_casting_title_aliases'
 import * as migration_20260522_190000_direct_casting_broadcast_title_names from './20260522_190000_direct_casting_broadcast_title_names'
 import * as migration_20260526_130000_teacher_profile_image_media from './20260526_130000_teacher_profile_image_media'
+import * as migration_20260526_150000_profile_image_media from './20260526_150000_profile_image_media'
 
 export const migrations = [
   {
@@ -533,5 +534,10 @@ export const migrations = [
     up: migration_20260526_130000_teacher_profile_image_media.up,
     down: migration_20260526_130000_teacher_profile_image_media.down,
     name: '20260526_130000_teacher_profile_image_media',
+  },
+  {
+    up: migration_20260526_150000_profile_image_media.up,
+    down: migration_20260526_150000_profile_image_media.down,
+    name: '20260526_150000_profile_image_media',
   },
 ]
