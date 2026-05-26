@@ -14,13 +14,14 @@ import {
 } from './runtime'
 
 type Options = {
-  compressAboveBytes: number
+  compressionQuality: number
   dryRun: boolean
   ids: string[]
   includeSizes: boolean
   limit: 'all' | number
   outputPath: string
   publishedFrom: string
+  variantAboveBytes: number
   write: boolean
 }
 
@@ -69,7 +70,8 @@ type EntryResult = {
 type SizeColumn = Extract<keyof NewsMediaRow, `sizes_${string}_filename`>
 
 const ROLE_PREFIX = 'media/news/thumbnails'
-const DEFAULT_COMPRESS_ABOVE_BYTES = 2 * 1024 * 1024
+const DEFAULT_COMPRESSION_QUALITY = 80
+const DEFAULT_VARIANT_ABOVE_BYTES = 1024 * 1024
 const SIZE_COLUMNS: Array<{ column: SizeColumn; name: string }> = [
   { column: 'sizes_thumbnail_filename', name: 'thumbnail' },
   { column: 'sizes_square_filename', name: 'square' },
@@ -147,27 +149,28 @@ async function main() {
 }
 
 function parseArgs(args: string[]): Options {
-  let compressAboveBytes = DEFAULT_COMPRESS_ABOVE_BYTES
+  let compressionQuality = DEFAULT_COMPRESSION_QUALITY
   let dryRun = false
   let ids: string[] = []
   let includeSizes = false
   let limit: Options['limit'] = 'all'
   let outputPath = 'tmp/legacy-assets/news-thumbnail-r2-upload-report.json'
   let publishedFrom = '2020-01-01'
+  let variantAboveBytes = DEFAULT_VARIANT_ABOVE_BYTES
   let write = false
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
 
-    if (arg === '--compress-above-mb') {
-      const value = readRequiredValue(args, index, '--compress-above-mb')
+    if (arg === '--compression-quality') {
+      const value = readRequiredValue(args, index, '--compression-quality')
       const parsed = Number(value)
 
-      if (!Number.isFinite(parsed) || parsed < 0) {
-        throw new Error(`--compress-above-mb 값은 0 이상 숫자여야 합니다: ${value}`)
+      if (!Number.isInteger(parsed) || parsed < 1 || parsed > 100) {
+        throw new Error(`--compression-quality 값은 1 이상 100 이하 정수여야 합니다: ${value}`)
       }
 
-      compressAboveBytes = Math.round(parsed * 1024 * 1024)
+      compressionQuality = parsed
       index += 1
       continue
     }
@@ -217,7 +220,7 @@ function parseArgs(args: string[]): Options {
     }
 
     if (arg === '--no-compress') {
-      compressAboveBytes = 0
+      compressionQuality = 0
       continue
     }
 
@@ -232,12 +235,35 @@ function parseArgs(args: string[]): Options {
       continue
     }
 
+    if (arg === '--variant-above-mb') {
+      const value = readRequiredValue(args, index, '--variant-above-mb')
+      const parsed = Number(value)
+
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        throw new Error(`--variant-above-mb 값은 0 이상 숫자여야 합니다: ${value}`)
+      }
+
+      variantAboveBytes = Math.round(parsed * 1024 * 1024)
+      index += 1
+      continue
+    }
+
     if (arg === '--write') {
       write = true
     }
   }
 
-  return { compressAboveBytes, dryRun, ids, includeSizes, limit, outputPath, publishedFrom, write }
+  return {
+    compressionQuality,
+    dryRun,
+    ids,
+    includeSizes,
+    limit,
+    outputPath,
+    publishedFrom,
+    variantAboveBytes,
+    write,
+  }
 }
 
 function readRequiredValue(args: string[], index: number, name: string) {
@@ -310,7 +336,13 @@ async function processRow({
     uploaded: 0,
   }
 
-  if (row.prefix === targetPrefix && (options.includeSizes || !hasSizeFilenames(row))) {
+  const includeSizeVariants = shouldIncludeSizeVariants(row, options)
+
+  if (
+    options.compressionQuality === 0 &&
+    row.prefix === targetPrefix &&
+    (includeSizeVariants || !hasSizeFilenames(row))
+  ) {
     return { ...base, action: 'skipped-already-r2' }
   }
 
@@ -353,7 +385,7 @@ async function processRow({
     }
 
     await updateMediaRow({
-      includeSizes: options.includeSizes,
+      includeSizes: includeSizeVariants,
       originalFilesize: uploadedOriginal?.body.byteLength ?? row.filesize,
       pool,
       row,
@@ -373,7 +405,7 @@ async function processRow({
 function buildUploadFiles(row: NewsMediaRow, targetPrefix: string, options: Options): UploadFile[] {
   const filenames = [
     { filename: row.filename, sizeName: 'original' },
-    ...(options.includeSizes
+    ...(shouldIncludeSizeVariants(row, options)
       ? SIZE_COLUMNS.flatMap((item) => {
           const filename = row[item.column]
           return filename ? [{ filename, sizeName: item.name }] : []
@@ -393,6 +425,14 @@ function hasSizeFilenames(row: NewsMediaRow) {
   return SIZE_COLUMNS.some((item) => Boolean(row[item.column]))
 }
 
+function shouldIncludeSizeVariants(row: NewsMediaRow, options: Options) {
+  if (options.includeSizes) {
+    return true
+  }
+
+  return Number(row.filesize ?? 0) >= options.variantAboveBytes
+}
+
 async function prepareUploadFile({
   file,
   options,
@@ -403,11 +443,15 @@ async function prepareUploadFile({
   const body = await fs.readFile(file.localPath)
   const contentType = contentTypeFor(file.filename)
 
-  if (file.sizeName !== 'original' || options.compressAboveBytes <= 0 || body.byteLength <= options.compressAboveBytes) {
+  if (options.compressionQuality <= 0) {
     return { ...file, body, compressed: false, contentType }
   }
 
-  const compressedBody = await compressImageBody({ body, contentType })
+  const compressedBody = await compressImageBody({
+    body,
+    contentType,
+    quality: options.compressionQuality,
+  })
 
   if (!compressedBody || compressedBody.byteLength >= body.byteLength) {
     return { ...file, body, compressed: false, contentType }
@@ -416,20 +460,28 @@ async function prepareUploadFile({
   return { ...file, body: compressedBody, compressed: true, contentType }
 }
 
-async function compressImageBody({ body, contentType }: { body: Buffer; contentType: string }) {
+async function compressImageBody({
+  body,
+  contentType,
+  quality,
+}: {
+  body: Buffer
+  contentType: string
+  quality: number
+}) {
   try {
     if (contentType === 'image/jpeg') {
-      return await sharp(body, { failOn: 'none' }).rotate().jpeg({ mozjpeg: true, quality: 82 }).toBuffer()
+      return await sharp(body, { failOn: 'none' }).rotate().jpeg({ mozjpeg: true, quality }).toBuffer()
     }
 
     if (contentType === 'image/webp') {
-      return await sharp(body, { failOn: 'none' }).rotate().webp({ quality: 82 }).toBuffer()
+      return await sharp(body, { failOn: 'none' }).rotate().webp({ quality }).toBuffer()
     }
 
     if (contentType === 'image/png') {
       return await sharp(body, { failOn: 'none' })
         .rotate()
-        .png({ adaptiveFiltering: true, compressionLevel: 9 })
+        .png({ adaptiveFiltering: true, compressionLevel: 9, palette: true, quality })
         .toBuffer()
     }
   } catch {
