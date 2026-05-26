@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import { Pool } from 'pg'
 
+import { deleteR2Object, hasR2Config } from '../../src/lib/r2'
 import {
   getDatabaseConnectionString,
   logDbTargetInfo,
@@ -14,11 +15,14 @@ type CleanupMode = 'all' | 'body-images' | 'below-threshold' | 'policy'
 
 type Options = {
   belowBytes: number
+  concurrency: number
   ids: string[]
   limit: 'all' | number
   mode: CleanupMode
   outputPath: string
   prefix?: string
+  progressEvery: number
+  write: boolean
 }
 
 type MediaVariantRow = {
@@ -41,8 +45,11 @@ type VariantFile = {
 }
 
 type CleanupEntry = {
+  action: 'dry-run' | 'failed' | 'cleaned'
   cleanupReasons: string[]
   dbColumnsToNull: string[]
+  deletedObjects?: number
+  error?: string
   filesize: number
   id: number
   originalFilename: string
@@ -53,6 +60,8 @@ type CleanupEntry = {
 type SizeName = 'large' | 'medium' | 'og' | 'small' | 'square' | 'thumbnail' | 'xlarge'
 
 const DEFAULT_BELOW_BYTES = 1024 * 1024
+const DEFAULT_CONCURRENCY = 8
+const DEFAULT_PROGRESS_EVERY = 100
 const SIZE_COLUMNS: Array<{ column: keyof MediaVariantRow; dbPrefix: string; name: SizeName }> = [
   { column: 'sizes_thumbnail_filename', dbPrefix: 'sizes_thumbnail', name: 'thumbnail' },
   { column: 'sizes_square_filename', dbPrefix: 'sizes_square', name: 'square' },
@@ -68,15 +77,51 @@ async function main() {
   const options = parseArgs(process.argv.slice(2))
   const connectionString = getDatabaseConnectionString({ preferUnpooled: true })
   const target = resolveDbTargetInfo(connectionString)
-  logDbTargetInfo(target, { destructive: false })
+  logDbTargetInfo(target, { destructive: options.write })
+
+  if (options.write) {
+    if (!target.isLocal && process.env.ALLOW_DESTRUCTIVE_C0 !== '1') {
+      throw new Error('비로컬 DB 쓰기는 ALLOW_DESTRUCTIVE_C0=1 을 명시해야 합니다.')
+    }
+
+    if (!hasR2Config()) {
+      throw new Error('R2 삭제에는 R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT, R2_BUCKET, R2_PUBLIC_BASE_URL 환경변수가 필요합니다.')
+    }
+  }
 
   const pool = new Pool({ connectionString })
 
   try {
     const rows = await readVariantRows(pool, options)
-    const entries = rows.map((row) => toCleanupEntry(row, options)).filter((entry) => entry.variantFiles.length > 0)
+    const plannedEntries = rows
+      .map((row) => toCleanupEntry(row, options))
+      .filter((entry) => entry.variantFiles.length > 0)
+
+    if (options.write) {
+      console.log(
+        JSON.stringify({
+          concurrency: options.concurrency,
+          phase: 'cleanup-start',
+          totalRows: plannedEntries.length,
+          totalVariantObjects: plannedEntries.reduce((sum, entry) => sum + entry.variantFiles.length, 0),
+        }),
+      )
+    }
+
+    const progress = createProgressLogger({
+      enabled: options.write,
+      every: options.progressEvery,
+      total: plannedEntries.length,
+    })
+    const entries = options.write
+      ? await mapWithConcurrency(plannedEntries, options.concurrency, async (entry) => {
+          const result = await cleanupEntry({ entry, pool })
+          progress(result)
+          return result
+        })
+      : plannedEntries
     const output = {
-      destructive: false,
+      destructive: options.write,
       entries,
       generatedAt: new Date().toISOString(),
       mode: options.mode,
@@ -104,17 +149,26 @@ async function main() {
 
 function parseArgs(args: string[]): Options {
   let belowBytes = DEFAULT_BELOW_BYTES
+  let concurrency = DEFAULT_CONCURRENCY
   let ids: string[] = []
   let limit: Options['limit'] = 'all'
   let mode: CleanupMode = 'policy'
   let outputPath = 'tmp/legacy-assets/media-variant-cleanup-plan.json'
   let prefix: string | undefined
+  let progressEvery = DEFAULT_PROGRESS_EVERY
+  let write = false
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
 
     if (arg === '--below-mb') {
       belowBytes = Math.round(parseNonNegativeNumber(readRequiredValue(args, index, '--below-mb'), '--below-mb') * 1024 * 1024)
+      index += 1
+      continue
+    }
+
+    if (arg === '--concurrency') {
+      concurrency = parseBoundedInt(readRequiredValue(args, index, '--concurrency'), '--concurrency', 1, 24)
       index += 1
       continue
     }
@@ -152,9 +206,24 @@ function parseArgs(args: string[]): Options {
       index += 1
       continue
     }
+
+    if (arg === '--progress-every') {
+      progressEvery = parseBoundedInt(readRequiredValue(args, index, '--progress-every'), '--progress-every', 1, 10000)
+      index += 1
+      continue
+    }
+
+    if (arg === '--write') {
+      write = true
+      outputPath =
+        outputPath === 'tmp/legacy-assets/media-variant-cleanup-plan.json'
+          ? 'tmp/legacy-assets/media-variant-cleanup-write-report.json'
+          : outputPath
+      continue
+    }
   }
 
-  return { belowBytes, ids, limit, mode, outputPath, prefix }
+  return { belowBytes, concurrency, ids, limit, mode, outputPath, prefix, progressEvery, write }
 }
 
 function readRequiredValue(args: string[], index: number, name: string) {
@@ -190,6 +259,16 @@ function parsePositiveInt(value: string, name: string) {
 
   if (!Number.isInteger(parsed) || parsed <= 0) {
     throw new Error(`${name} 값은 양의 정수여야 합니다: ${value}`)
+  }
+
+  return parsed
+}
+
+function parseBoundedInt(value: string, name: string, min: number, max: number) {
+  const parsed = Number(value)
+
+  if (!Number.isInteger(parsed) || parsed < min || parsed > max) {
+    throw new Error(`${name} 값은 ${min} 이상 ${max} 이하 정수여야 합니다: ${value}`)
   }
 
   return parsed
@@ -282,6 +361,7 @@ function toCleanupEntry(row: MediaVariantRow, options: Options): CleanupEntry {
   })
 
   return {
+    action: 'dry-run',
     cleanupReasons: cleanupReasons({ filesize, options, prefix }),
     dbColumnsToNull: dbColumnsToNull(),
     filesize,
@@ -290,6 +370,40 @@ function toCleanupEntry(row: MediaVariantRow, options: Options): CleanupEntry {
     prefix,
     variantFiles,
   }
+}
+
+async function cleanupEntry({ entry, pool }: { entry: CleanupEntry; pool: Pool }): Promise<CleanupEntry> {
+  try {
+    await Promise.all(entry.variantFiles.map((file) => deleteR2Object(file.objectKey)))
+
+    await clearMediaSizeMetadata(pool, entry.id)
+
+    return {
+      ...entry,
+      action: 'cleaned',
+      deletedObjects: entry.variantFiles.length,
+    }
+  } catch (error) {
+    return {
+      ...entry,
+      action: 'failed',
+      error: error instanceof Error ? error.message : String(error),
+    }
+  }
+}
+
+async function clearMediaSizeMetadata(pool: Pool, mediaId: number) {
+  await pool.query(
+    `
+      UPDATE media
+      SET
+        thumbnail_u_r_l = NULL,
+        ${dbColumnsToNull().map((column) => `${column} = NULL`).join(',\n        ')},
+        updated_at = NOW()
+      WHERE id = $1
+    `,
+    [mediaId],
+  )
 }
 
 function cleanupReasons({
@@ -334,11 +448,94 @@ function buildTotals(entries: CleanupEntry[]) {
   const uniqueObjectKeys = new Set(entries.flatMap((entry) => entry.variantFiles.map((file) => file.objectKey)))
 
   return {
+    cleanedRows: entries.filter((entry) => entry.action === 'cleaned').length,
     dbColumnsToNull: dbColumnsToNull().length,
+    deletedObjects: entries.reduce((sum, entry) => sum + (entry.deletedObjects ?? 0), 0),
+    dryRunRows: entries.filter((entry) => entry.action === 'dry-run').length,
+    failedRows: entries.filter((entry) => entry.action === 'failed').length,
     mediaRows: entries.length,
     variantObjects: entries.reduce((sum, entry) => sum + entry.variantFiles.length, 0),
     variantObjectsUnique: uniqueObjectKeys.size,
   }
+}
+
+function createProgressLogger({
+  enabled,
+  every,
+  total,
+}: {
+  enabled: boolean
+  every: number
+  total: number
+}) {
+  let cleanedRows = 0
+  let deletedObjects = 0
+  let done = 0
+  let failedRows = 0
+  const startedAt = Date.now()
+
+  return (entry: CleanupEntry) => {
+    if (!enabled) {
+      return
+    }
+
+    done += 1
+
+    if (entry.action === 'cleaned') {
+      cleanedRows += 1
+      deletedObjects += entry.deletedObjects ?? 0
+    }
+
+    if (entry.action === 'failed') {
+      failedRows += 1
+    }
+
+    if (done % every !== 0 && done !== total) {
+      return
+    }
+
+    const elapsedSec = Math.max(1, Math.round((Date.now() - startedAt) / 1000))
+    const rowsPerSec = Number((done / elapsedSec).toFixed(2))
+    const remainingRows = Math.max(0, total - done)
+    const etaSec = rowsPerSec > 0 ? Math.round(remainingRows / rowsPerSec) : null
+
+    console.log(
+      JSON.stringify({
+        cleanedRows,
+        deletedObjects,
+        done,
+        elapsedSec,
+        etaSec,
+        failedRows,
+        lastMediaId: entry.id,
+        phase: 'cleanup-progress',
+        remainingRows,
+        rowsPerSec,
+        total,
+      }),
+    )
+  }
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T, index: number) => Promise<R>,
+) {
+  const results = new Array<R>(items.length)
+  let nextIndex = 0
+
+  async function runWorker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex
+      nextIndex += 1
+      results[index] = await worker(items[index], index)
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, runWorker))
+
+  return results
 }
 
 void main().catch((error) => {
