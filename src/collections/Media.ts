@@ -66,15 +66,6 @@ export const Media: CollectionConfig = {
     read: anyone,
     update: authenticated,
   },
-  admin: {
-    components: {
-      views: {
-        list: {
-          Component: '@/components/payload/MediaListView#MediaListView',
-        },
-      },
-    },
-  },
   hooks: {
     afterRead: [applyExternalUrlAfterRead],
   },
