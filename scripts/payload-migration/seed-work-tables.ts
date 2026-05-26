@@ -538,7 +538,6 @@ const configs: TableConfig[] = [
       'centers',
       'summary',
       'body_html',
-      'profile_image_path',
       'photo_image1',
       'photo_image2',
       'photo_image3',
@@ -565,7 +564,6 @@ const configs: TableConfig[] = [
       photoImage4: text(row.photo_image4),
       photoImage5: text(row.photo_image5),
       photoImage6: text(row.photo_image6),
-      profileImagePath: text(row.profile_image_path),
       representativeWorks: buildRepresentativeWorks(
         context.teacherFilesByTeacherSlug.get(requiredText(row.slug, 'teachers.slug')) ?? [],
         requiredText(row.source_db, 'teachers.source_db'),

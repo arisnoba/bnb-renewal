@@ -67,9 +67,8 @@ export const Teachers: CollectionConfig = {
             type: "upload",
             label: "프로필 이미지",
             relationTo: "media",
-            required: false,
+            required: true,
           },
-          imagePathField("profileImagePath", "프로필 이미지 (레거시)", true),
           {
             name: "photoImage1",
             type: "text",

@@ -25,9 +25,9 @@ export type TestCollection = {
 
 export const testCollections = [
   {
-    description: '강사 프로필, 센터, 상태, 대표 이미지 경로',
+    description: '강사 프로필, 센터, 상태, 대표 이미지',
     href: '/test/teachers',
-    imageFields: ['profileImagePath', 'photoImage1'],
+    imageFields: ['profileImageMedia', 'photoImage1'],
     label: 'Teachers',
     metaFields: ['centers', 'status', 'displayOrder'],
     slug: 'teachers',

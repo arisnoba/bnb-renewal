@@ -23,6 +23,7 @@ import { Reviews } from "./Reviews";
 import { Shoots } from "./Shoots";
 import { slugField } from "./shared";
 import { TeacherFiles } from "./TeacherFiles";
+import { Teachers } from "./Teachers";
 
 type FieldWithName = Field & {
   fields?: Field[];
@@ -96,6 +97,17 @@ function findNamedFieldDeep(fields: Field[], fieldName: string): FieldWithName |
         return nestedField;
       }
     }
+
+    if (field.type === "tabs") {
+      const nestedField = findNamedFieldDeep(
+        field.tabs.flatMap((tab) => tab.fields),
+        fieldName,
+      );
+
+      if (nestedField) {
+        return nestedField;
+      }
+    }
   }
 
   return undefined;
@@ -107,6 +119,10 @@ function getFieldDeep(collection: CollectionConfig, fieldName: string) {
   assert.ok(field, `${collection.slug}.${fieldName} 필드가 있어야 합니다.`);
 
   return field;
+}
+
+function hasFieldDeep(collection: CollectionConfig, fieldName: string) {
+  return Boolean(findNamedFieldDeep(collection.fields, fieldName));
 }
 
 test("profile career items use title row labels", () => {
@@ -121,6 +137,15 @@ test("profile career items use title row labels", () => {
     field.admin?.components?.RowLabel,
     "@/components/payload/ProfileCareerRowLabel#ProfileCareerRowLabel",
   );
+});
+
+test("teachers require media profile images and omit legacy path", () => {
+  const field = getFieldDeep(Teachers, "profileImageMedia");
+
+  assert.equal(field.type, "upload");
+  assert.equal(field.label, "프로필 이미지");
+  assert.equal(field.required, true);
+  assert.equal(hasFieldDeep(Teachers, "profileImagePath"), false);
 });
 
 test("casting appearance cast members use actor row labels", () => {

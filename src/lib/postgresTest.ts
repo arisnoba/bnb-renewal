@@ -533,14 +533,6 @@ function boTableFromSourceTable(value: unknown) {
   return stringify(value).replace(/^g5_write_/, '')
 }
 
-function encodePath(value: string) {
-  return value
-    .split('/')
-    .filter(Boolean)
-    .map((part) => encodeURIComponent(part))
-    .join('/')
-}
-
 function legacyAssetPath(input: {
   boTable: string
   collection: string
@@ -565,32 +557,7 @@ function legacyAssetPath(input: {
 }
 
 function teacherImagePath(doc: TestDoc) {
-  return teacherLegacyImagePath(doc, doc.profileImagePath || doc.photoImage1)
-}
-
-function teacherLegacyImagePath(doc: TestDoc, path: unknown) {
-  const value = stringify(path)
-
-  if (!value) {
-    return ''
-  }
-
-  if (
-    value.startsWith('/api/') ||
-    value.startsWith('/legacy/teachers/') ||
-    value.startsWith('/media/') ||
-    value.startsWith('/uploads/') ||
-    value.startsWith('/_next/')
-  ) {
-    return normalizeImagePath(value)
-  }
-
-  const sourcePath = value
-    .replace(/^https?:\/\/[^/]+\/web\/data\/teacher\//, '')
-    .replace(/^\/?web\/data\/teacher\//, '')
-    .replace(/^\/+/, '')
-
-  return `/legacy/teachers/${stringify(doc.sourceDb)}/${stringify(doc.sourceTable)}/${encodePath(sourcePath)}`
+  return mediaImagePath(doc.profileImageMedia)
 }
 
 function teacherRepresentativeWorkPath(doc: TestDoc) {
