@@ -55,7 +55,7 @@ export function generateNewsMeta(news: NewsLike | null): Metadata {
 function getNewsMetaImageUrl(news: NewsLike) {
   const serverUrl = getServerSideURL()
   const media = getNewsSeoImageMedia(news)
-  const mediaUrl = media?.sizes?.og?.url || media?.url
+  const mediaUrl = media?.url
 
   if (mediaUrl) {
     return absoluteUrl(mediaUrl, serverUrl)

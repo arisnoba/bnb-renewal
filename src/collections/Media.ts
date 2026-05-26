@@ -34,6 +34,13 @@ function normalizeLocalMediaURL(value: unknown) {
   return url
 }
 
+function mediaAdminThumbnail({ doc }: { doc: Record<string, unknown> }) {
+  const thumbnailURL = normalizeLocalMediaURL(doc.thumbnailURL)
+  const url = normalizeLocalMediaURL(doc.url)
+
+  return thumbnailURL || url || null
+}
+
 const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
   const externalUrl = typeof doc?.externalUrl === 'string' ? doc.externalUrl.trim() : ''
 
@@ -95,40 +102,11 @@ export const Media: CollectionConfig = {
   upload: {
     // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
     staticDir: path.resolve(dirname, '../../public/media'),
-    adminThumbnail: 'thumbnail',
+    adminThumbnail: mediaAdminThumbnail,
     focalPoint: true,
-    imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 300,
-      },
-      {
-        name: 'square',
-        width: 500,
-        height: 500,
-      },
-      {
-        name: 'small',
-        width: 600,
-      },
-      {
-        name: 'medium',
-        width: 900,
-      },
-      {
-        name: 'large',
-        width: 1400,
-      },
-      {
-        name: 'xlarge',
-        width: 1920,
-      },
-      {
-        name: 'og',
-        width: 1200,
-        height: 630,
-        crop: 'center',
-      },
-    ],
+    resizeOptions: {
+      width: 1920,
+      withoutEnlargement: true,
+    },
   },
 }

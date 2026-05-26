@@ -53,7 +53,7 @@ export function generateArtistPressMeta(artistPress: ArtistPressLike | null): Me
 function getArtistPressMetaImageUrl(artistPress: ArtistPressLike) {
   const serverUrl = getServerSideURL()
   const media = getArtistPressSeoImageMedia(artistPress)
-  const mediaUrl = media?.sizes?.og?.url || media?.url
+  const mediaUrl = media?.url
 
   if (mediaUrl) {
     return absoluteUrl(mediaUrl, serverUrl)

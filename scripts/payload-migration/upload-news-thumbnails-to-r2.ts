@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { Pool } from 'pg'
+import sharp from 'sharp'
 
 import { uploadR2Object } from '../../src/lib/r2'
 import {
@@ -13,8 +14,10 @@ import {
 } from './runtime'
 
 type Options = {
+  compressAboveBytes: number
   dryRun: boolean
   ids: string[]
+  includeSizes: boolean
   limit: 'all' | number
   outputPath: string
   publishedFrom: string
@@ -22,6 +25,7 @@ type Options = {
 }
 
 type NewsMediaRow = {
+  filesize: number | null
   filename: string
   media_id: number
   news_id: number
@@ -43,6 +47,12 @@ type UploadFile = {
   sizeName: string
 }
 
+type PreparedUploadFile = UploadFile & {
+  body: Buffer
+  compressed: boolean
+  contentType: string
+}
+
 type EntryResult = {
   action: 'dry-run' | 'failed' | 'skipped-already-r2' | 'uploaded'
   currentPrefix: string | null
@@ -52,12 +62,14 @@ type EntryResult = {
   targetPrefix: string
   title?: string
   uploaded: number
+  compressed?: number
   error?: string
 }
 
 type SizeColumn = Extract<keyof NewsMediaRow, `sizes_${string}_filename`>
 
 const ROLE_PREFIX = 'media/news/thumbnails'
+const DEFAULT_COMPRESS_ABOVE_BYTES = 2 * 1024 * 1024
 const SIZE_COLUMNS: Array<{ column: SizeColumn; name: string }> = [
   { column: 'sizes_thumbnail_filename', name: 'thumbnail' },
   { column: 'sizes_square_filename', name: 'square' },
@@ -135,8 +147,10 @@ async function main() {
 }
 
 function parseArgs(args: string[]): Options {
+  let compressAboveBytes = DEFAULT_COMPRESS_ABOVE_BYTES
   let dryRun = false
   let ids: string[] = []
+  let includeSizes = false
   let limit: Options['limit'] = 'all'
   let outputPath = 'tmp/legacy-assets/news-thumbnail-r2-upload-report.json'
   let publishedFrom = '2020-01-01'
@@ -144,6 +158,19 @@ function parseArgs(args: string[]): Options {
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index]
+
+    if (arg === '--compress-above-mb') {
+      const value = readRequiredValue(args, index, '--compress-above-mb')
+      const parsed = Number(value)
+
+      if (!Number.isFinite(parsed) || parsed < 0) {
+        throw new Error(`--compress-above-mb 값은 0 이상 숫자여야 합니다: ${value}`)
+      }
+
+      compressAboveBytes = Math.round(parsed * 1024 * 1024)
+      index += 1
+      continue
+    }
 
     if (arg === '--dry-run') {
       dryRun = true
@@ -156,6 +183,11 @@ function parseArgs(args: string[]): Options {
         .map((value) => value.trim())
         .filter(Boolean)
       index += 1
+      continue
+    }
+
+    if (arg === '--include-sizes') {
+      includeSizes = true
       continue
     }
 
@@ -184,6 +216,11 @@ function parseArgs(args: string[]): Options {
       continue
     }
 
+    if (arg === '--no-compress') {
+      compressAboveBytes = 0
+      continue
+    }
+
     if (arg === '--published-from') {
       publishedFrom = readRequiredValue(args, index, '--published-from')
 
@@ -200,7 +237,7 @@ function parseArgs(args: string[]): Options {
     }
   }
 
-  return { dryRun, ids, limit, outputPath, publishedFrom, write }
+  return { compressAboveBytes, dryRun, ids, includeSizes, limit, outputPath, publishedFrom, write }
 }
 
 function readRequiredValue(args: string[], index: number, name: string) {
@@ -230,6 +267,7 @@ async function readRows(pool: Pool, options: Options) {
         news.title,
         media.id AS media_id,
         media.filename,
+        media.filesize,
         media.prefix,
         media.sizes_thumbnail_filename,
         media.sizes_square_filename,
@@ -260,7 +298,7 @@ async function processRow({
   row: NewsMediaRow
 }): Promise<EntryResult> {
   const targetPrefix = `${ROLE_PREFIX}/${row.news_id}`
-  const files = buildUploadFiles(row, targetPrefix)
+  const files = buildUploadFiles(row, targetPrefix, options)
   const base: EntryResult = {
     action: options.dryRun ? 'dry-run' : 'uploaded',
     currentPrefix: row.prefix,
@@ -272,7 +310,7 @@ async function processRow({
     uploaded: 0,
   }
 
-  if (row.prefix === targetPrefix) {
+  if (row.prefix === targetPrefix && (options.includeSizes || !hasSizeFilenames(row))) {
     return { ...base, action: 'skipped-already-r2' }
   }
 
@@ -291,20 +329,36 @@ async function processRow({
   }
 
   try {
+    let uploadedOriginal: PreparedUploadFile | undefined
+
     for (const file of files) {
+      const prepared = await prepareUploadFile({ file, options })
+
       await uploadR2Object({
-        body: await fs.readFile(file.localPath),
+        body: prepared.body,
         cacheControl: 'public, max-age=31536000, immutable',
-        contentType: contentTypeFor(file.filename),
+        contentType: prepared.contentType,
         key: file.objectKey,
       })
+
+      if (file.sizeName === 'original') {
+        uploadedOriginal = prepared
+      }
+
+      if (prepared.compressed) {
+        base.compressed = (base.compressed ?? 0) + 1
+      }
+
       base.uploaded += 1
     }
 
-    await pool.query('UPDATE media SET prefix = $1, updated_at = NOW() WHERE id = $2', [
+    await updateMediaRow({
+      includeSizes: options.includeSizes,
+      originalFilesize: uploadedOriginal?.body.byteLength ?? row.filesize,
+      pool,
+      row,
       targetPrefix,
-      row.media_id,
-    ])
+    })
 
     return base
   } catch (error) {
@@ -316,13 +370,15 @@ async function processRow({
   }
 }
 
-function buildUploadFiles(row: NewsMediaRow, targetPrefix: string): UploadFile[] {
+function buildUploadFiles(row: NewsMediaRow, targetPrefix: string, options: Options): UploadFile[] {
   const filenames = [
     { filename: row.filename, sizeName: 'original' },
-    ...SIZE_COLUMNS.flatMap((item) => {
-      const filename = row[item.column]
-      return filename ? [{ filename, sizeName: item.name }] : []
-    }),
+    ...(options.includeSizes
+      ? SIZE_COLUMNS.flatMap((item) => {
+          const filename = row[item.column]
+          return filename ? [{ filename, sizeName: item.name }] : []
+        })
+      : []),
   ]
 
   return filenames.map((file) => ({
@@ -331,6 +387,56 @@ function buildUploadFiles(row: NewsMediaRow, targetPrefix: string): UploadFile[]
     objectKey: path.posix.join(targetPrefix, file.filename),
     sizeName: file.sizeName,
   }))
+}
+
+function hasSizeFilenames(row: NewsMediaRow) {
+  return SIZE_COLUMNS.some((item) => Boolean(row[item.column]))
+}
+
+async function prepareUploadFile({
+  file,
+  options,
+}: {
+  file: UploadFile
+  options: Options
+}): Promise<PreparedUploadFile> {
+  const body = await fs.readFile(file.localPath)
+  const contentType = contentTypeFor(file.filename)
+
+  if (file.sizeName !== 'original' || options.compressAboveBytes <= 0 || body.byteLength <= options.compressAboveBytes) {
+    return { ...file, body, compressed: false, contentType }
+  }
+
+  const compressedBody = await compressImageBody({ body, contentType })
+
+  if (!compressedBody || compressedBody.byteLength >= body.byteLength) {
+    return { ...file, body, compressed: false, contentType }
+  }
+
+  return { ...file, body: compressedBody, compressed: true, contentType }
+}
+
+async function compressImageBody({ body, contentType }: { body: Buffer; contentType: string }) {
+  try {
+    if (contentType === 'image/jpeg') {
+      return await sharp(body, { failOn: 'none' }).rotate().jpeg({ mozjpeg: true, quality: 82 }).toBuffer()
+    }
+
+    if (contentType === 'image/webp') {
+      return await sharp(body, { failOn: 'none' }).rotate().webp({ quality: 82 }).toBuffer()
+    }
+
+    if (contentType === 'image/png') {
+      return await sharp(body, { failOn: 'none' })
+        .rotate()
+        .png({ adaptiveFiltering: true, compressionLevel: 9 })
+        .toBuffer()
+    }
+  } catch {
+    return undefined
+  }
+
+  return undefined
 }
 
 async function firstMissingFile(files: UploadFile[]) {
@@ -363,8 +469,92 @@ function contentTypeFor(filename: string) {
   return 'application/octet-stream'
 }
 
+async function updateMediaRow({
+  includeSizes,
+  originalFilesize,
+  pool,
+  row,
+  targetPrefix,
+}: {
+  includeSizes: boolean
+  originalFilesize: number | null
+  pool: Pool
+  row: NewsMediaRow
+  targetPrefix: string
+}) {
+  if (includeSizes) {
+    await pool.query('UPDATE media SET prefix = $1, updated_at = NOW() WHERE id = $2', [
+      targetPrefix,
+      row.media_id,
+    ])
+    return
+  }
+
+  await pool.query(
+    `
+      UPDATE media
+      SET
+        filesize = COALESCE($1, filesize),
+        prefix = $2,
+        thumbnail_u_r_l = NULL,
+        url = $3,
+        sizes_thumbnail_url = NULL,
+        sizes_thumbnail_width = NULL,
+        sizes_thumbnail_height = NULL,
+        sizes_thumbnail_mime_type = NULL,
+        sizes_thumbnail_filesize = NULL,
+        sizes_thumbnail_filename = NULL,
+        sizes_square_url = NULL,
+        sizes_square_width = NULL,
+        sizes_square_height = NULL,
+        sizes_square_mime_type = NULL,
+        sizes_square_filesize = NULL,
+        sizes_square_filename = NULL,
+        sizes_small_url = NULL,
+        sizes_small_width = NULL,
+        sizes_small_height = NULL,
+        sizes_small_mime_type = NULL,
+        sizes_small_filesize = NULL,
+        sizes_small_filename = NULL,
+        sizes_medium_url = NULL,
+        sizes_medium_width = NULL,
+        sizes_medium_height = NULL,
+        sizes_medium_mime_type = NULL,
+        sizes_medium_filesize = NULL,
+        sizes_medium_filename = NULL,
+        sizes_large_url = NULL,
+        sizes_large_width = NULL,
+        sizes_large_height = NULL,
+        sizes_large_mime_type = NULL,
+        sizes_large_filesize = NULL,
+        sizes_large_filename = NULL,
+        sizes_xlarge_url = NULL,
+        sizes_xlarge_width = NULL,
+        sizes_xlarge_height = NULL,
+        sizes_xlarge_mime_type = NULL,
+        sizes_xlarge_filesize = NULL,
+        sizes_xlarge_filename = NULL,
+        sizes_og_url = NULL,
+        sizes_og_width = NULL,
+        sizes_og_height = NULL,
+        sizes_og_mime_type = NULL,
+        sizes_og_filesize = NULL,
+        sizes_og_filename = NULL,
+        updated_at = NOW()
+      WHERE id = $4
+    `,
+    [
+      originalFilesize,
+      targetPrefix,
+      `/api/media/file/${encodeURIComponent(row.filename)}?prefix=${encodeURIComponent(targetPrefix)}`,
+      row.media_id,
+    ],
+  )
+}
+
 function buildTotals(entries: EntryResult[]) {
   return {
+    compressedFiles: entries.reduce((sum, entry) => sum + (entry.compressed ?? 0), 0),
     dryRun: entries.filter((entry) => entry.action === 'dry-run').length,
     failed: entries.filter((entry) => entry.action === 'failed').length,
     rows: entries.length,
