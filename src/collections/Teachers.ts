@@ -58,7 +58,14 @@ export const Teachers: CollectionConfig = {
               label: "전공/학교",
             },
           ]),
-          imagePathField("profileImagePath", "프로필 이미지", true),
+          {
+            name: "profileImageMedia",
+            type: "upload",
+            label: "프로필 이미지",
+            relationTo: "media",
+            required: false,
+          },
+          imagePathField("profileImagePath", "프로필 이미지 (레거시)", true),
           {
             name: "photoImage1",
             type: "text",
