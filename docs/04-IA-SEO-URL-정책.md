@@ -31,7 +31,7 @@
 | 센터       | slug       | 현재 운영 도메인     | 서브도메인 (예정)        |
 | ---------- | ---------- | -------------------- | ------------------------ |
 | 아트센터   | `art`      | `baewoo.co.kr`       | `art.{newdomain}`        |
-| 애비뉴센터 | `avenue`   | –                    | `avenue.{newdomain}`     |
+| 애비뉴센터 | `avenue`   | `baewoorun.co.kr`| `avenue.{newdomain}`     |
 | 입시센터   | `exam`     | `baewoo.kr`          | `exam.{newdomain}`       |
 | 하이틴센터 | `highteen` | `baewoo.me`          | `highteen.{newdomain}`   |
 | 키즈센터   | `kids`     | `baewoo.net`         | `kids.{newdomain}`       |
