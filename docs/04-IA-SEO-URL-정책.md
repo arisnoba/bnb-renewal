@@ -36,7 +36,7 @@
 | 하이틴센터 | `highteen` | `baewoo.me`          | `highteen.{newdomain}`   |
 | 키즈센터   | `kids`     | `baewoo.net`         | `kids.{newdomain}`       |
 
-> `{newdomain}`은 신규 대표 도메인이 확정되면 채운다. 애비뉴센터는 현재 운영 도메인 없음.
+> `{newdomain}`은 신규 대표 도메인이 확정되면 채운다.
 
 ## URL 기준
 
