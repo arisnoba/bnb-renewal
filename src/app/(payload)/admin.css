@@ -110,6 +110,12 @@
 	color: color-mix(in srgb, var(--bnb-admin-upload-text) 72%, var(--theme-elevation-600));
 }
 
+.screen-appearance-body-images-field > .array-field__header .array-field__header-actions,
+.screen-appearance-body-images-field > .array-field__draggable-rows,
+.screen-appearance-body-images-field > .array-field__add-row {
+	display: none;
+}
+
 html[data-theme='dark'] {
 	--bnb-admin-upload-bg: #102d44;
 	--bnb-admin-upload-border: #2d7fb9;

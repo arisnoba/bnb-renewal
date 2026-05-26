@@ -1,4 +1,4 @@
-import type { CollectionConfig, Validate } from "payload";
+import type { CollectionBeforeValidateHook, CollectionConfig, SelectField, Validate } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
 import {
@@ -6,12 +6,57 @@ import {
   adminTabs,
   adminDateConfig,
   authorNameField,
-  centerScopedBeforeValidate,
+  authorNameFromCenters,
+  centerOptions,
   centersField,
   imagePathField,
+  isGlobalAdminUser,
   publishingFields,
   sidebarFields,
+  userCenterValue,
 } from "./shared";
+
+const screenAppearanceBeforeValidate: CollectionBeforeValidateHook = ({
+  data,
+  originalDoc,
+  req,
+}) => {
+  if (!data) {
+    return data;
+  }
+
+  const user = req.user;
+  const userCenter = userCenterValue(user);
+  const nextData: Record<string, unknown> = { ...data };
+
+  if (user && !isGlobalAdminUser(user)) {
+    if (!userCenter) {
+      throw new Error("관리자 계정에 유효한 센터가 없습니다.");
+    }
+
+    const originalCenter =
+      originalDoc && typeof originalDoc === "object"
+        ? (originalDoc as { centers?: unknown }).centers
+        : undefined;
+
+    nextData.centers = originalCenter ?? userCenter;
+  } else {
+    const raw = nextData.centers;
+    const normalized = Array.isArray(raw) ? raw[0] : raw;
+
+    nextData.centers =
+      typeof normalized === "string" && normalized.trim()
+        ? normalized.trim()
+        : userCenter ?? "";
+  }
+
+  nextData.authorName =
+    typeof nextData.centers === "string"
+      ? (authorNameFromCenters([nextData.centers]) ?? nextData.authorName)
+      : nextData.authorName;
+
+  return nextData;
+};
 
 const screenAppearanceTypeOptions = [
   { label: "드라마", value: "drama" },
@@ -119,7 +164,7 @@ export const ScreenAppearances: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [screenAppearanceBeforeValidate],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -129,7 +174,14 @@ export const ScreenAppearances: CollectionConfig = {
         fields: [
           {
             ...centersField,
-          },
+            hasMany: false,
+            defaultValue: undefined,
+            options: centerOptions,
+            admin: {
+              isClearable: true,
+              placeholder: "선택해주세요.(미선택)",
+            },
+          } as SelectField,
           {
             name: "actorInputMode",
             type: "radio",
@@ -163,6 +215,10 @@ export const ScreenAppearances: CollectionConfig = {
               label: "출연자",
               validate: validateManualPerformerName,
               admin: {
+                components: {
+                  Cell:
+                    "@/components/payload/ScreenAppearancePerformerCell#ScreenAppearancePerformerCell",
+                },
                 condition: (_data, siblingData) =>
                   siblingData?.actorInputMode === "manual",
               },
@@ -245,10 +301,15 @@ export const ScreenAppearances: CollectionConfig = {
               singular: "본문 이미지",
             },
             admin: {
+              className: "screen-appearance-body-images-field",
               components: {
+                beforeInput: [
+                  "@/components/payload/ScreenAppearanceBodyImagesField#ScreenAppearanceBodyImagesField",
+                ],
                 RowLabel:
                   "@/components/payload/ScreenAppearanceBodyImageRowLabel#ScreenAppearanceBodyImageRowLabel",
               },
+              initCollapsed: true,
             },
             fields: [
               {

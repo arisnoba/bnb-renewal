@@ -38,7 +38,9 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { AgencyActorRowLabel as AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d } from '@/components/payload/AgencyActorRowLabel'
 import { CastingDirectorCareerRowLabel as CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6 } from '@/components/payload/CastingDirectorCareerRowLabel'
 import { CastingAppearanceCastMemberRowLabel as CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296 } from '@/components/payload/CastingAppearanceCastMemberRowLabel'
+import { ScreenAppearancePerformerCell as ScreenAppearancePerformerCell_a565e0992e46624eb0f1816c0da918b8 } from '@/components/payload/ScreenAppearancePerformerCell'
 import { ScreenAppearanceCareerRowLabel as ScreenAppearanceCareerRowLabel_7178f3eed2c874a197e506d98884ce36 } from '@/components/payload/ScreenAppearanceCareerRowLabel'
+import { ScreenAppearanceBodyImagesField as ScreenAppearanceBodyImagesField_ff5069f401ec4c8229786d08cb027675 } from '@/components/payload/ScreenAppearanceBodyImagesField'
 import { ScreenAppearanceBodyImageRowLabel as ScreenAppearanceBodyImageRowLabel_0f979d8e6ff8830b19397b386d46f9f1 } from '@/components/payload/ScreenAppearanceBodyImageRowLabel'
 import { ProfileNameFields as ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb } from '@/components/payload/ProfileNameFields'
 import { ProfileFilterField as ProfileFilterField_0c27d6f1f63313f291c972be4860de61 } from '@/components/payload/ProfileFilterField'
@@ -103,7 +105,9 @@ export const importMap = {
   "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel": AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d,
   "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel": CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6,
   "@/components/payload/CastingAppearanceCastMemberRowLabel#CastingAppearanceCastMemberRowLabel": CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296,
+  "@/components/payload/ScreenAppearancePerformerCell#ScreenAppearancePerformerCell": ScreenAppearancePerformerCell_a565e0992e46624eb0f1816c0da918b8,
   "@/components/payload/ScreenAppearanceCareerRowLabel#ScreenAppearanceCareerRowLabel": ScreenAppearanceCareerRowLabel_7178f3eed2c874a197e506d98884ce36,
+  "@/components/payload/ScreenAppearanceBodyImagesField#ScreenAppearanceBodyImagesField": ScreenAppearanceBodyImagesField_ff5069f401ec4c8229786d08cb027675,
   "@/components/payload/ScreenAppearanceBodyImageRowLabel#ScreenAppearanceBodyImageRowLabel": ScreenAppearanceBodyImageRowLabel_0f979d8e6ff8830b19397b386d46f9f1,
   "@/components/payload/ProfileNameFields#ProfileNameFields": ProfileNameFields_30c036cd2055523a9a5a9ac1840e66fb,
   "@/components/payload/ProfileFilterField#ProfileFilterField": ProfileFilterField_0c27d6f1f63313f291c972be4860de61,
