@@ -21,7 +21,7 @@ The workflow is:
 
 This skill is not a remote deployment workflow. Do not push schema/data changes to remote Neon/Vercel/R2 from this skill.
 
-`docs/06-마이그레이션-정제-체크리스트.md` is a required deliverable for this workflow. If a target reaches `로컬 DB 정리 완료` or `코드 정리 완료`, update that checklist before committing or reporting completion.
+`docs/07-마이그레이션-정제-체크리스트.md` is a required deliverable for this workflow. If a target reaches `로컬 DB 정리 완료` or `코드 정리 완료`, update that checklist before committing or reporting completion.
 
 ## Project Context
 
@@ -38,8 +38,8 @@ Primary references:
 - relevant migrations in `src/migrations/`
 - relevant scripts in `scripts/payload-migration/`
 - `src/lib/postgresTest.ts`
-- `docs/06-마이그레이션-정제-체크리스트.md`
-- `docs/02-레거시-마이그레이션-정책.md`
+- `docs/07-마이그레이션-정제-체크리스트.md`
+- `docs/04-레거시-마이그레이션-정책.md`
 
 Use the user's Korean commit/message rules from `AGENTS.md` if committing.
 
@@ -230,7 +230,7 @@ If time or environment blocks a check, report the exact command not run and why.
 
 ### 8. Update Cleanup Checklist
 
-Before committing or reporting completion, update `docs/06-마이그레이션-정제-체크리스트.md` for the target collection:
+Before committing or reporting completion, update `docs/07-마이그레이션-정제-체크리스트.md` for the target collection:
 
 - mark the target checklist item complete only after local DB evidence exists
 - update the target's `주요 확인` line if the final cleaned fields changed
