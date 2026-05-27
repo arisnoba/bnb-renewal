@@ -1,12 +1,30 @@
 'use client'
 
-import type { FormEvent } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Script from 'next/script'
-import { useMemo, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type BaseSyntheticEvent,
+  type InputHTMLAttributes,
+} from 'react'
+import { useForm, type Control, type FieldErrors, type FieldPath } from 'react-hook-form'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -19,8 +37,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/utilities/ui'
-
-type InquiryType = 'art' | 'admission' | 'highteen' | 'kids' | 'avenue' | 'partnership'
+import { inquiryTypeValues, type InquiryType } from './inquiryTypeParams'
 
 const inquiryTypes = [
   { label: '아트', value: 'art' },
@@ -82,41 +99,199 @@ const yesNoOptions = [
 
 const inflowSources = ['랜딩', '포털', 'SNS', '네이버카페', '지인소개', 'AI', '기타']
 
-const validInquiryTypeValues = new Set(inquiryTypes.map((type) => type.value))
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
-export function ConsultationForm() {
-  const searchParams = useSearchParams()
+const optionalString = z.string().optional()
+
+const consultationFormSchema = z
+  .object({
+    actingMajor: optionalString,
+    applicantName: optionalString,
+    attachment: z.any().optional(),
+    birthDate: optionalString,
+    companyName: optionalString,
+    companyWebsite: optionalString,
+    contactPersonName: optionalString,
+    gender: optionalString,
+    guardianPhone: optionalString,
+    hasPerformance: optionalString,
+    hasTraining: optionalString,
+    inflowSource: optionalString,
+    inflowSourceOther: optionalString,
+    inquiryType: z.enum(inquiryTypeValues),
+    jobTitle: optionalString,
+    occupation: optionalString,
+    partnerEmail: optionalString,
+    partnerPhone: optionalString,
+    partnershipContent: optionalString,
+    phone: optionalString,
+    preferredDate: optionalString,
+    preferredTime: optionalString,
+    privacyConsent: z.boolean().optional(),
+    region: optionalString,
+    schoolLevel: optionalString,
+  })
+  .superRefine((values, context) => {
+    if (!values.privacyConsent) {
+      addIssue(context, 'privacyConsent', '개인정보 수집 및 이용 방침에 동의해 주세요.')
+    }
+
+    if (values.inquiryType === 'partnership') {
+      addRequiredIssue(context, values.companyName, 'companyName', '회사명을 입력해 주세요.')
+      addRequiredIssue(context, values.jobTitle, 'jobTitle', '직책/지위를 입력해 주세요.')
+      addRequiredIssue(
+        context,
+        values.contactPersonName,
+        'contactPersonName',
+        '담당자 성명을 입력해 주세요.',
+      )
+      addRequiredIssue(context, values.partnerPhone, 'partnerPhone', '연락처를 입력해 주세요.')
+      addRequiredIssue(context, values.partnerEmail, 'partnerEmail', '이메일을 입력해 주세요.')
+      addRequiredIssue(
+        context,
+        values.partnershipContent,
+        'partnershipContent',
+        '제휴 내용을 입력해 주세요.',
+      )
+
+      if (hasValue(values.partnerEmail) && !isValidEmail(values.partnerEmail)) {
+        addIssue(context, 'partnerEmail', '올바른 이메일 주소를 입력해 주세요.')
+      }
+
+      if (hasValue(values.companyWebsite) && !isValidUrl(values.companyWebsite)) {
+        addIssue(context, 'companyWebsite', '올바른 홈페이지 주소를 입력해 주세요.')
+      }
+
+      return
+    }
+
+    addRequiredIssue(context, values.preferredDate, 'preferredDate', '희망일을 선택해 주세요.')
+    addRequiredIssue(context, values.preferredTime, 'preferredTime', '희망 시간을 선택해 주세요.')
+    addRequiredIssue(context, values.applicantName, 'applicantName', '이름을 입력해 주세요.')
+    addRequiredIssue(context, values.gender, 'gender', '성별을 선택해 주세요.')
+    addRequiredIssue(context, values.birthDate, 'birthDate', '생년월일을 입력해 주세요.')
+    addRequiredIssue(
+      context,
+      values.inquiryType === 'kids' ? values.guardianPhone : values.phone,
+      values.inquiryType === 'kids' ? 'guardianPhone' : 'phone',
+      values.inquiryType === 'kids' ? '보호자 연락처를 입력해 주세요.' : '연락처를 입력해 주세요.',
+    )
+    addRequiredIssue(context, values.region, 'region', '사는 지역을 선택해 주세요.')
+    addRequiredIssue(context, values.hasTraining, 'hasTraining', '트레이닝 경험을 선택해 주세요.')
+    addRequiredIssue(context, values.inflowSource, 'inflowSource', '유입경로를 선택해 주세요.')
+
+    if (hasValue(values.birthDate) && !/^[0-9]{8}$/.test(values.birthDate)) {
+      addIssue(context, 'birthDate', '생년월일은 19870725 형식의 숫자 8자로 입력해 주세요.')
+    }
+
+    if (values.inquiryType === 'admission') {
+      addRequiredIssue(context, values.occupation, 'occupation', '직업 구분을 선택해 주세요.')
+    }
+
+    if (values.inquiryType === 'highteen') {
+      addRequiredIssue(context, values.schoolLevel, 'schoolLevel', '학교 구분을 선택해 주세요.')
+    }
+
+    if (['art', 'admission', 'highteen'].includes(values.inquiryType)) {
+      addRequiredIssue(
+        context,
+        values.actingMajor,
+        'actingMajor',
+        '연기 전공/비전공을 선택해 주세요.',
+      )
+    }
+
+    if (values.inquiryType === 'kids') {
+      addRequiredIssue(
+        context,
+        values.hasPerformance,
+        'hasPerformance',
+        '작품 출연 경험을 선택해 주세요.',
+      )
+    }
+
+    if (values.inflowSource === '기타') {
+      addRequiredIssue(
+        context,
+        values.inflowSourceOther,
+        'inflowSourceOther',
+        '기타 유입경로를 입력해 주세요.',
+      )
+    }
+  })
+
+type ConsultationFormValues = z.infer<typeof consultationFormSchema>
+type ValidationErrorMessages = Partial<Record<FieldPath<ConsultationFormValues>, string>>
+
+const ValidationFeedbackContext = createContext<{
+  clearFieldError: (name: FieldPath<ConsultationFormValues>) => void
+  errors: ValidationErrorMessages
+}>({
+  clearFieldError: () => {},
+  errors: {},
+})
+
+export function ConsultationForm({ initialInquiryType }: { initialInquiryType: InquiryType }) {
   const today = useMemo(() => toDateInputValue(new Date()), [])
-  const initialInquiryType = useMemo(() => {
-    const center = searchParams.get('center')
-    const normalizedCenter = center === 'exam' ? 'admission' : center
-
-    return validInquiryTypeValues.has(normalizedCenter as InquiryType)
-      ? (normalizedCenter as InquiryType)
-      : 'art'
-  }, [searchParams])
-
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [inquiryType, setInquiryType] = useState<InquiryType>(initialInquiryType)
-  const [inflowSource, setInflowSource] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<ValidationErrorMessages>({})
+  const form = useForm<ConsultationFormValues>({
+    defaultValues: getDefaultValues(initialInquiryType, today),
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    resolver: zodResolver(consultationFormSchema),
+    shouldFocusError: true,
+    shouldUnregister: true,
+  })
+  const inquiryType = form.watch('inquiryType') ?? initialInquiryType
+  const inflowSource = form.watch('inflowSource')
   const isPartnership = inquiryType === 'partnership'
   const needsActingMajor = ['art', 'admission', 'highteen'].includes(inquiryType)
+  const clearFieldError = useCallback((name: FieldPath<ConsultationFormValues>) => {
+    setValidationErrors((currentErrors) => {
+      if (!currentErrors[name]) {
+        return currentErrors
+      }
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+      const nextErrors = { ...currentErrors }
+      delete nextErrors[name]
+
+      return nextErrors
+    })
+  }, [])
+  const validationFeedback = useMemo(
+    () => ({
+      clearFieldError,
+      errors: validationErrors,
+    }),
+    [clearFieldError, validationErrors],
+  )
+
+  useEffect(() => {
+    form.reset(getDefaultValues(initialInquiryType, today))
     setSubmitted(false)
     setSubmitError(null)
+    setValidationErrors({})
+  }, [form, initialInquiryType, today])
+
+  const handleValidSubmit = async (
+    _values: ConsultationFormValues,
+    event?: BaseSyntheticEvent,
+  ) => {
+    setSubmitted(false)
+    setSubmitError(null)
+    setValidationErrors({})
 
     if (!turnstileSiteKey) {
       setSubmitError('자동 제출 방지 설정이 준비되지 않았습니다. 관리자에게 문의해 주세요.')
       return
     }
 
-    const formData = new FormData(event.currentTarget)
-    const turnstileToken = formData.get('cf-turnstile-response')
+    const formElement = event?.currentTarget as HTMLFormElement | undefined
+    const formData = formElement ? new FormData(formElement) : null
+    const turnstileToken = formData?.get('cf-turnstile-response')
 
     if (typeof turnstileToken !== 'string' || !turnstileToken.trim()) {
       setSubmitError('자동 제출 방지 확인을 완료해 주세요.')
@@ -147,12 +322,41 @@ export function ConsultationForm() {
     }
   }
 
+  const handleInvalidSubmit = (errors: FieldErrors<ConsultationFormValues>) => {
+    const visibleMessages = getVisibleValidationMessages(form.getValues())
+    const parsedValues = consultationFormSchema.safeParse(form.getValues())
+
+    setSubmitted(false)
+    setValidationErrors(
+      Object.keys(visibleMessages).length > 0
+        ? visibleMessages
+        : parsedValues.success
+        ? toValidationErrorMessages(errors)
+        : toZodValidationErrorMessages(parsedValues.error),
+    )
+    setSubmitError('입력값을 확인해 주세요. 빨간색으로 표시된 항목을 수정하면 됩니다.')
+  }
+
+  const resetSubmitFeedback = () => {
+    if (submitted) {
+      setSubmitted(false)
+    }
+
+    if (submitError) {
+      setSubmitError(null)
+    }
+  }
+
   return (
-    <form
-      className="grid gap-10"
-      encType="multipart/form-data"
-      onSubmit={handleSubmit}
-    >
+    <ValidationFeedbackContext.Provider value={validationFeedback}>
+      <Form {...form}>
+        <form
+          className="grid gap-10"
+          encType="multipart/form-data"
+          noValidate
+          onChange={resetSubmitFeedback}
+          onSubmit={form.handleSubmit(handleValidSubmit, handleInvalidSubmit)}
+        >
       {submitted && (
         <div
           className="rounded-lg border border-success bg-success/30 px-4 py-3 text-sm font-medium"
@@ -176,9 +380,11 @@ export function ConsultationForm() {
                   id={id}
                   name="inquiryType"
                   onChange={() => {
-                    setInquiryType(type.value)
-                    setSubmitted(false)
-                    setSubmitError(null)
+                    form.setValue('inquiryType', type.value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                    resetSubmitFeedback()
                   }}
                   type="radio"
                   value={type.value}
@@ -202,61 +408,60 @@ export function ConsultationForm() {
         <section className="grid gap-5">
           <SectionHeading index="02" title="제휴 신청" />
           <div className="grid gap-5 md:grid-cols-2">
-            <Field label="회사명" required>
-              <Input className={controlClassName} name="companyName" required />
-            </Field>
+            <TextInputField control={form.control} label="회사명" name="companyName" required />
 
-            <Field label="홈페이지">
-              <Input
-                className={controlClassName}
-                inputMode="url"
-                name="companyWebsite"
-                placeholder="https://"
-                type="url"
-              />
-            </Field>
+            <TextInputField
+              control={form.control}
+              inputMode="url"
+              label="홈페이지"
+              name="companyWebsite"
+              placeholder="https://"
+              type="url"
+            />
 
-            <Field label="직책/지위" required>
-              <Input className={controlClassName} name="jobTitle" required />
-            </Field>
+            <TextInputField control={form.control} label="직책/지위" name="jobTitle" required />
 
-            <Field label="담당자 성명" required>
-              <Input
-                autoComplete="name"
-                className={controlClassName}
-                name="contactPersonName"
-                required
-              />
-            </Field>
+            <TextInputField
+              autoComplete="name"
+              control={form.control}
+              label="담당자 성명"
+              name="contactPersonName"
+              required
+            />
 
-            <Field label="연락처" required>
-              <Input
-                autoComplete="tel"
-                className={controlClassName}
-                inputMode="tel"
-                name="partnerPhone"
-                required
-                type="tel"
-              />
-            </Field>
+            <TextInputField
+              autoComplete="tel"
+              control={form.control}
+              inputMode="tel"
+              label="연락처"
+              name="partnerPhone"
+              required
+              type="tel"
+            />
 
-            <Field label="이메일" required>
-              <Input
-                autoComplete="email"
-                className={controlClassName}
-                name="partnerEmail"
-                required
-                type="email"
-              />
-            </Field>
+            <TextInputField
+              autoComplete="email"
+              control={form.control}
+              label="이메일"
+              name="partnerEmail"
+              required
+              type="email"
+            />
 
-            <Field className="md:col-span-2" label="첨부파일">
-              <Input className={controlClassName} name="attachment" type="file" />
-            </Field>
+            <FileInputField
+              className="md:col-span-2"
+              control={form.control}
+              label="첨부파일"
+              name="attachment"
+            />
 
-            <Field className="md:col-span-2" label="제휴 내용" required>
-              <Textarea className="min-h-40" name="partnershipContent" required />
-            </Field>
+            <TextareaField
+              className="md:col-span-2"
+              control={form.control}
+              label="제휴 내용"
+              name="partnershipContent"
+              required
+            />
           </div>
         </section>
       ) : (
@@ -264,92 +469,80 @@ export function ConsultationForm() {
           <section className="grid gap-5">
             <SectionHeading index="02" title="상담 예약" />
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="희망일" required>
-                <Input
-                  className={controlClassName}
-                  defaultValue={today}
-                  name="preferredDate"
-                  required
-                  type="date"
-                />
-              </Field>
+              <TextInputField
+                control={form.control}
+                label="희망일"
+                name="preferredDate"
+                required
+                type="date"
+              />
 
-              <Field label="희망 시간" required>
-                <Select name="preferredTime" required>
-                  <SelectTrigger className={controlClassName}>
-                    <SelectValue placeholder="시간 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {preferredTimes.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
+              <SelectField
+                control={form.control}
+                label="희망 시간"
+                name="preferredTime"
+                onValueChange={resetSubmitFeedback}
+                options={preferredTimes}
+                placeholder="시간 선택"
+                required
+              />
             </div>
           </section>
 
           <section className="grid gap-5">
             <SectionHeading index="03" title="신청자 정보" />
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="이름" required>
-                <Input
-                  autoComplete="name"
-                  className={controlClassName}
-                  name="applicantName"
-                  required
-                />
-              </Field>
+              <TextInputField
+                autoComplete="name"
+                control={form.control}
+                label="이름"
+                name="applicantName"
+                required
+              />
 
-              <RadioButtonGroup label="성별" name="gender" options={genderOptions} required />
+              <RadioButtonGroup
+                control={form.control}
+                label="성별"
+                name="gender"
+                options={genderOptions}
+                required
+              />
 
-              <Field label="생년월일" required>
-                <Input
-                  className={controlClassName}
-                  inputMode="numeric"
-                  maxLength={8}
-                  name="birthDate"
-                  pattern="[0-9]{8}"
-                  placeholder="예: 19870725"
-                  required
-                />
-              </Field>
+              <TextInputField
+                control={form.control}
+                inputMode="numeric"
+                label="생년월일"
+                maxLength={8}
+                name="birthDate"
+                pattern="[0-9]{8}"
+                placeholder="예: 19870725"
+                required
+              />
 
-              <Field label={inquiryType === 'kids' ? '보호자 연락처' : '연락처'} required>
-                <Input
-                  autoComplete="tel"
-                  className={controlClassName}
-                  inputMode="tel"
-                  name={inquiryType === 'kids' ? 'guardianPhone' : 'phone'}
-                  placeholder="예: 01012345678"
-                  required
-                  type="tel"
-                />
-              </Field>
+              <TextInputField
+                autoComplete="tel"
+                control={form.control}
+                inputMode="tel"
+                label={inquiryType === 'kids' ? '보호자 연락처' : '연락처'}
+                name={inquiryType === 'kids' ? 'guardianPhone' : 'phone'}
+                placeholder="예: 01012345678"
+                required
+                type="tel"
+              />
 
-              <Field label="사는 지역" required>
-                <Select name="region" required>
-                  <SelectTrigger className={controlClassName}>
-                    <SelectValue placeholder="지역 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {regions.map((region) => (
-                        <SelectItem key={region} value={region}>
-                          {region}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
+              <SelectField
+                control={form.control}
+                label="사는 지역"
+                name="region"
+                onValueChange={resetSubmitFeedback}
+                options={regions}
+                placeholder="지역 선택"
+                required
+              />
 
               {inquiryType === 'admission' && (
                 <RadioButtonGroup
+                  control={form.control}
                   label="직업 구분"
                   name="occupation"
                   options={occupationOptions}
@@ -359,6 +552,7 @@ export function ConsultationForm() {
 
               {inquiryType === 'highteen' && (
                 <RadioButtonGroup
+                  control={form.control}
                   label="학교 구분"
                   name="schoolLevel"
                   options={schoolLevelOptions}
@@ -373,6 +567,7 @@ export function ConsultationForm() {
             <div className="grid gap-5 md:grid-cols-2">
               {needsActingMajor && (
                 <RadioButtonGroup
+                  control={form.control}
                   label="연기 전공/비전공"
                   name="actingMajor"
                   options={actingMajorOptions}
@@ -381,6 +576,7 @@ export function ConsultationForm() {
               )}
 
               <RadioButtonGroup
+                control={form.control}
                 label="트레이닝 경험"
                 name="hasTraining"
                 options={yesNoOptions}
@@ -389,6 +585,7 @@ export function ConsultationForm() {
 
               {inquiryType === 'kids' && (
                 <RadioButtonGroup
+                  control={form.control}
                   label="작품 출연 경험"
                   name="hasPerformance"
                   options={yesNoOptions}
@@ -396,40 +593,26 @@ export function ConsultationForm() {
                 />
               )}
 
-              <Field className="md:col-span-2" label="유입경로" required>
-                <Select
-                  name="inflowSource"
-                  onValueChange={(value) => {
-                    setInflowSource(value)
-                    setSubmitted(false)
-                    setSubmitError(null)
-                  }}
-                  required
-                >
-                  <SelectTrigger className={controlClassName}>
-                    <SelectValue placeholder="유입경로 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {inflowSources.map((source) => (
-                        <SelectItem key={source} value={source}>
-                          {source}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
+              <SelectField
+                className="md:col-span-2"
+                control={form.control}
+                label="유입경로"
+                name="inflowSource"
+                onValueChange={resetSubmitFeedback}
+                options={inflowSources}
+                placeholder="유입경로 선택"
+                required
+              />
 
               {inflowSource === '기타' && (
-                <Field className="md:col-span-2" label="기타 유입경로" required>
-                  <Input
-                    className={controlClassName}
-                    name="inflowSourceOther"
-                    placeholder="유입경로를 입력해 주세요."
-                    required
-                  />
-                </Field>
+                <TextInputField
+                  className="md:col-span-2"
+                  control={form.control}
+                  label="기타 유입경로"
+                  name="inflowSourceOther"
+                  placeholder="유입경로를 입력해 주세요."
+                  required
+                />
               )}
             </div>
           </section>
@@ -444,12 +627,45 @@ export function ConsultationForm() {
           안내 및 문의 처리 목적으로만 사용되며, 이용 목적 달성 후 내부 보관 정책에 따라
           파기됩니다.
         </div>
-        <div className="flex items-center gap-3">
-          <Checkbox className="size-5" id="privacyConsent" name="privacyConsent" required />
-          <Label className="text-sm leading-5" htmlFor="privacyConsent">
-            개인정보 수집 및 이용 방침에 동의합니다. <RequiredMark />
-          </Label>
-        </div>
+        <FormField
+          control={form.control}
+          name="privacyConsent"
+          render={({ field, fieldState }) => (
+            <FormItem
+              className="gap-3"
+              data-invalid={
+                getFieldMessage(validationErrors, 'privacyConsent') || fieldState.invalid
+                  ? ''
+                  : undefined
+              }
+            >
+              <div className="flex items-center gap-3">
+                <FormControl>
+                  <Checkbox
+                    aria-invalid={Boolean(
+                      getFieldMessage(validationErrors, 'privacyConsent') || fieldState.invalid,
+                    )}
+                    checked={field.value}
+                    className={cn(
+                      'size-5',
+                      getFieldMessage(validationErrors, 'privacyConsent') && invalidControlClassName,
+                    )}
+                    name={field.name}
+                    onCheckedChange={(checked) => {
+                      field.onChange(checked === true)
+                      clearFieldError('privacyConsent')
+                      resetSubmitFeedback()
+                    }}
+                  />
+                </FormControl>
+                <FormLabel className="text-sm leading-5">
+                  개인정보 수집 및 이용 방침에 동의합니다. <RequiredMark />
+                </FormLabel>
+              </div>
+              <FormMessage>{getFieldMessage(validationErrors, 'privacyConsent')}</FormMessage>
+            </FormItem>
+          )}
+        />
       </section>
 
       <section className="grid gap-3 rounded-lg border bg-card p-5">
@@ -491,7 +707,9 @@ export function ConsultationForm() {
           {isSubmitting ? '확인 중' : '상담 신청 입력 확인'}
         </Button>
       </div>
-    </form>
+        </form>
+      </Form>
+    </ValidationFeedbackContext.Provider>
   )
 }
 
@@ -504,75 +722,458 @@ function SectionHeading({ index, title }: { index: string; title: string }) {
   )
 }
 
-function Field({
-  children,
-  className,
-  label,
-  required = false,
-}: {
-  children: React.ReactNode
+type ControlledFieldProps = {
   className?: string
+  control: Control<ConsultationFormValues>
   label: string
+  name: FieldPath<ConsultationFormValues>
   required?: boolean
-}) {
+}
+
+function TextInputField({
+  className,
+  control,
+  label,
+  name,
+  required = false,
+  ...inputProps
+}: ControlledFieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, 'name'>) {
+  const { clearFieldError, errors } = useValidationFeedback()
+
   return (
-    <div className={cn('grid gap-2', className)}>
-      <Label>
-        {label} {required && <RequiredMark />}
-      </Label>
-      {children}
-    </div>
+    <FormField
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem
+          className={className}
+          data-invalid={getFieldMessage(errors, name) || fieldState.invalid ? '' : undefined}
+        >
+          <FormLabel>
+            {label} {required && <RequiredMark />}
+          </FormLabel>
+          <FormControl>
+            <Input
+              {...inputProps}
+              {...field}
+              aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
+              className={cn(
+                controlClassName,
+                getFieldMessage(errors, name) && invalidControlClassName,
+              )}
+              onChange={(event) => {
+                field.onChange(event)
+                clearFieldError(name)
+              }}
+              value={typeof field.value === 'string' ? field.value : ''}
+            />
+          </FormControl>
+          <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
+        </FormItem>
+      )}
+    />
+  )
+}
+
+function FileInputField({
+  className,
+  control,
+  label,
+  name,
+  required = false,
+}: ControlledFieldProps) {
+  const { clearFieldError, errors } = useValidationFeedback()
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ fieldState, field }) => (
+        <FormItem
+          className={className}
+          data-invalid={getFieldMessage(errors, name) || fieldState.invalid ? '' : undefined}
+        >
+          <FormLabel>
+            {label} {required && <RequiredMark />}
+          </FormLabel>
+          <FormControl>
+            <Input
+              aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
+              className={cn(
+                controlClassName,
+                getFieldMessage(errors, name) && invalidControlClassName,
+              )}
+              name={field.name}
+              onBlur={field.onBlur}
+              onChange={(event) => {
+                field.onChange(event.target.files)
+                clearFieldError(name)
+              }}
+              type="file"
+            />
+          </FormControl>
+          <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
+        </FormItem>
+      )}
+    />
+  )
+}
+
+function TextareaField({
+  className,
+  control,
+  label,
+  name,
+  required = false,
+}: ControlledFieldProps) {
+  const { clearFieldError, errors } = useValidationFeedback()
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem
+          className={className}
+          data-invalid={getFieldMessage(errors, name) || fieldState.invalid ? '' : undefined}
+        >
+          <FormLabel>
+            {label} {required && <RequiredMark />}
+          </FormLabel>
+          <FormControl>
+            <Textarea
+              {...field}
+              aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
+              className={cn(
+                'min-h-40',
+                getFieldMessage(errors, name) && invalidControlClassName,
+              )}
+              onChange={(event) => {
+                field.onChange(event)
+                clearFieldError(name)
+              }}
+              value={typeof field.value === 'string' ? field.value : ''}
+            />
+          </FormControl>
+          <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
+        </FormItem>
+      )}
+    />
+  )
+}
+
+function SelectField({
+  className,
+  control,
+  label,
+  name,
+  onValueChange,
+  options,
+  placeholder,
+  required = false,
+}: ControlledFieldProps & {
+  onValueChange?: () => void
+  options: string[]
+  placeholder: string
+}) {
+  const { clearFieldError, errors } = useValidationFeedback()
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem
+          className={className}
+          data-invalid={getFieldMessage(errors, name) || fieldState.invalid ? '' : undefined}
+        >
+          <FormLabel>
+            {label} {required && <RequiredMark />}
+          </FormLabel>
+          <Select
+            name={field.name}
+            onValueChange={(value) => {
+              field.onChange(value)
+              clearFieldError(name)
+              onValueChange?.()
+            }}
+            value={typeof field.value === 'string' ? field.value : ''}
+          >
+            <FormControl>
+              <SelectTrigger
+                aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
+                className={cn(
+                  controlClassName,
+                  getFieldMessage(errors, name) && invalidControlClassName,
+                )}
+              >
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                {options.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
+        </FormItem>
+      )}
+    />
   )
 }
 
 function RadioButtonGroup({
+  control,
   label,
   name,
   options,
   required = false,
 }: {
+  control: Control<ConsultationFormValues>
   label: string
-  name: string
+  name: FieldPath<ConsultationFormValues>
   options: Array<{ label: string; value: string }>
   required?: boolean
 }) {
-  return (
-    <div className="grid gap-2">
-      <Label>
-        {label} {required && <RequiredMark />}
-      </Label>
-      <div className="grid grid-cols-2 gap-2" role="radiogroup">
-        {options.map((option) => {
-          const id = `${name}-${option.value}`
+  const { clearFieldError, errors } = useValidationFeedback()
 
-          return (
-            <div className="grid" key={option.value}>
-              <input
-                className="peer sr-only"
-                id={id}
-                name={name}
-                required={required}
-                type="radio"
-                value={option.value}
-              />
-              <Label
-                className={cn(
-                  controlClassName,
-                  'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
-                )}
-                htmlFor={id}
-              >
-                {option.label}
-              </Label>
-            </div>
-          )
-        })}
-      </div>
-    </div>
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem data-invalid={getFieldMessage(errors, name) || fieldState.invalid ? '' : undefined}>
+          <FormLabel>
+            {label} {required && <RequiredMark />}
+          </FormLabel>
+          <div
+            aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
+            className="grid grid-cols-2 gap-2"
+            role="radiogroup"
+          >
+            {options.map((option) => {
+              const id = `${name}-${option.value}`
+
+              return (
+                <div className="grid" key={option.value}>
+                  <input
+                    checked={field.value === option.value}
+                    className="peer sr-only"
+                    id={id}
+                    name={field.name}
+                    onBlur={field.onBlur}
+                    onChange={() => {
+                      field.onChange(option.value)
+                      clearFieldError(name)
+                    }}
+                    ref={field.ref}
+                    type="radio"
+                    value={option.value}
+                  />
+                  <Label
+                    className={cn(
+                      controlClassName,
+                      'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
+                      (getFieldMessage(errors, name) || fieldState.invalid) &&
+                        'border-destructive/60 text-destructive',
+                    )}
+                    htmlFor={id}
+                  >
+                    {option.label}
+                  </Label>
+                </div>
+              )
+            })}
+          </div>
+          <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
+        </FormItem>
+      )}
+    />
   )
 }
 
 const controlClassName = 'h-12'
+const invalidControlClassName = 'border-destructive/60 outline-destructive/60 ring-destructive/20'
+
+function useValidationFeedback() {
+  return useContext(ValidationFeedbackContext)
+}
+
+function getFieldMessage(
+  errors: ValidationErrorMessages,
+  name: FieldPath<ConsultationFormValues>,
+) {
+  return errors[name]
+}
+
+function toValidationErrorMessages(errors: FieldErrors<ConsultationFormValues>) {
+  const messages: ValidationErrorMessages = {}
+
+  for (const [name, error] of Object.entries(errors)) {
+    if (!error || !('message' in error) || !error.message) {
+      continue
+    }
+
+    messages[name as FieldPath<ConsultationFormValues>] = String(error.message)
+  }
+
+  return messages
+}
+
+function toZodValidationErrorMessages(error: z.ZodError<ConsultationFormValues>) {
+  const messages: ValidationErrorMessages = {}
+
+  for (const issue of error.issues) {
+    const [name] = issue.path
+
+    if (typeof name !== 'string') {
+      continue
+    }
+
+    messages[name as FieldPath<ConsultationFormValues>] = issue.message
+  }
+
+  return messages
+}
+
+function getVisibleValidationMessages(values: ConsultationFormValues) {
+  const messages: ValidationErrorMessages = {}
+
+  if (!values.privacyConsent) {
+    messages.privacyConsent = '개인정보 수집 및 이용 방침에 동의해 주세요.'
+  }
+
+  if (values.inquiryType === 'partnership') {
+    setVisibleMessage(messages, values.companyName, 'companyName', '회사명을 입력해 주세요.')
+    setVisibleMessage(messages, values.jobTitle, 'jobTitle', '직책/지위를 입력해 주세요.')
+    setVisibleMessage(
+      messages,
+      values.contactPersonName,
+      'contactPersonName',
+      '담당자 성명을 입력해 주세요.',
+    )
+    setVisibleMessage(messages, values.partnerPhone, 'partnerPhone', '연락처를 입력해 주세요.')
+    setVisibleMessage(messages, values.partnerEmail, 'partnerEmail', '이메일을 입력해 주세요.')
+    setVisibleMessage(
+      messages,
+      values.partnershipContent,
+      'partnershipContent',
+      '제휴 내용을 입력해 주세요.',
+    )
+
+    if (hasValue(values.partnerEmail) && !isValidEmail(values.partnerEmail)) {
+      messages.partnerEmail = '올바른 이메일 주소를 입력해 주세요.'
+    }
+
+    if (hasValue(values.companyWebsite) && !isValidUrl(values.companyWebsite)) {
+      messages.companyWebsite = '올바른 홈페이지 주소를 입력해 주세요.'
+    }
+
+    return messages
+  }
+
+  setVisibleMessage(messages, values.preferredDate, 'preferredDate', '희망일을 선택해 주세요.')
+  setVisibleMessage(messages, values.preferredTime, 'preferredTime', '희망 시간을 선택해 주세요.')
+  setVisibleMessage(messages, values.applicantName, 'applicantName', '이름을 입력해 주세요.')
+  setVisibleMessage(messages, values.gender, 'gender', '성별을 선택해 주세요.')
+  setVisibleMessage(messages, values.birthDate, 'birthDate', '생년월일을 입력해 주세요.')
+  setVisibleMessage(
+    messages,
+    values.inquiryType === 'kids' ? values.guardianPhone : values.phone,
+    values.inquiryType === 'kids' ? 'guardianPhone' : 'phone',
+    values.inquiryType === 'kids' ? '보호자 연락처를 입력해 주세요.' : '연락처를 입력해 주세요.',
+  )
+  setVisibleMessage(messages, values.region, 'region', '사는 지역을 선택해 주세요.')
+  setVisibleMessage(messages, values.hasTraining, 'hasTraining', '트레이닝 경험을 선택해 주세요.')
+  setVisibleMessage(messages, values.inflowSource, 'inflowSource', '유입경로를 선택해 주세요.')
+
+  if (hasValue(values.birthDate) && !/^[0-9]{8}$/.test(values.birthDate)) {
+    messages.birthDate = '생년월일은 19870725 형식의 숫자 8자로 입력해 주세요.'
+  }
+
+  if (values.inquiryType === 'admission') {
+    setVisibleMessage(messages, values.occupation, 'occupation', '직업 구분을 선택해 주세요.')
+  }
+
+  if (values.inquiryType === 'highteen') {
+    setVisibleMessage(messages, values.schoolLevel, 'schoolLevel', '학교 구분을 선택해 주세요.')
+  }
+
+  if (['art', 'admission', 'highteen'].includes(values.inquiryType)) {
+    setVisibleMessage(
+      messages,
+      values.actingMajor,
+      'actingMajor',
+      '연기 전공/비전공을 선택해 주세요.',
+    )
+  }
+
+  if (values.inquiryType === 'kids') {
+    setVisibleMessage(
+      messages,
+      values.hasPerformance,
+      'hasPerformance',
+      '작품 출연 경험을 선택해 주세요.',
+    )
+  }
+
+  if (values.inflowSource === '기타') {
+    setVisibleMessage(
+      messages,
+      values.inflowSourceOther,
+      'inflowSourceOther',
+      '기타 유입경로를 입력해 주세요.',
+    )
+  }
+
+  return messages
+}
+
+function setVisibleMessage(
+  messages: ValidationErrorMessages,
+  value: string | undefined,
+  path: FieldPath<ConsultationFormValues>,
+  message: string,
+) {
+  if (!hasValue(value)) {
+    messages[path] = message
+  }
+}
+
+function getDefaultValues(inquiryType: InquiryType, today: string): ConsultationFormValues {
+  return {
+    actingMajor: '',
+    applicantName: '',
+    attachment: undefined,
+    birthDate: '',
+    companyName: '',
+    companyWebsite: '',
+    contactPersonName: '',
+    gender: '',
+    guardianPhone: '',
+    hasPerformance: '',
+    hasTraining: '',
+    inflowSource: '',
+    inflowSourceOther: '',
+    inquiryType,
+    jobTitle: '',
+    occupation: '',
+    partnerEmail: '',
+    partnerPhone: '',
+    partnershipContent: '',
+    phone: '',
+    preferredDate: today,
+    preferredTime: '',
+    privacyConsent: false,
+    region: '',
+    schoolLevel: '',
+  }
+}
 
 function toDateInputValue(date: Date) {
   const year = date.getFullYear()
@@ -580,6 +1181,47 @@ function toDateInputValue(date: Date) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function hasValue(value: string | undefined): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function addRequiredIssue(
+  context: z.RefinementCtx,
+  value: string | undefined,
+  path: FieldPath<ConsultationFormValues>,
+  message: string,
+) {
+  if (!hasValue(value)) {
+    addIssue(context, path, message)
+  }
+}
+
+function addIssue(
+  context: z.RefinementCtx,
+  path: FieldPath<ConsultationFormValues>,
+  message: string,
+) {
+  context.addIssue({
+    code: 'custom',
+    message,
+    path: [path],
+  })
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function isValidUrl(value: string) {
+  try {
+    const url = new URL(value)
+
+    return ['http:', 'https:'].includes(url.protocol)
+  } catch {
+    return false
+  }
 }
 
 function RequiredMark() {

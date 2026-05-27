@@ -1,16 +1,25 @@
 import type { Metadata } from 'next'
 import type { CSSProperties } from 'react'
-import { Suspense } from 'react'
 
 import { ConsultationForm } from './ConsultationForm'
 import { ConsultationLightTheme } from './ConsultationLightTheme'
+import {
+  type ConsultationSearchParams,
+  resolveInitialInquiryType,
+} from './inquiryTypeParams'
 
 export const metadata: Metadata = {
   title: '상담하기',
   description: '배우앤배움 상담하기',
 }
 
-export default function ConsultPage() {
+type ConsultPageProps = {
+  searchParams?: Promise<ConsultationSearchParams>
+}
+
+export default async function ConsultPage({ searchParams }: ConsultPageProps) {
+  const initialInquiryType = resolveInitialInquiryType(await searchParams)
+
   return (
     <main className="bg-background pb-24 text-foreground" style={consultLightThemeVars}>
       <ConsultationLightTheme />
@@ -59,9 +68,7 @@ export default function ConsultPage() {
           </aside>
 
           <div className="rounded-lg border bg-background p-5 shadow-xs md:p-8">
-            <Suspense fallback={<div className="text-sm text-muted-foreground">폼을 불러오는 중입니다.</div>}>
-              <ConsultationForm />
-            </Suspense>
+            <ConsultationForm initialInquiryType={initialInquiryType} />
           </div>
         </div>
       </section>
