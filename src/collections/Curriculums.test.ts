@@ -14,6 +14,7 @@ type FieldWithAdmin = Field & {
     disableListColumn?: boolean;
     disableListFilter?: boolean;
     hidden?: boolean;
+    placeholder?: string;
     width?: string;
   };
 };
@@ -188,8 +189,11 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
     ? secondRow.fields.find((field) => isNamedField(field, "capacity"))
     : undefined;
   const centerFieldWithLabel = centerField as FieldWithLabel | undefined;
+  const centerFieldWithAdmin = centerField as FieldWithAdmin | undefined;
   const classFieldWithLabel = classField as FieldWithLabel | undefined;
+  const classFieldWithAdmin = classField as FieldWithAdmin | undefined;
   const teacherFieldWithLabel = teacherField as FieldWithLabel | undefined;
+  const teacherFieldWithAdmin = teacherField as FieldWithAdmin | undefined;
   const capacityFieldWithDefault = capacityField as FieldWithRequired | undefined;
   const capacityFieldWithLabel = capacityField as FieldWithLabel | undefined;
 
@@ -197,8 +201,10 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.equal(centerField.type, "select");
   assert.equal(centerFieldWithLabel?.label, "센터");
   assert.equal(centerField.hasMany, undefined);
+  assert.equal((centerField as FieldWithDefaultValue).defaultValue, undefined);
   assertFieldValidate(centerField);
   assert.equal(adminClassName(centerField), "bnb-admin-required-field");
+  assert.equal(centerFieldWithAdmin?.admin?.placeholder, "선택해 주세요");
   assert.deepEqual(centerField.options, [
     { label: "아트센터", value: "art" },
     { label: "입시센터", value: "exam" },
@@ -214,6 +220,7 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.equal(classFieldWithLabel?.label, "클래스");
   assertFieldValidate(classField);
   assert.equal(adminClassName(classField), "bnb-admin-required-field");
+  assert.equal(classFieldWithAdmin?.admin?.placeholder, "선택해 주세요");
   assert.equal(
     classField.admin?.components?.Field,
     "@/components/payload/CurriculumClassField#CurriculumClassField",
@@ -221,7 +228,13 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.equal(teacherFieldWithLabel?.label, "강사");
   assertFieldValidate(teacherField);
   assert.equal(adminClassName(teacherField), "bnb-admin-required-field");
+  assert.equal(teacherFieldWithAdmin?.admin?.placeholder, "선택해 주세요");
   assert.equal(labelComponent(teacherField), undefined);
+  assert.equal(
+    teacherField?.admin?.components?.Field,
+    "@/components/payload/CurriculumTeacherField#CurriculumTeacherField",
+  );
+  assert.equal(typeof (teacherField as { filterOptions?: unknown } | undefined)?.filterOptions, "function");
   assert.equal(capacityFieldWithLabel?.label, "정원");
   assert.equal(capacityFieldWithDefault?.admin?.width, "50%");
   assert.equal(labelComponent(capacityField), undefined);

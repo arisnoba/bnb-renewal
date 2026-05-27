@@ -1,4 +1,4 @@
-import type { Access, CollectionBeforeValidateHook, CollectionConfig, Field } from "payload";
+import type { Access, CollectionBeforeValidateHook, CollectionConfig, Field, Where } from "payload";
 
 import {
   curriculumClassOptions,
@@ -82,6 +82,17 @@ const validateCurriculumClass = (
     : "선택한 센터에서 사용할 수 없는 클래스입니다.";
 };
 
+const validateCurriculumTeacher = (
+  value: unknown,
+  { siblingData }: { siblingData?: Record<string, unknown> },
+) => {
+  if (!normalizeCurriculumCenter(siblingData?.centers)) {
+    return "센터를 먼저 선택해야 합니다.";
+  }
+
+  return validateRequired(value);
+};
+
 const validateEducationDays = (_value: unknown, { siblingData }: { siblingData?: Record<string, unknown> }) => {
   const hasEducationDay = educationDayFieldNames.some(
     (fieldName) => siblingData?.[fieldName] === true,
@@ -96,19 +107,56 @@ const setCurriculumSlug = createUniqueSlugBeforeValidate({
   getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
 });
 
+function teacherFilterForSelectedCenter({
+  data,
+  siblingData,
+}: {
+  data?: unknown;
+  siblingData?: unknown;
+}): Where {
+  const siblingCenter =
+    siblingData && typeof siblingData === "object"
+      ? (siblingData as { centers?: unknown }).centers
+      : undefined;
+  const documentCenter =
+    data && typeof data === "object"
+      ? (data as { centers?: unknown }).centers
+      : undefined;
+  const center = normalizeCurriculumCenter(siblingCenter ?? documentCenter);
+
+  if (!center) {
+    return {
+      id: {
+        equals: -1,
+      },
+    };
+  }
+
+  return {
+    or: [
+      {
+        centers: {
+          contains: center,
+        },
+      },
+      {
+        centers: {
+          contains: "all",
+        },
+      },
+    ],
+  };
+}
+
 const curriculumCenterField: Field = {
   name: "centers",
   type: "select",
   label: "센터",
-  defaultValue: ({ user }) => {
-    const center = userCenterValue(user);
-
-    return center && curriculumCenterValues.has(center) ? center : undefined;
-  },
   options: curriculumCenterOptions,
   validate: validateCurriculumCenter,
   admin: {
     className: "bnb-admin-required-field",
+    placeholder: "선택해 주세요",
     width: "50%",
     components: {
       Field: "@/components/payload/CurriculumCenterField#CurriculumCenterField",
@@ -161,6 +209,7 @@ const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, original
 
   const userCenter = userCenterValue(req.user);
   const originalCenter = normalizeCurriculumCenter(originalDoc?.centers);
+  const selectedCenter = normalizeCurriculumCenter(data.centers);
   const nextData = { ...data };
 
   if (req.user && !isGlobalAdminUser(req.user)) {
@@ -168,9 +217,19 @@ const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, original
       throw new Error("커리큘럼을 관리할 수 있는 센터가 아닙니다.");
     }
 
-    nextData.centers = originalCenter ?? userCenter;
+    const nextCenter = originalCenter ?? selectedCenter;
+
+    if (!nextCenter) {
+      throw new Error("센터를 선택해야 합니다.");
+    }
+
+    if (nextCenter !== userCenter) {
+      throw new Error("소속 센터의 커리큘럼만 관리할 수 있습니다.");
+    }
+
+    nextData.centers = nextCenter;
   } else {
-    nextData.centers = normalizeCurriculumCenter(nextData.centers ?? originalCenter);
+    nextData.centers = selectedCenter ?? originalCenter;
   }
 
   if (!nextData.centers) {
@@ -238,6 +297,7 @@ export const Curriculums: CollectionConfig = {
               validate: validateCurriculumClass,
               admin: {
                 className: "bnb-admin-required-field",
+                placeholder: "선택해 주세요",
                 width: "50%",
                 components: {
                   Field: "@/components/payload/CurriculumClassField#CurriculumClassField",
@@ -251,9 +311,14 @@ export const Curriculums: CollectionConfig = {
               type: "relationship",
               label: "강사",
               relationTo: "teachers",
-              validate: validateRequired,
+              filterOptions: teacherFilterForSelectedCenter,
+              validate: validateCurriculumTeacher,
               admin: {
                 className: "bnb-admin-required-field",
+                placeholder: "선택해 주세요",
+                components: {
+                  Field: "@/components/payload/CurriculumTeacherField#CurriculumTeacherField",
+                },
                 width: "50%",
               },
             },

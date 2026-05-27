@@ -9,6 +9,7 @@ import { CentersField as CentersField_32f6973a336e54b2fbe5bbbe92a20938 } from '@
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { CurriculumCenterField as CurriculumCenterField_2bd0ef7ff7f41d018e3e87f60f1b5bf8 } from '@/components/payload/CurriculumCenterField'
 import { CurriculumClassField as CurriculumClassField_14c4103696986801411d85352ade804e } from '@/components/payload/CurriculumClassField'
+import { CurriculumTeacherField as CurriculumTeacherField_b9918fd7823fb29344209a6a1bbdfc64 } from '@/components/payload/CurriculumTeacherField'
 import { CurriculumEducationDaysCell as CurriculumEducationDaysCell_d209715e5564662e373d7df899295fcb } from '@/components/payload/CurriculumEducationDaysField'
 import { CurriculumEducationDaysField as CurriculumEducationDaysField_d209715e5564662e373d7df899295fcb } from '@/components/payload/CurriculumEducationDaysField'
 import { CurriculumLessonRowLabel as CurriculumLessonRowLabel_e176a12055efebae7761f51d1061f53e } from '@/components/payload/CurriculumLessonRowLabel'
@@ -77,6 +78,7 @@ export const importMap = {
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@/components/payload/CurriculumCenterField#CurriculumCenterField": CurriculumCenterField_2bd0ef7ff7f41d018e3e87f60f1b5bf8,
   "@/components/payload/CurriculumClassField#CurriculumClassField": CurriculumClassField_14c4103696986801411d85352ade804e,
+  "@/components/payload/CurriculumTeacherField#CurriculumTeacherField": CurriculumTeacherField_b9918fd7823fb29344209a6a1bbdfc64,
   "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysCell": CurriculumEducationDaysCell_d209715e5564662e373d7df899295fcb,
   "@/components/payload/CurriculumEducationDaysField#CurriculumEducationDaysField": CurriculumEducationDaysField_d209715e5564662e373d7df899295fcb,
   "@/components/payload/CurriculumLessonRowLabel#CurriculumLessonRowLabel": CurriculumLessonRowLabel_e176a12055efebae7761f51d1061f53e,

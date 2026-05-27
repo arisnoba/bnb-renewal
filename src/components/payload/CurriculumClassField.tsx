@@ -6,7 +6,6 @@ import { SelectField, useField } from '@payloadcms/ui';
 import { useEffect, useMemo } from 'react';
 
 import {
-  curriculumClassOptions,
   curriculumClassOptionsByCenter,
   type CurriculumCenter,
 } from '@/lib/curriculumOptions';
@@ -26,10 +25,11 @@ export const CurriculumClassField: SelectFieldClientComponent = props => {
   });
   const center = normalizeCenter(centerValue);
   const options = useMemo(
-    () => (center ? curriculumClassOptionsByCenter[center] : curriculumClassOptions),
+    () => (center ? curriculumClassOptionsByCenter[center] : []),
     [center],
   );
   const fieldValue = typeof value === 'string' ? value : '';
+  const showCenterMessage = !center;
 
   useEffect(() => {
     if (fieldValue && !options.some((option) => option.value === fieldValue)) {
@@ -38,12 +38,25 @@ export const CurriculumClassField: SelectFieldClientComponent = props => {
   }, [fieldValue, options, setValue]);
 
   return (
+    <>
     <SelectField
       {...props}
       field={{
         ...props.field,
         options,
       }}
+      readOnly={showCenterMessage}
     />
+    {showCenterMessage ? (
+      <p
+        style={{
+          color: 'var(--theme-error-500)',
+          fontSize: 12,
+          marginTop: -12,
+        }}>
+        센터를 먼저 선택해야 합니다.
+      </p>
+    ) : null}
+    </>
   );
 };
