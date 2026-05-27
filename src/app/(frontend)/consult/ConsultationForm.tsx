@@ -1,5 +1,7 @@
 'use client'
 
+import type { FormEvent } from 'react'
+import Script from 'next/script'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
@@ -81,9 +83,11 @@ const yesNoOptions = [
 const inflowSources = ['랜딩', '포털', 'SNS', '네이버카페', '지인소개', 'AI', '기타']
 
 const validInquiryTypeValues = new Set(inquiryTypes.map((type) => type.value))
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 export function ConsultationForm() {
   const searchParams = useSearchParams()
+  const today = useMemo(() => toDateInputValue(new Date()), [])
   const initialInquiryType = useMemo(() => {
     const center = searchParams.get('center')
     const normalizedCenter = center === 'exam' ? 'admission' : center
@@ -94,19 +98,60 @@ export function ConsultationForm() {
   }, [searchParams])
 
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [inquiryType, setInquiryType] = useState<InquiryType>(initialInquiryType)
   const [inflowSource, setInflowSource] = useState<string | null>(null)
   const isPartnership = inquiryType === 'partnership'
   const needsActingMajor = ['art', 'admission', 'highteen'].includes(inquiryType)
 
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubmitted(false)
+    setSubmitError(null)
+
+    if (!turnstileSiteKey) {
+      setSubmitError('자동 제출 방지 설정이 준비되지 않았습니다. 관리자에게 문의해 주세요.')
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+    const turnstileToken = formData.get('cf-turnstile-response')
+
+    if (typeof turnstileToken !== 'string' || !turnstileToken.trim()) {
+      setSubmitError('자동 제출 방지 확인을 완료해 주세요.')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/turnstile', {
+        body: JSON.stringify({ token: turnstileToken }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        setSubmitError('자동 제출 방지 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+        return
+      }
+
+      setSubmitted(true)
+    } catch {
+      setSubmitError('자동 제출 방지 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <form
       className="grid gap-10"
       encType="multipart/form-data"
-      onSubmit={(event) => {
-        event.preventDefault()
-        setSubmitted(true)
-      }}
+      onSubmit={handleSubmit}
     >
       {submitted && (
         <div
@@ -133,6 +178,7 @@ export function ConsultationForm() {
                   onChange={() => {
                     setInquiryType(type.value)
                     setSubmitted(false)
+                    setSubmitError(null)
                   }}
                   type="radio"
                   value={type.value}
@@ -219,7 +265,13 @@ export function ConsultationForm() {
             <SectionHeading index="02" title="상담 예약" />
             <div className="grid gap-5 md:grid-cols-2">
               <Field label="희망일" required>
-                <Input className={controlClassName} name="preferredDate" required type="date" />
+                <Input
+                  className={controlClassName}
+                  defaultValue={today}
+                  name="preferredDate"
+                  required
+                  type="date"
+                />
               </Field>
 
               <Field label="희망 시간" required>
@@ -256,7 +308,15 @@ export function ConsultationForm() {
               <RadioButtonGroup label="성별" name="gender" options={genderOptions} required />
 
               <Field label="생년월일" required>
-                <Input className={controlClassName} name="birthDate" required type="date" />
+                <Input
+                  className={controlClassName}
+                  inputMode="numeric"
+                  maxLength={8}
+                  name="birthDate"
+                  pattern="[0-9]{8}"
+                  placeholder="예: 19870725"
+                  required
+                />
               </Field>
 
               <Field label={inquiryType === 'kids' ? '보호자 연락처' : '연락처'} required>
@@ -342,6 +402,7 @@ export function ConsultationForm() {
                   onValueChange={(value) => {
                     setInflowSource(value)
                     setSubmitted(false)
+                    setSubmitError(null)
                   }}
                   required
                 >
@@ -391,12 +452,43 @@ export function ConsultationForm() {
         </div>
       </section>
 
+      <section className="grid gap-3 rounded-lg border bg-card p-5">
+        <h2 className="text-lg font-semibold tracking-normal">자동 제출 방지</h2>
+        {turnstileSiteKey ? (
+          <>
+            <Script
+              async
+              defer
+              src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+              strategy="afterInteractive"
+            />
+            <div
+              className="cf-turnstile min-h-16"
+              data-language="ko"
+              data-sitekey={turnstileSiteKey}
+              data-theme="light"
+            />
+          </>
+        ) : (
+          <p className="text-sm text-destructive">
+            자동 제출 방지 설정이 준비되지 않았습니다.
+          </p>
+        )}
+      </section>
+
       <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm leading-6 text-muted-foreground">
-          제출 API와 CAPTCHA는 프론트 흐름 확정 후 연결합니다.
+        <p
+          className={cn(
+            'text-sm leading-6',
+            submitError ? 'font-medium text-destructive' : 'text-muted-foreground',
+          )}
+          role={submitError ? 'alert' : undefined}
+        >
+          {submitError ??
+            '저장 API 연결 전 입력 흐름을 검증하며, 제출 전 자동 제출 방지 확인을 진행합니다.'}
         </p>
-        <Button className="h-12 px-8 text-base" type="submit">
-          상담 신청 입력 확인
+        <Button className="h-12 px-8 text-base" disabled={isSubmitting} type="submit">
+          {isSubmitting ? '확인 중' : '상담 신청 입력 확인'}
         </Button>
       </div>
     </form>
@@ -481,6 +573,14 @@ function RadioButtonGroup({
 }
 
 const controlClassName = 'h-12'
+
+function toDateInputValue(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
 
 function RequiredMark() {
   return (

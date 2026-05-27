@@ -98,6 +98,7 @@ import * as migration_20260527_121000_normalize_collection_slug_hyphens from './
 import * as migration_20260527_130000_curriculum_single_center_classes from './20260527_130000_curriculum_single_center_classes'
 import * as migration_20260527_140000_faq_status_and_answer_mode from './20260527_140000_faq_status_and_answer_mode'
 import * as migration_20260527_200000_inquiries from './20260527_200000_inquiries'
+import * as migration_20260527_201000_inquiry_birth_date_text from './20260527_201000_inquiry_birth_date_text'
 
 export const migrations = [
   {
@@ -599,5 +600,10 @@ export const migrations = [
     up: migration_20260527_200000_inquiries.up,
     down: migration_20260527_200000_inquiries.down,
     name: '20260527_200000_inquiries',
+  },
+  {
+    up: migration_20260527_201000_inquiry_birth_date_text.up,
+    down: migration_20260527_201000_inquiry_birth_date_text.down,
+    name: '20260527_201000_inquiry_birth_date_text',
   },
 ]

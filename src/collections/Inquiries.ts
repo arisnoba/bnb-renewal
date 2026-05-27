@@ -157,6 +157,22 @@ const requiredForNonPartnership = (message: string) =>
 const requiredForPartnership = (message: string) =>
   requiredWhen((siblingData) => siblingData?.inquiryType === 'partnership', message)
 
+const validateBirthDate: Validate<unknown, unknown, Partial<InquiryData>> = (value, options) => {
+  const requiredResult = requiredForNonPartnership('생년월일을 입력해야 합니다.')(value, options)
+
+  if (requiredResult !== true) {
+    return requiredResult
+  }
+
+  if (options.siblingData?.inquiryType === 'partnership') {
+    return true
+  }
+
+  return typeof value === 'string' && /^[0-9]{8}$/.test(value.trim())
+    ? true
+    : '생년월일은 예: 19870725 형식의 숫자 8자로 입력해야 합니다.'
+}
+
 const inquiryAccess: Access = ({ req }) => {
   if (!req.user) {
     return false
@@ -262,6 +278,7 @@ export const Inquiries: CollectionConfig = {
               name: 'preferredDate',
               type: 'date',
               label: '희망일',
+              defaultValue: () => new Date().toISOString(),
               admin: {
                 condition: nonPartnershipOnly,
                 date: {
@@ -302,16 +319,13 @@ export const Inquiries: CollectionConfig = {
             },
             {
               name: 'birthDate',
-              type: 'date',
+              type: 'text',
               label: '생년월일',
               admin: {
                 condition: nonPartnershipOnly,
-                date: {
-                  displayFormat: 'yyyy-MM-dd',
-                  pickerAppearance: 'dayOnly',
-                },
+                placeholder: '예: 19870725',
               },
-              validate: requiredForNonPartnership('생년월일을 입력해야 합니다.'),
+              validate: validateBirthDate,
             },
             {
               name: 'phone',
