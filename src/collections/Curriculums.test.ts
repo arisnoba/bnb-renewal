@@ -367,6 +367,42 @@ test("curriculum lessons use topic-driven row labels", () => {
   );
 });
 
+test("curriculums keep missing center as a field-level validation error", async () => {
+  const hook = Curriculums.hooks?.beforeValidate?.at(0);
+  const centerField = findFieldDeep(Curriculums.fields, "centers") as
+    | FieldWithRequired
+    | undefined;
+
+  assert.equal(typeof hook, "function");
+  assert.equal(typeof centerField?.validate, "function");
+
+  if (typeof hook !== "function" || typeof centerField?.validate !== "function") {
+    return;
+  }
+
+  const result = await hook({
+    data: {
+      title: "센터 미선택 테스트",
+    },
+    originalDoc: undefined,
+    req: {
+      user: {
+        role: "admin",
+      },
+    },
+  } as never);
+
+  assert.deepEqual(result, {
+    title: "센터 미선택 테스트",
+    centers: undefined,
+    authorName: undefined,
+  });
+  assert.equal(
+    await centerField.validate(undefined, {} as never),
+    "센터를 먼저 선택해 주세요.",
+  );
+});
+
 test("curriculum education day formatter uses compact Korean weekday labels", () => {
   assert.equal(
     formatCurriculumEducationDays({

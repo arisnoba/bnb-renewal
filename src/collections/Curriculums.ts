@@ -61,7 +61,7 @@ function normalizeCurriculumCenter(value: unknown): CurriculumCenter | undefined
 }
 
 function validateCurriculumCenter(value: unknown) {
-  return normalizeCurriculumCenter(value) ? true : "센터를 선택해야 합니다.";
+  return normalizeCurriculumCenter(value) ? true : "센터를 먼저 선택해 주세요.";
 }
 
 const validateCurriculumClass = (
@@ -217,7 +217,7 @@ const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, original
       throw new Error("커리큘럼을 관리할 수 있는 센터가 아닙니다.");
     }
 
-    const nextCenter = originalCenter ?? selectedCenter;
+    const nextCenter = originalCenter ?? selectedCenter ?? userCenter;
 
     if (!nextCenter) {
       throw new Error("센터를 선택해야 합니다.");
@@ -232,13 +232,9 @@ const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, original
     nextData.centers = selectedCenter ?? originalCenter;
   }
 
-  if (!nextData.centers) {
-    throw new Error("센터를 선택해야 합니다.");
-  }
-
   nextData.authorName =
     nextData.authorName ??
-    authorNameFromCenters(nextData.centers);
+    (nextData.centers ? authorNameFromCenters(nextData.centers) : undefined);
 
   return nextData;
 };
