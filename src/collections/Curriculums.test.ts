@@ -52,6 +52,35 @@ function getField(name: string) {
     | undefined;
 }
 
+function findFieldDeep(fields: Field[], name: string): FieldWithName | undefined {
+  for (const field of fields) {
+    if (isNamedField(field, name)) {
+      return field;
+    }
+
+    if ("fields" in field && Array.isArray(field.fields)) {
+      const nestedField = findFieldDeep(field.fields, name);
+
+      if (nestedField) {
+        return nestedField;
+      }
+    }
+
+    if (field.type === "tabs") {
+      const nestedField = findFieldDeep(
+        field.tabs.flatMap((tab) => tab.fields),
+        name,
+      );
+
+      if (nestedField) {
+        return nestedField;
+      }
+    }
+  }
+
+  return undefined;
+}
+
 function fieldNames(fields: Field[]): string[] {
   return fields.flatMap((field) => {
     if (field.type === "row") {
@@ -85,6 +114,7 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.equal(Curriculums.admin?.useAsTitle, "title");
   assert.deepEqual(Curriculums.admin?.defaultColumns, [
     "title",
+    "slug",
     "className",
     "teacher",
     "educationDays",
@@ -111,10 +141,11 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   );
   assert.deepEqual(
     fieldNames(Curriculums.fields).filter((name) =>
-      ["sourceDb", "sourceTable", "sourceId", "slug", "legacyMeta"].includes(name),
+      ["sourceDb", "sourceTable", "sourceId", "legacyMeta"].includes(name),
     ),
     [],
   );
+  assert.ok(findFieldDeep(Curriculums.fields, "slug"), "slug 필드가 있어야 합니다.");
 
   const lectureInfoTab = tabs.find((tab) => tab.label === "강의 정보");
 

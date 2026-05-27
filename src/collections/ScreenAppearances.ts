@@ -14,8 +14,10 @@ import {
   isGlobalAdminUser,
   publishingFields,
   sidebarFields,
+  slugField,
   userCenterValue,
 } from "./shared";
+import { createUniqueSlugBeforeValidate } from "./slugUtils";
 
 const screenAppearanceBeforeValidate: CollectionBeforeValidateHook = ({
   data,
@@ -144,6 +146,15 @@ const validateManualPerformerName: Validate<
     : "직접 입력 방식에서는 출연자명을 입력해야 합니다.";
 };
 
+const setScreenAppearanceSlug = createUniqueSlugBeforeValidate({
+  collection: "screen-appearances",
+  fallbackPrefix: "screen-appearance",
+  getSlugParts: ({ data, originalDoc }) => [
+    data.centers ?? originalDoc?.centers,
+    data.projectTitle ?? originalDoc?.projectTitle ?? data.title ?? originalDoc?.title,
+  ],
+});
+
 export const ScreenAppearances: CollectionConfig = {
   slug: "screen-appearances",
   labels: {
@@ -154,6 +165,7 @@ export const ScreenAppearances: CollectionConfig = {
   admin: {
     defaultColumns: [
       "title",
+      "slug",
       "centers",
       "authorName",
       "performerName",
@@ -170,7 +182,7 @@ export const ScreenAppearances: CollectionConfig = {
         { path: "bodyImages.*.image", role: "screen-appearances.body-image" },
       ]),
     ],
-    beforeValidate: [screenAppearanceBeforeValidate],
+    beforeValidate: [screenAppearanceBeforeValidate, setScreenAppearanceSlug],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -331,5 +343,6 @@ export const ScreenAppearances: CollectionConfig = {
       },
     ]),
     ...sidebarFields([...publishingFields, authorNameField]),
+    slugField(),
   ],
 };

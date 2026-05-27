@@ -41,6 +41,8 @@ function getNestedField(field: NamedField, fieldName: string) {
 test('footer center infos expose required center fields with row labels', () => {
   const field = getField(Footer, 'centerInfos')
 
+  assert.equal(Footer.label, '센터 정보')
+  assert.equal(Footer.fields.some((item) => 'name' in item && item.name === 'navItems'), false)
   assert.equal(field.type, 'array')
   assert.deepEqual(field.labels, {
     plural: '센터 정보',

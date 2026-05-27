@@ -8,6 +8,7 @@ import { AppearancesExtra } from "./AppearancesExtra";
 import { ArtistPress } from "./ArtistPress";
 import { ArtistPressAgencies } from "./ArtistPressAgencies";
 import { CastingAppearances } from "./CastingAppearances";
+import { Curriculums } from "./Curriculums";
 import { Directings } from "./Directings";
 import { DirectCastings } from "./DirectCastings";
 import { Dramas } from "./Dramas";
@@ -21,6 +22,7 @@ import { News } from "./News";
 import { Profiles } from "./Profiles";
 import { Reviews } from "./Reviews";
 import { Shoots } from "./Shoots";
+import { ScreenAppearances } from "./ScreenAppearances";
 import { slugField } from "./shared";
 import { TeacherFiles } from "./TeacherFiles";
 import { Teachers } from "./Teachers";
@@ -31,11 +33,14 @@ type FieldWithName = Field & {
   name: string;
   labels?: unknown;
   required?: boolean;
+  defaultValue?: unknown;
+  minRows?: number;
   admin?: {
     components?: {
       RowLabel?: unknown;
     };
     description?: unknown;
+    hidden?: boolean;
     initCollapsed?: boolean;
   };
 };
@@ -148,6 +153,35 @@ test("teachers require media profile images and omit legacy path", () => {
   assert.equal(hasFieldDeep(Teachers, "profileImagePath"), false);
 });
 
+test("teachers generate unique name slugs", async () => {
+  const hook = Teachers.hooks?.beforeChange?.at(-1);
+
+  assert.equal(typeof hook, "function");
+
+  if (typeof hook !== "function") {
+    return;
+  }
+
+  const result = await hook({
+    data: {
+      name: "홍 길동",
+    },
+    originalDoc: undefined,
+    req: {
+      payload: {
+        find: async () => ({
+          docs: [
+            { id: 1, slug: "홍-길동" },
+            { id: 2, slug: "홍-길동-2" },
+          ],
+        }),
+      },
+    },
+  } as never);
+
+  assert.equal(result.slug, "홍-길동-3");
+});
+
 test("casting appearance cast members use actor row labels", () => {
   const field = getTabField(CastingAppearances, "캐스팅/출연자", "castMembers");
 
@@ -187,7 +221,14 @@ test("exam passed review omits cohort field", () => {
 });
 
 test("exam passed content collections expose slug fields", () => {
-  for (const collection of [ExamPassedReviews, ExamPassedVideos]) {
+  for (const collection of [
+    CastingAppearances,
+    Curriculums,
+    ExamPassedReviews,
+    ExamPassedVideos,
+    HighteenSpecialClasses,
+    ScreenAppearances,
+  ]) {
     const slug = getFieldDeep(collection, "slug");
 
     assert.equal(slug.type, "text", `${collection.slug}.slug 타입`);
@@ -317,14 +358,35 @@ test("legacy direct slug fields use Korean labels", () => {
 });
 
 test("history months use month row labels", () => {
+  const title = getTopLevelField(Histories, "title");
   const field = getTopLevelField(Histories, "months");
 
+  assert.equal(title.type, "text");
+  assert.equal(title.label, "제목");
+  assert.equal(title.required, true);
+  assert.equal(title.admin?.hidden, true);
+  assert.equal(title.admin?.readOnly, true);
+
   assert.equal(field.type, "array");
+  assert.equal(field.minRows, 1);
+  assert.deepEqual(
+    typeof field.defaultValue === "function" ? field.defaultValue({} as never) : field.defaultValue,
+    [
+      {
+        month: 1,
+        items: [
+          {
+            title: "",
+          },
+        ],
+      },
+    ],
+  );
   assert.deepEqual(field.labels, {
     plural: "월별 연혁",
     singular: "월별 연혁",
   });
-  assert.equal(field.admin?.initCollapsed, true);
+  assert.equal(field.admin?.initCollapsed, false);
   assert.equal(
     field.admin?.components?.RowLabel,
     "@/components/payload/HistoryMonthRowLabel#HistoryMonthRowLabel",
@@ -334,11 +396,17 @@ test("history months use month row labels", () => {
 
   assert.ok(itemField, "histories.months.items 필드가 있어야 합니다.");
   assert.equal(itemField.type, "array");
+  assert.equal(itemField.minRows, 1);
+  assert.deepEqual(itemField.defaultValue, [
+    {
+      title: "",
+    },
+  ]);
   assert.deepEqual(itemField.labels, {
     plural: "항목",
     singular: "항목",
   });
-  assert.equal(itemField.admin?.initCollapsed, true);
+  assert.equal(itemField.admin?.initCollapsed, false);
   assert.equal(
     itemField.admin?.components?.RowLabel,
     "@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel",

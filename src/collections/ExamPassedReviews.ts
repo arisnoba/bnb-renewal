@@ -26,7 +26,7 @@ import {
   slugField,
 } from "./shared";
 
-const examPassedReviewSlugify = createKoreanSlugifyWithFallback("exam-passed-review");
+const examPassedReviewSlugify = createKoreanSlugifyWithFallback("review");
 
 const examPassedReviewBodyEditor = lexicalEditor({
   admin: {

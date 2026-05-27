@@ -1,4 +1,8 @@
-import type { CollectionConfig } from "payload";
+import type {
+  CollectionBeforeChangeHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+} from "payload";
 
 import { allowAll, centerScopedCollectionAccess } from "./access";
 import { koreanSlugify } from "../utilities/koreanSlugify";
@@ -13,6 +17,108 @@ import {
   sidebarFields,
   slugField,
 } from "./shared";
+
+type TeacherSlugDoc = {
+  id?: unknown;
+  slug?: unknown;
+};
+
+function sameId(left: unknown, right: unknown) {
+  return String(left ?? "") === String(right ?? "");
+}
+
+function teacherBaseSlug(value: unknown) {
+  return koreanSlugify({ valueToSlugify: value }) || "teacher";
+}
+
+async function nextUniqueTeacherSlug({
+  baseSlug,
+  currentId,
+  payload,
+}: {
+  baseSlug: string;
+  currentId?: unknown;
+  payload?: {
+    find: (args: {
+      collection: "teachers";
+      depth: number;
+      limit: number;
+      overrideAccess: boolean;
+      pagination: false;
+    }) => Promise<{ docs: TeacherSlugDoc[] }>;
+  };
+}) {
+  if (!payload) {
+    return baseSlug;
+  }
+
+  const result = await payload.find({
+    collection: "teachers",
+    depth: 0,
+    limit: 10000,
+    overrideAccess: true,
+    pagination: false,
+  });
+  const usedSlugs = new Set(
+    result.docs
+      .filter((doc) => !sameId(doc.id, currentId))
+      .map((doc) => String(doc.slug ?? "").trim())
+      .filter(Boolean),
+  );
+
+  if (!usedSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  let suffix = 2;
+
+  while (usedSlugs.has(`${baseSlug}-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseSlug}-${suffix}`;
+}
+
+async function normalizeTeacherSlugData({
+  data,
+  originalDoc,
+  req,
+}: {
+  data?: Record<string, unknown>;
+  originalDoc?: Record<string, unknown>;
+  req: {
+    payload?: {
+      find: (args: {
+        collection: "teachers";
+        depth: number;
+        limit: number;
+        overrideAccess: boolean;
+        pagination: false;
+      }) => Promise<{ docs: TeacherSlugDoc[] }>;
+    };
+  };
+}) {
+  if (!data) {
+    return data;
+  }
+
+  const baseSlug = teacherBaseSlug(data.name ?? originalDoc?.name);
+
+  return {
+    ...data,
+    slug: await nextUniqueTeacherSlug({
+      baseSlug,
+      currentId: data.id ?? originalDoc?.id,
+      payload: req.payload,
+    }),
+  };
+}
+
+const normalizeTeacherSlugBeforeValidate: CollectionBeforeValidateHook = (args) =>
+  normalizeTeacherSlugData(args);
+
+const normalizeTeacherSlugBeforeChange: CollectionBeforeChangeHook = (args) =>
+  normalizeTeacherSlugData(args);
 
 export const Teachers: CollectionConfig = {
   slug: "teachers",
@@ -34,7 +140,8 @@ export const Teachers: CollectionConfig = {
     afterChange: [
       normalizeUploadedMediaPrefixes([{ path: "profileImageMedia", role: "teachers.profile-image" }]),
     ],
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeChange: [normalizeTeacherSlugBeforeChange],
+    beforeValidate: [centerScopedBeforeValidate, normalizeTeacherSlugBeforeValidate],
   },
   versions: {
     maxPerDoc: 15,

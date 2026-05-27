@@ -10,7 +10,15 @@ import {
   imagePathField,
   publishingFields,
   sidebarFields,
+  slugField,
 } from "./shared";
+import { createUniqueSlugBeforeValidate } from "./slugUtils";
+
+const setCastingAppearanceSlug = createUniqueSlugBeforeValidate({
+  collection: "casting-appearances",
+  fallbackPrefix: "casting-appearance",
+  getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
+});
 
 export const CastingAppearances: CollectionConfig = {
   slug: "casting-appearances",
@@ -22,6 +30,7 @@ export const CastingAppearances: CollectionConfig = {
   admin: {
     defaultColumns: [
       "title",
+      "slug",
       "centers",
       "authorName",
       "broadcaster",
@@ -33,7 +42,7 @@ export const CastingAppearances: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [centerScopedBeforeValidate, setCastingAppearanceSlug],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -91,5 +100,6 @@ export const CastingAppearances: CollectionConfig = {
       },
     ]),
     ...sidebarFields([centersField, ...publishingFields, authorNameField]),
+    slugField(),
   ],
 };

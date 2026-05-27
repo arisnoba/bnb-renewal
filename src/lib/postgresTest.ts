@@ -312,7 +312,7 @@ function mapDocToRow(
         meta3: stringify(doc.capacity),
         title: stringify(doc.title),
         }),
-        slug: '',
+        slug: stringify(doc.slug),
         sourceDb: '',
         sourceId: '',
         sourceTable: '',

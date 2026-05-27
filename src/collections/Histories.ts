@@ -20,6 +20,17 @@ const normalizeHistory: CollectionBeforeValidateHook = ({ data }) => {
   }
 }
 
+const defaultHistoryMonths = () => [
+  {
+    month: 1,
+    items: [
+      {
+        title: '',
+      },
+    ],
+  },
+]
+
 export const Histories: CollectionConfig = {
   slug: 'histories',
   labels: {
@@ -48,6 +59,7 @@ export const Histories: CollectionConfig = {
       label: '제목',
       required: true,
       admin: {
+        hidden: true,
         readOnly: true,
       },
     },
@@ -62,15 +74,17 @@ export const Histories: CollectionConfig = {
       name: 'months',
       type: 'array',
       label: '월별 연혁',
+      defaultValue: defaultHistoryMonths,
       labels: {
         plural: '월별 연혁',
         singular: '월별 연혁',
       },
+      minRows: 1,
       admin: {
         components: {
           RowLabel: '@/components/payload/HistoryMonthRowLabel#HistoryMonthRowLabel',
         },
-        initCollapsed: true,
+        initCollapsed: false,
       },
       fields: [
         {
@@ -83,16 +97,22 @@ export const Histories: CollectionConfig = {
           name: 'items',
           type: 'array',
           label: '항목',
+          defaultValue: [
+            {
+              title: '',
+            },
+          ],
           labels: {
             plural: '항목',
             singular: '항목',
           },
+          minRows: 1,
           admin: {
             components: {
               RowLabel:
                 '@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel',
             },
-            initCollapsed: true,
+            initCollapsed: false,
           },
           fields: [
             {

@@ -9,7 +9,9 @@ import {
   centerScopedBeforeValidate,
   centersField,
   sidebarFields,
+  slugField,
 } from "./shared";
+import { createUniqueSlugBeforeValidate } from "./slugUtils";
 
 export const curriculumClassOptions = [
   { label: "초급 I Class", value: "초급 I Class" },
@@ -59,6 +61,12 @@ const validateEducationDays = (_value: unknown, { siblingData }: { siblingData?:
   return hasEducationDay ? true : "수업요일을 하나 이상 선택해야 합니다.";
 };
 
+const setCurriculumSlug = createUniqueSlugBeforeValidate({
+  collection: "curriculums",
+  fallbackPrefix: "curriculum",
+  getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
+});
+
 export const Curriculums: CollectionConfig = {
   slug: "curriculums",
   labels: {
@@ -69,6 +77,7 @@ export const Curriculums: CollectionConfig = {
   admin: {
     defaultColumns: [
       "title",
+      "slug",
       "className",
       "teacher",
       "educationDays",
@@ -80,7 +89,7 @@ export const Curriculums: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [centerScopedBeforeValidate, setCurriculumSlug],
   },
   fields: [
     {
@@ -271,5 +280,6 @@ export const Curriculums: CollectionConfig = {
       },
     ]),
     ...sidebarFields([centersField, authorNameField]),
+    slugField(),
   ],
 };

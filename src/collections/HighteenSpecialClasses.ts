@@ -17,9 +17,7 @@ import {
 } from './shared'
 import { newsBodyEditor } from './News'
 
-const highteenSpecialClassSlugify = createKoreanSlugifyWithFallback(
-  'highteen-special-class',
-)
+const highteenSpecialClassSlugify = createKoreanSlugifyWithFallback('class')
 
 const highteenOnlyCreateAccess: Access = ({ req }) => {
   if (!req.user || typeof req.user !== 'object') {

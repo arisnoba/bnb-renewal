@@ -1,10 +1,10 @@
 import type { GlobalConfig } from 'payload'
 
-import { link } from '@/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
+  label: '센터 정보',
   access: {
     read: () => true,
   },
@@ -12,27 +12,6 @@ export const Footer: GlobalConfig = {
     group: '회사정보',
   },
   fields: [
-    {
-      name: 'navItems',
-      type: 'array',
-      label: 'Footer 메뉴',
-      fields: [
-        link({
-          appearances: false,
-        }),
-      ],
-      labels: {
-        plural: 'Footer 메뉴',
-        singular: 'Footer 메뉴',
-      },
-      maxRows: 6,
-      admin: {
-        initCollapsed: true,
-        components: {
-          RowLabel: '@/Footer/RowLabel#RowLabel',
-        },
-      },
-    },
     {
       name: 'centerInfos',
       type: 'array',

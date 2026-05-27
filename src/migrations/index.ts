@@ -92,6 +92,9 @@ import * as migration_20260526_200000_restore_screen_appearances_centers from '.
 import * as migration_20260526_210000_drop_star_card_logo_media from './20260526_210000_drop_star_card_logo_media'
 import * as migration_20260526_211000_star_card_discount_rate from './20260526_211000_star_card_discount_rate'
 import * as migration_20260526_212000_teacher_profile_image_media_required from './20260526_212000_teacher_profile_image_media_required'
+import * as migration_20260527_110000_teacher_name_slugs from './20260527_110000_teacher_name_slugs'
+import * as migration_20260527_120000_collection_slug_cleanup from './20260527_120000_collection_slug_cleanup'
+import * as migration_20260527_121000_normalize_collection_slug_hyphens from './20260527_121000_normalize_collection_slug_hyphens'
 
 export const migrations = [
   {
@@ -563,5 +566,20 @@ export const migrations = [
     up: migration_20260526_212000_teacher_profile_image_media_required.up,
     down: migration_20260526_212000_teacher_profile_image_media_required.down,
     name: '20260526_212000_teacher_profile_image_media_required',
+  },
+  {
+    up: migration_20260527_110000_teacher_name_slugs.up,
+    down: migration_20260527_110000_teacher_name_slugs.down,
+    name: '20260527_110000_teacher_name_slugs',
+  },
+  {
+    up: migration_20260527_120000_collection_slug_cleanup.up,
+    down: migration_20260527_120000_collection_slug_cleanup.down,
+    name: '20260527_120000_collection_slug_cleanup',
+  },
+  {
+    up: migration_20260527_121000_normalize_collection_slug_hyphens.up,
+    down: migration_20260527_121000_normalize_collection_slug_hyphens.down,
+    name: '20260527_121000_normalize_collection_slug_hyphens',
   },
 ]
