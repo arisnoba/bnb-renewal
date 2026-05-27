@@ -1,27 +1,26 @@
-import type { CollectionConfig } from "payload";
+import type { Access, CollectionBeforeValidateHook, CollectionConfig, Field } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import {
+  curriculumClassOptions,
+  curriculumClassOptionsByCenter,
+  type CurriculumCenter,
+} from "../lib/curriculumOptions";
 import {
   adminDateConfig,
   adminRow,
   adminTabs,
   authorNameField,
-  centerScopedBeforeValidate,
-  centersField,
+  authorNameFromCenters,
+  centerOptions,
+  isGlobalAdminUser,
   sidebarFields,
   slugField,
+  userCenterValue,
 } from "./shared";
 import { createUniqueSlugBeforeValidate } from "./slugUtils";
 
-export const curriculumClassOptions = [
-  { label: "초급 I Class", value: "초급 I Class" },
-  { label: "중급 R Class", value: "중급 R Class" },
-  { label: "고급 U Class", value: "고급 U Class" },
-  { label: "전문 D Class", value: "전문 D Class" },
-  { label: "배우 A Class", value: "배우 A Class" },
-  { label: "애비뉴 S Class", value: "애비뉴 S Class" },
-  { label: "특강반", value: "특강반" },
-];
+const curriculumCenterOptions = centerOptions.filter((option) => option.value !== "kids");
+const curriculumCenterValues = new Set(curriculumCenterOptions.map((option) => option.value));
 
 const educationDayFieldNames = [
   "educationDayMonday",
@@ -53,6 +52,36 @@ const validateRequired = (value: unknown) => {
   return isEmptyValue(value) ? requiredMessage : true;
 };
 
+function normalizeCurriculumCenter(value: unknown): CurriculumCenter | undefined {
+  const center = Array.isArray(value) ? value[0] : value;
+
+  return typeof center === "string" && curriculumCenterValues.has(center)
+    ? (center as CurriculumCenter)
+    : undefined;
+}
+
+function validateCurriculumCenter(value: unknown) {
+  return normalizeCurriculumCenter(value) ? true : "센터를 선택해야 합니다.";
+}
+
+const validateCurriculumClass = (
+  value: unknown,
+  { siblingData }: { siblingData?: Record<string, unknown> },
+) => {
+  const center = normalizeCurriculumCenter(siblingData?.centers);
+
+  if (!center) {
+    return "센터를 먼저 선택해야 합니다.";
+  }
+
+  const options = curriculumClassOptionsByCenter[center];
+  const className = typeof value === "string" ? value.trim() : "";
+
+  return options.some((option) => option.value === className)
+    ? true
+    : "선택한 센터에서 사용할 수 없는 클래스입니다.";
+};
+
 const validateEducationDays = (_value: unknown, { siblingData }: { siblingData?: Record<string, unknown> }) => {
   const hasEducationDay = educationDayFieldNames.some(
     (fieldName) => siblingData?.[fieldName] === true,
@@ -67,17 +96,111 @@ const setCurriculumSlug = createUniqueSlugBeforeValidate({
   getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
 });
 
+const curriculumCenterField: Field = {
+  name: "centers",
+  type: "select",
+  label: "센터",
+  defaultValue: ({ user }) => {
+    const center = userCenterValue(user);
+
+    return center && curriculumCenterValues.has(center) ? center : undefined;
+  },
+  options: curriculumCenterOptions,
+  validate: validateCurriculumCenter,
+  admin: {
+    className: "bnb-admin-required-field",
+    width: "50%",
+    components: {
+      Field: "@/components/payload/CurriculumCenterField#CurriculumCenterField",
+    },
+  },
+};
+
+const curriculumAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return false;
+  }
+
+  if (isGlobalAdminUser(req.user)) {
+    return true;
+  }
+
+  const center = userCenterValue(req.user);
+
+  if (!center || !curriculumCenterValues.has(center)) {
+    return false;
+  }
+
+  return {
+    centers: {
+      equals: center,
+    },
+  };
+};
+
+const curriculumCreateAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return false;
+  }
+
+  return isGlobalAdminUser(req.user) || curriculumCenterValues.has(userCenterValue(req.user) ?? "");
+};
+
+const curriculumReadAccess: Access = ({ req }) => {
+  if (!req.user || isGlobalAdminUser(req.user)) {
+    return true;
+  }
+
+  return curriculumAccess({ req });
+};
+
+const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
+  if (!data) {
+    return data;
+  }
+
+  const userCenter = userCenterValue(req.user);
+  const originalCenter = normalizeCurriculumCenter(originalDoc?.centers);
+  const nextData = { ...data };
+
+  if (req.user && !isGlobalAdminUser(req.user)) {
+    if (!userCenter || !curriculumCenterValues.has(userCenter)) {
+      throw new Error("커리큘럼을 관리할 수 있는 센터가 아닙니다.");
+    }
+
+    nextData.centers = originalCenter ?? userCenter;
+  } else {
+    nextData.centers = normalizeCurriculumCenter(nextData.centers ?? originalCenter);
+  }
+
+  if (!nextData.centers) {
+    throw new Error("센터를 선택해야 합니다.");
+  }
+
+  nextData.authorName =
+    nextData.authorName ??
+    authorNameFromCenters(nextData.centers);
+
+  return nextData;
+};
+
 export const Curriculums: CollectionConfig = {
   slug: "curriculums",
   labels: {
     plural: "커리큘럼",
     singular: "커리큘럼",
   },
-  access: centerScopedCollectionAccess,
+  access: {
+    create: curriculumCreateAccess,
+    delete: curriculumAccess,
+    read: curriculumReadAccess,
+    update: curriculumAccess,
+  },
   admin: {
     defaultColumns: [
       "title",
       "slug",
+      "centers",
       "className",
       "teacher",
       "educationDays",
@@ -89,7 +212,7 @@ export const Curriculums: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    beforeValidate: [centerScopedBeforeValidate, setCurriculumSlug],
+    beforeValidate: [curriculumBeforeValidate, setCurriculumSlug],
   },
   fields: [
     {
@@ -106,11 +229,28 @@ export const Curriculums: CollectionConfig = {
         label: "강의 정보",
         fields: [
           adminRow([
+            curriculumCenterField,
             {
               name: "className",
               type: "select",
               label: "클래스",
               options: curriculumClassOptions,
+              validate: validateCurriculumClass,
+              admin: {
+                className: "bnb-admin-required-field",
+                width: "50%",
+                components: {
+                  Field: "@/components/payload/CurriculumClassField#CurriculumClassField",
+                },
+              },
+            },
+          ]),
+          adminRow([
+            {
+              name: "teacher",
+              type: "relationship",
+              label: "강사",
+              relationTo: "teachers",
               validate: validateRequired,
               admin: {
                 className: "bnb-admin-required-field",
@@ -118,10 +258,11 @@ export const Curriculums: CollectionConfig = {
               },
             },
             {
-              name: "teacher",
-              type: "relationship",
-              label: "강사",
-              relationTo: "teachers",
+              name: "capacity",
+              type: "number",
+              label: "정원",
+              defaultValue: 8,
+              min: 0,
               validate: validateRequired,
               admin: {
                 className: "bnb-admin-required-field",
@@ -230,18 +371,6 @@ export const Curriculums: CollectionConfig = {
                 width: "50%",
               },
             },
-            {
-              name: "capacity",
-              type: "number",
-              label: "정원",
-              defaultValue: 8,
-              min: 0,
-              validate: validateRequired,
-              admin: {
-                className: "bnb-admin-required-field",
-                width: "50%",
-              },
-            },
           ]),
         ],
       },
@@ -279,7 +408,7 @@ export const Curriculums: CollectionConfig = {
         ],
       },
     ]),
-    ...sidebarFields([centersField, authorNameField]),
+    ...sidebarFields([authorNameField]),
     slugField(),
   ],
 };

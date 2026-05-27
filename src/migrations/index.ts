@@ -95,6 +95,7 @@ import * as migration_20260526_212000_teacher_profile_image_media_required from 
 import * as migration_20260527_110000_teacher_name_slugs from './20260527_110000_teacher_name_slugs'
 import * as migration_20260527_120000_collection_slug_cleanup from './20260527_120000_collection_slug_cleanup'
 import * as migration_20260527_121000_normalize_collection_slug_hyphens from './20260527_121000_normalize_collection_slug_hyphens'
+import * as migration_20260527_130000_curriculum_single_center_classes from './20260527_130000_curriculum_single_center_classes'
 
 export const migrations = [
   {
@@ -581,5 +582,10 @@ export const migrations = [
     up: migration_20260527_121000_normalize_collection_slug_hyphens.up,
     down: migration_20260527_121000_normalize_collection_slug_hyphens.down,
     name: '20260527_121000_normalize_collection_slug_hyphens',
+  },
+  {
+    up: migration_20260527_130000_curriculum_single_center_classes.up,
+    down: migration_20260527_130000_curriculum_single_center_classes.down,
+    name: '20260527_130000_curriculum_single_center_classes',
   },
 ]

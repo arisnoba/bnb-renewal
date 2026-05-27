@@ -115,6 +115,7 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.deepEqual(Curriculums.admin?.defaultColumns, [
     "title",
     "slug",
+    "centers",
     "className",
     "teacher",
     "educationDays",
@@ -151,8 +152,10 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
 
   assert.ok(lectureInfoTab, "강의 정보 탭이 있어야 합니다.");
   assert.deepEqual(fieldNames(lectureInfoTab.fields), [
+    "centers",
     "className",
     "teacher",
+    "capacity",
     "educationDays",
     "educationDayMonday",
     "educationDayTuesday",
@@ -164,32 +167,67 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
     "educationStartTime",
     "educationEndTime",
     "educationStartDate",
-    "capacity",
   ]);
 
   const firstRow = lectureInfoTab.fields[0];
 
   assert.equal(firstRow.type, "row");
-  assert.deepEqual(fieldNames([firstRow]), ["className", "teacher"]);
+  assert.deepEqual(fieldNames([firstRow]), ["centers", "className"]);
 
+  const centerField = firstRow.type === "row"
+    ? firstRow.fields.find((field) => isNamedField(field, "centers"))
+    : undefined;
   const classField = firstRow.type === "row"
     ? firstRow.fields.find((field) => isNamedField(field, "className"))
     : undefined;
-  const teacherField = firstRow.type === "row"
-    ? firstRow.fields.find((field) => isNamedField(field, "teacher"))
+  const secondRow = lectureInfoTab.fields[1];
+  const teacherField = secondRow.type === "row"
+    ? secondRow.fields.find((field) => isNamedField(field, "teacher"))
     : undefined;
+  const capacityField = secondRow.type === "row"
+    ? secondRow.fields.find((field) => isNamedField(field, "capacity"))
+    : undefined;
+  const centerFieldWithLabel = centerField as FieldWithLabel | undefined;
   const classFieldWithLabel = classField as FieldWithLabel | undefined;
   const teacherFieldWithLabel = teacherField as FieldWithLabel | undefined;
+  const capacityFieldWithDefault = capacityField as FieldWithRequired | undefined;
+  const capacityFieldWithLabel = capacityField as FieldWithLabel | undefined;
 
+  assert.ok(centerField, "센터 필드가 있어야 합니다.");
+  assert.equal(centerField.type, "select");
+  assert.equal(centerFieldWithLabel?.label, "센터");
+  assert.equal(centerField.hasMany, undefined);
+  assertFieldValidate(centerField);
+  assert.equal(adminClassName(centerField), "bnb-admin-required-field");
+  assert.deepEqual(centerField.options, [
+    { label: "아트센터", value: "art" },
+    { label: "입시센터", value: "exam" },
+    { label: "하이틴센터", value: "highteen" },
+    { label: "애비뉴센터", value: "avenue" },
+  ]);
+  assert.equal(
+    centerField.admin?.components?.Field,
+    "@/components/payload/CurriculumCenterField#CurriculumCenterField",
+  );
   assert.ok(classField, "클래스 필드가 있어야 합니다.");
   assert.equal(classField.type, "select");
   assert.equal(classFieldWithLabel?.label, "클래스");
   assertFieldValidate(classField);
   assert.equal(adminClassName(classField), "bnb-admin-required-field");
+  assert.equal(
+    classField.admin?.components?.Field,
+    "@/components/payload/CurriculumClassField#CurriculumClassField",
+  );
   assert.equal(teacherFieldWithLabel?.label, "강사");
   assertFieldValidate(teacherField);
   assert.equal(adminClassName(teacherField), "bnb-admin-required-field");
   assert.equal(labelComponent(teacherField), undefined);
+  assert.equal(capacityFieldWithLabel?.label, "정원");
+  assert.equal(capacityFieldWithDefault?.admin?.width, "50%");
+  assert.equal(labelComponent(capacityField), undefined);
+  assert.equal(adminClassName(capacityField), "bnb-admin-required-field");
+  assertFieldValidate(capacityField);
+  assert.equal(capacityFieldWithDefault?.defaultValue, 8);
   assert.deepEqual(classField.options, [
     { label: "초급 I Class", value: "초급 I Class" },
     { label: "중급 R Class", value: "중급 R Class" },
@@ -198,6 +236,13 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
     { label: "배우 A Class", value: "배우 A Class" },
     { label: "애비뉴 S Class", value: "애비뉴 S Class" },
     { label: "특강반", value: "특강반" },
+    { label: "입시반", value: "입시반" },
+    { label: "입시예비반", value: "입시예비반" },
+    { label: "예고입시반", value: "예고입시반" },
+    { label: "입문 I CLASS", value: "입문 I CLASS" },
+    { label: "중급 R CLASS", value: "중급 R CLASS" },
+    { label: "심화 U CLASS", value: "심화 U CLASS" },
+    { label: "전문 DA CLASS", value: "전문 DA CLASS" },
   ]);
 
   const educationDaysField = lectureInfoTab.fields.find((field) =>
@@ -235,40 +280,28 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.ok(dayFields.every((field) => field?.admin?.disableListColumn === true));
   assert.ok(dayFields.every((field) => field?.admin?.disableListFilter === true));
 
-  const dateCapacityRow = lectureInfoTab.fields.find(
+  const dateRow = lectureInfoTab.fields.find(
     (field) =>
       field.type === "row" &&
-      fieldNames([field]).join(",") === "educationStartDate,capacity",
+      fieldNames([field]).join(",") === "educationStartDate",
   );
 
-  assert.equal(dateCapacityRow?.type, "row");
+  assert.equal(dateRow?.type, "row");
 
   const dateField =
-    dateCapacityRow?.type === "row"
-      ? dateCapacityRow.fields.find((field) =>
+    dateRow?.type === "row"
+      ? dateRow.fields.find((field) =>
           isNamedField(field, "educationStartDate"),
         )
       : undefined;
-  const capacityField =
-    dateCapacityRow?.type === "row"
-      ? dateCapacityRow.fields.find((field) => isNamedField(field, "capacity"))
-      : undefined;
   const dateFieldWithAdmin = dateField as FieldWithAdmin | undefined;
   const dateFieldWithLabel = dateField as FieldWithLabel | undefined;
-  const capacityFieldWithDefault = capacityField as FieldWithRequired | undefined;
-  const capacityFieldWithLabel = capacityField as FieldWithLabel | undefined;
 
   assert.equal(dateFieldWithLabel?.label, "교육 시작일");
   assert.equal(dateFieldWithAdmin?.admin?.width, "50%");
   assert.equal(labelComponent(dateField), undefined);
   assert.equal(adminClassName(dateField), "bnb-admin-required-field");
-  assert.equal(capacityFieldWithLabel?.label, "정원");
-  assert.equal(capacityFieldWithDefault?.admin?.width, "50%");
-  assert.equal(labelComponent(capacityField), undefined);
-  assert.equal(adminClassName(capacityField), "bnb-admin-required-field");
   assertFieldValidate(dateField);
-  assertFieldValidate(capacityField);
-  assert.equal(capacityFieldWithDefault?.defaultValue, 8);
 
   const timeRow = lectureInfoTab.fields.find(
     (field) =>
