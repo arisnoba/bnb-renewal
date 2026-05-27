@@ -1,0 +1,46 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(docker compose *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(rg *)",
+      "Bash(fd *)",
+      "Bash(bat *)",
+      "Bash(eza *)",
+      "Bash(python3 *)",
+      "Bash(jq *)",
+      "Bash(mkdir -p *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file_path=$(echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get('file_path',''))\" 2>/dev/null); if echo \"$file_path\" | grep -qE '\\.env($|\\.)|\\/env\\/'; then echo \"🚫 환경변수 파일 직접 편집이 차단되었습니다: $file_path\\n필요하면 config/env/ 경로를 확인하세요.\"; exit 2; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file_path=$(echo \"$CLAUDE_TOOL_INPUT\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get('file_path',''))\" 2>/dev/null); if echo \"$file_path\" | grep -qE '\\.(ts|tsx)$'; then cd /Users/arisnoba/Documents/GitHub/bnb-renewal && npx tsc --noEmit 2>&1 | head -30; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

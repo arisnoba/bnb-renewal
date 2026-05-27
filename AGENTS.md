@@ -1,4 +1,61 @@
-# 개인 작업 규칙 추가
+# 프로젝트 개발 가이드
+
+## 프로젝트 개요
+
+- **스택**: Next.js App Router + PayloadCMS + PostgreSQL + TypeScript
+- **스토리지**: Cloudflare R2 (AWS S3 호환)
+- **배포**: Vercel
+- **로컬 인프라**: Docker (PostgreSQL + legacy MariaDB)
+
+---
+
+## 핵심 워크플로우
+
+### 로컬 개발 환경 시작
+
+```bash
+npm run db:local:up   # PostgreSQL 컨테이너 시작
+npm run dev           # Next.js dev server (http://localhost:3000)
+```
+
+레거시 MariaDB 필요 시: `npm run legacy:db:up`
+
+### PayloadCMS 컬렉션 변경 후 필수 절차
+
+컬렉션(`.ts`) 파일을 수정하면 반드시 아래 순서대로 실행하세요:
+
+```bash
+npm run db:local:migrate:create   # 마이그레이션 파일 생성
+# → src/migrations/index.ts에 등록 확인
+npm run db:local:migrate          # 마이그레이션 실행
+npm run payload:generate-types    # 타입 재생성
+# 새 커스텀 컴포넌트 추가 시에만:
+npm run payload:generate-importmap
+```
+
+### 타입 체크 / 린트
+
+```bash
+npm run typecheck   # TypeScript 타입 오류 확인
+npm run lint        # ESLint 검사
+```
+
+---
+
+## 코드 리뷰 체크리스트 (PayloadCMS 컬렉션)
+
+컬렉션 변경 시 검토 항목:
+
+1. **마이그레이션 필요 여부**: 필드 추가/삭제/타입 변경 → 마이그레이션 필요
+2. **required 처리**: `required: true`는 DB NOT NULL 유발 → `validate` 함수 우선
+3. **Array RowLabel**: 배열 필드는 `admin.components.RowLabel`로 항목 식별 텍스트 설정
+4. **미디어 prefix**: R2 object key는 `/`로 구분된 폴더 구조 (`media/컬렉션/역할/...`)
+5. **한국어 label**: 모든 필드에 `label` 명시
+6. **Access Control**: `read/create/update/delete` 권한 명시
+
+---
+
+## 개인 작업 규칙
 
 ## 명령 실행
 

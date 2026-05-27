@@ -30,6 +30,7 @@ import { StarCards } from './src/collections/StarCards'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
 import { applyAdminTimestampFields } from './src/collections/adminTimestampFields'
+import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoints'
 import { Footer } from './src/Footer/config'
 import { Header } from './src/Header/config'
 import { defaultLexical } from './src/fields/defaultLexical'
@@ -75,32 +76,34 @@ export default buildConfig({
       },
     },
   },
-  collections: applyAdminTimestampFields([
-    Histories,
-    Teachers,
-    Curriculums,
-    HighteenSpecialClasses,
-    Agencies,
-    AuditionSchedules,
-    CastingDirectors,
-    DirectCastings,
-    CastingAppearances,
-    ScreenAppearances,
-    Profiles,
-    ArtistPress,
-    ArtistPressAgencies,
-    ExamPassedReviews,
-    ExamPassedVideos,
-    ExamResults,
-    ExamSchoolLogos,
-    News,
-    Faqs,
-    StarCards,
-    Users,
-    Pages,
-    Posts,
-    Media,
-  ]),
+  collections: applyReliableBulkEndpoints(
+    applyAdminTimestampFields([
+      Histories,
+      Teachers,
+      Curriculums,
+      HighteenSpecialClasses,
+      Agencies,
+      AuditionSchedules,
+      CastingDirectors,
+      DirectCastings,
+      CastingAppearances,
+      ScreenAppearances,
+      Profiles,
+      ArtistPress,
+      ArtistPressAgencies,
+      ExamPassedReviews,
+      ExamPassedVideos,
+      ExamResults,
+      ExamSchoolLogos,
+      News,
+      Faqs,
+      StarCards,
+      Users,
+      Pages,
+      Posts,
+      Media,
+    ]),
+  ),
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {

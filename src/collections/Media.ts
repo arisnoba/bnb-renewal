@@ -81,10 +81,10 @@ function normalizeLocalMediaURL(value: unknown) {
 }
 
 function mediaAdminThumbnail({ doc }: { doc: Record<string, unknown> }) {
-  const thumbnailURL = normalizeLocalMediaURL(doc.thumbnailURL)
   const url = normalizeLocalMediaURL(doc.url)
+  const thumbnailURL = normalizeLocalMediaURL(doc.thumbnailURL)
 
-  return thumbnailURL || url || null
+  return url || thumbnailURL || null
 }
 
 function localMediaPath(value: unknown) {
@@ -144,9 +144,10 @@ const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
   if (!externalUrl) {
     const normalizedUrl = normalizeLocalMediaURL(doc?.url)
     const normalizedThumbnailURL =
+      normalizedUrl ||
       normalizeLocalMediaURL(doc?.thumbnailURL) ||
       normalizeLocalMediaURL(doc?.sizes?.thumbnail?.url) ||
-      normalizedUrl
+      ''
 
     return {
       ...doc,

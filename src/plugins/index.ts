@@ -24,7 +24,7 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
 }
 
 const r2Enabled = hasR2Config()
-const mediaPrefix = 'media'
+const mediaPrefix = 'media/assets'
 const localMediaDir = path.resolve(process.cwd(), 'public/media')
 const mediaIdScopedPrefixes = new Set([mediaPrefix, ...Object.values(R2_MEDIA_PREFIX_BY_ROLE)])
 
