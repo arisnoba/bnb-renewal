@@ -36,6 +36,7 @@ import { Header } from './src/Header/config'
 import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
+import { Inquiries } from './src/collections/Inquiries'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -98,6 +99,7 @@ export default buildConfig({
       News,
       Faqs,
       StarCards,
+      Inquiries,
       Users,
       Pages,
       Posts,
