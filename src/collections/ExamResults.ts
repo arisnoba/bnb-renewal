@@ -103,7 +103,7 @@ export const ExamResults: CollectionConfig = {
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
-    imagePathField("thumbnailPath", "미디어"),
+    imagePathField("thumbnailPath", "대표 이미지"),
     {
       name: "resultType",
       type: "select",

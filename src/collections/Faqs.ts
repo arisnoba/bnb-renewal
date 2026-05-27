@@ -1,6 +1,7 @@
 import type {
   CollectionBeforeValidateHook,
   CollectionConfig,
+  SelectField,
   Validate,
 } from 'payload'
 
@@ -30,7 +31,7 @@ const faqCategoryOptions = [
 ]
 
 const answerModeOptions = [
-  { label: '공통 답변', value: 'shared' },
+  { label: '단일 답변', value: 'shared' },
   { label: '센터별 답변', value: 'centerVariants' },
 ]
 
@@ -46,13 +47,102 @@ type FaqVariant = {
   [key: string]: unknown
 }
 
+type FaqData = {
+  answerMode?: unknown
+  centers?: unknown
+  sharedAnswer?: unknown
+  variants?: unknown
+}
+
+function selectedFaqCenters(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+
+  return values
+    .map((item) => String(item ?? '').trim())
+    .filter((item) => item && item !== 'all')
+}
+
+function hasMultipleFaqCenters(value: unknown) {
+  return selectedFaqCenters(value).length >= 2
+}
+
+function hasFaqCenterValue(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+
+  return values.some((item) => String(item ?? '').trim())
+}
+
+const faqCentersField: SelectField = {
+  ...(centersField as SelectField),
+}
+
+function valuesEqual(left: unknown, right: unknown) {
+  if (Object.is(left, right)) {
+    return true
+  }
+
+  try {
+    return JSON.stringify(left) === JSON.stringify(right)
+  } catch {
+    return false
+  }
+}
+
+function isFaqBulkUpdateRequest({
+  operation,
+  req,
+}: {
+  operation?: unknown
+  req?: { url?: string }
+}) {
+  if (operation !== 'update') {
+    return false
+  }
+
+  const url = req?.url
+
+  if (typeof url !== 'string') {
+    return false
+  }
+
+  try {
+    return Array.from(new URL(url, 'http://payload.local').searchParams.keys()).some(
+      (key) => key === 'where' || key.startsWith('where['),
+    )
+  } catch {
+    return url.includes('where=') || url.includes('where[') || url.includes('where%5B')
+  }
+}
+
+function isUnchangedFaqBulkUpdateValue({
+  operation,
+  previousValue,
+  req,
+  value,
+}: {
+  operation?: unknown
+  previousValue?: unknown
+  req?: { url?: string }
+  value: unknown
+}) {
+  return isFaqBulkUpdateRequest({ operation, req }) && valuesEqual(value, previousValue)
+}
+
 const validateSharedAnswer: Validate<
   string | null | undefined,
   unknown,
-  { answerMode?: unknown }
-> = (value, { siblingData }) => {
-  if (siblingData?.answerMode === 'shared' && !String(value ?? '').trim()) {
-    return '공통 답변을 입력해야 합니다.'
+  FaqData
+> = (value, { operation, previousValue, req, siblingData }) => {
+  if (isUnchangedFaqBulkUpdateValue({ operation, previousValue, req, value })) {
+    return true
+  }
+
+  if (
+    (siblingData?.answerMode !== 'centerVariants' ||
+      !hasMultipleFaqCenters(siblingData?.centers)) &&
+    !String(value ?? '').trim()
+  ) {
+    return '단일 답변을 입력해야 합니다.'
   }
 
   return true
@@ -61,10 +151,18 @@ const validateSharedAnswer: Validate<
 const validateFaqVariants: Validate<
   unknown[] | null | undefined,
   unknown,
-  { answerMode?: unknown }
-> = (value, { siblingData }) => {
+  FaqData
+> = (value, { operation, previousValue, req, siblingData }) => {
+  if (isUnchangedFaqBulkUpdateValue({ operation, previousValue, req, value })) {
+    return true
+  }
+
   if (siblingData?.answerMode !== 'centerVariants') {
     return true
+  }
+
+  if (!hasMultipleFaqCenters(siblingData?.centers)) {
+    return '센터별 답변은 센터를 2개 이상 선택했을 때만 사용할 수 있습니다.'
   }
 
   const variants = Array.isArray(value) ? (value as FaqVariant[]) : []
@@ -94,16 +192,71 @@ const validateFaqVariants: Validate<
   return true
 }
 
-const normalizeFaqData: CollectionBeforeValidateHook = ({ data }) => {
+const validateFaqCategory: Validate<unknown> = (
+  value,
+  { operation, previousValue, req },
+) => {
+  if (isUnchangedFaqBulkUpdateValue({ operation, previousValue, req, value })) {
+    return true
+  }
+
+  return String(value ?? '').trim() ? true : '분류를 선택해야 합니다.'
+}
+
+const normalizeFaqData: CollectionBeforeValidateHook = (args) => {
+  const { data } = args
+
   if (!data) {
     return data
   }
 
-  const nextData = { ...data }
-  const variants = Array.isArray(nextData.variants) ? nextData.variants : []
+  if (
+    args.operation === 'update' &&
+    args.originalDoc &&
+    valuesEqual(data.centers, args.originalDoc.centers) &&
+    valuesEqual(data.answerMode, args.originalDoc.answerMode) &&
+    valuesEqual(data.sharedAnswer, args.originalDoc.sharedAnswer) &&
+    valuesEqual(data.variants, args.originalDoc.variants)
+  ) {
+    return data
+  }
 
-  if (!nextData.answerMode) {
-    nextData.answerMode = variants.length > 0 ? 'centerVariants' : 'shared'
+  const nextData = { ...data }
+
+  if (
+    args.operation === 'update' &&
+    isFaqBulkUpdateRequest({ operation: args.operation, req: args.req }) &&
+    hasFaqCenterValue(args.originalDoc?.centers) &&
+    !hasFaqCenterValue(nextData.centers)
+  ) {
+    nextData.centers = args.originalDoc?.centers
+  }
+
+  const variants = Array.isArray(nextData.variants)
+    ? (nextData.variants as FaqVariant[])
+    : Array.isArray(args.originalDoc?.variants)
+      ? (args.originalDoc.variants as FaqVariant[])
+      : []
+  const sharedAnswer = nextData.sharedAnswer ?? args.originalDoc?.sharedAnswer
+
+  if (!hasMultipleFaqCenters(nextData.centers)) {
+    nextData.answerMode = 'shared'
+
+    if (!String(sharedAnswer ?? '').trim()) {
+      const firstAnswer = variants
+        .map((variant) =>
+          variant && typeof variant === 'object'
+            ? String((variant as { answer?: unknown }).answer ?? '').trim()
+            : '',
+        )
+        .find(Boolean)
+
+      if (firstAnswer) {
+        nextData.sharedAnswer = firstAnswer
+      }
+    }
+  } else if (!nextData.answerMode) {
+    nextData.answerMode = args.originalDoc?.answerMode ?? (variants.length > 0 ? 'centerVariants' : 'shared')
   }
 
   return nextData
@@ -139,15 +292,17 @@ export const Faqs: CollectionConfig = {
       label: '질문',
       required: true,
     },
+    faqCentersField,
     adminRow([
       {
         name: 'category',
         type: 'select',
         label: '분류',
-        defaultValue: 'etc',
         options: faqCategoryOptions,
-        required: true,
+        validate: validateFaqCategory,
         admin: {
+          className: 'bnb-admin-required-field',
+          placeholder: '선택해 주세요',
           width: '50%',
         },
       },
@@ -159,6 +314,7 @@ export const Faqs: CollectionConfig = {
         options: answerModeOptions,
         admin: {
           className: 'bnb-faq-answer-mode',
+          condition: (_data, siblingData) => hasMultipleFaqCenters(siblingData?.centers),
           layout: 'horizontal',
           width: '50%',
         },
@@ -167,12 +323,14 @@ export const Faqs: CollectionConfig = {
     {
       name: 'sharedAnswer',
       type: 'textarea',
-      label: '공통 답변',
+      label: '단일 답변',
       validate: validateSharedAnswer,
       admin: {
         className: 'bnb-admin-required-field',
-        condition: (_data, siblingData) => siblingData?.answerMode === 'shared',
-        description: '모든 선택 센터에 같은 답변을 노출할 때 사용합니다.',
+        condition: (_data, siblingData) =>
+          siblingData?.answerMode !== 'centerVariants' ||
+          !hasMultipleFaqCenters(siblingData?.centers),
+        description: '선택한 센터에 같은 답변을 노출할 때 사용합니다.',
         rows: 8,
       },
     },
@@ -187,7 +345,8 @@ export const Faqs: CollectionConfig = {
       },
       admin: {
         condition: (_data, siblingData) =>
-          siblingData?.answerMode !== 'shared',
+          siblingData?.answerMode === 'centerVariants' &&
+          hasMultipleFaqCenters(siblingData?.centers),
         components: {
           RowLabel:
             '@/components/payload/FaqAnswerVariantRowLabel#FaqAnswerVariantRowLabel',
@@ -268,12 +427,11 @@ export const Faqs: CollectionConfig = {
       ],
     },
     ...sidebarFields([
-      centersField,
       {
         name: 'displayStatus',
         type: 'select',
         label: '상태',
-        defaultValue: 'draft',
+        defaultValue: 'published',
         options: displayStatusOptions,
       },
       {

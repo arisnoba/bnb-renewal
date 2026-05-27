@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, Validate } from "payload";
 
 import {
   MetaDescriptionField,
@@ -32,6 +32,10 @@ import {
 import { seoTitleField } from "./seoFields";
 
 const artistPressSlugify = createKoreanSlugifyWithFallback("artist-press");
+
+const validateArtistPressAgency: Validate<unknown> = (value) => {
+  return value ? true : "소속사를 선택해야 합니다.";
+};
 
 const artistPressBodyEditor = lexicalEditor({
   admin: {
@@ -104,7 +108,9 @@ export const ArtistPress: CollectionConfig = {
               type: "relationship",
               label: "소속사",
               relationTo: "artist-press-agencies",
+              validate: validateArtistPressAgency,
               admin: {
+                className: "bnb-admin-required-field",
                 description:
                   "소속사가 검색되지 않으면 먼저 소속사 로고 설정에 등록하세요.",
                 width: "33.333%",

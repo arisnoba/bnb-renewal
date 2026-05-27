@@ -1,4 +1,4 @@
-import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import type { Access, CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
 
 import { createKoreanSlugifyWithFallback, koreanSlugify } from '../utilities/koreanSlugify'
 import {
@@ -46,6 +46,12 @@ function normalizeDirectCastingBroadcastName(value: string) {
     .replace(/coupang\s+play/gi, 'Coupang Play')
     .replace(/쿠팡플레이/g, 'Coupang Play')
     .replace(/카카오\s+TV/gi, 'KakaoTV')
+}
+
+function hasDirectCastingCenterValue(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+
+  return values.some((item) => String(item ?? '').trim())
 }
 
 const nonExamAccess: Access = ({ req }) => {
@@ -107,11 +113,19 @@ const setDirectCastingAuthorName: CollectionBeforeValidateHook = ({ data, origin
     originalDoc && typeof originalDoc === 'object'
       ? (originalDoc as { centers?: unknown }).centers
       : undefined
-  const centers = normalizeDirectCastingCenters(
-    isGlobalAdminUser(req.user)
-      ? data.centers ?? originalCenters
-      : originalCenters ?? (center ? [center] : data.centers),
-  )
+  const rawCenters = isGlobalAdminUser(req.user)
+    ? data.centers ?? originalCenters
+    : originalCenters ?? (center ? [center] : data.centers)
+
+  if (isGlobalAdminUser(req.user) && !hasDirectCastingCenterValue(rawCenters)) {
+    return {
+      ...data,
+      centers: rawCenters,
+      authorName: data.authorName,
+    }
+  }
+
+  const centers = normalizeDirectCastingCenters(rawCenters)
 
   return {
     ...data,
@@ -183,6 +197,21 @@ function normalizeDirectCastingCenters(value: unknown) {
   return Array.from(new Set(centers))
 }
 
+const validateDirectCastingCenters: Validate<unknown> = (value) => {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+  const centers = values
+    .map((item) => String(item ?? '').trim())
+    .filter(Boolean)
+
+  if (centers.length === 0) {
+    return '노출 센터를 선택해야 합니다.'
+  }
+
+  const invalidCenter = centers.find((center) => !directCastingCenterValues.has(center))
+
+  return invalidCenter ? `다이렉트캐스팅에서 지원하지 않는 센터 값입니다: ${invalidCenter}` : true
+}
+
 export const DirectCastings: CollectionConfig = {
   slug: 'direct-castings',
   labels: {
@@ -246,8 +275,10 @@ export const DirectCastings: CollectionConfig = {
               label: '노출 센터',
               hasMany: true,
               options: sourceCenterOptions,
-              required: true,
+              validate: validateDirectCastingCenters,
               admin: {
+                className: 'bnb-admin-required-field',
+                placeholder: '선택해 주세요',
                 width: '50%',
               },
             },

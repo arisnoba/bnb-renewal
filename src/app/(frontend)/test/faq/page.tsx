@@ -106,7 +106,7 @@ export default async function FaqTestPage({ searchParams: searchParamsPromise }:
                     </h2>
                   </div>
                   <span className="w-fit rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground">
-                    {faq.answerMode === 'shared' ? '공통 답변' : getCenterLabel(activeCenter)}
+                    {faq.answerMode === 'shared' ? '단일 답변' : getCenterLabel(activeCenter)}
                   </span>
                 </div>
                 <div className="mt-5 text-sm leading-7 text-muted-foreground">
@@ -178,7 +178,7 @@ function answerForCenter(faq: Faq, center: CenterSlug) {
 }
 
 function categoryLabel(value: Faq['category']) {
-  const labels: Record<Faq['category'], string> = {
+  const labels: Record<NonNullable<Faq['category']>, string> = {
     admission: '입학/상담',
     casting: '캐스팅/프로필',
     class: '수업/과정',
@@ -188,7 +188,7 @@ function categoryLabel(value: Faq['category']) {
     tuition: '수강료/할인',
   }
 
-  return labels[value] ?? value
+  return value ? (labels[value] ?? value) : '미분류'
 }
 
 function InfoItem({ label, value }: { label: string; value: string }) {

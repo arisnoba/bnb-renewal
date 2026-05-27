@@ -1,4 +1,4 @@
-import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import type { CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
 
 import { centerScopedCollectionAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
@@ -250,6 +250,10 @@ function validateSlug(value: unknown) {
   return true
 }
 
+const validateAgencyLogoMedia: Validate<unknown> = (value) => {
+  return value ? true : '소속사 로고 이미지를 선택해야 합니다.'
+}
+
 export const ArtistPressAgencies: CollectionConfig = {
   slug: 'artist-press-agencies',
   labels: {
@@ -296,6 +300,10 @@ export const ArtistPressAgencies: CollectionConfig = {
       type: 'upload',
       label: '소속사 로고 이미지',
       relationTo: 'media',
+      validate: validateAgencyLogoMedia,
+      admin: {
+        className: 'bnb-admin-required-field',
+      },
     },
     {
       name: 'linkedArtists',

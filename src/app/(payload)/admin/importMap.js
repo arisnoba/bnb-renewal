@@ -39,6 +39,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { AgencyActorRowLabel as AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d } from '@/components/payload/AgencyActorRowLabel'
+import { AuditionScheduleStartDateField as AuditionScheduleStartDateField_daeb064b600ba1e5aa9502ef326a111e } from '@/components/payload/AuditionScheduleStartDateField'
 import { CastingDirectorCareerRowLabel as CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6 } from '@/components/payload/CastingDirectorCareerRowLabel'
 import { CastingAppearanceCastMemberRowLabel as CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296 } from '@/components/payload/CastingAppearanceCastMemberRowLabel'
 import { ScreenAppearancePerformerCell as ScreenAppearancePerformerCell_a565e0992e46624eb0f1816c0da918b8 } from '@/components/payload/ScreenAppearancePerformerCell'
@@ -108,6 +109,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel": AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d,
+  "@/components/payload/AuditionScheduleStartDateField#AuditionScheduleStartDateField": AuditionScheduleStartDateField_daeb064b600ba1e5aa9502ef326a111e,
   "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel": CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6,
   "@/components/payload/CastingAppearanceCastMemberRowLabel#CastingAppearanceCastMemberRowLabel": CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296,
   "@/components/payload/ScreenAppearancePerformerCell#ScreenAppearancePerformerCell": ScreenAppearancePerformerCell_a565e0992e46624eb0f1816c0da918b8,

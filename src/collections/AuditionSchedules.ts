@@ -1,6 +1,7 @@
 import type {
   CollectionBeforeValidateHook,
   CollectionConfig,
+  SelectField,
   Validate,
 } from "payload";
 
@@ -53,11 +54,21 @@ const validateScheduleEndDate: Validate<
     return true;
   }
 
-  const startDate = dateValue(siblingData.scheduleStartDate);
+  const startDate = dateValue(siblingData?.scheduleStartDate);
   const endDate = dateValue(value);
 
   if (startDate && endDate && endDate < startDate) {
     return "종료일은 시작일보다 빠를 수 없습니다.";
+  }
+
+  return true;
+};
+
+const validateAuditionEventType: Validate<string, unknown, AuditionScheduleData> = (
+  value,
+) => {
+  if (!String(value ?? "").trim()) {
+    return "일정 유형을 선택해야 합니다.";
   }
 
   return true;
@@ -113,16 +124,25 @@ export const AuditionSchedules: CollectionConfig = {
       name: "eventType",
       type: "select",
       label: "일정 유형",
-      defaultValue: "schedule",
       options: auditionEventTypeOptions,
-      required: true,
-    },
+      validate: validateAuditionEventType,
+      admin: {
+        className: "bnb-admin-required-field",
+        placeholder: "선택해 주세요",
+      },
+    } as SelectField,
     adminRow([
       {
         name: "scheduleStartDate",
         type: "date",
         label: "시작일",
-        admin: adminDateConfig,
+        admin: {
+          ...adminDateConfig,
+          components: {
+            Field:
+              "@/components/payload/AuditionScheduleStartDateField#AuditionScheduleStartDateField",
+          },
+        },
         required: true,
         validate: validateScheduleStartDate,
       },

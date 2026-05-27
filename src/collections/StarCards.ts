@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, SelectField, Validate } from 'payload'
 
 import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedCollectionAccess } from './access'
@@ -17,6 +17,28 @@ import {
 import { newsBodyEditor } from './News'
 
 const starCardSlugify = createKoreanSlugifyWithFallback('star-card')
+
+const validateStarCardImages: Validate<unknown[] | null | undefined> = (value) => {
+  const rows = Array.isArray(value) ? value : []
+  const hasImage = rows.some((row) => {
+    if (!row || typeof row !== 'object') {
+      return false
+    }
+
+    return Boolean((row as { imageMedia?: unknown }).imageMedia)
+  })
+
+  return hasImage ? true : '이미지를 하나 이상 등록해야 합니다.'
+}
+
+const validateStarCardImageMedia: Validate<unknown> = (value) => {
+  return value ? true : '이미지를 선택해야 합니다.'
+}
+
+const starCardCentersField: SelectField = {
+  ...(centersField as SelectField),
+  defaultValue: ['all'],
+}
 
 export const StarCards: CollectionConfig = {
   slug: 'star-cards',
@@ -89,6 +111,8 @@ export const StarCards: CollectionConfig = {
             name: 'bodyImages',
             type: 'array',
             label: '이미지',
+            minRows: 1,
+            validate: validateStarCardImages,
             labels: {
               plural: '이미지',
               singular: '이미지',
@@ -108,6 +132,10 @@ export const StarCards: CollectionConfig = {
                 type: 'upload',
                 label: '이미지',
                 relationTo: 'media',
+                validate: validateStarCardImageMedia,
+                admin: {
+                  className: 'bnb-admin-required-field',
+                },
               },
             ],
           },
@@ -115,7 +143,7 @@ export const StarCards: CollectionConfig = {
       },
     ]),
     ...sidebarFields([
-      centersField,
+      starCardCentersField,
       {
         name: 'displayStatus',
         type: 'select',

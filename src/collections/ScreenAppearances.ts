@@ -123,7 +123,7 @@ const validateLinkedProfiles: Validate<
   unknown,
   ScreenAppearanceData
 > = (value, { siblingData }) => {
-  if (siblingData.actorInputMode === "manual") {
+  if (siblingData?.actorInputMode === "manual") {
     return true;
   }
 
@@ -132,12 +132,24 @@ const validateLinkedProfiles: Validate<
     : "프로필 선택 방식에서는 연결된 프로필을 선택해야 합니다.";
 };
 
+const validateScreenAppearanceCenter: Validate<
+  unknown,
+  unknown,
+  ScreenAppearanceData
+> = (value) => {
+  const center = Array.isArray(value) ? value[0] : value;
+
+  return typeof center === "string" && center.trim()
+    ? true
+    : "센터를 선택해야 합니다.";
+};
+
 const validateManualPerformerName: Validate<
   string,
   unknown,
   ScreenAppearanceData
 > = (value, { siblingData }) => {
-  if (siblingData.actorInputMode !== "manual") {
+  if (siblingData?.actorInputMode !== "manual") {
     return true;
   }
 
@@ -195,9 +207,11 @@ export const ScreenAppearances: CollectionConfig = {
             hasMany: false,
             defaultValue: undefined,
             options: centerOptions,
+            validate: validateScreenAppearanceCenter,
             admin: {
+              className: "bnb-admin-required-field",
               isClearable: true,
-              placeholder: "선택해주세요.(미선택)",
+              placeholder: "선택해 주세요",
             },
           } as SelectField,
           {

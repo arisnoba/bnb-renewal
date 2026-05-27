@@ -3,7 +3,7 @@
 import type { ChangeEvent } from 'react'
 import type { ArrayFieldClientComponent } from 'payload'
 
-import { useField, useForm, useFormFields } from '@payloadcms/ui'
+import { FieldError, FieldLabel, useField, useForm, useFormFields } from '@payloadcms/ui'
 import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -158,7 +158,7 @@ function createRowId() {
 
 export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { disabled, path, rows = [] } = useField<number>({
+  const { disabled, path, rows = [], showError } = useField<number>({
     hasRows: true,
     path: 'bodyImages',
   })
@@ -342,16 +342,8 @@ export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
       }}
     >
       <div>
-        <div
-          style={{
-            color: 'var(--theme-text)',
-            fontSize: 13,
-            fontWeight: 600,
-            marginBottom: 8,
-          }}
-        >
-          이미지
-        </div>
+        <FieldLabel label="이미지" path={path} required />
+        <FieldError path={path} showError={showError} />
         <input
           accept="image/avif,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
           disabled={controlsDisabled}
@@ -367,7 +359,9 @@ export const StarCardBodyImagesField: ArrayFieldClientComponent = () => {
           onClick={() => inputRef.current?.click()}
           style={{
             background: 'var(--bnb-admin-upload-bg)',
-            border: '1px dashed var(--bnb-admin-upload-border)',
+            border: `1px dashed ${
+              showError ? 'var(--theme-error-500)' : 'var(--bnb-admin-upload-border)'
+            }`,
             borderRadius: 'var(--style-radius-s)',
             color: 'var(--bnb-admin-upload-text)',
             cursor: controlsDisabled ? 'not-allowed' : 'pointer',

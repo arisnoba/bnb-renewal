@@ -96,6 +96,7 @@ import * as migration_20260527_110000_teacher_name_slugs from './20260527_110000
 import * as migration_20260527_120000_collection_slug_cleanup from './20260527_120000_collection_slug_cleanup'
 import * as migration_20260527_121000_normalize_collection_slug_hyphens from './20260527_121000_normalize_collection_slug_hyphens'
 import * as migration_20260527_130000_curriculum_single_center_classes from './20260527_130000_curriculum_single_center_classes'
+import * as migration_20260527_140000_faq_status_and_answer_mode from './20260527_140000_faq_status_and_answer_mode'
 
 export const migrations = [
   {
@@ -587,5 +588,10 @@ export const migrations = [
     up: migration_20260527_130000_curriculum_single_center_classes.up,
     down: migration_20260527_130000_curriculum_single_center_classes.down,
     name: '20260527_130000_curriculum_single_center_classes',
+  },
+  {
+    up: migration_20260527_140000_faq_status_and_answer_mode.up,
+    down: migration_20260527_140000_faq_status_and_answer_mode.down,
+    name: '20260527_140000_faq_status_and_answer_mode',
   },
 ]
