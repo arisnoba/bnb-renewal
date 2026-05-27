@@ -1,6 +1,7 @@
 'use client';
 
 import type { SelectFieldClientComponent } from 'payload';
+import type { CSSProperties } from 'react';
 
 import { SelectField, useAuth, useField } from '@payloadcms/ui';
 
@@ -40,10 +41,14 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
 
   return (
     <div
-      style={{
-        display: 'grid',
-        width: '100%',
-      }}>
+      style={
+        {
+          '--field-width': '50%',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+        } as CSSProperties
+      }>
       <SelectField
         {...props}
         field={{
@@ -56,7 +61,7 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
           style={{
             color: 'var(--theme-error-500)',
             fontSize: 12,
-            margin: '-12px 0 0',
+            margin: '4px 0 0',
           }}>
           센터를 먼저 선택해 주세요.
         </p>
