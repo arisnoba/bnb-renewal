@@ -37,9 +37,9 @@ const publicTestPages = [
     label: '검색',
   },
   {
-    description: '저장 연결 전 오디션 지원 MVP 폼',
-    href: '/audition',
-    label: '오디션 지원하기',
+    description: '저장 연결 전 상담 신청 MVP 폼',
+    href: '/consult',
+    label: '상담하기',
   },
   {
     description: 'Payload FAQ 센터별 노출 테스트 화면',
