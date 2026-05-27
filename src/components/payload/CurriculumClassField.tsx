@@ -2,7 +2,7 @@
 
 import type { SelectFieldClientComponent } from 'payload';
 
-import { SelectField, useField } from '@payloadcms/ui';
+import { SelectField, useField, useFormFields } from '@payloadcms/ui';
 import { useEffect, useMemo } from 'react';
 
 import {
@@ -20,16 +20,14 @@ export const CurriculumClassField: SelectFieldClientComponent = props => {
   const { setValue, value } = useField<string>({
     potentiallyStalePath: props.path,
   });
-  const { value: centerValue } = useField<string>({
-    potentiallyStalePath: 'centers',
-  });
+  const centerValue = useFormFields(([fields]) => fields.centers?.value);
   const center = normalizeCenter(centerValue);
   const options = useMemo(
     () => (center ? curriculumClassOptionsByCenter[center] : []),
     [center],
   );
   const fieldValue = typeof value === 'string' ? value : '';
-  const showCenterMessage = !center;
+  const isDisabledUntilCenterSelected = !center;
 
   useEffect(() => {
     if (fieldValue && !options.some((option) => option.value === fieldValue)) {
@@ -38,25 +36,13 @@ export const CurriculumClassField: SelectFieldClientComponent = props => {
   }, [fieldValue, options, setValue]);
 
   return (
-    <>
     <SelectField
       {...props}
       field={{
         ...props.field,
         options,
       }}
-      readOnly={showCenterMessage}
+      readOnly={isDisabledUntilCenterSelected}
     />
-    {showCenterMessage ? (
-      <p
-        style={{
-          color: 'var(--theme-error-500)',
-          fontSize: 12,
-          marginTop: -12,
-        }}>
-        센터를 먼저 선택해야 합니다.
-      </p>
-    ) : null}
-    </>
   );
 };

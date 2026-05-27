@@ -2,7 +2,7 @@
 
 import type { SelectFieldClientComponent } from 'payload';
 
-import { SelectField, useAuth } from '@payloadcms/ui';
+import { SelectField, useAuth, useField } from '@payloadcms/ui';
 
 const validCenters = new Set(['art', 'exam', 'highteen', 'avenue']);
 
@@ -30,12 +30,20 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
   const { user } = useAuth();
   const userCenter = getUserCenter(user);
   const canEditCenter = isGlobalAdmin(user);
+  const { value } = useField<string>({
+    potentiallyStalePath: props.path,
+  });
   const options = canEditCenter
     ? props.field.options
     : props.field.options.filter((option) => typeof option === 'object' && option.value === userCenter);
+  const hasCenter = typeof value === 'string' && validCenters.has(value);
 
   return (
-    <>
+    <div
+      style={{
+        display: 'grid',
+        width: '100%',
+      }}>
       <SelectField
         {...props}
         field={{
@@ -43,6 +51,16 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
           options,
         }}
       />
+      {!hasCenter ? (
+        <p
+          style={{
+            color: 'var(--theme-error-500)',
+            fontSize: 12,
+            margin: '-12px 0 0',
+          }}>
+          센터를 먼저 선택해 주세요.
+        </p>
+      ) : null}
       {!canEditCenter ? (
         <p
           style={{
@@ -53,6 +71,6 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
           소속 센터만 선택할 수 있습니다.
         </p>
       ) : null}
-    </>
+    </div>
   );
 };

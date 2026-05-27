@@ -71,7 +71,7 @@ const validateCurriculumClass = (
   const center = normalizeCurriculumCenter(siblingData?.centers);
 
   if (!center) {
-    return "센터를 먼저 선택해야 합니다.";
+    return "센터를 먼저 선택해 주세요.";
   }
 
   const options = curriculumClassOptionsByCenter[center];
@@ -87,7 +87,7 @@ const validateCurriculumTeacher = (
   { siblingData }: { siblingData?: Record<string, unknown> },
 ) => {
   if (!normalizeCurriculumCenter(siblingData?.centers)) {
-    return "센터를 먼저 선택해야 합니다.";
+    return "센터를 먼저 선택해 주세요.";
   }
 
   return validateRequired(value);

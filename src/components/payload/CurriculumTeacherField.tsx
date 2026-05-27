@@ -2,7 +2,7 @@
 
 import type { RelationshipFieldClientComponent } from 'payload';
 
-import { RelationshipField, useField } from '@payloadcms/ui';
+import { RelationshipField, useFormFields } from '@payloadcms/ui';
 
 import type { CurriculumCenter } from '@/lib/curriculumOptions';
 
@@ -13,25 +13,9 @@ function normalizeCenter(value: unknown): CurriculumCenter | undefined {
 }
 
 export const CurriculumTeacherField: RelationshipFieldClientComponent = props => {
-  const { value: centerValue } = useField<string>({
-    potentiallyStalePath: 'centers',
-  });
+  const centerValue = useFormFields(([fields]) => fields.centers?.value);
   const center = normalizeCenter(centerValue);
-  const showCenterMessage = !center;
+  const isDisabledUntilCenterSelected = !center;
 
-  return (
-    <>
-      <RelationshipField {...props} readOnly={showCenterMessage} />
-      {showCenterMessage ? (
-        <p
-          style={{
-            color: 'var(--theme-error-500)',
-            fontSize: 12,
-            marginTop: -12,
-          }}>
-          센터를 먼저 선택해야 합니다.
-        </p>
-      ) : null}
-    </>
-  );
+  return <RelationshipField {...props} readOnly={isDisabledUntilCenterSelected} />;
 };
