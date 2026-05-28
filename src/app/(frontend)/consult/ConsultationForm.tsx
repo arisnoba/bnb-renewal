@@ -17,6 +17,12 @@ import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import FileUpload, {
+  DropZone,
+  FileError,
+  FileList,
+  type FileInfo,
+} from '@/components/ui/file-upload'
 import {
   Form,
   FormControl,
@@ -45,7 +51,7 @@ const inquiryTypes = [
   { label: '하이틴', value: 'highteen' },
   { label: '키즈', value: 'kids' },
   { label: '애비뉴', value: 'avenue' },
-  { label: '제휴', value: 'partnership' },
+  { label: '제휴문의', value: 'partnership' },
 ] satisfies Array<{ label: string; value: InquiryType }>
 
 const regions = [
@@ -102,6 +108,11 @@ const inflowSources = ['랜딩', '포털', 'SNS', '네이버카페', '지인소�
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 const optionalString = z.string().optional()
+const preferredDateTooEarlyMessage = '예약 희망일은 내일부터 선택해 주세요.'
+
+function requiresActingMajor(inquiryType: InquiryType | undefined) {
+  return inquiryType === 'art' || inquiryType === 'admission' || inquiryType === 'highteen'
+}
 
 const consultationFormSchema = z
   .object({
@@ -166,6 +177,12 @@ const consultationFormSchema = z
     }
 
     addRequiredIssue(context, values.preferredDate, 'preferredDate', '희망일을 선택해 주세요.')
+    if (
+      hasValue(values.preferredDate) &&
+      isDateInputBefore(values.preferredDate, getEarliestPreferredDateValue())
+    ) {
+      addIssue(context, 'preferredDate', preferredDateTooEarlyMessage)
+    }
     addRequiredIssue(context, values.preferredTime, 'preferredTime', '희망 시간을 선택해 주세요.')
     addRequiredIssue(context, values.applicantName, 'applicantName', '이름을 입력해 주세요.')
     addRequiredIssue(context, values.gender, 'gender', '성별을 선택해 주세요.')
@@ -192,7 +209,7 @@ const consultationFormSchema = z
       addRequiredIssue(context, values.schoolLevel, 'schoolLevel', '학교 구분을 선택해 주세요.')
     }
 
-    if (['art', 'admission', 'highteen'].includes(values.inquiryType)) {
+    if (requiresActingMajor(values.inquiryType)) {
       addRequiredIssue(
         context,
         values.actingMajor,
@@ -232,13 +249,13 @@ const ValidationFeedbackContext = createContext<{
 })
 
 export function ConsultationForm({ initialInquiryType }: { initialInquiryType: InquiryType }) {
-  const today = useMemo(() => toDateInputValue(new Date()), [])
+  const earliestPreferredDate = useMemo(() => getEarliestPreferredDateValue(), [])
   const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [validationErrors, setValidationErrors] = useState<ValidationErrorMessages>({})
   const form = useForm<ConsultationFormValues>({
-    defaultValues: getDefaultValues(initialInquiryType, today),
+    defaultValues: getDefaultValues(initialInquiryType, earliestPreferredDate),
     mode: 'onSubmit',
     reValidateMode: 'onChange',
     resolver: zodResolver(consultationFormSchema),
@@ -248,7 +265,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
   const inquiryType = form.watch('inquiryType') ?? initialInquiryType
   const inflowSource = form.watch('inflowSource')
   const isPartnership = inquiryType === 'partnership'
-  const needsActingMajor = ['art', 'admission', 'highteen'].includes(inquiryType)
+  const needsActingMajor = requiresActingMajor(inquiryType)
   const clearFieldError = useCallback((name: FieldPath<ConsultationFormValues>) => {
     setValidationErrors((currentErrors) => {
       if (!currentErrors[name]) {
@@ -270,11 +287,11 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
   )
 
   useEffect(() => {
-    form.reset(getDefaultValues(initialInquiryType, today))
+    form.reset(getDefaultValues(initialInquiryType, earliestPreferredDate))
     setSubmitted(false)
     setSubmitError(null)
     setValidationErrors({})
-  }, [form, initialInquiryType, today])
+  }, [earliestPreferredDate, form, initialInquiryType])
 
   const handleValidSubmit = async (
     _values: ConsultationFormValues,
@@ -368,40 +385,48 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 
       <section className="grid gap-5">
         <SectionHeading index="01" title="문의 유형" />
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" role="radiogroup">
-          {inquiryTypes.map((type) => {
-            const id = `inquiryType-${type.value}`
+        <FormField
+          control={form.control}
+          name="inquiryType"
+          render={({ field }) => (
+            <div
+              className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
+              role="radiogroup"
+            >
+              {inquiryTypes.map((type) => {
+                const id = `inquiryType-${type.value}`
 
-            return (
-              <div className="grid" key={type.value}>
-                <input
-                  checked={inquiryType === type.value}
-                  className="peer sr-only"
-                  id={id}
-                  name="inquiryType"
-                  onChange={() => {
-                    form.setValue('inquiryType', type.value, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    })
-                    resetSubmitFeedback()
-                  }}
-                  type="radio"
-                  value={type.value}
-                />
-                <Label
-                  className={cn(
-                    controlClassName,
-                    'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
-                  )}
-                  htmlFor={id}
-                >
-                  {type.label}
-                </Label>
-              </div>
-            )
-          })}
-        </div>
+                return (
+                  <div className="grid" key={type.value}>
+                    <input
+                      checked={field.value === type.value}
+                      className="peer sr-only"
+                      id={id}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      onChange={() => {
+                        field.onChange(type.value)
+                        resetSubmitFeedback()
+                      }}
+                      ref={field.ref}
+                      type="radio"
+                      value={type.value}
+                    />
+                    <Label
+                      className={cn(
+                        controlClassName,
+                        'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
+                      )}
+                      htmlFor={id}
+                    >
+                      {type.label}
+                    </Label>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        />
       </section>
 
       {isPartnership ? (
@@ -472,6 +497,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
               <TextInputField
                 control={form.control}
                 label="희망일"
+                min={earliestPreferredDate}
                 name="preferredDate"
                 required
                 type="date"
@@ -509,6 +535,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
               />
 
               <TextInputField
+                autoComplete="bday"
                 control={form.control}
                 inputMode="numeric"
                 label="생년월일"
@@ -619,10 +646,10 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
         </>
       )}
 
-      <section className="grid gap-4 rounded-lg border bg-card p-5">
+      <section className="flex gap-4 flex-col">
         <h2 className="text-lg font-semibold tracking-normal">개인정보 수집 및 이용 방침</h2>
         <div className="max-h-40 overflow-y-auto rounded-md border bg-background p-4 text-sm leading-6 text-muted-foreground">
-          회사는 상담 신청 확인과 안내를 위해 이름, 생년월일, 연락처, 거주지역, 문의 유형,
+          상담 신청 확인과 안내를 위해 이름, 생년월일, 연락처, 거주지역, 문의 유형,
           예약 희망일, 연기 경험 정보 또는 제휴 신청 정보를 수집합니다. 수집된 정보는 상담
           안내 및 문의 처리 목적으로만 사용되며, 이용 목적 달성 후 내부 보관 정책에 따라
           파기됩니다.
@@ -639,7 +666,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                   : undefined
               }
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <FormControl>
                   <Checkbox
                     aria-invalid={Boolean(
@@ -662,14 +689,12 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                   개인정보 수집 및 이용 방침에 동의합니다. <RequiredMark />
                 </FormLabel>
               </div>
-              <FormMessage>{getFieldMessage(validationErrors, 'privacyConsent')}</FormMessage>
             </FormItem>
           )}
         />
       </section>
 
-      <section className="grid gap-3 rounded-lg border bg-card p-5">
-        <h2 className="text-lg font-semibold tracking-normal">자동 제출 방지</h2>
+      <section className="flex flex-col items-center justify-center gap-3">
         {turnstileSiteKey ? (
           <>
             <Script
@@ -783,6 +808,16 @@ function FileInputField({
   required = false,
 }: ControlledFieldProps) {
   const { clearFieldError, errors } = useValidationFeedback()
+  const [uploadFiles, setUploadFiles] = useState<FileInfo[]>([])
+
+  const updateSelectedFiles = (
+    fieldOnChange: (value: File[] | undefined) => void,
+    files: FileInfo[],
+  ) => {
+    setUploadFiles(files)
+    fieldOnChange(files.length > 0 ? files.map((fileInfo) => fileInfo.file) : undefined)
+    clearFieldError(name)
+  }
 
   return (
     <FormField
@@ -796,22 +831,37 @@ function FileInputField({
           <FormLabel>
             {label} {required && <RequiredMark />}
           </FormLabel>
-          <FormControl>
-            <Input
-              aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
-              className={cn(
-                controlClassName,
-                getFieldMessage(errors, name) && invalidControlClassName,
-              )}
-              name={field.name}
-              onBlur={field.onBlur}
-              onChange={(event) => {
-                field.onChange(event.target.files)
-                clearFieldError(name)
+          <FileUpload
+            accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
+            files={uploadFiles}
+            maxCount={3}
+            maxSize={10}
+            multiple
+            onFileSelectChange={(files) => updateSelectedFiles(field.onChange, files)}
+          >
+            <FormControl>
+              <DropZone
+                className={cn(
+                  getFieldMessage(errors, name) && invalidControlClassName,
+                  (getFieldMessage(errors, name) || fieldState.invalid) &&
+                    'border-destructive/60',
+                )}
+                inputName={field.name}
+                onBlur={field.onBlur}
+                prompt="클릭하거나 파일을 끌어 놓아 첨부"
+              />
+            </FormControl>
+            <FileError />
+            <FileList
+              onClear={() => updateSelectedFiles(field.onChange, [])}
+              onRemove={(fileId) => {
+                updateSelectedFiles(
+                  field.onChange,
+                  uploadFiles.filter((file) => file.id !== fileId),
+                )
               }}
-              type="file"
             />
-          </FormControl>
+          </FileUpload>
           <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
         </FormItem>
       )}
@@ -953,6 +1003,7 @@ function RadioButtonGroup({
           </FormLabel>
           <div
             aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
+            aria-required={required || undefined}
             className="grid grid-cols-2 gap-2"
             role="radiogroup"
           >
@@ -972,6 +1023,7 @@ function RadioButtonGroup({
                       clearFieldError(name)
                     }}
                     ref={field.ref}
+                    required={required}
                     type="radio"
                     value={option.value}
                   />
@@ -1078,6 +1130,12 @@ function getVisibleValidationMessages(values: ConsultationFormValues) {
   }
 
   setVisibleMessage(messages, values.preferredDate, 'preferredDate', '희망일을 선택해 주세요.')
+  if (
+    hasValue(values.preferredDate) &&
+    isDateInputBefore(values.preferredDate, getEarliestPreferredDateValue())
+  ) {
+    messages.preferredDate = preferredDateTooEarlyMessage
+  }
   setVisibleMessage(messages, values.preferredTime, 'preferredTime', '희망 시간을 선택해 주세요.')
   setVisibleMessage(messages, values.applicantName, 'applicantName', '이름을 입력해 주세요.')
   setVisibleMessage(messages, values.gender, 'gender', '성별을 선택해 주세요.')
@@ -1104,7 +1162,7 @@ function getVisibleValidationMessages(values: ConsultationFormValues) {
     setVisibleMessage(messages, values.schoolLevel, 'schoolLevel', '학교 구분을 선택해 주세요.')
   }
 
-  if (['art', 'admission', 'highteen'].includes(values.inquiryType)) {
+  if (requiresActingMajor(values.inquiryType)) {
     setVisibleMessage(
       messages,
       values.actingMajor,
@@ -1145,7 +1203,10 @@ function setVisibleMessage(
   }
 }
 
-function getDefaultValues(inquiryType: InquiryType, today: string): ConsultationFormValues {
+function getDefaultValues(
+  inquiryType: InquiryType,
+  earliestPreferredDate: string,
+): ConsultationFormValues {
   return {
     actingMajor: '',
     applicantName: '',
@@ -1167,12 +1228,24 @@ function getDefaultValues(inquiryType: InquiryType, today: string): Consultation
     partnerPhone: '',
     partnershipContent: '',
     phone: '',
-    preferredDate: today,
+    preferredDate: earliestPreferredDate,
     preferredTime: '',
     privacyConsent: false,
     region: '',
     schoolLevel: '',
   }
+}
+
+function getEarliestPreferredDateValue(date = new Date()) {
+  return toDateInputValue(addDays(date, 1))
+}
+
+function addDays(date: Date, days: number) {
+  const nextDate = new Date(date)
+
+  nextDate.setDate(nextDate.getDate() + days)
+
+  return nextDate
 }
 
 function toDateInputValue(date: Date) {
@@ -1181,6 +1254,10 @@ function toDateInputValue(date: Date) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function isDateInputBefore(value: string, minValue: string) {
+  return /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) && value < minValue
 }
 
 function hasValue(value: string | undefined): value is string {
