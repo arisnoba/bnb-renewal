@@ -62,6 +62,7 @@ import { ExamPassedReviewInterviewRowLabel as ExamPassedReviewInterviewRowLabel_
 import { FaqAnswerVariantRowLabel as FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96 } from '@/components/payload/FaqAnswerVariantRowLabel'
 import { StarCardBodyImagesField as StarCardBodyImagesField_4651afda955252646e70363072999e1a } from '@/components/payload/StarCardBodyImagesField'
 import { StarCardBodyImageRowLabel as StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e } from '@/components/payload/StarCardBodyImageRowLabel'
+import { InquirySummaryField as InquirySummaryField_af4a424d7191079ec9ff3344f002f212 } from '@/components/payload/InquirySummaryField'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
 import { MainBannerOrderRowLabel as MainBannerOrderRowLabel_1367d5c7871b1fb50a0483d3ac77fa38 } from '@/Main/RowLabel'
@@ -133,6 +134,7 @@ export const importMap = {
   "@/components/payload/FaqAnswerVariantRowLabel#FaqAnswerVariantRowLabel": FaqAnswerVariantRowLabel_bcd55890f29df5d096364baff88a6b96,
   "@/components/payload/StarCardBodyImagesField#StarCardBodyImagesField": StarCardBodyImagesField_4651afda955252646e70363072999e1a,
   "@/components/payload/StarCardBodyImageRowLabel#StarCardBodyImageRowLabel": StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e,
+  "@/components/payload/InquirySummaryField#InquirySummaryField": InquirySummaryField_af4a424d7191079ec9ff3344f002f212,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
   "@/Main/RowLabel#MainBannerOrderRowLabel": MainBannerOrderRowLabel_1367d5c7871b1fb50a0483d3ac77fa38,

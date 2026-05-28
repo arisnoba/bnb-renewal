@@ -19,6 +19,7 @@ type R2ClientConfig = R2Config & {
 type UploadR2ObjectInput = {
   body: Buffer | Uint8Array;
   cacheControl?: string;
+  contentDisposition?: string;
   contentType: string;
   key: string;
 };
@@ -130,6 +131,7 @@ export async function uploadR2Object(input: UploadR2ObjectInput) {
       Body: input.body,
       Bucket: config.bucket,
       CacheControl: input.cacheControl,
+      ContentDisposition: input.contentDisposition,
       ContentType: input.contentType,
       Key: input.key,
     }),

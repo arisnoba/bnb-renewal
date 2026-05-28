@@ -50,7 +50,7 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
         <div className="container grid gap-5 py-8 md:grid-cols-3">
           <InfoItem label="문의유형" value="아트 · 입시 · 하이틴 · 키즈 · 애비뉴 · 제휴" />
           <InfoItem label="예약방식" value="희망일과 시간 선택" />
-          <InfoItem label="진행상태" value="저장 API 연결 전 입력 흐름 검증" />
+          <InfoItem label="진행상태" value="상담 문의 저장 연결" />
         </div>
       </section>
 

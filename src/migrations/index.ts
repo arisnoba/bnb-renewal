@@ -99,6 +99,8 @@ import * as migration_20260527_130000_curriculum_single_center_classes from './2
 import * as migration_20260527_140000_faq_status_and_answer_mode from './20260527_140000_faq_status_and_answer_mode'
 import * as migration_20260527_200000_inquiries from './20260527_200000_inquiries'
 import * as migration_20260527_201000_inquiry_birth_date_text from './20260527_201000_inquiry_birth_date_text'
+import * as migration_20260528_120000_inquiry_privacy_consent_at from './20260528_120000_inquiry_privacy_consent_at'
+import * as migration_20260528_121000_inquiry_attachment_r2_link from './20260528_121000_inquiry_attachment_r2_link'
 import * as migration_20260528_130000_main_global from './20260528_130000_main_global'
 
 export const migrations = [
@@ -606,6 +608,16 @@ export const migrations = [
     up: migration_20260527_201000_inquiry_birth_date_text.up,
     down: migration_20260527_201000_inquiry_birth_date_text.down,
     name: '20260527_201000_inquiry_birth_date_text',
+  },
+  {
+    up: migration_20260528_120000_inquiry_privacy_consent_at.up,
+    down: migration_20260528_120000_inquiry_privacy_consent_at.down,
+    name: '20260528_120000_inquiry_privacy_consent_at',
+  },
+  {
+    up: migration_20260528_121000_inquiry_attachment_r2_link.up,
+    down: migration_20260528_121000_inquiry_attachment_r2_link.down,
+    name: '20260528_121000_inquiry_attachment_r2_link',
   },
   {
     up: migration_20260528_130000_main_global.up,

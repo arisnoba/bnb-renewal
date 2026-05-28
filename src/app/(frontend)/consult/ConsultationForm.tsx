@@ -9,10 +9,10 @@ import {
   useEffect,
   useMemo,
   useState,
-  type BaseSyntheticEvent,
   type InputHTMLAttributes,
 } from 'react'
 import { useForm, type Control, type FieldErrors, type FieldPath } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -109,6 +109,23 @@ const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 const optionalString = z.string().optional()
 const preferredDateTooEarlyMessage = '예약 희망일은 내일부터 선택해 주세요.'
+const turnstileRequiredMessage = '자동 제출 방지 확인을 완료해 주세요.'
+const birthDateFormatMessage = '생년월일은 19870725 형식의 숫자 8자로 입력해 주세요.'
+const birthDateInvalidMessage = '실제 생년월일을 입력해 주세요.'
+const birthDateFutureMessage = '생년월일은 오늘 이후 날짜를 입력할 수 없습니다.'
+const koreanPhoneMessage = '연락처는 국내 전화번호 형식으로 입력해 주세요.'
+const phoneFieldNames = new Set(['guardianPhone', 'partnerPhone', 'phone'])
+
+declare global {
+  interface Window {
+    consultTurnstileError?: () => void
+    consultTurnstileExpired?: () => void
+    consultTurnstileSuccess?: (token: string) => void
+    turnstile?: {
+      reset?: () => void
+    }
+  }
+}
 
 function requiresActingMajor(inquiryType: InquiryType | undefined) {
   return inquiryType === 'art' || inquiryType === 'admission' || inquiryType === 'highteen'
@@ -169,6 +186,10 @@ const consultationFormSchema = z
         addIssue(context, 'partnerEmail', '올바른 이메일 주소를 입력해 주세요.')
       }
 
+      if (hasValue(values.partnerPhone) && !isValidKoreanPhoneNumber(values.partnerPhone)) {
+        addIssue(context, 'partnerPhone', koreanPhoneMessage)
+      }
+
       if (hasValue(values.companyWebsite) && !isValidUrl(values.companyWebsite)) {
         addIssue(context, 'companyWebsite', '올바른 홈페이지 주소를 입력해 주세요.')
       }
@@ -197,8 +218,15 @@ const consultationFormSchema = z
     addRequiredIssue(context, values.hasTraining, 'hasTraining', '트레이닝 경험을 선택해 주세요.')
     addRequiredIssue(context, values.inflowSource, 'inflowSource', '유입경로를 선택해 주세요.')
 
-    if (hasValue(values.birthDate) && !/^[0-9]{8}$/.test(values.birthDate)) {
-      addIssue(context, 'birthDate', '생년월일은 19870725 형식의 숫자 8자로 입력해 주세요.')
+    const birthDateMessage = getBirthDateValidationMessage(values.birthDate)
+    if (birthDateMessage) {
+      addIssue(context, 'birthDate', birthDateMessage)
+    }
+
+    const contactPath = values.inquiryType === 'kids' ? 'guardianPhone' : 'phone'
+    const contactValue = values.inquiryType === 'kids' ? values.guardianPhone : values.phone
+    if (hasValue(contactValue) && !isValidKoreanPhoneNumber(contactValue)) {
+      addIssue(context, contactPath, koreanPhoneMessage)
     }
 
     if (values.inquiryType === 'admission') {
@@ -243,16 +271,19 @@ type ValidationErrorMessages = Partial<Record<FieldPath<ConsultationFormValues>,
 const ValidationFeedbackContext = createContext<{
   clearFieldError: (name: FieldPath<ConsultationFormValues>) => void
   errors: ValidationErrorMessages
+  setFieldError: (name: FieldPath<ConsultationFormValues>, message: string) => void
 }>({
   clearFieldError: () => {},
   errors: {},
+  setFieldError: () => {},
 })
 
 export function ConsultationForm({ initialInquiryType }: { initialInquiryType: InquiryType }) {
   const earliestPreferredDate = useMemo(() => getEarliestPreferredDateValue(), [])
-  const [submitted, setSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formResetKey, setFormResetKey] = useState(0)
+  const [turnstileToken, setTurnstileToken] = useState('')
   const [validationErrors, setValidationErrors] = useState<ValidationErrorMessages>({})
   const form = useForm<ConsultationFormValues>({
     defaultValues: getDefaultValues(initialInquiryType, earliestPreferredDate),
@@ -278,26 +309,61 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       return nextErrors
     })
   }, [])
+  const setFieldError = useCallback((name: FieldPath<ConsultationFormValues>, message: string) => {
+    setValidationErrors((currentErrors) => {
+      if (currentErrors[name] === message) {
+        return currentErrors
+      }
+
+      return {
+        ...currentErrors,
+        [name]: message,
+      }
+    })
+  }, [])
   const validationFeedback = useMemo(
     () => ({
       clearFieldError,
       errors: validationErrors,
+      setFieldError,
     }),
-    [clearFieldError, validationErrors],
+    [clearFieldError, setFieldError, validationErrors],
   )
 
   useEffect(() => {
     form.reset(getDefaultValues(initialInquiryType, earliestPreferredDate))
-    setSubmitted(false)
     setSubmitError(null)
     setValidationErrors({})
   }, [earliestPreferredDate, form, initialInquiryType])
 
-  const handleValidSubmit = async (
-    _values: ConsultationFormValues,
-    event?: BaseSyntheticEvent,
-  ) => {
-    setSubmitted(false)
+  useEffect(() => {
+    window.consultTurnstileSuccess = (token: string) => {
+      setTurnstileToken(token)
+      setSubmitError((currentError) =>
+        currentError === turnstileRequiredMessage ? null : currentError,
+      )
+    }
+    window.consultTurnstileExpired = () => {
+      setTurnstileToken('')
+    }
+    window.consultTurnstileError = () => {
+      setTurnstileToken('')
+      setSubmitError('자동 제출 방지 확인 중 오류가 발생했습니다. 다시 시도해 주세요.')
+    }
+
+    return () => {
+      delete window.consultTurnstileSuccess
+      delete window.consultTurnstileExpired
+      delete window.consultTurnstileError
+    }
+  }, [])
+
+  const resetTurnstile = useCallback(() => {
+    setTurnstileToken('')
+    window.turnstile?.reset?.()
+  }, [])
+
+  const handleValidSubmit = async (values: ConsultationFormValues) => {
     setSubmitError(null)
     setValidationErrors({})
 
@@ -306,34 +372,36 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       return
     }
 
-    const formElement = event?.currentTarget as HTMLFormElement | undefined
-    const formData = formElement ? new FormData(formElement) : null
-    const turnstileToken = formData?.get('cf-turnstile-response')
-
-    if (typeof turnstileToken !== 'string' || !turnstileToken.trim()) {
-      setSubmitError('자동 제출 방지 확인을 완료해 주세요.')
+    if (!turnstileToken.trim()) {
+      setSubmitError(turnstileRequiredMessage)
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/turnstile', {
-        body: JSON.stringify({ token: turnstileToken }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch('/api/consult', {
+        body: toConsultFormData(values, turnstileToken),
         method: 'POST',
       })
 
       if (!response.ok) {
-        setSubmitError('자동 제출 방지 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+        setSubmitError('상담 신청 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+        resetTurnstile()
         return
       }
 
-      setSubmitted(true)
+      form.reset(getDefaultValues(initialInquiryType, getEarliestPreferredDateValue()))
+      setFormResetKey((currentKey) => currentKey + 1)
+      setValidationErrors({})
+      setSubmitError(null)
+      resetTurnstile()
+      toast.success('상담 신청이 접수되었습니다.', {
+        description: '담당자가 확인 후 연락드리겠습니다.',
+      })
     } catch {
-      setSubmitError('자동 제출 방지 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
+      setSubmitError('상담 신청 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')
+      resetTurnstile()
     } finally {
       setIsSubmitting(false)
     }
@@ -343,7 +411,6 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
     const visibleMessages = getVisibleValidationMessages(form.getValues())
     const parsedValues = consultationFormSchema.safeParse(form.getValues())
 
-    setSubmitted(false)
     setValidationErrors(
       Object.keys(visibleMessages).length > 0
         ? visibleMessages
@@ -355,10 +422,6 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
   }
 
   const resetSubmitFeedback = () => {
-    if (submitted) {
-      setSubmitted(false)
-    }
-
     if (submitError) {
       setSubmitError(null)
     }
@@ -374,15 +437,6 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           onChange={resetSubmitFeedback}
           onSubmit={form.handleSubmit(handleValidSubmit, handleInvalidSubmit)}
         >
-      {submitted && (
-        <div
-          className="rounded-lg border border-success bg-success/30 px-4 py-3 text-sm font-medium"
-          role="status"
-        >
-          상담 신청 입력값이 확인되었습니다. 저장 API 연결 후 실제 접수로 전환됩니다.
-        </div>
-      )}
-
       <section className="grid gap-5">
         <SectionHeading index="01" title="문의 유형" />
         <FormField
@@ -432,7 +486,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       {isPartnership ? (
         <section className="grid gap-5">
           <SectionHeading index="02" title="제휴 신청" />
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid items-start gap-5 md:grid-cols-2">
             <TextInputField control={form.control} label="회사명" name="companyName" required />
 
             <TextInputField
@@ -474,6 +528,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
             />
 
             <FileInputField
+              key={`attachment-${formResetKey}`}
               className="md:col-span-2"
               control={form.control}
               label="첨부파일"
@@ -493,7 +548,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
         <>
           <section className="grid gap-5">
             <SectionHeading index="02" title="상담 예약" />
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid items-start gap-5 md:grid-cols-2">
               <TextInputField
                 control={form.control}
                 label="희망일"
@@ -517,7 +572,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 
           <section className="grid gap-5">
             <SectionHeading index="03" title="신청자 정보" />
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid items-start gap-5 md:grid-cols-2">
               <TextInputField
                 autoComplete="name"
                 control={form.control}
@@ -591,7 +646,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 
           <section className="grid gap-5">
             <SectionHeading index="04" title="연기 경험 정보" />
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid items-start gap-5 md:grid-cols-2">
               {needsActingMajor && (
                 <RadioButtonGroup
                   control={form.control}
@@ -705,6 +760,9 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
             />
             <div
               className="cf-turnstile min-h-16"
+              data-callback="consultTurnstileSuccess"
+              data-error-callback="consultTurnstileError"
+              data-expired-callback="consultTurnstileExpired"
               data-language="ko"
               data-sitekey={turnstileSiteKey}
               data-theme="light"
@@ -726,10 +784,10 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           role={submitError ? 'alert' : undefined}
         >
           {submitError ??
-            '저장 API 연결 전 입력 흐름을 검증하며, 제출 전 자동 제출 방지 확인을 진행합니다.'}
+            '제출 전 자동 제출 방지 확인을 진행한 뒤 상담 문의로 저장됩니다.'}
         </p>
         <Button className="h-12 px-8 text-base" disabled={isSubmitting} type="submit">
-          {isSubmitting ? '확인 중' : '상담 신청 입력 확인'}
+          {isSubmitting ? '접수 중' : '상담 신청 접수'}
         </Button>
       </div>
         </form>
@@ -763,16 +821,19 @@ function TextInputField({
   required = false,
   ...inputProps
 }: ControlledFieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, 'name'>) {
-  const { clearFieldError, errors } = useValidationFeedback()
+  const { clearFieldError, errors, setFieldError } = useValidationFeedback()
 
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
+      render={({ field }) => {
+        const fieldMessage = getFieldMessage(errors, name)
+
+        return (
         <FormItem
           className={className}
-          data-invalid={getFieldMessage(errors, name) || fieldState.invalid ? '' : undefined}
+          data-invalid={fieldMessage ? '' : undefined}
         >
           <FormLabel>
             {label} {required && <RequiredMark />}
@@ -781,11 +842,16 @@ function TextInputField({
             <Input
               {...inputProps}
               {...field}
-              aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
-              className={cn(
-                controlClassName,
-                getFieldMessage(errors, name) && invalidControlClassName,
-              )}
+              aria-invalid={Boolean(fieldMessage)}
+              className={cn(controlClassName, fieldMessage && invalidControlClassName)}
+              onBlur={(event) => {
+                field.onBlur()
+                const message = getSoftInputValidationMessage(name, event.currentTarget.value)
+
+                if (message) {
+                  setFieldError(name, message)
+                }
+              }}
               onChange={(event) => {
                 field.onChange(event)
                 clearFieldError(name)
@@ -793,9 +859,10 @@ function TextInputField({
               value={typeof field.value === 'string' ? field.value : ''}
             />
           </FormControl>
-          <FormMessage>{getFieldMessage(errors, name)}</FormMessage>
+          <FormMessage>{fieldMessage}</FormMessage>
         </FormItem>
-      )}
+        )
+      }}
     />
   )
 }
@@ -834,9 +901,8 @@ function FileInputField({
           <FileUpload
             accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
             files={uploadFiles}
-            maxCount={3}
+            maxCount={1}
             maxSize={10}
-            multiple
             onFileSelectChange={(files) => updateSelectedFiles(field.onChange, files)}
           >
             <FormControl>
@@ -1122,6 +1188,10 @@ function getVisibleValidationMessages(values: ConsultationFormValues) {
       messages.partnerEmail = '올바른 이메일 주소를 입력해 주세요.'
     }
 
+    if (hasValue(values.partnerPhone) && !isValidKoreanPhoneNumber(values.partnerPhone)) {
+      messages.partnerPhone = koreanPhoneMessage
+    }
+
     if (hasValue(values.companyWebsite) && !isValidUrl(values.companyWebsite)) {
       messages.companyWebsite = '올바른 홈페이지 주소를 입력해 주세요.'
     }
@@ -1150,8 +1220,15 @@ function getVisibleValidationMessages(values: ConsultationFormValues) {
   setVisibleMessage(messages, values.hasTraining, 'hasTraining', '트레이닝 경험을 선택해 주세요.')
   setVisibleMessage(messages, values.inflowSource, 'inflowSource', '유입경로를 선택해 주세요.')
 
-  if (hasValue(values.birthDate) && !/^[0-9]{8}$/.test(values.birthDate)) {
-    messages.birthDate = '생년월일은 19870725 형식의 숫자 8자로 입력해 주세요.'
+  const birthDateMessage = getBirthDateValidationMessage(values.birthDate)
+  if (birthDateMessage) {
+    messages.birthDate = birthDateMessage
+  }
+
+  const contactPath = values.inquiryType === 'kids' ? 'guardianPhone' : 'phone'
+  const contactValue = values.inquiryType === 'kids' ? values.guardianPhone : values.phone
+  if (hasValue(contactValue) && !isValidKoreanPhoneNumber(contactValue)) {
+    messages[contactPath] = koreanPhoneMessage
   }
 
   if (values.inquiryType === 'admission') {
@@ -1236,6 +1313,36 @@ function getDefaultValues(
   }
 }
 
+function toConsultFormData(values: ConsultationFormValues, turnstileToken: string) {
+  const formData = new FormData()
+  const attachments = Array.isArray(values.attachment) ? values.attachment : []
+
+  formData.set('cf-turnstile-response', turnstileToken)
+
+  for (const [key, value] of Object.entries(values)) {
+    if (key === 'attachment' || value === undefined || value === null) {
+      continue
+    }
+
+    if (typeof value === 'boolean') {
+      formData.set(key, String(value))
+      continue
+    }
+
+    if (typeof value === 'string' && value.trim()) {
+      formData.set(key, phoneFieldNames.has(key) ? normalizePhoneNumber(value) : value.trim())
+    }
+  }
+
+  for (const file of attachments) {
+    if (file instanceof File) {
+      formData.append('attachment', file)
+    }
+  }
+
+  return formData
+}
+
 function getEarliestPreferredDateValue(date = new Date()) {
   return toDateInputValue(addDays(date, 1))
 }
@@ -1258,6 +1365,82 @@ function toDateInputValue(date: Date) {
 
 function isDateInputBefore(value: string, minValue: string) {
   return /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) && value < minValue
+}
+
+function getSoftInputValidationMessage(name: FieldPath<ConsultationFormValues>, value: string) {
+  if (!hasValue(value)) {
+    return null
+  }
+
+  if (name === 'birthDate') {
+    const digits = normalizePhoneNumber(value)
+
+    return digits.length >= 8 ? getBirthDateValidationMessage(value) : null
+  }
+
+  if (phoneFieldNames.has(name)) {
+    const digits = normalizePhoneNumber(value)
+
+    return digits.length >= 8 && !isValidKoreanPhoneNumber(value) ? koreanPhoneMessage : null
+  }
+
+  return null
+}
+
+function getBirthDateValidationMessage(value: string | undefined) {
+  if (!hasValue(value)) {
+    return null
+  }
+
+  if (!/^[0-9]{8}$/.test(value)) {
+    return birthDateFormatMessage
+  }
+
+  const year = Number(value.slice(0, 4))
+  const month = Number(value.slice(4, 6))
+  const day = Number(value.slice(6, 8))
+
+  if (year < 1900 || !isValidDateParts(year, month, day)) {
+    return birthDateInvalidMessage
+  }
+
+  const birthDate = new Date(year, month - 1, day)
+  const today = new Date()
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+  if (birthDate > todayDate) {
+    return birthDateFutureMessage
+  }
+
+  return null
+}
+
+function isValidDateParts(year: number, month: number, day: number) {
+  const date = new Date(year, month - 1, day)
+
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+}
+
+function normalizePhoneNumber(value: string) {
+  return value.replace(/\D/g, '')
+}
+
+function isValidKoreanPhoneNumber(value: string) {
+  const trimmedValue = value.trim()
+
+  if (!/^[0-9\s-]+$/.test(trimmedValue)) {
+    return false
+  }
+
+  const digits = normalizePhoneNumber(trimmedValue)
+
+  return (
+    /^01[016789][0-9]{7,8}$/.test(digits) ||
+    /^02[0-9]{7,8}$/.test(digits) ||
+    /^0(?:3[1-3]|4[1-4]|5[1-5]|6[1-4])[0-9]{7,8}$/.test(digits) ||
+    /^0(?:50[0-9]|70|80)[0-9]{7,8}$/.test(digits) ||
+    /^1[568][0-9]{6}$/.test(digits)
+  )
 }
 
 function hasValue(value: string | undefined): value is string {
