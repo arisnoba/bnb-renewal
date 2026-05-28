@@ -12,6 +12,9 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { MainBannerSection } from '@/Main/BannerSection'
+import type { CenterSlug } from '@/lib/centers'
+import type { Main } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,6 +71,12 @@ type Args = {
   }>
 }
 
+const centerSlugs = ['art', 'exam', 'kids', 'highteen', 'avenue'] as const
+
+function centerFromSlug(slug: string): CenterSlug | null {
+  return centerSlugs.includes(slug as CenterSlug) ? (slug as CenterSlug) : null
+}
+
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = 'home' } = await paramsPromise
@@ -93,6 +102,8 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   const { hero, layout } = page
+  const center = centerFromSlug(decodedSlug)
+  const main = center ? await queryMainGlobal() : null
 
   return (
     <article className="pt-16 pb-24">
@@ -100,11 +111,25 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
+      {center && <MainBannerSection center={center} main={main} />}
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} />
     </article>
   )
 }
+
+const queryMainGlobal = cache(async () => {
+  try {
+    const payload = await getPayload({ config: configPromise })
+
+    return (await payload.findGlobal({
+      slug: 'main',
+      depth: 2,
+    })) as Main
+  } catch {
+    return null
+  }
+})
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()

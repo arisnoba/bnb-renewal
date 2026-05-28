@@ -20,6 +20,7 @@ import { ExamResults } from './src/collections/ExamResults'
 import { ExamSchoolLogos } from './src/collections/ExamSchoolLogos'
 import { Faqs } from './src/collections/Faqs'
 import { Histories } from './src/collections/Histories'
+import { MainBanners } from './src/collections/MainBanners'
 import { Media } from './src/collections/Media'
 import { News } from './src/collections/News'
 import { Pages } from './src/collections/Pages'
@@ -33,6 +34,7 @@ import { applyAdminTimestampFields } from './src/collections/adminTimestampField
 import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoints'
 import { Footer } from './src/Footer/config'
 import { Header } from './src/Header/config'
+import { Main } from './src/Main/config'
 import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
@@ -99,6 +101,7 @@ export default buildConfig({
       News,
       Faqs,
       StarCards,
+      MainBanners,
       Inquiries,
       Users,
       Pages,
@@ -113,7 +116,7 @@ export default buildConfig({
     },
   }),
   editor: defaultLexical,
-  globals: [Header, Footer],
+  globals: [Header, Main, Footer],
   plugins,
   routes: {
     admin: '/admin',
