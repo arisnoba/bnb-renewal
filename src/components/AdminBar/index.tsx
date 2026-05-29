@@ -3,7 +3,7 @@
 import type { PayloadAdminBarProps, PayloadMeUser } from '@payloadcms/admin-bar'
 
 import { cn } from '@/utilities/ui'
-import { useSelectedLayoutSegments } from 'next/navigation'
+import Link from 'next/link'
 import { PayloadAdminBar } from '@payloadcms/admin-bar'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -14,20 +14,13 @@ import { getClientSideURL } from '@/utilities/getURL'
 
 const baseClass = 'admin-bar'
 
-const collectionLabels = {
-  pages: {
-    plural: 'Pages',
-    singular: 'Page',
-  },
-  posts: {
-    plural: 'Posts',
-    singular: 'Post',
-  },
-  projects: {
-    plural: 'Projects',
-    singular: 'Project',
-  },
-}
+const centerLinks = [
+  { href: '/art', label: '아트' },
+  { href: '/exam', label: '입시' },
+  { href: '/kids', label: '키즈' },
+  { href: '/highteen', label: '하이틴' },
+  { href: '/avenue', label: '애비뉴' },
+]
 
 const Title: React.FC = () => <span>Dashboard</span>
 
@@ -35,11 +28,7 @@ export const AdminBar: React.FC<{
   adminBarProps?: PayloadAdminBarProps
 }> = (props) => {
   const { adminBarProps } = props || {}
-  const segments = useSelectedLayoutSegments()
   const [show, setShow] = useState(false)
-  const collection = (
-    collectionLabels[segments?.[1] as keyof typeof collectionLabels] ? segments[1] : 'pages'
-  ) as keyof typeof collectionLabels
   const router = useRouter()
 
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
@@ -53,21 +42,28 @@ export const AdminBar: React.FC<{
         hidden: !show,
       })}
     >
-      <div className="container">
+      <div className="container flex flex-wrap items-center gap-x-4 gap-y-2">
+        <nav aria-label="센터 바로가기" className="flex flex-wrap items-center gap-2 text-xs">
+          {centerLinks.map((link) => (
+            <Link
+              className="rounded border border-white/30 px-2 py-1 text-white no-underline transition hover:border-white hover:bg-white/10"
+              href={link.href}
+              key={link.href}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
         <PayloadAdminBar
           {...adminBarProps}
-          className="py-2 text-white"
+          className="min-w-0 flex-1 py-2 text-white"
           classNames={{
             controls: 'font-medium text-white',
             logo: 'text-white',
             user: 'text-white',
           }}
           cmsURL={getClientSideURL()}
-          collectionSlug={collection}
-          collectionLabels={{
-            plural: collectionLabels[collection]?.plural || 'Pages',
-            singular: collectionLabels[collection]?.singular || 'Page',
-          }}
+          collectionSlug={undefined}
           logo={<Title />}
           onAuthChange={onAuthChange}
           onPreviewExit={() => {
