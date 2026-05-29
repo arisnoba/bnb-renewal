@@ -2,6 +2,7 @@
 
 import type { Media } from '@/payload-types'
 
+import Link from 'next/link'
 import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -15,7 +16,13 @@ export type MainBannerSlide = {
   desktopVideo?: Media | number | string | null
   mobileImage?: Media | number | string | null
   mobileVideo?: Media | number | string | null
+  marqueeItems?: MainBannerMarqueeItem[]
   title?: string | null
+}
+
+export type MainBannerMarqueeItem = {
+  href: string
+  label: string
 }
 
 type MainBannerSliderProps = {
@@ -84,6 +91,7 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
   const title = String(banner.title ?? '').trim()
   const broadcaster = String(banner.broadcaster ?? '').trim()
   const description = String(banner.description ?? '').trim()
+  const marqueeItems = banner.marqueeItems ?? []
 
   return (
     <section
@@ -94,7 +102,12 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
     >
       <BannerVisual banner={banner} />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.68),rgba(0,0,0,0.22)_52%,rgba(0,0,0,0.08))]" />
-      <div className="container relative z-10 flex min-h-[520px] items-end pb-14 pt-20 md:min-h-[640px] md:pb-20">
+      <div
+        className={cn(
+          'container relative z-10 flex min-h-[520px] items-end pt-20 md:min-h-[640px]',
+          marqueeItems.length > 0 ? 'pb-28 md:pb-32' : 'pb-14 md:pb-20',
+        )}
+      >
         <div className="max-w-3xl">
           {broadcaster && (
             <p className="mb-4 text-sm font-semibold uppercase text-white/70">
@@ -109,7 +122,29 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
           )}
         </div>
       </div>
+      {marqueeItems.length > 0 && <BannerMarquee items={marqueeItems} />}
     </section>
+  )
+}
+
+function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
+  return (
+    <div className="absolute inset-x-0 bottom-0 z-20 border-t border-white/15 bg-black/35 text-white backdrop-blur-sm">
+      <div className="container overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-max min-w-full gap-2 pr-4">
+          {items.map((item, index) => (
+            <Link
+              aria-label={item.label}
+              className="inline-flex h-10 max-w-[76vw] shrink-0 items-center rounded-full border border-white/20 bg-white/10 px-4 text-sm font-medium text-white transition-colors hover:border-white/45 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:max-w-none"
+              href={item.href}
+              key={`${item.href}-${item.label}-${index}`}
+            >
+              <span className="truncate whitespace-nowrap">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 

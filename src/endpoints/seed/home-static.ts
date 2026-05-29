@@ -86,3 +86,31 @@ export const homeStatic: RequiredDataFromCollectionSlug<'pages'> = {
   title: 'Home',
   layout: [],
 }
+
+const centerTitleBySlug = {
+  art: '아트센터',
+  avenue: '애비뉴센터',
+  exam: '입시센터',
+  highteen: '하이틴센터',
+  kids: '키즈센터',
+} as const
+
+export function centerStaticPage(
+  slug: keyof typeof centerTitleBySlug,
+): RequiredDataFromCollectionSlug<'pages'> {
+  const title = centerTitleBySlug[slug]
+
+  return {
+    ...homeStatic,
+    hero: {
+      type: 'none',
+    },
+    layout: [],
+    meta: {
+      description: `${title} 메인 페이지`,
+      title,
+    },
+    slug,
+    title,
+  }
+}

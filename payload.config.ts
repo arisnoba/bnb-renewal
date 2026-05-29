@@ -33,7 +33,6 @@ import { Users } from './src/collections/Users'
 import { applyAdminTimestampFields } from './src/collections/adminTimestampFields'
 import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoints'
 import { Footer } from './src/Footer/config'
-import { Header } from './src/Header/config'
 import { Main } from './src/Main/config'
 import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
@@ -116,7 +115,7 @@ export default buildConfig({
     },
   }),
   editor: defaultLexical,
-  globals: [Header, Main, Footer],
+  globals: [Main, Footer],
   plugins,
   routes: {
     admin: '/admin',

@@ -9,6 +9,7 @@ type NamedField = Field & {
   name: string
   admin?: {
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => unknown
+    position?: unknown
   }
   defaultValue?: unknown
   fields?: Field[]
@@ -62,6 +63,8 @@ function getField(collection: CollectionConfig, fieldName: string) {
 
 test('main banners are managed as center-scoped posts', () => {
   assert.equal(MainBanners.slug, 'main-banners')
+  assert.equal(MainBanners.labels?.plural, '메인 배너 등록')
+  assert.equal(MainBanners.labels?.singular, '메인 배너 등록')
   assert.equal(MainBanners.admin?.group, '글로벌')
   assert.equal(MainBanners.admin?.useAsTitle, 'title')
   assert.deepEqual(MainBanners.admin?.defaultColumns, [
@@ -86,6 +89,20 @@ test('main banners are managed as center-scoped posts', () => {
     getField(MainBanners, 'linkedExamReviews').admin?.condition?.({}, { center: 'exam' }),
     true,
   )
+})
+
+test('main banners expose center at the top of linked content tab', async () => {
+  const linkedContentTab = getTabs(MainBanners).find((tab) => tab.label === '연결 콘텐츠')
+
+  assert.ok(linkedContentTab, '연결 콘텐츠 탭이 있어야 합니다.')
+
+  const [center] = linkedContentTab.fields as NamedField[]
+
+  assert.equal(center?.name, 'center')
+  assert.equal(center.type, 'select')
+  assert.equal(center.label, '센터')
+  assert.equal(center.admin?.position, undefined)
+  assert.equal(await center.validate?.('', {}), '센터를 선택해야 합니다.')
 })
 
 test('main banners validate required fields and reservation range', async () => {

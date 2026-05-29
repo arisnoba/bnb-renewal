@@ -5,7 +5,7 @@ import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import React, { cache } from 'react'
-import { homeStatic } from '@/endpoints/seed/home-static'
+import { centerStaticPage, homeStatic } from '@/endpoints/seed/home-static'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
@@ -77,6 +77,10 @@ function centerFromSlug(slug: string): CenterSlug | null {
   return centerSlugs.includes(slug as CenterSlug) ? (slug as CenterSlug) : null
 }
 
+function centerContentAnchor(center: CenterSlug) {
+  return center === 'exam' ? 'exam-passed-reviews' : 'profiles'
+}
+
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = 'home' } = await paramsPromise
@@ -97,12 +101,17 @@ export default async function Page({ params: paramsPromise }: Args) {
     page = homeStatic
   }
 
+  const center = centerFromSlug(decodedSlug)
+
+  if (!page && center) {
+    page = centerStaticPage(center)
+  }
+
   if (!page) {
     notFound()
   }
 
   const { hero, layout } = page
-  const center = centerFromSlug(decodedSlug)
   const main = center ? await queryMainGlobal() : null
 
   return (
@@ -113,6 +122,9 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {center && <MainBannerSection center={center} main={main} />}
       <RenderHero {...hero} />
+      {center && (
+        <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
+      )}
       <RenderBlocks blocks={layout} />
     </article>
   )

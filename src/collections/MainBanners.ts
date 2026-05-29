@@ -169,8 +169,8 @@ const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalD
 export const MainBanners: CollectionConfig = {
   slug: 'main-banners',
   labels: {
-    plural: '메인 배너',
-    singular: '메인 배너',
+    plural: '메인 배너 등록',
+    singular: '메인 배너 등록',
   },
   access: {
     create: createAccess,
@@ -260,6 +260,13 @@ export const MainBanners: CollectionConfig = {
           label: '연결 콘텐츠',
           fields: [
             {
+              name: 'center',
+              type: 'select',
+              label: '센터',
+              options: centerOptions,
+              validate: requiredValue('센터를 선택해야 합니다.'),
+            },
+            {
               name: 'linkedProfiles',
               type: 'relationship',
               label: '연결 프로필',
@@ -286,16 +293,6 @@ export const MainBanners: CollectionConfig = {
           ],
         },
       ],
-    },
-    {
-      name: 'center',
-      type: 'select',
-      label: '센터',
-      options: centerOptions,
-      validate: requiredValue('센터를 선택해야 합니다.'),
-      admin: {
-        position: 'sidebar',
-      },
     },
     {
       name: 'status',

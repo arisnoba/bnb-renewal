@@ -49,7 +49,7 @@ function centerBannerOrderField(center: CenterValue): Field {
 
 export const Main: GlobalConfig = {
   slug: 'main',
-  label: '메인',
+  label: '배너 순서 설정',
   access: {
     read: () => true,
   },
