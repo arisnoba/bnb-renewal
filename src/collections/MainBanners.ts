@@ -169,8 +169,8 @@ const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalD
 export const MainBanners: CollectionConfig = {
   slug: 'main-banners',
   labels: {
-    plural: '메인 배너 등록',
-    singular: '메인 배너 등록',
+    plural: '메인 배너',
+    singular: '메인 배너',
   },
   access: {
     create: createAccess,
@@ -180,7 +180,7 @@ export const MainBanners: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['title', 'center', 'status', 'useReservation', 'updatedAt'],
-    group: '글로벌',
+    group: '메인설정',
     useAsTitle: 'title',
   },
   defaultSort: '-updatedAt',

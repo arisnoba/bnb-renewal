@@ -38,6 +38,7 @@ export const Pages: CollectionConfig<'pages'> = {
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    group: '컬렉션(삭제예정)',
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({

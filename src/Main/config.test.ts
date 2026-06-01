@@ -24,7 +24,7 @@ function getTabs(global: GlobalConfig) {
     | { tabs: Tab[] }
     | undefined
 
-  assert.ok(tabsField, 'main 글로벌에 센터별 tabs 필드가 있어야 합니다.')
+  assert.ok(tabsField, 'main global에 센터별 tabs 필드가 있어야 합니다.')
 
   return tabsField.tabs
 }
@@ -32,7 +32,7 @@ function getTabs(global: GlobalConfig) {
 function getTab(global: GlobalConfig, label: string) {
   const tab = getTabs(global).find((item) => item.label === label)
 
-  assert.ok(tab, `main 글로벌에 ${label} 탭이 있어야 합니다.`)
+  assert.ok(tab, `main global에 ${label} 탭이 있어야 합니다.`)
 
   return tab
 }
@@ -60,8 +60,8 @@ function getNestedField(field: NamedField, fieldName: string) {
 
 test('main global exposes center-specific banner order arrays', async () => {
   assert.equal(Main.slug, 'main')
-  assert.equal(Main.label, '배너 순서 설정')
-  assert.equal(Main.admin?.group, '글로벌')
+  assert.equal(Main.label, '배너 순서')
+  assert.equal(Main.admin?.group, '메인설정')
 
   for (const [tabLabel, fieldName] of [
     ['아트센터', 'artBanners'],

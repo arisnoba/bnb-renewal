@@ -13,6 +13,7 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { MainBannerSection } from '@/Main/BannerSection'
+import { SocialLinksSection } from '@/Main/SocialLinksSection'
 import type { CenterSlug } from '@/lib/centers'
 import type { Main } from '@/payload-types'
 
@@ -126,6 +127,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
       )}
       <RenderBlocks blocks={layout} />
+      {center && <SocialLinksSection center={center} />}
     </article>
   )
 }

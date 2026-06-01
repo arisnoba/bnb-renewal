@@ -27,6 +27,7 @@ import { Pages } from './src/collections/Pages'
 import { Posts } from './src/collections/Posts'
 import { Profiles } from './src/collections/Profiles'
 import { ScreenAppearances } from './src/collections/ScreenAppearances'
+import { SocialLinks } from './src/collections/SocialLinks'
 import { StarCards } from './src/collections/StarCards'
 import { Teachers } from './src/collections/Teachers'
 import { Users } from './src/collections/Users'
@@ -80,6 +81,10 @@ export default buildConfig({
   },
   collections: applyReliableBulkEndpoints(
     applyAdminTimestampFields([
+      Pages,
+      Posts,
+      MainBanners,
+      SocialLinks,
       Histories,
       Teachers,
       Curriculums,
@@ -100,11 +105,8 @@ export default buildConfig({
       News,
       Faqs,
       StarCards,
-      MainBanners,
       Inquiries,
       Users,
-      Pages,
-      Posts,
       Media,
     ]),
   ),

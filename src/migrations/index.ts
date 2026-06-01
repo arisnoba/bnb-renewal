@@ -102,6 +102,8 @@ import * as migration_20260527_201000_inquiry_birth_date_text from './20260527_2
 import * as migration_20260528_120000_inquiry_privacy_consent_at from './20260528_120000_inquiry_privacy_consent_at'
 import * as migration_20260528_121000_inquiry_attachment_r2_link from './20260528_121000_inquiry_attachment_r2_link'
 import * as migration_20260528_130000_main_global from './20260528_130000_main_global'
+import * as migration_20260529_153600_add_social_links from './20260529_153600_add_social_links'
+import * as migration_20260529_160000_social_link_image_url from './20260529_160000_social_link_image_url'
 
 export const migrations = [
   {
@@ -623,5 +625,15 @@ export const migrations = [
     up: migration_20260528_130000_main_global.up,
     down: migration_20260528_130000_main_global.down,
     name: '20260528_130000_main_global',
+  },
+  {
+    up: migration_20260529_153600_add_social_links.up,
+    down: migration_20260529_153600_add_social_links.down,
+    name: '20260529_153600_add_social_links',
+  },
+  {
+    up: migration_20260529_160000_social_link_image_url.up,
+    down: migration_20260529_160000_social_link_image_url.down,
+    name: '20260529_160000_social_link_image_url',
   },
 ]

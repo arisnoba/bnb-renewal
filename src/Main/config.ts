@@ -49,12 +49,12 @@ function centerBannerOrderField(center: CenterValue): Field {
 
 export const Main: GlobalConfig = {
   slug: 'main',
-  label: '배너 순서 설정',
+  label: '배너 순서',
   access: {
     read: () => true,
   },
   admin: {
-    group: '글로벌',
+    group: '메인설정',
   },
   fields: [
     {
