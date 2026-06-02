@@ -143,6 +143,16 @@ function labelWithDetail(primary: string, detail: unknown, fallback: string) {
   return primary || detailText || fallback
 }
 
+function mainBannerProfileRoleLabel(value: unknown) {
+  const roleLabel = textValue(value)
+
+  if (!roleLabel) {
+    return ''
+  }
+
+  return roleLabel.endsWith('역') ? roleLabel : `${roleLabel} 역`
+}
+
 export function mainBannerAnchorHref(center: CenterSlug) {
   return center === 'exam' ? '/exam#exam-passed-reviews' : `/${center}#profiles`
 }
@@ -204,15 +214,17 @@ export function mainBannerMarqueeItems(
         return null
       }
 
+      const roleLabel = mainBannerProfileRoleLabel(item.roleLabel)
+
       const cardItem: MainBannerCardItem = {
         type: 'card',
         buttonLabel: '프로필 보기',
         href: mainBannerProfileHref(profile, center),
         image: mainBannerProfileImage(profile),
         imageAlt: textValue(profile.name, profile.englishName) || '프로필',
-        label: labelWithDetail(textValue(profile.name, profile.englishName), item.roleLabel, '프로필'),
+        label: labelWithDetail(textValue(profile.name, profile.englishName), roleLabel, '프로필'),
         name: textValue(profile.name, profile.englishName) || '프로필',
-        roleLabel: textValue(item.roleLabel),
+        roleLabel,
       }
 
       return cardItem

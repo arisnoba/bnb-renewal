@@ -442,7 +442,7 @@ export const MainBanners: CollectionConfig = {
                   type: 'text',
                   label: '역할/노출 문구',
                   admin: {
-                    description: '예: 아이돌 연습생 역, 여주 역',
+                    description: '예: 아이돌 연습생, 여주. 프론트에서는 뒤에 "역"이 자동으로 붙습니다.',
                   },
                   validate: requiredText('역할/노출 문구를 입력해야 합니다.'),
                 },

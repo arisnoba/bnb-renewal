@@ -39,7 +39,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
           profileImageMedia: profileImage,
           slug: 'kim-actor',
         }),
-        roleLabel: '아이돌 연습생 역',
+        roleLabel: '아이돌 연습생',
       },
       {
         profile: profile({
