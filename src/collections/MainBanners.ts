@@ -160,12 +160,13 @@ const validatePublishEndAt: Validate<unknown, unknown, MainBannerData> = (
 }
 
 function selectedCenter(data?: unknown, siblingData?: unknown) {
-  const value =
+  const siblingCenter =
     siblingData && typeof siblingData === 'object'
       ? (siblingData as MainBannerData).center
-      : data && typeof data === 'object'
-        ? (data as MainBannerData).center
-        : undefined
+      : undefined
+  const documentCenter =
+    data && typeof data === 'object' ? (data as MainBannerData).center : undefined
+  const value = siblingCenter ?? documentCenter
   const center = String(value ?? '').trim()
 
   return centerValues.has(center) ? center : undefined

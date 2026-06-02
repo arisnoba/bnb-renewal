@@ -135,6 +135,11 @@ test('main banner linked profiles are filtered by selected center', () => {
       contains: 'kids',
     },
   })
+  assert.deepEqual(filterOptions({ data: { center: 'kids' }, siblingData: {} }), {
+    centers: {
+      contains: 'kids',
+    },
+  })
   assert.deepEqual(filterOptions({ data: { center: 'art' } }), {
     centers: {
       contains: 'art',
