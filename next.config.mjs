@@ -40,6 +40,9 @@ const nextConfig = {
   images: {
     localPatterns: [
       {
+        pathname: '/assets/footer/**',
+      },
+      {
         pathname: '/api/media/file/**',
       },
     ],

@@ -61,7 +61,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/profiles/kim-actor',
+      href: '/art/profiles/kim-actor',
       image: profileImage,
       imageAlt: '김배우',
       label: '김배우 | 아이돌 연습생 역',
@@ -71,7 +71,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/profiles/english-name',
+      href: '/art/profiles/english-name',
       image: '/legacy/profile.jpg',
       imageAlt: 'English Name',
       label: 'English Name | 여주 역',
@@ -83,7 +83,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/profiles/kim-actor',
+      href: '/avenue/profiles/kim-actor',
       image: profileImage,
       imageAlt: '김배우',
       label: '김배우 | 아이돌 연습생 역',
@@ -93,7 +93,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/profiles/english-name',
+      href: '/avenue/profiles/english-name',
       image: '/legacy/profile.jpg',
       imageAlt: 'English Name',
       label: 'English Name | 여주 역',

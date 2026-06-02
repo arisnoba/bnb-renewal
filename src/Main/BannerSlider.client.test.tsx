@@ -38,7 +38,7 @@ test('main banner renders profile cards when linked profiles exist', () => {
       {
         type: 'card',
         buttonLabel: '프로필 보기',
-        href: '/profiles/kim-actor',
+        href: '/art/profiles/kim-actor',
         image: {
           ...image,
           alt: '김배우 프로필',
@@ -57,7 +57,7 @@ test('main banner renders profile cards when linked profiles exist', () => {
   assert.match(html, /김배우/)
   assert.match(html, /아이돌 연습생 역/)
   assert.match(html, /프로필 보기/)
-  assert.match(html, /href="\/profiles\/kim-actor"/)
+  assert.match(html, /href="\/art\/profiles\/kim-actor"/)
 })
 
 test('main banner profile cards start centered without duplicate marquee set', () => {
@@ -67,7 +67,7 @@ test('main banner profile cards start centered without duplicate marquee set', (
       {
         type: 'card',
         buttonLabel: '프로필 보기',
-        href: '/profiles/kim-actor',
+        href: '/art/profiles/kim-actor',
         image,
         imageAlt: '김배우',
         label: '김배우',

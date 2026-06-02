@@ -160,7 +160,7 @@ export function mainBannerAnchorHref(center: CenterSlug) {
 function mainBannerProfileHref(profile: Profile, center: CenterSlug) {
   const slug = textValue(profile.slug)
 
-  return slug ? `/profiles/${encodeURIComponent(slug)}` : mainBannerAnchorHref(center)
+  return slug ? `/${center}/profiles/${encodeURIComponent(slug)}` : mainBannerAnchorHref(center)
 }
 
 function mainBannerProfileImage(profile: Profile) {
