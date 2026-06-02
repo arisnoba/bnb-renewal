@@ -46,48 +46,41 @@
   --breakpoint-2xl: 86rem;
   --font-mono: var(--font-geist-mono);
   --font-sans: var(--font-geist-sans);
+  --color-brand: var(--brand);
+  --color-brand-art: #c80000;
+  --color-brand-exam: #1e5fcc;
+  --color-brand-highteen: #e0529b;
+  --color-brand-kids: #f5a623;
+  --color-brand-avenue: #2bb673;
+  --color-bg-footer: #0c0c0c;
+  --container-main: 1120px;
+  --container-sm: 800px;
 }
 
 @layer utilities {
+  .container-fluid {
+    width: 100%;
+    padding-inline: 20px;
+  }
+
   .container {
     width: 100%;
+    max-width: var(--container-main);
     margin-inline: auto;
-    padding-inline: 1rem;
+    padding-inline: 20px;
   }
 
-  @variant sm {
-    .container {
-      max-width: var(--breakpoint-sm);
-    }
-  }
-
-  @variant md {
-    .container {
-      max-width: var(--breakpoint-md);
-      padding-inline: 2rem;
-    }
-  }
-
-  @variant lg {
-    .container {
-      max-width: var(--breakpoint-lg);
-    }
-  }
-
-  @variant xl {
-    .container {
-      max-width: var(--breakpoint-xl);
-    }
-  }
-
-  @variant 2xl {
-    .container {
-      max-width: var(--breakpoint-2xl);
-    }
+  .container-sm {
+    width: 100%;
+    max-width: var(--container-sm);
+    margin-inline: auto;
+    padding-inline: 20px;
   }
 }
 
 :root {
+  --admin-bar-height: 0px;
+  --brand: var(--color-brand-art);
   --background: oklch(100% 0 0deg);
   --foreground: oklch(14.5% 0 0deg);
   --card: oklch(96.5% 0.005 265deg);
@@ -124,6 +117,26 @@
   --success: oklch(78% 0.08 200deg);
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
+}
+
+[data-center='art'] {
+  --brand: var(--color-brand-art);
+}
+
+[data-center='exam'] {
+  --brand: var(--color-brand-exam);
+}
+
+[data-center='highteen'] {
+  --brand: var(--color-brand-highteen);
+}
+
+[data-center='kids'] {
+  --brand: var(--color-brand-kids);
+}
+
+[data-center='avenue'] {
+  --brand: var(--color-brand-avenue);
 }
 
 [data-theme='dark'] {

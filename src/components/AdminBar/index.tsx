@@ -5,7 +5,7 @@ import type { PayloadAdminBarProps, PayloadMeUser } from '@payloadcms/admin-bar'
 import { cn } from '@/utilities/ui'
 import Link from 'next/link'
 import { PayloadAdminBar } from '@payloadcms/admin-bar'
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import './index.scss'
@@ -28,6 +28,7 @@ export const AdminBar: React.FC<{
   adminBarProps?: PayloadAdminBarProps
 }> = (props) => {
   const { adminBarProps } = props || {}
+  const rootRef = useRef<HTMLDivElement | null>(null)
   const [show, setShow] = useState(false)
   const router = useRouter()
 
@@ -35,14 +36,42 @@ export const AdminBar: React.FC<{
     setShow(Boolean(user?.id))
   }, [])
 
+  useEffect(() => {
+    const root = document.documentElement
+
+    if (!show || !rootRef.current) {
+      root.style.setProperty('--admin-bar-height', '0px')
+      root.removeAttribute('data-admin-bar')
+      return
+    }
+
+    const element = rootRef.current
+    const updateHeight = () => {
+      root.style.setProperty('--admin-bar-height', `${element.offsetHeight}px`)
+      root.setAttribute('data-admin-bar', 'true')
+    }
+
+    updateHeight()
+
+    const observer = new ResizeObserver(updateHeight)
+    observer.observe(element)
+
+    return () => {
+      observer.disconnect()
+      root.style.setProperty('--admin-bar-height', '0px')
+      root.removeAttribute('data-admin-bar')
+    }
+  }, [show])
+
   return (
     <div
-      className={cn(baseClass, 'py-2 bg-black text-white', {
+      ref={rootRef}
+      className={cn(baseClass, 'bg-black text-white', {
         block: show,
         hidden: !show,
       })}
     >
-      <div className="container flex flex-wrap items-center gap-x-4 gap-y-2">
+      <div className="container-fluid flex min-h-11 flex-wrap items-center gap-x-4 gap-y-2 py-2">
         <nav aria-label="센터 바로가기" className="flex flex-wrap items-center gap-2 text-xs">
           {centerLinks.map((link) => (
             <Link

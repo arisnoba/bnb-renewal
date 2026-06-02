@@ -1,9 +1,12 @@
 'use client'
 
 import type { Media } from '@/payload-types'
+import type { CenterSlug } from '@/lib/centers'
 
 import Link from 'next/link'
-import { Autoplay } from 'swiper/modules'
+import { Plus } from 'lucide-react'
+import { Autoplay, Pagination } from 'swiper/modules'
+import { useEffect, useRef, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { cn } from '@/utilities/ui'
@@ -39,13 +42,31 @@ export type MainBannerCardItem = {
 
 export type MainBannerMarqueeItem = MainBannerLinkItem | MainBannerCardItem
 
+export type MainBannerStatisticItem = {
+  label: string
+  value: number
+}
+
+export type MainBannerStatisticGroup = {
+  items: MainBannerStatisticItem[]
+  title: string
+}
+
+export type MainBannerStatistics = {
+  groups: MainBannerStatisticGroup[]
+  totalWorkCount: number
+}
+
 type MainBannerSliderProps = {
   autoplayDelay?: number
   autoplayEnabled?: boolean
   banners: MainBannerSlide[]
+  center?: CenterSlug
+  statistics?: MainBannerStatistics | null
 }
 
 export const DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY = 5000
+const PROFILE_MARQUEE_OVERFLOW_RATIO = 1.15
 
 function isMedia(value: MainBannerSlide['desktopImage']): value is Media {
   return Boolean(value && typeof value === 'object')
@@ -94,7 +115,7 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
     return (
       <video
         autoPlay
-        className="absolute inset-0 h-full w-full object-cover"
+        className="section-main-banner__media"
         loop
         muted
         playsInline
@@ -111,7 +132,7 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
       {mobileImageUrl && <source media="(max-width: 767px)" srcSet={mobileImageUrl} />}
       <img
         alt={alt}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="section-main-banner__media"
         loading="eager"
         src={desktopImageUrl || mobileImageUrl}
       />
@@ -119,45 +140,72 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
   )
 }
 
-function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; isSingle?: boolean }) {
+function formatCount(value: number) {
+  return new Intl.NumberFormat('ko-KR').format(value)
+}
+
+function BannerStatisticsPanel({ statistics }: { statistics: MainBannerStatistics }) {
+  return (
+    <aside aria-label="센터 주요 통계" className="section-main-banner__stats">
+      <div className="section-main-banner__stat-total">
+        <span>누적작품수</span>
+        <strong>{formatCount(statistics.totalWorkCount)}</strong>
+      </div>
+      {statistics.groups.map((group) => (
+        <div className="section-main-banner__stat-group" key={group.title}>
+          <div className="section-main-banner__stat-group-head">
+            <span>{group.title}</span>
+            <Plus aria-hidden="true" size={18} strokeWidth={3} />
+          </div>
+          <div className="section-main-banner__stat-items">
+            {group.items.map((item) => (
+              <div className="section-main-banner__stat-item" key={item.label}>
+                <span>{item.label}</span>
+                <strong>{formatCount(item.value)}명</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </aside>
+  )
+}
+
+function BannerSlide({
+  banner,
+  center,
+  isSingle = false,
+  statistics,
+}: {
+  banner: MainBannerSlide
+  center?: CenterSlug
+  isSingle?: boolean
+  statistics?: MainBannerStatistics | null
+}) {
   const title = String(banner.title ?? '').trim()
   const broadcaster = String(banner.broadcaster ?? '').trim()
   const description = String(banner.description ?? '').trim()
   const marqueeItems = banner.marqueeItems ?? []
-  const hasCardItems = marqueeItems.some(isCardItem)
 
   return (
     <section
+      data-center={center}
       className={cn(
-        'relative isolate min-h-[520px] overflow-hidden bg-neutral-950 text-white md:min-h-[640px]',
+        'section-main-banner',
         isSingle ? 'w-full' : 'h-full',
       )}
     >
       <BannerVisual banner={banner} />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.68),rgba(0,0,0,0.22)_52%,rgba(0,0,0,0.08))]" />
-      <div
-        className={cn(
-          'container relative z-10 flex min-h-[520px] items-end pt-20 md:min-h-[640px]',
-          hasCardItems
-            ? 'pb-64 md:pb-72'
-            : marqueeItems.length > 0
-              ? 'pb-28 md:pb-32'
-              : 'pb-14 md:pb-20',
-        )}
-      >
-        <div className="max-w-3xl">
-          {broadcaster && (
-            <p className="mb-4 text-sm font-semibold uppercase text-white/70">
-              {broadcaster}
-            </p>
-          )}
-          <h2 className="text-balance text-4xl font-semibold leading-tight md:text-6xl">{title}</h2>
-          {description && (
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/78 md:text-lg">
-              {description}
-            </p>
-          )}
+      <div className="section-main-banner__overlay" />
+      <div className="section-main-banner__brand-block" aria-hidden="true" />
+      <div className="section-main-banner__brand-ring" aria-hidden="true" />
+      <div className="container section-main-banner__content">
+        <div className="section-main-banner__copy">
+          {broadcaster && <p className="section-main-banner__badge">{broadcaster}</p>}
+          <h2 className="section-main-banner__title">{title}</h2>
+          {description && <p className="section-main-banner__description">{description}</p>}
         </div>
+        {statistics && <BannerStatisticsPanel statistics={statistics} />}
       </div>
       {marqueeItems.length > 0 && <BannerMarquee items={marqueeItems} />}
     </section>
@@ -172,13 +220,13 @@ function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
   }
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-20 border-t border-white/15 bg-black/35 text-white backdrop-blur-sm">
-      <div className="container overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-max min-w-full gap-2 pr-4">
+    <div className="section-main-banner__link-marquee">
+      <div className="container">
+        <div className="section-main-banner__link-track">
           {items.map((item, index) => (
             <Link
               aria-label={item.label}
-              className="inline-flex h-10 max-w-[76vw] shrink-0 items-center rounded-full border border-white/20 bg-white/10 px-4 text-sm font-medium text-white transition-colors hover:border-white/45 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:max-w-none"
+              className="section-main-banner__link-pill"
               href={item.href}
               key={`${item.href}-${item.label}-${index}`}
             >
@@ -192,58 +240,114 @@ function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
 }
 
 function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
-  return (
-    <div className="absolute inset-x-0 bottom-0 z-20 border-t border-white/10 bg-black/30 text-white backdrop-blur-sm">
-      <div className="container overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-max min-w-full gap-3 pr-4">
-          {items.map((item, index) => {
-            const imageUrl = itemImageUrl(item.image)
-            const name = String(item.name ?? '').trim()
-            const roleLabel = String(item.roleLabel ?? '').trim()
-            const buttonLabel = String(item.buttonLabel || '자세히 보기').trim()
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const setRef = useRef<HTMLDivElement | null>(null)
+  const [shouldMarquee, setShouldMarquee] = useState(false)
+  const cardSets = shouldMarquee ? [items, items] : [items]
 
-            return (
-              <article
-                className="w-[112px] shrink-0 border border-white/15 bg-black/78 shadow-[0_14px_30px_rgba(0,0,0,0.35)] md:w-[128px]"
-                key={`${item.href}-${item.label}-${index}`}
-              >
-                <div className="aspect-[4/5] overflow-hidden bg-white/8">
-                  {imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      alt={item.imageAlt || name || '프로필'}
-                      className="h-full w-full object-cover"
-                      loading="eager"
-                      src={imageUrl}
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-white/10" />
-                  )}
-                </div>
-                <div className="px-2.5 pb-2.5 pt-2 text-center">
-                  <h3 className="truncate text-xs font-bold leading-4 text-white">{name}</h3>
-                  {roleLabel && (
-                    <p className="mt-0.5 truncate text-[11px] font-medium leading-4 text-white/72">
-                      {roleLabel}
-                    </p>
-                  )}
-                  <Link
-                    aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
-                    className="mt-2 inline-flex h-7 w-full items-center justify-center border border-white/65 px-2 text-[11px] font-bold leading-none text-white transition-colors hover:border-white hover:bg-white/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                    href={item.href}
-                  >
-                    <span>{buttonLabel}</span>
-                    <span className="ml-1 text-red-500" aria-hidden="true">
-                      &gt;
-                    </span>
-                  </Link>
-                </div>
-              </article>
-            )
-          })}
-        </div>
+  useEffect(() => {
+    const container = containerRef.current
+    const set = setRef.current
+
+    if (!container || !set) {
+      return
+    }
+
+    const updateShouldMarquee = () => {
+      setShouldMarquee(set.scrollWidth > container.clientWidth * PROFILE_MARQUEE_OVERFLOW_RATIO)
+    }
+
+    updateShouldMarquee()
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateShouldMarquee)
+
+      return () => {
+        window.removeEventListener('resize', updateShouldMarquee)
+      }
+    }
+
+    const observer = new ResizeObserver(updateShouldMarquee)
+    observer.observe(container)
+    observer.observe(set)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [items.length])
+
+  return (
+    <div
+      className="section-main-banner__profile-marquee"
+      data-marquee={shouldMarquee ? 'true' : 'false'}
+      ref={containerRef}
+    >
+      <div className="section-main-banner__profile-track">
+        {cardSets.map((set, setIndex) => (
+          <div
+            aria-hidden={setIndex === 1 ? 'true' : undefined}
+            className="section-main-banner__profile-set"
+            key={setIndex}
+            ref={setIndex === 0 ? setRef : undefined}
+          >
+            {set.map((item, index) => (
+              <BannerProfileCard
+                duplicate={setIndex === 1}
+                index={index}
+                item={item}
+                key={`${setIndex}-${item.href}-${item.label}-${index}`}
+              />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
+  )
+}
+
+function BannerProfileCard({
+  duplicate,
+  index,
+  item,
+}: {
+  duplicate: boolean
+  index: number
+  item: MainBannerCardItem
+}) {
+  const imageUrl = itemImageUrl(item.image)
+  const name = String(item.name ?? '').trim()
+  const roleLabel = String(item.roleLabel ?? '').trim()
+  const buttonLabel = String(item.buttonLabel || '자세히 보기').trim()
+
+  return (
+    <article className="section-main-banner__profile-card">
+      <div className="section-main-banner__profile-image">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt={item.imageAlt || name || '프로필'}
+            loading={index < 6 ? 'eager' : 'lazy'}
+            src={imageUrl}
+          />
+        ) : (
+          <div className="section-main-banner__profile-placeholder" />
+        )}
+      </div>
+      <div className="section-main-banner__profile-body">
+        <div>
+          <h3>{name}</h3>
+          {roleLabel && <p>{roleLabel}</p>}
+        </div>
+        <Link
+          aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
+          className="section-main-banner__profile-link"
+          href={item.href}
+          tabIndex={duplicate ? -1 : undefined}
+        >
+          <span>{buttonLabel}</span>
+        </Link>
+      </div>
+    </article>
   )
 }
 
@@ -257,13 +361,15 @@ export function MainBannerSlider({
   autoplayDelay = DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
   autoplayEnabled = true,
   banners,
+  center,
+  statistics,
 }: MainBannerSliderProps) {
   if (banners.length === 0) {
     return null
   }
 
   if (banners.length === 1) {
-    return <BannerSlide banner={banners[0]} isSingle />
+    return <BannerSlide banner={banners[0]} center={center} isSingle statistics={statistics} />
   }
 
   return (
@@ -278,12 +384,15 @@ export function MainBannerSlider({
       }
       className="main-banner-swiper"
       loop
-      modules={[Autoplay]}
+      modules={[Autoplay, Pagination]}
+      pagination={{
+        clickable: true,
+      }}
       slidesPerView={1}
     >
       {banners.map((banner, index) => (
         <SwiperSlide key={`${banner.title ?? 'banner'}-${index}`}>
-          <BannerSlide banner={banner} />
+          <BannerSlide banner={banner} center={center} statistics={statistics} />
         </SwiperSlide>
       ))}
     </Swiper>

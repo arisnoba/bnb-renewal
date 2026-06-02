@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import type { ExamPassedReview, Main, MainBanner, Media, Profile } from '@/payload-types'
+import type { ExamPassedReview, Main, MainBanner, MainStatistic, Media, Profile } from '@/payload-types'
 
 import {
   mainBannerAnchorHref,
   mainBannerAutoplaySettings,
   mainBannerMarqueeItems,
+  mainBannerStatistics,
   toSlide,
 } from './BannerSection'
 
@@ -202,6 +203,45 @@ test('main banner autoplay settings use center-specific main values', () => {
     {
       autoplayDelay: 5000,
       autoplayEnabled: true,
+    },
+  )
+})
+
+test('main banner statistics expose center-specific values', () => {
+  assert.deepEqual(
+    mainBannerStatistics(
+      {
+        artTotalWorkCount: 268,
+        artMonthlyLeadSupporting: {
+          auditionCount: 142,
+          directorMeetingCount: 17,
+        },
+        artMonthlyMinorExtra: {
+          castingConfirmedCount: 41,
+          listupCount: 173,
+        },
+        examTotalWorkCount: 99,
+      } as MainStatistic,
+      'art',
+    ),
+    {
+      groups: [
+        {
+          items: [
+            { label: '오디션 진행', value: 142 },
+            { label: '최종 감독 미팅', value: 17 },
+          ],
+          title: '이달의 주·조연',
+        },
+        {
+          items: [
+            { label: '리스트업 인원', value: 173 },
+            { label: '캐스팅 확정', value: 41 },
+          ],
+          title: '이달의 조·단역',
+        },
+      ],
+      totalWorkCount: 268,
     },
   )
 })

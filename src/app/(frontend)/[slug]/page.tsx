@@ -15,7 +15,7 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { MainBannerSection } from '@/Main/BannerSection'
 import { SocialLinksSection } from '@/Main/SocialLinksSection'
 import type { CenterSlug } from '@/lib/centers'
-import type { Main } from '@/payload-types'
+import type { Main, MainStatistic } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 
@@ -114,6 +114,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const { hero, layout } = page
   const main = center ? await queryMainGlobal() : null
+  const statistics = center ? await queryMainStatisticsGlobal() : null
 
   return (
     <main className="">
@@ -121,7 +122,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      {center && <MainBannerSection center={center} main={main} />}
+      {center && <MainBannerSection center={center} main={main} statistics={statistics} />}
       <RenderHero {...hero} />
       {center && (
         <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
@@ -140,6 +141,19 @@ const queryMainGlobal = cache(async () => {
       slug: 'main',
       depth: 3,
     })) as Main
+  } catch {
+    return null
+  }
+})
+
+const queryMainStatisticsGlobal = cache(async () => {
+  try {
+    const payload = await getPayload({ config: configPromise })
+
+    return (await payload.findGlobal({
+      slug: 'main-statistics',
+      depth: 1,
+    })) as MainStatistic
   } catch {
     return null
   }

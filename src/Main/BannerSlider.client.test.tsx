@@ -60,6 +60,29 @@ test('main banner renders profile cards when linked profiles exist', () => {
   assert.match(html, /href="\/profiles\/kim-actor"/)
 })
 
+test('main banner profile cards start centered without duplicate marquee set', () => {
+  const html = render({
+    desktopImage: image,
+    marqueeItems: [
+      {
+        type: 'card',
+        buttonLabel: '프로필 보기',
+        href: '/profiles/kim-actor',
+        image,
+        imageAlt: '김배우',
+        label: '김배우',
+        name: '김배우',
+        roleLabel: '배우',
+      },
+    ],
+    title: '메인 배너',
+  })
+
+  assert.match(html, /data-marquee="false"/)
+  assert.doesNotMatch(html, /aria-hidden="true" class="section-main-banner__profile-set"/)
+})
+
+
 test('main banner renders exam review cards with review buttons', () => {
   const html = render({
     desktopImage: image,

@@ -1,4 +1,4 @@
-import type { ExamPassedReview, Main, MainBanner, Profile } from '@/payload-types'
+import type { ExamPassedReview, Main, MainBanner, MainStatistic, Profile } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
 
 import {
@@ -7,11 +7,14 @@ import {
   type MainBannerCardItem,
   type MainBannerMarqueeItem,
   type MainBannerSlide,
+  type MainBannerStatisticGroup,
+  type MainBannerStatistics,
 } from './BannerSlider.client'
 
 type MainBannerSectionProps = {
   center: CenterSlug
   main?: Main | null
+  statistics?: MainStatistic | null
 }
 
 type LinkedExamReviewItem = NonNullable<MainBanner['linkedExamReviewItems']>[number]
@@ -20,6 +23,9 @@ type MainBannerOrderField = `${CenterSlug}Banners`
 type MainBannerOrderRow = NonNullable<Main[MainBannerOrderField]>[number]
 type MainBannerAutoplayField = `${CenterSlug}BannerAutoplay`
 type MainBannerAutoplayDelayField = `${CenterSlug}BannerAutoplayDelay`
+type MainBannerTotalWorkCountField = `${CenterSlug}TotalWorkCount`
+type MainBannerMonthlyLeadSupportingField = `${CenterSlug}MonthlyLeadSupporting`
+type MainBannerMonthlyMinorExtraField = `${CenterSlug}MonthlyMinorExtra`
 
 const centerOrderField: Record<CenterSlug, MainBannerOrderField> = {
   art: 'artBanners',
@@ -43,6 +49,33 @@ const centerAutoplayDelayField: Record<CenterSlug, MainBannerAutoplayDelayField>
   exam: 'examBannerAutoplayDelay',
   highteen: 'highteenBannerAutoplayDelay',
   kids: 'kidsBannerAutoplayDelay',
+}
+
+const centerTotalWorkCountField: Record<CenterSlug, MainBannerTotalWorkCountField> = {
+  art: 'artTotalWorkCount',
+  avenue: 'avenueTotalWorkCount',
+  exam: 'examTotalWorkCount',
+  highteen: 'highteenTotalWorkCount',
+  kids: 'kidsTotalWorkCount',
+}
+
+const centerMonthlyLeadSupportingField: Record<
+  CenterSlug,
+  MainBannerMonthlyLeadSupportingField
+> = {
+  art: 'artMonthlyLeadSupporting',
+  avenue: 'avenueMonthlyLeadSupporting',
+  exam: 'examMonthlyLeadSupporting',
+  highteen: 'highteenMonthlyLeadSupporting',
+  kids: 'kidsMonthlyLeadSupporting',
+}
+
+const centerMonthlyMinorExtraField: Record<CenterSlug, MainBannerMonthlyMinorExtraField> = {
+  art: 'artMonthlyMinorExtra',
+  avenue: 'avenueMonthlyMinorExtra',
+  exam: 'examMonthlyMinorExtra',
+  highteen: 'highteenMonthlyMinorExtra',
+  kids: 'kidsMonthlyMinorExtra',
 }
 
 function parseDate(value: unknown) {
@@ -213,11 +246,53 @@ export function mainBannerAutoplaySettings(main: Main | null | undefined, center
   }
 }
 
+function numericValue(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
+function statisticGroup(value: unknown, title: string): MainBannerStatisticGroup {
+  const group = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  const isLeadSupporting = title === '이달의 주·조연'
+
+  return {
+    items: [
+      {
+        label: isLeadSupporting ? '오디션 진행' : '리스트업 인원',
+        value: numericValue(isLeadSupporting ? group.auditionCount : group.listupCount),
+      },
+      {
+        label: isLeadSupporting ? '최종 감독 미팅' : '캐스팅 확정',
+        value: numericValue(
+          isLeadSupporting ? group.directorMeetingCount : group.castingConfirmedCount,
+        ),
+      },
+    ],
+    title,
+  }
+}
+
+export function mainBannerStatistics(
+  statistics: MainStatistic | null | undefined,
+  center: CenterSlug,
+): MainBannerStatistics | null {
+  if (!statistics) {
+    return null
+  }
+
+  return {
+    groups: [
+      statisticGroup(statistics[centerMonthlyLeadSupportingField[center]], '이달의 주·조연'),
+      statisticGroup(statistics[centerMonthlyMinorExtraField[center]], '이달의 조·단역'),
+    ],
+    totalWorkCount: numericValue(statistics[centerTotalWorkCountField[center]]),
+  }
+}
+
 function rowBanner(row: MainBannerOrderRow): MainBanner | null {
   return row.banner && typeof row.banner === 'object' ? row.banner : null
 }
 
-export function MainBannerSection({ center, main }: MainBannerSectionProps) {
+export function MainBannerSection({ center, main, statistics }: MainBannerSectionProps) {
   const now = new Date()
   const rows = main?.[centerOrderField[center]] ?? []
   const autoplaySettings = mainBannerAutoplaySettings(main, center)
@@ -231,5 +306,12 @@ export function MainBannerSection({ center, main }: MainBannerSectionProps) {
     return null
   }
 
-  return <MainBannerSlider banners={activeBanners} {...autoplaySettings} />
+  return (
+    <MainBannerSlider
+      banners={activeBanners}
+      center={center}
+      statistics={mainBannerStatistics(statistics, center)}
+      {...autoplaySettings}
+    />
+  )
 }

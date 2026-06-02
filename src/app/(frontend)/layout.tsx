@@ -15,6 +15,7 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
+import '@/Main/BannerSlider.scss'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export const dynamic = 'force-dynamic'
