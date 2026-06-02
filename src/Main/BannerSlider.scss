@@ -253,7 +253,7 @@
 .section-main-banner__profile-set {
   animation: section-main-banner-marquee 34s linear infinite;
   display: flex;
-  gap: 28px;
+  // gap: 28px;
   min-width: max-content;
   padding-left: 20px;
 }
@@ -285,14 +285,14 @@
 .section-main-banner__profile-card {
   display: grid;
   gap: 12px;
-  grid-template-columns: 120px 77px;
+  grid-template-columns: 120px 108px;
   height: 100px;
-  width: 209px;
+  width: 240px;
 }
 
 .section-main-banner__profile-image {
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border-radius: 12px;
   height: 100px;
   overflow: hidden;
   width: 120px;
@@ -317,7 +317,7 @@
   justify-content: space-between;
   min-width: 0;
   padding-block: 4px;
-
+  width: 100%;
   h3,
   p {
     margin: 0;
@@ -330,6 +330,7 @@
     font-size: 16px;
     font-weight: 900;
     line-height: 1.5;
+    margin-bottom: 4px;
   }
 
   p {

@@ -286,7 +286,7 @@ function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
         {cardSets.map((set, setIndex) => (
           <div
             aria-hidden={setIndex === 1 ? 'true' : undefined}
-            className="section-main-banner__profile-set"
+            className="section-main-banner__profile-set gap-6"
             key={setIndex}
             ref={setIndex === 0 ? setRef : undefined}
           >
@@ -333,14 +333,14 @@ function BannerProfileCard({
           <div className="section-main-banner__profile-placeholder" />
         )}
       </div>
-      <div className="section-main-banner__profile-body">
+      <div className="section-main-banner__profile-body items-start">
         <div>
           <h3>{name}</h3>
           {roleLabel && <p>{roleLabel}</p>}
         </div>
         <Link
           aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
-          className="section-main-banner__profile-link"
+          className="section-main-banner__profile-link "
           href={item.href}
           tabIndex={duplicate ? -1 : undefined}
         >
