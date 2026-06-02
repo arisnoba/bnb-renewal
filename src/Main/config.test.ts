@@ -64,7 +64,7 @@ function getNestedField(field: NamedField, fieldName: string) {
 test('main global exposes center-specific banner order arrays', async () => {
   assert.equal(Main.slug, 'main')
   assert.equal(Main.label, '배너 설정')
-  assert.equal(Main.admin?.group, '메인 설정')
+  assert.equal(Main.admin?.group, '메인설정')
 
   for (const [tabLabel, fieldName] of [
     ['아트센터', 'artBanners'],

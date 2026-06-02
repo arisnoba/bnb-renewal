@@ -35,6 +35,7 @@ import { applyAdminTimestampFields } from './src/collections/adminTimestampField
 import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoints'
 import { Footer } from './src/Footer/config'
 import { Main } from './src/Main/config'
+import { MainStatistics } from './src/Main/Statistics'
 import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
@@ -117,7 +118,7 @@ export default buildConfig({
     },
   }),
   editor: defaultLexical,
-  globals: [Main, Footer],
+  globals: [Main, MainStatistics, Footer],
   plugins,
   routes: {
     admin: '/admin',

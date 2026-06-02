@@ -90,9 +90,10 @@ export const Main: GlobalConfig = {
   label: '배너 설정',
   access: {
     read: () => true,
+    update: ({ req }) => Boolean(req.user),
   },
   admin: {
-    group: '메인 설정',
+    group: '메인설정',
   },
   fields: [
     {

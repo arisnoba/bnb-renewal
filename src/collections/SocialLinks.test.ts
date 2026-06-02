@@ -36,7 +36,7 @@ test('social links are configured as center-scoped SNS content', () => {
   assert.equal(SocialLinks.slug, 'social-links')
   assert.equal(SocialLinks.labels?.plural, 'SNS 링크')
   assert.equal(SocialLinks.labels?.singular, 'SNS 링크')
-  assert.equal(SocialLinks.admin?.group, '메인 설정')
+  assert.equal(SocialLinks.admin?.group, '메인설정')
   assert.equal(SocialLinks.admin?.useAsTitle, 'title')
   assert.equal(SocialLinks.defaultSort, '-createdAt')
   assert.deepEqual(SocialLinks.admin?.defaultColumns, [

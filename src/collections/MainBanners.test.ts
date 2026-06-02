@@ -73,7 +73,7 @@ test('main banners are managed as center-scoped posts', () => {
   assert.equal(MainBanners.slug, 'main-banners')
   assert.equal(MainBanners.labels?.plural, '메인 배너')
   assert.equal(MainBanners.labels?.singular, '메인 배너')
-  assert.equal(MainBanners.admin?.group, '메인 설정')
+  assert.equal(MainBanners.admin?.group, '메인설정')
   assert.equal(MainBanners.admin?.useAsTitle, 'title')
   assert.deepEqual(MainBanners.admin?.defaultColumns, [
     'title',

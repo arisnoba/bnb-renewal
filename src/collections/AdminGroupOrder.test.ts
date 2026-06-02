@@ -5,11 +5,18 @@ import configPromise from '../../payload.config'
 
 const expectedLeadingGroups = [
   '컬렉션(삭제예정)',
-  '메인 설정',
+  '메인설정',
   '회사정보',
   '교육',
   '캐스팅/오디션',
 ]
+
+const expectedMainSettingCollections = [
+  'main-banners',
+  'social-links',
+]
+
+const expectedMainSettingGlobals = ['main', 'main-statistics']
 
 test('payload admin collection groups keep the requested leading order', async () => {
   const config = await configPromise
@@ -24,4 +31,19 @@ test('payload admin collection groups keep the requested leading order', async (
   }
 
   assert.deepEqual(groupOrder.slice(0, expectedLeadingGroups.length), expectedLeadingGroups)
+})
+
+test('main setting collections keep the requested relative order', async () => {
+  const config = await configPromise
+  const mainSettingCollections = config.collections
+    .filter((collection) => collection.admin?.group === '메인설정')
+    .map((collection) => collection.slug)
+
+  assert.deepEqual(mainSettingCollections, expectedMainSettingCollections)
+  assert.deepEqual(
+    config.globals
+      .filter((global) => global.admin?.group === '메인설정')
+      .map((global) => global.slug),
+    expectedMainSettingGlobals,
+  )
 })
