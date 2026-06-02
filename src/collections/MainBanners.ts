@@ -1,12 +1,15 @@
 import type {
   Access,
+  CollectionAfterChangeHook,
   CollectionBeforeValidateHook,
   CollectionConfig,
   Validate,
   Where,
 } from 'payload'
 
-import { centerOptions, isGlobalAdminUser, userCenterValue } from './shared'
+import type { MainBanner } from '@/payload-types'
+
+import { centerOptions, type CenterValue, isGlobalAdminUser, userCenterValue } from './shared'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 
 type MainBannerData = {
@@ -15,12 +18,22 @@ type MainBannerData = {
   useReservation?: unknown
 }
 
+type MainBannerOrderField = `${CenterValue}Banners`
+type MainBannerOrderRow = {
+  banner?: ({ id?: unknown } & Record<string, unknown>) | number | string | null
+  id?: string | null
+}
+type MainBannerOrderData = Partial<Record<MainBannerOrderField, MainBannerOrderRow[] | null>>
+
 const statusOptions = [
   { label: '임시저장', value: 'draft' },
   { label: '공개', value: 'published' },
 ]
 
 const centerValues = new Set(centerOptions.map((option) => option.value))
+const mainBannerOrderFieldByCenter = Object.fromEntries(
+  centerOptions.map((option) => [option.value, `${option.value}Banners`]),
+) as Record<CenterValue, MainBannerOrderField>
 
 const allowRead: Access = () => true
 
@@ -166,6 +179,90 @@ const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalD
   return nextData
 }
 
+function bannerId(value: MainBannerOrderRow['banner']) {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'object') {
+    return String(value.id ?? '').trim()
+  }
+
+  return String(value).trim()
+}
+
+export function mainBannerOrderField(center: CenterValue): MainBannerOrderField {
+  return mainBannerOrderFieldByCenter[center]
+}
+
+export function mainBannerOrderIncludes(
+  rows: MainBannerOrderRow[] | null | undefined,
+  targetBannerId: MainBanner['id'],
+) {
+  const targetId = String(targetBannerId).trim()
+
+  return (rows ?? []).some((row) => bannerId(row.banner) === targetId)
+}
+
+export function mainBannerOrderWithout(
+  rows: MainBannerOrderRow[] | null | undefined,
+  targetBannerId: MainBanner['id'],
+) {
+  const targetId = String(targetBannerId).trim()
+
+  return (rows ?? []).filter((row) => bannerId(row.banner) !== targetId)
+}
+
+const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
+  doc,
+  operation,
+  previousDoc,
+  req,
+}) => {
+  const center = selectedCenter(doc) as CenterValue | undefined
+  const previousCenter = selectedCenter(previousDoc) as CenterValue | undefined
+
+  if (!center) {
+    return doc
+  }
+
+  const main = (await req.payload.findGlobal({
+    slug: 'main',
+    depth: 0,
+    overrideAccess: true,
+  })) as unknown as MainBannerOrderData
+  const centerOrderField = mainBannerOrderField(center)
+  const currentRows = main[centerOrderField]
+  const shouldMoveFromPreviousCenter = Boolean(previousCenter && previousCenter !== center)
+  const alreadyOrdered = mainBannerOrderIncludes(currentRows, doc.id)
+
+  if (!shouldMoveFromPreviousCenter && alreadyOrdered && operation !== 'create') {
+    return doc
+  }
+
+  const data: MainBannerOrderData = {
+    [centerOrderField]: [
+      { banner: doc.id },
+      ...mainBannerOrderWithout(currentRows, doc.id),
+    ],
+  }
+
+  if (shouldMoveFromPreviousCenter && previousCenter) {
+    const previousOrderField = mainBannerOrderField(previousCenter)
+
+    data[previousOrderField] = mainBannerOrderWithout(main[previousOrderField], doc.id)
+  }
+
+  await req.payload.updateGlobal({
+    slug: 'main',
+    data,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  return doc
+}
+
 export const MainBanners: CollectionConfig = {
   slug: 'main-banners',
   labels: {
@@ -186,6 +283,7 @@ export const MainBanners: CollectionConfig = {
   defaultSort: '-updatedAt',
   hooks: {
     afterChange: [
+      syncMainBannerOrder,
       normalizeUploadedMediaPrefixes([
         { path: 'desktopImage', role: 'main-banners.desktop-image' },
         { path: 'mobileImage', role: 'main-banners.mobile-image' },

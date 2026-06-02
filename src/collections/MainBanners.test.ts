@@ -3,7 +3,12 @@ import test from 'node:test'
 
 import type { CollectionConfig, Field, Tab } from 'payload'
 
-import { MainBanners } from './MainBanners'
+import {
+  MainBanners,
+  mainBannerOrderField,
+  mainBannerOrderIncludes,
+  mainBannerOrderWithout,
+} from './MainBanners'
 
 type NamedField = Field & {
   name: string
@@ -89,6 +94,48 @@ test('main banners are managed as center-scoped posts', () => {
     getField(MainBanners, 'linkedExamReviews').admin?.condition?.({}, { center: 'exam' }),
     true,
   )
+  assert.equal(MainBanners.hooks?.afterChange?.length, 2)
+})
+
+test('main banners can sync into center-specific order arrays without duplicates', () => {
+  assert.equal(mainBannerOrderField('art'), 'artBanners')
+  assert.equal(mainBannerOrderField('exam'), 'examBanners')
+
+  const rows = [
+    { banner: 3 },
+    { banner: { id: 7, title: '기존 배너' } },
+    { banner: 9 },
+  ] as const
+
+  assert.equal(mainBannerOrderIncludes([...rows], 7), true)
+  assert.equal(mainBannerOrderIncludes([...rows], 11), false)
+  assert.deepEqual(mainBannerOrderWithout([...rows], 7), [{ banner: 3 }, { banner: 9 }])
+})
+
+test('main banner save prepends new banner to its center order', async () => {
+  const syncOrder = MainBanners.hooks?.afterChange?.[0] as (args: Record<string, unknown>) => unknown
+  let updatedData: unknown
+
+  assert.equal(typeof syncOrder, 'function')
+
+  await syncOrder({
+    doc: { center: 'exam', id: 7 },
+    operation: 'create',
+    req: {
+      payload: {
+        findGlobal: async () => ({
+          examBanners: [{ banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
+        }),
+        updateGlobal: async ({ data }: { data: unknown }) => {
+          updatedData = data
+        },
+      },
+    },
+  })
+
+  assert.deepEqual(updatedData, {
+    examBanners: [{ banner: 7 }, { banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
+  })
 })
 
 test('main banners expose center at the top of linked content tab', async () => {
