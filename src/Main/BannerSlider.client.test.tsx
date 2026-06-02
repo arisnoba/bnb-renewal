@@ -36,7 +36,8 @@ test('main banner renders profile cards when linked profiles exist', () => {
     desktopImage: image,
     marqueeItems: [
       {
-        type: 'profile',
+        type: 'card',
+        buttonLabel: '프로필 보기',
         href: '/profiles/kim-actor',
         image: {
           ...image,
@@ -57,6 +58,31 @@ test('main banner renders profile cards when linked profiles exist', () => {
   assert.match(html, /아이돌 연습생 역/)
   assert.match(html, /프로필 보기/)
   assert.match(html, /href="\/profiles\/kim-actor"/)
+})
+
+test('main banner renders exam review cards with review buttons', () => {
+  const html = render({
+    desktopImage: image,
+    marqueeItems: [
+      {
+        type: 'card',
+        buttonLabel: '후기 보기',
+        href: '/exam#exam-passed-reviews',
+        image: '/legacy/exam-student.jpg',
+        imageAlt: '이학생',
+        label: '이학생 | 한예종, 세종대',
+        name: '이학생',
+        roleLabel: '한예종, 세종대',
+      },
+    ],
+    title: '입시 배너',
+  })
+
+  assert.match(html, /src="\/legacy\/exam-student\.jpg"/)
+  assert.match(html, /이학생/)
+  assert.match(html, /한예종, 세종대/)
+  assert.match(html, /후기 보기/)
+  assert.match(html, /href="\/exam#exam-passed-reviews"/)
 })
 
 test('main banner skips marquee links when linked content is empty', () => {

@@ -105,6 +105,7 @@ import * as migration_20260528_130000_main_global from './20260528_130000_main_g
 import * as migration_20260529_153600_add_social_links from './20260529_153600_add_social_links'
 import * as migration_20260529_160000_social_link_image_url from './20260529_160000_social_link_image_url'
 import * as migration_20260602_161500_main_banner_linked_content_items from './20260602_161500_main_banner_linked_content_items'
+import * as migration_20260602_173000_main_banner_autoplay_settings from './20260602_173000_main_banner_autoplay_settings'
 
 export const migrations = [
   {
@@ -641,5 +642,10 @@ export const migrations = [
     up: migration_20260602_161500_main_banner_linked_content_items.up,
     down: migration_20260602_161500_main_banner_linked_content_items.down,
     name: '20260602_161500_main_banner_linked_content_items',
+  },
+  {
+    up: migration_20260602_173000_main_banner_autoplay_settings.up,
+    down: migration_20260602_173000_main_banner_autoplay_settings.down,
+    name: '20260602_173000_main_banner_autoplay_settings',
   },
 ]

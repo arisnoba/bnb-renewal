@@ -26,23 +26,26 @@ export type MainBannerLinkItem = {
   type?: 'link'
 }
 
-export type MainBannerProfileItem = {
+export type MainBannerCardItem = {
+  buttonLabel?: string | null
   href: string
   image?: Media | number | string | null
   imageAlt?: string | null
   label: string
   name: string
   roleLabel?: string | null
-  type: 'profile'
+  type: 'card'
 }
 
-export type MainBannerMarqueeItem = MainBannerLinkItem | MainBannerProfileItem
+export type MainBannerMarqueeItem = MainBannerLinkItem | MainBannerCardItem
 
 type MainBannerSliderProps = {
+  autoplayDelay?: number
+  autoplayEnabled?: boolean
   banners: MainBannerSlide[]
 }
 
-const AUTOPLAY_DELAY = 5000
+export const DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY = 5000
 
 function isMedia(value: MainBannerSlide['desktopImage']): value is Media {
   return Boolean(value && typeof value === 'object')
@@ -60,7 +63,7 @@ function mediaAlt(value: MainBannerSlide['desktopImage'], fallback: string) {
   return isMedia(value) ? value.alt || fallback : fallback
 }
 
-function itemImageUrl(value: MainBannerProfileItem['image']) {
+function itemImageUrl(value: MainBannerCardItem['image']) {
   if (!value) {
     return ''
   }
@@ -72,8 +75,8 @@ function itemImageUrl(value: MainBannerProfileItem['image']) {
   return mediaUrl(value)
 }
 
-function isProfileItem(item: MainBannerMarqueeItem): item is MainBannerProfileItem {
-  return item.type === 'profile'
+function isCardItem(item: MainBannerMarqueeItem): item is MainBannerCardItem {
+  return item.type === 'card'
 }
 
 function BannerVisual({ banner }: { banner: MainBannerSlide }) {
@@ -121,7 +124,7 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
   const broadcaster = String(banner.broadcaster ?? '').trim()
   const description = String(banner.description ?? '').trim()
   const marqueeItems = banner.marqueeItems ?? []
-  const hasProfileItems = marqueeItems.some(isProfileItem)
+  const hasCardItems = marqueeItems.some(isCardItem)
 
   return (
     <section
@@ -135,7 +138,7 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
       <div
         className={cn(
           'container relative z-10 flex min-h-[520px] items-end pt-20 md:min-h-[640px]',
-          hasProfileItems
+          hasCardItems
             ? 'pb-64 md:pb-72'
             : marqueeItems.length > 0
               ? 'pb-28 md:pb-32'
@@ -162,10 +165,10 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
 }
 
 function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
-  const profileItems = items.filter(isProfileItem)
+  const cardItems = items.filter(isCardItem)
 
-  if (profileItems.length > 0) {
-    return <BannerProfileCards items={profileItems} />
+  if (cardItems.length > 0) {
+    return <BannerContentCards items={cardItems} />
   }
 
   return (
@@ -188,7 +191,7 @@ function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
   )
 }
 
-function BannerProfileCards({ items }: { items: MainBannerProfileItem[] }) {
+function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
   return (
     <div className="absolute inset-x-0 bottom-0 z-20 border-t border-white/10 bg-black/30 text-white backdrop-blur-sm">
       <div className="container overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -197,6 +200,7 @@ function BannerProfileCards({ items }: { items: MainBannerProfileItem[] }) {
             const imageUrl = itemImageUrl(item.image)
             const name = String(item.name ?? '').trim()
             const roleLabel = String(item.roleLabel ?? '').trim()
+            const buttonLabel = String(item.buttonLabel || '자세히 보기').trim()
 
             return (
               <article
@@ -224,11 +228,11 @@ function BannerProfileCards({ items }: { items: MainBannerProfileItem[] }) {
                     </p>
                   )}
                   <Link
-                    aria-label={`${name || '프로필'} 보기`}
+                    aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
                     className="mt-2 inline-flex h-7 w-full items-center justify-center border border-white/65 px-2 text-[11px] font-bold leading-none text-white transition-colors hover:border-white hover:bg-white/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                     href={item.href}
                   >
-                    <span>프로필 보기</span>
+                    <span>{buttonLabel}</span>
                     <span className="ml-1 text-red-500" aria-hidden="true">
                       &gt;
                     </span>
@@ -243,7 +247,17 @@ function BannerProfileCards({ items }: { items: MainBannerProfileItem[] }) {
   )
 }
 
-export function MainBannerSlider({ banners }: MainBannerSliderProps) {
+function normalizedAutoplayDelay(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+    ? value
+    : DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY
+}
+
+export function MainBannerSlider({
+  autoplayDelay = DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
+  autoplayEnabled = true,
+  banners,
+}: MainBannerSliderProps) {
   if (banners.length === 0) {
     return null
   }
@@ -254,10 +268,14 @@ export function MainBannerSlider({ banners }: MainBannerSliderProps) {
 
   return (
     <Swiper
-      autoplay={{
-        delay: AUTOPLAY_DELAY,
-        disableOnInteraction: false,
-      }}
+      autoplay={
+        autoplayEnabled
+          ? {
+              delay: normalizedAutoplayDelay(autoplayDelay),
+              disableOnInteraction: false,
+            }
+          : false
+      }
       className="main-banner-swiper"
       loop
       modules={[Autoplay]}

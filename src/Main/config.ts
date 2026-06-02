@@ -2,10 +2,22 @@ import type { Field, GlobalConfig, Validate } from 'payload'
 
 import { centerOptions, type CenterValue } from '@/collections/shared'
 
+const defaultAutoplayDelay = 5000
+
 const requiredValue =
   (message: string): Validate<unknown> =>
   (value) => {
     return value ? true : message
+  }
+
+const positiveNumber =
+  (message: string): Validate<unknown> =>
+  (value) => {
+    if (value === undefined || value === null || value === '') {
+      return true
+    }
+
+    return typeof value === 'number' && Number.isFinite(value) && value > 0 ? true : message
   }
 
 const centerLabelByValue = Object.fromEntries(
@@ -47,14 +59,40 @@ function centerBannerOrderField(center: CenterValue): Field {
   }
 }
 
+function centerBannerSettingFields(center: CenterValue): Field[] {
+  return [
+    {
+      name: `${center}BannerAutoplay`,
+      type: 'checkbox',
+      label: '오토플레이',
+      defaultValue: true,
+    },
+    {
+      name: `${center}BannerAutoplayDelay`,
+      type: 'number',
+      label: '전환속도(ms)',
+      defaultValue: defaultAutoplayDelay,
+      admin: {
+        components: {
+          Field:
+            '@/components/payload/MainBannerAutoplayDelayField#MainBannerAutoplayDelayField',
+        },
+        description: '자동 전환 간격입니다. 예: 5000 = 5초',
+        step: 100,
+      },
+      validate: positiveNumber('전환속도는 0보다 큰 숫자로 입력해야 합니다.'),
+    },
+  ]
+}
+
 export const Main: GlobalConfig = {
   slug: 'main',
-  label: '배너 순서',
+  label: '배너 설정',
   access: {
     read: () => true,
   },
   admin: {
-    group: '메인설정',
+    group: '메인 설정',
   },
   fields: [
     {
@@ -62,6 +100,7 @@ export const Main: GlobalConfig = {
       tabs: centerOptions.map((option) => ({
         label: option.label,
         fields: [
+          ...centerBannerSettingFields(option.value),
           centerBannerOrderField(option.value),
         ],
       })),

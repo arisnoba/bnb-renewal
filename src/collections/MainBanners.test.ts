@@ -73,7 +73,7 @@ test('main banners are managed as center-scoped posts', () => {
   assert.equal(MainBanners.slug, 'main-banners')
   assert.equal(MainBanners.labels?.plural, '메인 배너')
   assert.equal(MainBanners.labels?.singular, '메인 배너')
-  assert.equal(MainBanners.admin?.group, '메인설정')
+  assert.equal(MainBanners.admin?.group, '메인 설정')
   assert.equal(MainBanners.admin?.useAsTitle, 'title')
   assert.deepEqual(MainBanners.admin?.defaultColumns, [
     'title',
@@ -96,7 +96,7 @@ test('main banners are managed as center-scoped posts', () => {
     '@/components/payload/MainBannerProfileItemRowLabel#MainBannerProfileItemRowLabel',
   )
   assert.equal(profile.relationTo, 'profiles')
-  assert.equal(profile.filterOptions, undefined)
+  assert.equal(typeof profile.filterOptions, 'function')
   assert.equal(roleLabel.label, '역할/노출 문구')
   assert.equal(linkedExamReviewItems.type, 'array')
   assert.equal(
@@ -118,6 +118,38 @@ test('main banners are managed as center-scoped posts', () => {
     true,
   )
   assert.equal(MainBanners.hooks?.afterChange?.length, 2)
+})
+
+test('main banner linked profiles are filtered by selected center', () => {
+  const profile = getField(MainBanners, 'profile')
+
+  assert.equal(typeof profile.filterOptions, 'function')
+
+  const filterOptions = profile.filterOptions as (args: {
+    data?: Record<string, unknown>
+    siblingData?: Record<string, unknown>
+  }) => unknown
+
+  assert.deepEqual(filterOptions({ data: { center: 'kids' } }), {
+    centers: {
+      contains: 'kids',
+    },
+  })
+  assert.deepEqual(filterOptions({ data: { center: 'art' } }), {
+    centers: {
+      contains: 'art',
+    },
+  })
+  assert.deepEqual(filterOptions({ data: { center: 'exam' } }), {
+    id: {
+      equals: -1,
+    },
+  })
+  assert.deepEqual(filterOptions({}), {
+    id: {
+      equals: -1,
+    },
+  })
 })
 
 test('main banners can sync into center-specific order arrays without duplicates', () => {

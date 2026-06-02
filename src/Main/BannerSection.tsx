@@ -2,9 +2,10 @@ import type { ExamPassedReview, Main, MainBanner, Profile } from '@/payload-type
 import type { CenterSlug } from '@/lib/centers'
 
 import {
+  DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
   MainBannerSlider,
+  type MainBannerCardItem,
   type MainBannerMarqueeItem,
-  type MainBannerProfileItem,
   type MainBannerSlide,
 } from './BannerSlider.client'
 
@@ -17,6 +18,8 @@ type LinkedExamReviewItem = NonNullable<MainBanner['linkedExamReviewItems']>[num
 type LinkedProfileItem = NonNullable<MainBanner['linkedProfileItems']>[number]
 type MainBannerOrderField = `${CenterSlug}Banners`
 type MainBannerOrderRow = NonNullable<Main[MainBannerOrderField]>[number]
+type MainBannerAutoplayField = `${CenterSlug}BannerAutoplay`
+type MainBannerAutoplayDelayField = `${CenterSlug}BannerAutoplayDelay`
 
 const centerOrderField: Record<CenterSlug, MainBannerOrderField> = {
   art: 'artBanners',
@@ -24,6 +27,22 @@ const centerOrderField: Record<CenterSlug, MainBannerOrderField> = {
   exam: 'examBanners',
   highteen: 'highteenBanners',
   kids: 'kidsBanners',
+}
+
+const centerAutoplayField: Record<CenterSlug, MainBannerAutoplayField> = {
+  art: 'artBannerAutoplay',
+  avenue: 'avenueBannerAutoplay',
+  exam: 'examBannerAutoplay',
+  highteen: 'highteenBannerAutoplay',
+  kids: 'kidsBannerAutoplay',
+}
+
+const centerAutoplayDelayField: Record<CenterSlug, MainBannerAutoplayDelayField> = {
+  art: 'artBannerAutoplayDelay',
+  avenue: 'avenueBannerAutoplayDelay',
+  exam: 'examBannerAutoplayDelay',
+  highteen: 'highteenBannerAutoplayDelay',
+  kids: 'kidsBannerAutoplayDelay',
 }
 
 function parseDate(value: unknown) {
@@ -105,6 +124,10 @@ function mainBannerProfileImage(profile: Profile) {
   return profile.profileImageMedia || textValue(profile.profileImagePath) || null
 }
 
+function mainBannerExamReviewImage(review: ExamPassedReview) {
+  return textValue(review.studentImagePath) || null
+}
+
 export function mainBannerMarqueeItems(
   banner: MainBanner,
   center: CenterSlug,
@@ -120,16 +143,24 @@ export function mainBannerMarqueeItems(
           return null
         }
 
-        return {
+        const cardItem: MainBannerCardItem = {
+          type: 'card',
+          buttonLabel: '후기 보기',
           href,
+          image: mainBannerExamReviewImage(review),
+          imageAlt: textValue(review.studentName, review.title) || '합격후기',
           label: labelWithDetail(
             textValue(review.studentName, review.title),
             item.resultLabel,
             '합격후기',
           ),
+          name: textValue(review.studentName, review.title) || '합격후기',
+          roleLabel: textValue(item.resultLabel),
         }
+
+        return cardItem
       })
-      .filter((item): item is MainBannerMarqueeItem => Boolean(item))
+      .filter((item): item is MainBannerCardItem => Boolean(item))
   }
 
   return (banner.linkedProfileItems ?? [])
@@ -140,8 +171,9 @@ export function mainBannerMarqueeItems(
         return null
       }
 
-      const profileItem: MainBannerProfileItem = {
-        type: 'profile',
+      const cardItem: MainBannerCardItem = {
+        type: 'card',
+        buttonLabel: '프로필 보기',
         href: mainBannerProfileHref(profile, center),
         image: mainBannerProfileImage(profile),
         imageAlt: textValue(profile.name, profile.englishName) || '프로필',
@@ -150,9 +182,9 @@ export function mainBannerMarqueeItems(
         roleLabel: textValue(item.roleLabel),
       }
 
-      return profileItem
+      return cardItem
     })
-    .filter((item): item is MainBannerProfileItem => Boolean(item))
+    .filter((item): item is MainBannerCardItem => Boolean(item))
 }
 
 export function toSlide(banner: MainBanner, center: CenterSlug): MainBannerSlide {
@@ -168,6 +200,19 @@ export function toSlide(banner: MainBanner, center: CenterSlug): MainBannerSlide
   }
 }
 
+export function mainBannerAutoplaySettings(main: Main | null | undefined, center: CenterSlug) {
+  const autoplayValue = main?.[centerAutoplayField[center]]
+  const autoplayDelayValue = main?.[centerAutoplayDelayField[center]]
+
+  return {
+    autoplayDelay:
+      typeof autoplayDelayValue === 'number' && Number.isFinite(autoplayDelayValue) && autoplayDelayValue > 0
+        ? autoplayDelayValue
+        : DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
+    autoplayEnabled: autoplayValue === false ? false : true,
+  }
+}
+
 function rowBanner(row: MainBannerOrderRow): MainBanner | null {
   return row.banner && typeof row.banner === 'object' ? row.banner : null
 }
@@ -175,6 +220,7 @@ function rowBanner(row: MainBannerOrderRow): MainBanner | null {
 export function MainBannerSection({ center, main }: MainBannerSectionProps) {
   const now = new Date()
   const rows = main?.[centerOrderField[center]] ?? []
+  const autoplaySettings = mainBannerAutoplaySettings(main, center)
   const activeBanners = rows
     .map(rowBanner)
     .filter((banner): banner is MainBanner => Boolean(banner))
@@ -185,5 +231,5 @@ export function MainBannerSection({ center, main }: MainBannerSectionProps) {
     return null
   }
 
-  return <MainBannerSlider banners={activeBanners} />
+  return <MainBannerSlider banners={activeBanners} {...autoplaySettings} />
 }

@@ -9,10 +9,13 @@ type NamedField = Field & {
   name: string
   admin?: {
     components?: {
+      Field?: unknown
       RowLabel?: unknown
     }
+    description?: unknown
     initCollapsed?: boolean
   }
+  defaultValue?: unknown
   fields?: Field[]
   labels?: unknown
   relationTo?: unknown
@@ -60,8 +63,8 @@ function getNestedField(field: NamedField, fieldName: string) {
 
 test('main global exposes center-specific banner order arrays', async () => {
   assert.equal(Main.slug, 'main')
-  assert.equal(Main.label, '배너 순서')
-  assert.equal(Main.admin?.group, '메인설정')
+  assert.equal(Main.label, '배너 설정')
+  assert.equal(Main.admin?.group, '메인 설정')
 
   for (const [tabLabel, fieldName] of [
     ['아트센터', 'artBanners'],
@@ -70,9 +73,31 @@ test('main global exposes center-specific banner order arrays', async () => {
     ['하이틴센터', 'highteenBanners'],
     ['애비뉴센터', 'avenueBanners'],
   ] as const) {
+    const tab = getTab(Main, tabLabel)
+    const namedFields = tab.fields.filter(
+      (item): item is NamedField => 'name' in item,
+    )
+    const autoplay = namedFields[0]
+    const autoplayDelay = namedFields[1]
     const field = getTabField(Main, tabLabel, fieldName)
     const banner = getNestedField(field, 'banner')
 
+    assert.equal(autoplay.name, fieldName.replace('Banners', 'BannerAutoplay'))
+    assert.equal(autoplay.type, 'checkbox')
+    assert.equal(autoplay.label, '오토플레이')
+    assert.equal(autoplay.defaultValue, true)
+    assert.equal(autoplayDelay.name, fieldName.replace('Banners', 'BannerAutoplayDelay'))
+    assert.equal(autoplayDelay.type, 'number')
+    assert.equal(autoplayDelay.label, '전환속도(ms)')
+    assert.equal(autoplayDelay.defaultValue, 5000)
+    assert.equal(
+      autoplayDelay.admin?.components?.Field,
+      '@/components/payload/MainBannerAutoplayDelayField#MainBannerAutoplayDelayField',
+    )
+    assert.equal(
+      await autoplayDelay.validate?.(0, {}),
+      '전환속도는 0보다 큰 숫자로 입력해야 합니다.',
+    )
     assert.equal(field.type, 'array')
     assert.equal(field.admin?.initCollapsed, true)
     assert.equal(field.admin?.components?.RowLabel, '@/Main/RowLabel#MainBannerOrderRowLabel')

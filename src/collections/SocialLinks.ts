@@ -182,7 +182,7 @@ export const SocialLinks: CollectionConfig = {
       'createdAt',
       'updatedAt',
     ],
-    group: '메인설정',
+    group: '메인 설정',
     useAsTitle: 'title',
   },
   defaultSort: '-createdAt',

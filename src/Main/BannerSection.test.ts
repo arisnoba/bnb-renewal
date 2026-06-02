@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import type { ExamPassedReview, MainBanner, Media, Profile } from '@/payload-types'
+import type { ExamPassedReview, Main, MainBanner, Media, Profile } from '@/payload-types'
 
-import { mainBannerAnchorHref, mainBannerMarqueeItems, toSlide } from './BannerSection'
+import {
+  mainBannerAnchorHref,
+  mainBannerAutoplaySettings,
+  mainBannerMarqueeItems,
+  toSlide,
+} from './BannerSection'
 
 function profile(data: Partial<Profile>): Profile {
   return data as Profile
@@ -53,7 +58,8 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
   assert.equal(mainBannerAnchorHref('art'), '/art#profiles')
   assert.deepEqual(mainBannerMarqueeItems(banner, 'art'), [
     {
-      type: 'profile',
+      type: 'card',
+      buttonLabel: '프로필 보기',
       href: '/profiles/kim-actor',
       image: profileImage,
       imageAlt: '김배우',
@@ -62,7 +68,8 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
       roleLabel: '아이돌 연습생 역',
     },
     {
-      type: 'profile',
+      type: 'card',
+      buttonLabel: '프로필 보기',
       href: '/profiles/english-name',
       image: '/legacy/profile.jpg',
       imageAlt: 'English Name',
@@ -73,7 +80,8 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
   ])
   assert.deepEqual(toSlide(banner, 'avenue').marqueeItems, [
     {
-      type: 'profile',
+      type: 'card',
+      buttonLabel: '프로필 보기',
       href: '/profiles/kim-actor',
       image: profileImage,
       imageAlt: '김배우',
@@ -82,7 +90,8 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
       roleLabel: '아이돌 연습생 역',
     },
     {
-      type: 'profile',
+      type: 'card',
+      buttonLabel: '프로필 보기',
       href: '/profiles/english-name',
       image: '/legacy/profile.jpg',
       imageAlt: 'English Name',
@@ -100,7 +109,8 @@ test('main banner profile links fall back to center anchor when slug is missing'
 
   assert.deepEqual(mainBannerMarqueeItems(banner, 'art'), [
     {
-      type: 'profile',
+      type: 'card',
+      buttonLabel: '프로필 보기',
       href: '/art#profiles',
       image: null,
       imageAlt: '김배우',
@@ -117,11 +127,21 @@ test('main banner slides expose linked exam reviews for exam center', () => {
     linkedProfileItems: [{ profile: profile({ id: 1, name: '김배우' }) }],
     linkedExamReviewItems: [
       {
-        review: examReview({ id: 10, title: '서울예대 합격', studentName: '이학생' }),
+        review: examReview({
+          id: 10,
+          studentImagePath: '/legacy/exam-student-1.jpg',
+          studentName: '이학생',
+          title: '서울예대 합격',
+        }),
         resultLabel: '한예종, 세종대',
       },
       {
-        review: examReview({ id: 11, title: '', studentName: '박학생' }),
+        review: examReview({
+          id: 11,
+          studentImagePath: '/legacy/exam-student-2.jpg',
+          studentName: '박학생',
+          title: '',
+        }),
         resultLabel: '건국대',
       },
       { review: 12, resultLabel: '무시되는 항목' },
@@ -130,7 +150,58 @@ test('main banner slides expose linked exam reviews for exam center', () => {
 
   assert.equal(mainBannerAnchorHref('exam'), '/exam#exam-passed-reviews')
   assert.deepEqual(toSlide(banner, 'exam').marqueeItems, [
-    { href: '/exam#exam-passed-reviews', label: '이학생 | 한예종, 세종대' },
-    { href: '/exam#exam-passed-reviews', label: '박학생 | 건국대' },
+    {
+      type: 'card',
+      buttonLabel: '후기 보기',
+      href: '/exam#exam-passed-reviews',
+      image: '/legacy/exam-student-1.jpg',
+      imageAlt: '이학생',
+      label: '이학생 | 한예종, 세종대',
+      name: '이학생',
+      roleLabel: '한예종, 세종대',
+    },
+    {
+      type: 'card',
+      buttonLabel: '후기 보기',
+      href: '/exam#exam-passed-reviews',
+      image: '/legacy/exam-student-2.jpg',
+      imageAlt: '박학생',
+      label: '박학생 | 건국대',
+      name: '박학생',
+      roleLabel: '건국대',
+    },
   ])
+})
+
+test('main banner autoplay settings use center-specific main values', () => {
+  assert.deepEqual(mainBannerAutoplaySettings(null, 'art'), {
+    autoplayDelay: 5000,
+    autoplayEnabled: true,
+  })
+  assert.deepEqual(
+    mainBannerAutoplaySettings(
+      {
+        artBannerAutoplay: false,
+        artBannerAutoplayDelay: 2800,
+      } as Main,
+      'art',
+    ),
+    {
+      autoplayDelay: 2800,
+      autoplayEnabled: false,
+    },
+  )
+  assert.deepEqual(
+    mainBannerAutoplaySettings(
+      {
+        examBannerAutoplay: true,
+        examBannerAutoplayDelay: 0,
+      } as Main,
+      'exam',
+    ),
+    {
+      autoplayDelay: 5000,
+      autoplayEnabled: true,
+    },
+  )
 })

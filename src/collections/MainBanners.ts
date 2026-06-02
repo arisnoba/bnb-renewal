@@ -4,6 +4,7 @@ import type {
   CollectionBeforeValidateHook,
   CollectionConfig,
   Validate,
+  Where,
 } from 'payload'
 
 import type { MainBanner } from '@/payload-types'
@@ -170,6 +171,30 @@ function selectedCenter(data?: unknown, siblingData?: unknown) {
   return centerValues.has(center) ? center : undefined
 }
 
+function profileFilterForSelectedCenter({
+  data,
+  siblingData,
+}: {
+  data?: unknown
+  siblingData?: unknown
+}): Where {
+  const center = selectedCenter(data, siblingData)
+
+  if (!center || center === 'exam') {
+    return {
+      id: {
+        equals: -1,
+      },
+    }
+  }
+
+  return {
+    centers: {
+      contains: center,
+    },
+  }
+}
+
 const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
   if (!data) {
     return data
@@ -294,7 +319,7 @@ export const MainBanners: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['title', 'center', 'status', 'useReservation', 'updatedAt'],
-    group: '메인설정',
+    group: '메인 설정',
     useAsTitle: 'title',
   },
   defaultSort: '-updatedAt',
@@ -408,6 +433,7 @@ export const MainBanners: CollectionConfig = {
                   type: 'relationship',
                   label: '프로필',
                   relationTo: 'profiles',
+                  filterOptions: profileFilterForSelectedCenter,
                   validate: requiredValue('프로필을 선택해야 합니다.'),
                 },
                 {
