@@ -4,6 +4,10 @@ import test from 'node:test'
 import type { Field, GlobalConfig, Tab } from 'payload'
 
 import { Main } from './config'
+import {
+  mainBannerOrderBannerId,
+  mainBannerOrderBannerTitle,
+} from './rowLabelHelpers'
 
 type NamedField = Field & {
   name: string
@@ -105,4 +109,18 @@ test('main global exposes center-specific banner order arrays', async () => {
     assert.equal(banner.relationTo, 'main-banners')
     assert.equal(await banner.validate?.(null, {}), '배너를 선택해야 합니다.')
   }
+})
+
+test('main banner order row label helpers resolve relationship titles and ids', () => {
+  assert.equal(mainBannerOrderBannerTitle({ id: 1, title: '입시센터 메인 배너' }), '입시센터 메인 배너')
+  assert.equal(
+    mainBannerOrderBannerTitle({ relationTo: 'main-banners', value: { id: 2, title: '아트센터 메인 배너' } }),
+    '아트센터 메인 배너',
+  )
+  assert.equal(mainBannerOrderBannerTitle({ label: '선택된 배너 라벨', value: 3 }), '선택된 배너 라벨')
+  assert.equal(mainBannerOrderBannerTitle(4), '')
+
+  assert.equal(mainBannerOrderBannerId(4), '4')
+  assert.equal(mainBannerOrderBannerId({ id: 5, title: '배너' }), '5')
+  assert.equal(mainBannerOrderBannerId({ relationTo: 'main-banners', value: { id: 6 } }), '6')
 })

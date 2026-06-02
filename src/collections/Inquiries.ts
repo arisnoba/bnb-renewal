@@ -2,14 +2,14 @@ import type { Access, CollectionBeforeValidateHook, CollectionConfig, Validate }
 
 import { isGlobalAdminUser, userCenterValue } from './shared'
 
-type InquiryType = 'art' | 'admission' | 'highteen' | 'kids' | 'avenue' | 'partnership'
-type InquiryCenter = 'art' | 'exam' | 'highteen' | 'kids' | 'avenue'
+type InquiryType = 'art' | 'admission' | 'kids' | 'highteen' | 'avenue' | 'partnership'
+type InquiryCenter = 'art' | 'exam' | 'kids' | 'highteen' | 'avenue'
 
 const inquiryTypeOptions = [
   { label: '아트', value: 'art' },
   { label: '입시', value: 'admission' },
-  { label: '하이틴', value: 'highteen' },
   { label: '키즈', value: 'kids' },
+  { label: '하이틴', value: 'highteen' },
   { label: '애비뉴', value: 'avenue' },
   { label: '제휴', value: 'partnership' },
 ]
@@ -17,8 +17,8 @@ const inquiryTypeOptions = [
 const inquiryCenterOptions = [
   { label: '아트센터', value: 'art' },
   { label: '입시센터', value: 'exam' },
-  { label: '하이틴센터', value: 'highteen' },
   { label: '키즈센터', value: 'kids' },
+  { label: '하이틴센터', value: 'highteen' },
   { label: '애비뉴센터', value: 'avenue' },
 ]
 

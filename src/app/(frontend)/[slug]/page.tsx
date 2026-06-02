@@ -116,7 +116,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const main = center ? await queryMainGlobal() : null
 
   return (
-    <article className="pt-16 pb-24">
+    <main className="">
       <PageClient />
 
       {draft && <LivePreviewListener />}
@@ -128,7 +128,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       )}
       <RenderBlocks blocks={layout} />
       {center && <SocialLinksSection center={center} />}
-    </article>
+    </main>
   )
 }
 
