@@ -17,6 +17,8 @@ import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 }
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { MainBannerProfileItemRowLabel as MainBannerProfileItemRowLabel_61d6a8b511fb8512e197feab19aa1a04 } from '@/components/payload/MainBannerProfileItemRowLabel'
+import { MainBannerExamReviewItemRowLabel as MainBannerExamReviewItemRowLabel_f7311788e7704ada130e7ce22f3ee48f } from '@/components/payload/MainBannerExamReviewItemRowLabel'
 import { SocialLinkImagePreviewField as SocialLinkImagePreviewField_ad630b611e20c4e31bd53349dd0bb29b } from '@/components/payload/SocialLinkImagePreviewField'
 import { HistoryMonthItemRowLabel as HistoryMonthItemRowLabel_4e0cc1a03b1062528e5e10e749266102 } from '@/components/payload/HistoryMonthItemRowLabel'
 import { HistoryMonthRowLabel as HistoryMonthRowLabel_e8b54ef1d32045b98c739875fe8de3db } from '@/components/payload/HistoryMonthRowLabel'
@@ -89,6 +91,8 @@ export const importMap = {
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/payload/MainBannerProfileItemRowLabel#MainBannerProfileItemRowLabel": MainBannerProfileItemRowLabel_61d6a8b511fb8512e197feab19aa1a04,
+  "@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel": MainBannerExamReviewItemRowLabel_f7311788e7704ada130e7ce22f3ee48f,
   "@/components/payload/SocialLinkImagePreviewField#SocialLinkImagePreviewField": SocialLinkImagePreviewField_ad630b611e20c4e31bd53349dd0bb29b,
   "@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel": HistoryMonthItemRowLabel_4e0cc1a03b1062528e5e10e749266102,
   "@/components/payload/HistoryMonthRowLabel#HistoryMonthRowLabel": HistoryMonthRowLabel_e8b54ef1d32045b98c739875fe8de3db,

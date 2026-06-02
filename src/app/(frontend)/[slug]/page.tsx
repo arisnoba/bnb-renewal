@@ -138,7 +138,7 @@ const queryMainGlobal = cache(async () => {
 
     return (await payload.findGlobal({
       slug: 'main',
-      depth: 2,
+      depth: 3,
     })) as Main
   } catch {
     return null

@@ -4,6 +4,7 @@ import type { CenterSlug } from '@/lib/centers'
 import {
   MainBannerSlider,
   type MainBannerMarqueeItem,
+  type MainBannerProfileItem,
   type MainBannerSlide,
 } from './BannerSlider.client'
 
@@ -12,8 +13,8 @@ type MainBannerSectionProps = {
   main?: Main | null
 }
 
-type LinkedExamReview = NonNullable<MainBanner['linkedExamReviews']>[number]
-type LinkedProfile = NonNullable<MainBanner['linkedProfiles']>[number]
+type LinkedExamReviewItem = NonNullable<MainBanner['linkedExamReviewItems']>[number]
+type LinkedProfileItem = NonNullable<MainBanner['linkedProfileItems']>[number]
 type MainBannerOrderField = `${CenterSlug}Banners`
 type MainBannerOrderRow = NonNullable<Main[MainBannerOrderField]>[number]
 
@@ -72,12 +73,22 @@ function textValue(...values: unknown[]) {
   return ''
 }
 
-function isProfile(value: LinkedProfile): value is Profile {
+function isProfile(value: LinkedProfileItem['profile']): value is Profile {
   return Boolean(value && typeof value === 'object')
 }
 
-function isExamReview(value: LinkedExamReview): value is ExamPassedReview {
+function isExamReview(value: LinkedExamReviewItem['review']): value is ExamPassedReview {
   return Boolean(value && typeof value === 'object')
+}
+
+function labelWithDetail(primary: string, detail: unknown, fallback: string) {
+  const detailText = textValue(detail)
+
+  if (primary && detailText) {
+    return `${primary} | ${detailText}`
+  }
+
+  return primary || detailText || fallback
 }
 
 export function mainBannerAnchorHref(center: CenterSlug) {
@@ -90,6 +101,10 @@ function mainBannerProfileHref(profile: Profile, center: CenterSlug) {
   return slug ? `/profiles/${encodeURIComponent(slug)}` : mainBannerAnchorHref(center)
 }
 
+function mainBannerProfileImage(profile: Profile) {
+  return profile.profileImageMedia || textValue(profile.profileImagePath) || null
+}
+
 export function mainBannerMarqueeItems(
   banner: MainBanner,
   center: CenterSlug,
@@ -97,20 +112,47 @@ export function mainBannerMarqueeItems(
   const href = mainBannerAnchorHref(center)
 
   if (center === 'exam') {
-    return (banner.linkedExamReviews ?? [])
-      .filter(isExamReview)
-      .map((review) => ({
-        href,
-        label: textValue(review.title, review.studentName) || '합격후기',
-      }))
+    return (banner.linkedExamReviewItems ?? [])
+      .map((item) => {
+        const review = item.review
+
+        if (!isExamReview(review)) {
+          return null
+        }
+
+        return {
+          href,
+          label: labelWithDetail(
+            textValue(review.studentName, review.title),
+            item.resultLabel,
+            '합격후기',
+          ),
+        }
+      })
+      .filter((item): item is MainBannerMarqueeItem => Boolean(item))
   }
 
-  return (banner.linkedProfiles ?? [])
-    .filter(isProfile)
-    .map((profile) => ({
-      href: mainBannerProfileHref(profile, center),
-      label: textValue(profile.name, profile.englishName) || '프로필',
-    }))
+  return (banner.linkedProfileItems ?? [])
+    .map((item) => {
+      const profile = item.profile
+
+      if (!isProfile(profile)) {
+        return null
+      }
+
+      const profileItem: MainBannerProfileItem = {
+        type: 'profile',
+        href: mainBannerProfileHref(profile, center),
+        image: mainBannerProfileImage(profile),
+        imageAlt: textValue(profile.name, profile.englishName) || '프로필',
+        label: labelWithDetail(textValue(profile.name, profile.englishName), item.roleLabel, '프로필'),
+        name: textValue(profile.name, profile.englishName) || '프로필',
+        roleLabel: textValue(item.roleLabel),
+      }
+
+      return profileItem
+    })
+    .filter((item): item is MainBannerProfileItem => Boolean(item))
 }
 
 export function toSlide(banner: MainBanner, center: CenterSlug): MainBannerSlide {

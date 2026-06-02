@@ -20,10 +20,23 @@ export type MainBannerSlide = {
   title?: string | null
 }
 
-export type MainBannerMarqueeItem = {
+export type MainBannerLinkItem = {
   href: string
   label: string
+  type?: 'link'
 }
+
+export type MainBannerProfileItem = {
+  href: string
+  image?: Media | number | string | null
+  imageAlt?: string | null
+  label: string
+  name: string
+  roleLabel?: string | null
+  type: 'profile'
+}
+
+export type MainBannerMarqueeItem = MainBannerLinkItem | MainBannerProfileItem
 
 type MainBannerSliderProps = {
   banners: MainBannerSlide[]
@@ -45,6 +58,22 @@ function mediaUrl(value: MainBannerSlide['desktopImage']) {
 
 function mediaAlt(value: MainBannerSlide['desktopImage'], fallback: string) {
   return isMedia(value) ? value.alt || fallback : fallback
+}
+
+function itemImageUrl(value: MainBannerProfileItem['image']) {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'string') {
+    return value
+  }
+
+  return mediaUrl(value)
+}
+
+function isProfileItem(item: MainBannerMarqueeItem): item is MainBannerProfileItem {
+  return item.type === 'profile'
 }
 
 function BannerVisual({ banner }: { banner: MainBannerSlide }) {
@@ -92,6 +121,7 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
   const broadcaster = String(banner.broadcaster ?? '').trim()
   const description = String(banner.description ?? '').trim()
   const marqueeItems = banner.marqueeItems ?? []
+  const hasProfileItems = marqueeItems.some(isProfileItem)
 
   return (
     <section
@@ -105,7 +135,11 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
       <div
         className={cn(
           'container relative z-10 flex min-h-[520px] items-end pt-20 md:min-h-[640px]',
-          marqueeItems.length > 0 ? 'pb-28 md:pb-32' : 'pb-14 md:pb-20',
+          hasProfileItems
+            ? 'pb-64 md:pb-72'
+            : marqueeItems.length > 0
+              ? 'pb-28 md:pb-32'
+              : 'pb-14 md:pb-20',
         )}
       >
         <div className="max-w-3xl">
@@ -128,6 +162,12 @@ function BannerSlide({ banner, isSingle = false }: { banner: MainBannerSlide; is
 }
 
 function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
+  const profileItems = items.filter(isProfileItem)
+
+  if (profileItems.length > 0) {
+    return <BannerProfileCards items={profileItems} />
+  }
+
   return (
     <div className="absolute inset-x-0 bottom-0 z-20 border-t border-white/15 bg-black/35 text-white backdrop-blur-sm">
       <div className="container overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -142,6 +182,61 @@ function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
               <span className="truncate whitespace-nowrap">{item.label}</span>
             </Link>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BannerProfileCards({ items }: { items: MainBannerProfileItem[] }) {
+  return (
+    <div className="absolute inset-x-0 bottom-0 z-20 border-t border-white/10 bg-black/30 text-white backdrop-blur-sm">
+      <div className="container overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-max min-w-full gap-3 pr-4">
+          {items.map((item, index) => {
+            const imageUrl = itemImageUrl(item.image)
+            const name = String(item.name ?? '').trim()
+            const roleLabel = String(item.roleLabel ?? '').trim()
+
+            return (
+              <article
+                className="w-[112px] shrink-0 border border-white/15 bg-black/78 shadow-[0_14px_30px_rgba(0,0,0,0.35)] md:w-[128px]"
+                key={`${item.href}-${item.label}-${index}`}
+              >
+                <div className="aspect-[4/5] overflow-hidden bg-white/8">
+                  {imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt={item.imageAlt || name || '프로필'}
+                      className="h-full w-full object-cover"
+                      loading="eager"
+                      src={imageUrl}
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-white/10" />
+                  )}
+                </div>
+                <div className="px-2.5 pb-2.5 pt-2 text-center">
+                  <h3 className="truncate text-xs font-bold leading-4 text-white">{name}</h3>
+                  {roleLabel && (
+                    <p className="mt-0.5 truncate text-[11px] font-medium leading-4 text-white/72">
+                      {roleLabel}
+                    </p>
+                  )}
+                  <Link
+                    aria-label={`${name || '프로필'} 보기`}
+                    className="mt-2 inline-flex h-7 w-full items-center justify-center border border-white/65 px-2 text-[11px] font-bold leading-none text-white transition-colors hover:border-white hover:bg-white/12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    href={item.href}
+                  >
+                    <span>프로필 보기</span>
+                    <span className="ml-1 text-red-500" aria-hidden="true">
+                      &gt;
+                    </span>
+                  </Link>
+                </div>
+              </article>
+            )
+          })}
         </div>
       </div>
     </div>

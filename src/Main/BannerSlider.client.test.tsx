@@ -31,6 +31,34 @@ test('main banner renders marquee links when linked content exists', () => {
   assert.match(html, /김배우/)
 })
 
+test('main banner renders profile cards when linked profiles exist', () => {
+  const html = render({
+    desktopImage: image,
+    marqueeItems: [
+      {
+        type: 'profile',
+        href: '/profiles/kim-actor',
+        image: {
+          ...image,
+          alt: '김배우 프로필',
+          url: '/media/profile.jpg',
+        },
+        imageAlt: '김배우',
+        label: '김배우 | 아이돌 연습생 역',
+        name: '김배우',
+        roleLabel: '아이돌 연습생 역',
+      },
+    ],
+    title: '메인 배너',
+  })
+
+  assert.match(html, /src="\/media\/profile\.jpg\?2026-01-01T00%3A00%3A00\.000Z"/)
+  assert.match(html, /김배우/)
+  assert.match(html, /아이돌 연습생 역/)
+  assert.match(html, /프로필 보기/)
+  assert.match(html, /href="\/profiles\/kim-actor"/)
+})
+
 test('main banner skips marquee links when linked content is empty', () => {
   const html = render({
     desktopImage: image,

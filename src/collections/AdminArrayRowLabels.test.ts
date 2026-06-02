@@ -214,6 +214,7 @@ test("exam passed review interviews use question row labels", () => {
 test("exam passed review omits cohort field", () => {
   const studentName = getTopLevelField(ExamPassedReviews, "studentName");
 
+  assert.equal(ExamPassedReviews.admin?.useAsTitle, "studentName");
   assert.equal(studentName.type, "text");
   assert.equal(studentName.label, "학생명");
   assert.equal(studentName.required, true);

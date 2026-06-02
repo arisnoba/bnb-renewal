@@ -95,7 +95,7 @@ export const ExamPassedReviews: CollectionConfig = {
     defaultColumns: ["title", "slug", "centers", "authorName", "school", "publishedAt", "updatedAt"],
     group: "입시센터 후기/합격",
     hidden: ({ user }) => isExamAdminMenuHidden(user),
-    useAsTitle: "title",
+    useAsTitle: "studentName",
   },
   defaultSort: "-publishedAt",
   hooks: {

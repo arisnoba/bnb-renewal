@@ -13,6 +13,9 @@ import {
 type NamedField = Field & {
   name: string
   admin?: {
+    components?: {
+      RowLabel?: unknown
+    }
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => unknown
     position?: unknown
   }
@@ -80,18 +83,38 @@ test('main banners are managed as center-scoped posts', () => {
     'updatedAt',
   ])
 
-  assert.equal(getField(MainBanners, 'linkedProfiles').relationTo, 'profiles')
-  assert.equal(getField(MainBanners, 'linkedExamReviews').relationTo, 'exam-passed-reviews')
+  const linkedProfileItems = getField(MainBanners, 'linkedProfileItems')
+  const linkedExamReviewItems = getField(MainBanners, 'linkedExamReviewItems')
+  const profile = getField(MainBanners, 'profile')
+  const roleLabel = getField(MainBanners, 'roleLabel')
+  const review = getField(MainBanners, 'review')
+  const resultLabel = getField(MainBanners, 'resultLabel')
+
+  assert.equal(linkedProfileItems.type, 'array')
   assert.equal(
-    getField(MainBanners, 'linkedProfiles').admin?.condition?.({}, { center: 'art' }),
+    linkedProfileItems.admin?.components?.RowLabel,
+    '@/components/payload/MainBannerProfileItemRowLabel#MainBannerProfileItemRowLabel',
+  )
+  assert.equal(profile.relationTo, 'profiles')
+  assert.equal(profile.filterOptions, undefined)
+  assert.equal(roleLabel.label, '역할/노출 문구')
+  assert.equal(linkedExamReviewItems.type, 'array')
+  assert.equal(
+    linkedExamReviewItems.admin?.components?.RowLabel,
+    '@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel',
+  )
+  assert.equal(review.relationTo, 'exam-passed-reviews')
+  assert.equal(resultLabel.label, '합격 대학/노출 문구')
+  assert.equal(
+    linkedProfileItems.admin?.condition?.({}, { center: 'art' }),
     true,
   )
   assert.equal(
-    getField(MainBanners, 'linkedProfiles').admin?.condition?.({}, { center: 'exam' }),
+    linkedProfileItems.admin?.condition?.({}, { center: 'exam' }),
     false,
   )
   assert.equal(
-    getField(MainBanners, 'linkedExamReviews').admin?.condition?.({}, { center: 'exam' }),
+    linkedExamReviewItems.admin?.condition?.({}, { center: 'exam' }),
     true,
   )
   assert.equal(MainBanners.hooks?.afterChange?.length, 2)
@@ -157,6 +180,8 @@ test('main banners validate required fields and reservation range', async () => 
   const center = getField(MainBanners, 'center')
   const status = getField(MainBanners, 'status')
   const desktopImage = getField(MainBanners, 'desktopImage')
+  const linkedProfileItems = getField(MainBanners, 'linkedProfileItems')
+  const linkedExamReviewItems = getField(MainBanners, 'linkedExamReviewItems')
   const publishStartAt = getField(MainBanners, 'publishStartAt')
   const publishEndAt = getField(MainBanners, 'publishEndAt')
 
@@ -164,6 +189,20 @@ test('main banners validate required fields and reservation range', async () => 
   assert.equal(await center.validate?.('', {}), '센터를 선택해야 합니다.')
   assert.equal(await status.validate?.('', {}), '상태를 선택해야 합니다.')
   assert.equal(await desktopImage.validate?.(null, {}), '데스크톱 이미지를 선택해야 합니다.')
+  assert.equal(
+    await linkedProfileItems.validate?.(
+      [{ profile: 3 }, { profile: { id: 3, name: '중복 프로필' } }],
+      {},
+    ),
+    '같은 프로필은 한 번만 연결할 수 있습니다.',
+  )
+  assert.equal(
+    await linkedExamReviewItems.validate?.(
+      [{ review: 7 }, { review: { id: 7, title: '중복 합격후기' } }],
+      {},
+    ),
+    '같은 합격후기는 한 번만 연결할 수 있습니다.',
+  )
   assert.equal(publishStartAt.defaultValue instanceof Function, true)
   assert.equal(
     await publishStartAt.validate?.(null, {

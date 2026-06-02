@@ -4,7 +4,6 @@ import type {
   CollectionBeforeValidateHook,
   CollectionConfig,
   Validate,
-  Where,
 } from 'payload'
 
 import type { MainBanner } from '@/payload-types'
@@ -73,6 +72,48 @@ const requiredValue =
     return value ? true : message
   }
 
+function relationshipId(value: unknown) {
+  if (!value) {
+    return ''
+  }
+
+  if (typeof value === 'object') {
+    return String((value as { id?: unknown }).id ?? '').trim()
+  }
+
+  return String(value).trim()
+}
+
+const uniqueRelationshipRows =
+  (fieldName: string, message: string): Validate<unknown[]> =>
+  (value) => {
+    if (!Array.isArray(value)) {
+      return true
+    }
+
+    const seen = new Set<string>()
+
+    for (const row of value) {
+      if (!row || typeof row !== 'object') {
+        continue
+      }
+
+      const id = relationshipId((row as Record<string, unknown>)[fieldName])
+
+      if (!id) {
+        continue
+      }
+
+      if (seen.has(id)) {
+        return message
+      }
+
+      seen.add(id)
+    }
+
+    return true
+  }
+
 const requiredWhenReserved =
   (message: string): Validate<unknown, unknown, MainBannerData> =>
   (value, { siblingData }) => {
@@ -129,30 +170,6 @@ function selectedCenter(data?: unknown, siblingData?: unknown) {
   return centerValues.has(center) ? center : undefined
 }
 
-function profileFilterForSelectedCenter({
-  data,
-  siblingData,
-}: {
-  data?: unknown
-  siblingData?: unknown
-}): Where {
-  const center = selectedCenter(data, siblingData)
-
-  if (!center || center === 'exam') {
-    return {
-      id: {
-        equals: -1,
-      },
-    }
-  }
-
-  return {
-    centers: {
-      contains: center,
-    },
-  }
-}
-
 const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
   if (!data) {
     return data
@@ -166,9 +183,9 @@ const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalD
   }
 
   if (nextData.center === 'exam') {
-    nextData.linkedProfiles = []
+    nextData.linkedProfileItems = []
   } else {
-    nextData.linkedExamReviews = []
+    nextData.linkedExamReviewItems = []
   }
 
   if (!nextData.useReservation) {
@@ -365,28 +382,83 @@ export const MainBanners: CollectionConfig = {
               validate: requiredValue('센터를 선택해야 합니다.'),
             },
             {
-              name: 'linkedProfiles',
-              type: 'relationship',
+              name: 'linkedProfileItems',
+              type: 'array',
               label: '연결 프로필',
-              filterOptions: profileFilterForSelectedCenter,
-              hasMany: true,
-              relationTo: 'profiles',
+              labels: {
+                plural: '연결 프로필',
+                singular: '연결 프로필',
+              },
               admin: {
                 condition: (_data, siblingData) =>
                   siblingData?.center && siblingData.center !== 'exam',
+                components: {
+                  RowLabel:
+                    '@/components/payload/MainBannerProfileItemRowLabel#MainBannerProfileItemRowLabel',
+                },
                 description: '입시센터 외 센터는 배우 프로필을 연결합니다.',
               },
+              validate: uniqueRelationshipRows(
+                'profile',
+                '같은 프로필은 한 번만 연결할 수 있습니다.',
+              ),
+              fields: [
+                {
+                  name: 'profile',
+                  type: 'relationship',
+                  label: '프로필',
+                  relationTo: 'profiles',
+                  validate: requiredValue('프로필을 선택해야 합니다.'),
+                },
+                {
+                  name: 'roleLabel',
+                  type: 'text',
+                  label: '역할/노출 문구',
+                  admin: {
+                    description: '예: 아이돌 연습생 역, 여주 역',
+                  },
+                  validate: requiredText('역할/노출 문구를 입력해야 합니다.'),
+                },
+              ],
             },
             {
-              name: 'linkedExamReviews',
-              type: 'relationship',
+              name: 'linkedExamReviewItems',
+              type: 'array',
               label: '연결 합격후기',
-              hasMany: true,
-              relationTo: 'exam-passed-reviews',
+              labels: {
+                plural: '연결 합격후기',
+                singular: '연결 합격후기',
+              },
               admin: {
                 condition: (_data, siblingData) => siblingData?.center === 'exam',
+                components: {
+                  RowLabel:
+                    '@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel',
+                },
                 description: '입시센터 배너는 합격후기를 연결합니다.',
               },
+              validate: uniqueRelationshipRows(
+                'review',
+                '같은 합격후기는 한 번만 연결할 수 있습니다.',
+              ),
+              fields: [
+                {
+                  name: 'review',
+                  type: 'relationship',
+                  label: '합격후기',
+                  relationTo: 'exam-passed-reviews',
+                  validate: requiredValue('합격후기를 선택해야 합니다.'),
+                },
+                {
+                  name: 'resultLabel',
+                  type: 'text',
+                  label: '합격 대학/노출 문구',
+                  admin: {
+                    description: '예: 한예종, 세종대, 건국대',
+                  },
+                  validate: requiredText('합격 대학/노출 문구를 입력해야 합니다.'),
+                },
+              ],
             },
           ],
         },
