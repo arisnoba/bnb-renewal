@@ -117,7 +117,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const statistics = center ? await queryMainStatisticsGlobal() : null
 
   return (
-    <main className="">
+    <main className={center ? 'page-static page-static--center' : 'page-static'}>
       <PageClient />
 
       {draft && <LivePreviewListener />}

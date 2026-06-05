@@ -64,7 +64,7 @@ export default async function NewsDetail({ params: paramsPromise }: Args) {
   const body = hasLexicalContent(news.body) ? news.body : undefined
 
   return (
-    <article className="pt-20 pb-24">
+    <article className="pt-20 pb-24 page-detail">
       <PageClient />
 
       <header className="container max-w-5xl">

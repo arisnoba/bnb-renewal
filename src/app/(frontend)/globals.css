@@ -80,6 +80,12 @@
 
 :root {
   --admin-bar-height: 0px;
+  --site-header-height: 84px;
+  --page-top-offset: calc(
+    var(--admin-bar-height, 0px) +
+    var(--site-header-measured-height, var(--site-header-height, 84px))
+  );
+  --page-detail-padding-top: var(--page-top-offset);
   --brand: var(--color-brand-art);
   --background: oklch(100% 0 0deg);
   --foreground: oklch(14.5% 0 0deg);
@@ -117,6 +123,16 @@
   --success: oklch(78% 0.08 200deg);
   --warning: oklch(89% 0.1 75deg);
   --error: oklch(75% 0.15 25deg);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --site-header-height: 68px;
+  }
+}
+
+.page-detail {
+  padding-top: var(--page-detail-padding-top);
 }
 
 [data-center='art'] {

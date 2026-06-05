@@ -231,12 +231,57 @@ npm install pretendard
 - 반응형, 칼럼, display 등은 tw을 사용하여 직관적으로 작성한다.
 - 예외 요소(font-size, 각 section의 padding, margin)는 섹션 scss 또는 globals.css `@layer`에서 `clamp()`로 관리한다.
 - **각 섹션에는 `section-{name}` (kebab-case) classname이 필수**이며, 섹션 scss 파일로 컨트롤한다.
+- 페이지 루트에는 화면 타입을 구분하는 클래스가 필요하다. CMS 상세는 `page-detail`, Payload `pages` 기반 일반 정적 페이지는 `page-static`을 사용한다.
+
+### 페이지 타입 클래스
+
+| 클래스 | 적용 대상 | 역할 |
+|--------|-----------|------|
+| `page-detail` | `/news/[slug]`, `/artist-press/[slug]`, 프로필 상세처럼 개별 콘텐츠를 보여주는 상세 페이지 | 관리자 바와 고정 GNB 높이를 반영해 본문 시작 위치를 보정한다. |
+| `page-static` | `/`, `/{center}`, 기타 Payload `pages` 기반 정적 페이지 | 정적/섹션형 화면임을 표시한다. 기본 상단 padding은 강제하지 않는다. |
+| `page-static--center` | 센터 랜딩 정적 페이지 | 센터 전용 메인 배너/소셜 섹션을 포함하는 정적 페이지를 구분한다. |
+
+`page-detail`의 상단 여백은 Tailwind `pt-*` 값에 의존하지 않고 아래 전역 변수로 관리한다.
+
+```css
+:root {
+  --admin-bar-height: 0px;
+  --site-header-height: 84px;
+  --page-top-offset: calc(
+    var(--admin-bar-height, 0px) +
+    var(--site-header-measured-height, var(--site-header-height, 84px))
+  );
+  --page-detail-padding-top: var(--page-top-offset);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --site-header-height: 68px;
+  }
+}
+
+.page-detail {
+  padding-top: var(--page-detail-padding-top);
+}
+```
+
+- `--admin-bar-height`는 로그인한 관리자 바가 보일 때 실측값으로 갱신한다.
+- `--site-header-measured-height`는 렌더된 GNB 높이를 실측한 값이며, 없을 때는 `--site-header-height`를 fallback으로 사용한다.
+- 상세 페이지에서 `pt-20`, `pt-24` 같은 고정 상단 padding을 추가하더라도 최종 상단 padding은 `.page-detail` 규칙이 담당한다.
+- `page-static`에는 이 offset을 자동 적용하지 않는다. 정적 페이지 hero는 대개 GNB 오버레이를 전제로 하므로 화면별 섹션에서 직접 여백을 제어한다.
 
 ### 마크업 구조 패턴
 
 ```tsx
-// main > section.section-{name} > .container 구조 고정
-<main>
+// 상세 페이지: page-detail이 관리자 바 + GNB offset을 담당
+<article className="page-detail pb-24">
+  <header className="container">
+    {/* 상세 제목 */}
+  </header>
+</article>
+
+// 정적 페이지: page-static은 타입 표식이고, 섹션별 여백은 section scss에서 제어
+<main className="page-static">
   <section className="section-hero" data-center="art">
     <div className="container">
       {/* 콘텐츠 */}
@@ -295,6 +340,18 @@ npm install pretendard
 - 배경: 투명 (페이지 최상단, 이미지 위에 오버레이)
 - 텍스트 색상: `#FFFFFF`
 - 메뉴 아이템 간격: `80px`
+
+### GNB Hover / Mega Nav
+
+피그마 기준 노드: `38:9927`
+
+- 어떤 1depth 메뉴를 hover/focus해도 전체 1depth/2depth 구조가 한 번에 보이는 메가 메뉴를 사용한다.
+- 데스크톱 메가 메뉴는 GNB와 같은 검정 배경(`#0C0C0C`)을 쓰고, GNB 아래에 이어지는 패널로 렌더링한다.
+- 메가 메뉴 데이터는 `src/Header/Nav/menu.ts`에서만 관리한다. 데스크톱 hover 메뉴와 모바일 fullscreen 메뉴는 같은 데이터 구조를 재사용한다.
+- 현재 센터는 URL 첫 segment로 판단한다. 예: `/exam/news`는 입시센터 메뉴, `/kids/profiles/{slug}`는 키즈센터 메뉴, 센터 segment가 없으면 아트센터 메뉴를 fallback으로 쓴다.
+- 센터별로 없는 메뉴는 렌더링하지 않는다. 입시센터처럼 성격이 다른 센터는 1depth label도 `합격현황`, `합격자 소개`처럼 센터 문맥에 맞게 바꾼다.
+- 아직 공개 라우트가 없는 세부 메뉴는 깨진 경로를 만들지 않고 `/{center}#anchor` 형태로 연결한다. 실제 라우트가 생기면 menu 데이터의 `href`만 교체한다.
+- 모바일에서는 별도 메뉴 데이터를 만들지 않는다. 햄버거 버튼으로 같은 메가 메뉴 구조를 fullscreen 패널에 표시한다.
 
 ### Footer
 

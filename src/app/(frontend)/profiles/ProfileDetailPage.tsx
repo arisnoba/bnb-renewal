@@ -67,7 +67,7 @@ export async function ProfileDetailPage({
   const careerItems = profile.careerItems ?? []
 
   return (
-    <article className="pt-20 pb-24">
+    <article className="pt-20 pb-24 page-detail">
       <div className="container grid gap-12 lg:grid-cols-[minmax(280px,420px)_1fr] lg:items-start">
         <div className="overflow-hidden rounded-lg bg-muted">
           {hasMediaImage ? (
