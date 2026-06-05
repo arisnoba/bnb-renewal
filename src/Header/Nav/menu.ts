@@ -112,12 +112,20 @@ function avenueMenu(): HeaderMenuGroup[] {
 }
 
 function aboutItems(center: CenterSlug): HeaderMenuItem[] {
+  if (center === 'art') {
+    return [
+      { href: '/art#company', label: '회사 소개' },
+      { href: centerHref(center, 'about'), label: '센터 소개' },
+      { href: centerHref(center, 'facilities'), label: '시설 안내' },
+      { href: centerHref(center, 'location'), label: '오시는 길' },
+    ]
+  }
+
   return [
     { href: '/art#company', label: '회사 소개' },
     ...(center === 'exam' || center === 'highteen' || center === 'kids'
       ? [{ href: centerHref(center, 'greeting'), label: '대표인사말' }]
       : []),
-    ...(center === 'art' ? [{ href: centerHref(center, 'about'), label: '아트센터 소개' }] : []),
     ...(center === 'exam'
       ? [
           { href: centerHref(center, 'history'), label: '연혁' },
@@ -172,6 +180,16 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
+  if (center === 'art') {
+    return [
+      { href: centerHref(center, 'screen-appearances'), label: '드라마ㆍ광고 출연장면' },
+      { href: centerHref(center, 'casting-status'), label: '진행중인 캐스팅 출연현황' },
+      { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
+      { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
+      { href: centerHref(center, 'monthly-schedule'), label: '이달의 촬영ㆍ오디션 스케줄' },
+    ]
+  }
+
   return [
     { href: centerHref(center, 'screen-appearances'), label: '드라마ㆍ광고 출연장면' },
     { href: centerHref(center, 'casting-status'), label: '진행중인 캐스팅 출연현황' },
@@ -182,18 +200,14 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
           { href: centerHref(center, 'imground-casting'), label: 'IMGround 캐스팅' },
         ]
       : []),
-    ...(center === 'art' || center === 'highteen'
-      ? [{ href: centerHref(center, 'bx-model'), label: 'BX모델에이전시' }]
-      : []),
+    ...(center === 'highteen' ? [{ href: centerHref(center, 'bx-model'), label: 'BX모델에이전시' }] : []),
     ...(center === 'highteen'
       ? [
           { href: centerHref(center, 'direct-casting'), label: '다이렉트 캐스팅' },
           { href: centerHref(center, 'casting-news'), label: 'BNB 캐스팅 섭외뉴스' },
         ]
       : []),
-    ...(center === 'art' || center === 'highteen'
-      ? [{ href: '/audition', label: '오디션 지원하기' }]
-      : []),
+    ...(center === 'highteen' ? [{ href: '/audition', label: '오디션 지원하기' }] : []),
   ]
 }
 
@@ -206,21 +220,33 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
+  if (center === 'art') {
+    return [
+      { href: '/artist-press', label: 'BNB출신 아티스트' },
+      { href: centerHref(center, 'rookies'), label: 'BNB 루키' },
+    ]
+  }
+
   return [
     { href: centerHref(center, 'management-system'), label: '매니지먼트 시스템' },
-    ...(center === 'art' ? [{ href: centerHref(center, 'managers'), label: '매니저 소개' }] : []),
     { href: centerHref(center, 'schedule'), label: '촬영ㆍ오디션 스케줄' },
-    ...(center === 'art' || center === 'highteen'
-      ? [{ href: centerHref(center, 'rookies'), label: 'BNB 루키' }]
-      : []),
-    ...(center === 'art' ? [{ href: '/artist-press', label: 'BNB출신 아티스트' }] : []),
+    ...(center === 'highteen' ? [{ href: centerHref(center, 'rookies'), label: 'BNB 루키' }] : []),
     ...(center === 'kids' ? [{ href: centerHref(center, 'profiles'), label: '아역배우 프로필' }] : []),
-    ...(center === 'art' ? [{ href: centerHref(center, 'shooting-reviews'), label: '촬영후기' }] : []),
     { href: centerHref(center, 'profile-production'), label: '프로필 촬영ㆍ제작' },
   ]
 }
 
 function supportItems(center: CenterSlug): HeaderMenuItem[] {
+  if (center === 'art') {
+    return [
+      { href: `/${center}/news`, label: 'NEWS&NOTICE' },
+      { href: centerHref(center, 'admission'), label: '입학안내' },
+      { href: centerHref(center, 'how-to-use'), label: '학원100%이용법' },
+      { href: centerHref(center, 'starcard'), label: '스타카드 멤버쉽서비스' },
+      { href: '/test/faq', label: '자주하는 질문' },
+    ]
+  }
+
   return [
     { href: `/${center}/news`, label: 'NEWS&NOTICE' },
     { href: centerHref(center, 'admission'), label: '입학안내' },

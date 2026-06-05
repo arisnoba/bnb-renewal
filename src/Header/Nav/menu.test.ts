@@ -14,14 +14,22 @@ test('headerCenterFromPathname reads the first center segment with art fallback'
 })
 
 test('art mega menu exposes Figma baseline menu labels', () => {
+  const menu = getHeaderMenu('art')
   const labels = labelsFor('art')
 
-  assert.ok(labels.includes('배우앤배움'))
-  assert.ok(labels.includes('아트센터 소개'))
+  assert.deepEqual(
+    menu.map((group) => group.label),
+    ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
+  )
+  assert.ok(labels.includes('센터 소개'))
   assert.ok(labels.includes('등급제 교육관리시스템'))
   assert.ok(labels.includes('드라마ㆍ광고 출연장면'))
+  assert.ok(labels.includes('캐스팅 시스템'))
+  assert.ok(labels.includes('이달의 촬영ㆍ오디션 스케줄'))
   assert.ok(labels.includes('BNB출신 아티스트'))
   assert.ok(labels.includes('NEWS&NOTICE'))
+  assert.ok(!labels.includes('매니지먼트 시스템'))
+  assert.ok(!labels.includes('온라인 상담신청'))
 })
 
 test('exam mega menu swaps casting and artist columns for exam-specific content', () => {

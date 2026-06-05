@@ -347,11 +347,14 @@ npm install pretendard
 
 - 어떤 1depth 메뉴를 hover/focus해도 전체 1depth/2depth 구조가 한 번에 보이는 메가 메뉴를 사용한다.
 - 데스크톱 메가 메뉴는 GNB와 같은 검정 배경(`#0C0C0C`)을 쓰고, GNB 아래에 이어지는 패널로 렌더링한다.
+- 데스크톱 메가 메뉴 패널 안에서는 1depth 메뉴명을 다시 노출하지 않는다. 1depth는 상단 GNB 자체를 사용하고, 패널에는 각 1depth 아래의 2depth 목록만 같은 그리드 열에 맞춰 표시한다.
+- 데스크톱 hover 구조는 `nav > 1depth item > submenu` 형태를 유지한다. hover 이전에는 item padding을 좁게 두고, hover/open 상태에서는 item padding을 넓혀 1depth 간격을 확장한다. 2depth는 별도 그리드에 다시 배치하지 않고 각 1depth item 중앙 아래에 absolute로 붙인다.
 - 메가 메뉴 데이터는 `src/Header/Nav/menu.ts`에서만 관리한다. 데스크톱 hover 메뉴와 모바일 fullscreen 메뉴는 같은 데이터 구조를 재사용한다.
 - 현재 센터는 URL 첫 segment로 판단한다. 예: `/exam/news`는 입시센터 메뉴, `/kids/profiles/{slug}`는 키즈센터 메뉴, 센터 segment가 없으면 아트센터 메뉴를 fallback으로 쓴다.
 - 센터별로 없는 메뉴는 렌더링하지 않는다. 입시센터처럼 성격이 다른 센터는 1depth label도 `합격현황`, `합격자 소개`처럼 센터 문맥에 맞게 바꾼다.
 - 아직 공개 라우트가 없는 세부 메뉴는 깨진 경로를 만들지 않고 `/{center}#anchor` 형태로 연결한다. 실제 라우트가 생기면 menu 데이터의 `href`만 교체한다.
 - 모바일에서는 별도 메뉴 데이터를 만들지 않는다. 햄버거 버튼으로 같은 메가 메뉴 구조를 fullscreen 패널에 표시한다.
+- 아트센터 최종 1depth 구조는 `배우앤배움 / 교육 / 캐스팅 / 아티스트 / 지원센터`이며, 지원센터에는 `온라인 상담신청`을 2depth로 중복 배치하지 않는다.
 
 ### Footer
 

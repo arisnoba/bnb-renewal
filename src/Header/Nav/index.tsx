@@ -46,22 +46,36 @@ export const HeaderNav: React.FC = () => {
         onMouseLeave={() => setIsMegaOpen(false)}
       >
         <nav aria-label="주요 메뉴" className="site-header__nav">
-          {menuGroups.map((item) => (
-            <Link
-              className="site-header__nav-link"
-              href={item.href}
-              key={item.key}
-              onFocus={() => setIsMegaOpen(true)}
+          {menuGroups.map((group) => (
+            <div
+              className="site-header__desktop-item"
+              key={group.key}
+              style={desktopItemStyle(group)}
             >
-              {item.label}
-            </Link>
+              <Link
+                className="site-header__nav-link"
+                href={group.href}
+                onFocus={() => setIsMegaOpen(true)}
+              >
+                {group.label}
+              </Link>
+              <ul className="site-header__desktop-submenu">
+                {group.items.map((item) => (
+                  <li key={`${group.key}-${item.href}-${item.label}`}>
+                    <Link
+                      className="site-header__mega-link"
+                      href={item.href}
+                      onClick={() => setIsMegaOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </nav>
-        <MegaMenu
-          groups={menuGroups}
-          isOpen={isMegaOpen}
-          onLinkClick={() => setIsMegaOpen(false)}
-        />
+        <MegaMenu isOpen={isMegaOpen} />
       </div>
       <div className="site-header__actions">
         <Link className="site-header__consult" href="/consult">
@@ -110,23 +124,13 @@ export const HeaderNav: React.FC = () => {
   )
 }
 
-function MegaMenu({
-  groups,
-  isOpen,
-  onLinkClick,
-}: {
-  groups: HeaderMenuGroup[]
-  isOpen: boolean
-  onLinkClick: () => void
-}) {
+function MegaMenu({ isOpen }: { isOpen: boolean }) {
   return (
     <div
       aria-hidden={!isOpen}
       className="site-header__mega"
       data-open={isOpen ? 'true' : 'false'}
-    >
-      <MenuColumns groups={groups} onLinkClick={onLinkClick} />
-    </div>
+    />
   )
 }
 
@@ -210,31 +214,30 @@ function MobileMenu({
   )
 }
 
-function MenuColumns({
-  groups,
-  onLinkClick,
-}: {
-  groups: HeaderMenuGroup[]
-  onLinkClick: () => void
-}) {
-  return (
-    <nav aria-label="전체 메뉴" className="site-header__mega-grid">
-      {groups.map((group) => (
-        <section className="site-header__mega-group" key={group.key}>
-          <Link className="site-header__mega-title" href={group.href} onClick={onLinkClick}>
-            {group.label}
-          </Link>
-          <ul className="site-header__mega-list">
-            {group.items.map((item) => (
-              <li key={`${group.key}-${item.href}-${item.label}`}>
-                <Link className="site-header__mega-link" href={item.href} onClick={onLinkClick}>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </nav>
+type DesktopItemStyle = React.CSSProperties & {
+  '--site-header-column-width': string
+  '--site-header-label-width': string
+}
+
+function desktopItemStyle(group: HeaderMenuGroup): DesktopItemStyle {
+  const labelWidth = visualLabelWidth(group.label)
+  const columnWidth = [group.label, ...group.items.map((item) => item.label)].reduce(
+    (max, label) => Math.max(max, visualLabelWidth(label)),
+    labelWidth,
   )
+
+  return {
+    '--site-header-column-width': `${Math.min(18, Math.max(7, columnWidth * 0.86 + 1.4)).toFixed(2)}rem`,
+    '--site-header-label-width': `${Math.min(12, Math.max(5.4, labelWidth * 0.92 + 1.2)).toFixed(2)}rem`,
+  }
+}
+
+function visualLabelWidth(label: string) {
+  return Array.from(label).reduce((width, character) => {
+    if (character === ' ') return width + 0.45
+    if (/[A-Za-z0-9&]/.test(character)) return width + 0.62
+    if (character === 'ㆍ') return width + 0.5
+
+    return width + 1
+  }, 0)
 }
