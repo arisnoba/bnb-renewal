@@ -1,7 +1,23 @@
 'use client'
 
-import { BarChart3, BookOpenCheck, CalendarDays, ClipboardCheck, Medal, Target } from 'lucide-react'
-import { useState } from 'react'
+import {
+  AudioLines,
+  Brain,
+  CalendarDays,
+  Clapperboard,
+  Drama,
+  FileText,
+  Heart,
+  Image,
+  Monitor,
+  ScanFace,
+  Sparkles,
+  Speech,
+  Users,
+  Video,
+} from 'lucide-react'
+import NextImage from 'next/image'
+import { useEffect, useState } from 'react'
 
 import { cn } from '@/utilities/ui'
 
@@ -9,45 +25,137 @@ type TabKey = 'steps' | 'criteria' | 'cohorts'
 
 const tabs = [
   { key: 'steps', label: '단계별 교육' },
-  { key: 'criteria', label: '등급·심사 기준' },
+  { key: 'criteria', label: '등급 · 심사 기준' },
   { key: 'cohorts', label: '기수 안내' },
 ] satisfies Array<{ key: TabKey; label: string }>
 
-const classes = [
+const gradeAssetBase = '/assets/art/grade-system'
+
+const stepClasses = [
   {
     className: 'I Class',
-    description: '기초 연기와 감각 훈련을 통해 카메라 앞에서 자신을 인식하는 단계입니다.',
-    goals: ['기본 호흡과 발성', '대본 읽기와 상황 이해', '카메라 적응'],
-    icon: BookOpenCheck,
-    title: '기초를 세우는 입문 과정',
+    cards: [
+      {
+        icon: Speech,
+        items: ['호흡/발성/발음/템포&리듬/억양/성량 훈련', '개인별 화술적 습관 분석 및 교정', '독백 대본으로 화술 훈련'],
+        title: '화술 훈련',
+      },
+      {
+        icon: Heart,
+        items: ["'나'로서 감정 표현하는 방법 알아보기", '정서적 경험과 체험 꺼내 놓기'],
+        title: '감정 훈련',
+      },
+      {
+        icon: ScanFace,
+        items: ['신체적으로 몸을 활용하는 방법 탐구 및 훈련'],
+        title: '신체 훈련',
+      },
+    ],
+    description:
+      "내가 배우로서 가진 재산이 무엇인지 알아보고, '나'를 활용하고 통제할 수 있게 훈련합니다. 배우가 자연스러운 연기를 하기 위해서는 본인이 가지고 있는 말과 신체에 대한 인지와 이해가 필요합니다. 배우앤배움의 초급 I-Class에서는 배우 본연의 정서-호흡-시선(행동)-화술에 관한 연구를 통해 '나'를 알아가는 과정을 공부하게 됩니다. 기초 연기의 훈련과정은 연기를 전달하는 데 기본적으로 필요한 말과 신체의 움직임을 시작으로 본인의 경험과 체험을 통한 감정 훈련으로 이어지게 되며, 교육목표는 '나를 움직이기 / 나로부터 시작하기 / 나를 공부하기' 세 가지로 이루어집니다.",
+    headline: "'나'를 움직이기 / '나'로부터 시작하기 / '나'를 공부하기",
+    label: '초급 I Class',
+    letter: 'I',
   },
   {
     className: 'R Class',
-    description: '개인별 강점과 약점을 분석하고 장면 훈련으로 표현 범위를 넓히는 단계입니다.',
-    goals: ['캐릭터 분석', '장면 연기', '피드백 반영'],
-    icon: Target,
-    title: '반복 훈련으로 완성도를 높이는 과정',
+    cards: [
+      {
+        icon: Users,
+        items: ['즉흥 2인극을 통해 즉발적 반응에 의한 진정성 찾기', '본인이 만든 이야기 속에서 즉흥적으로 상황과 부딪치기'],
+        title: '액팅&리액팅 훈련',
+      },
+      {
+        icon: Brain,
+        items: ['나의 정서와 연관된 텍스트 자기로부터의 출발 독백 연기', '2인극으로 서로 부딪치는 감정 훈련, 내 정서의 변화 관찰'],
+        title: '심화 감정 훈련',
+      },
+      {
+        icon: Video,
+        items: ['화면으로 보이는 본인의 모습과 행동을 관찰 및 분석', '카메라 프레임 안에서 몸을 움직이는 방법과 적합한 동선 알아보기'],
+        title: '카메라 훈련',
+      },
+      {
+        icon: FileText,
+        items: ['대본 전체 파악하는 방법 배우기', '대본의 상황과 인물 분석 방법 알아보기'],
+        title: '대본 이해와 분석',
+      },
+    ],
+    description:
+      "내 몸을 알아가고 컨트롤이 가능하기 시작할 때에 '나'로서 연기에 접하는 것을 훈련합니다. '나'로서의 대사처리, 움직임, 제스처, 리액션 등을 자연스럽게 표현할 수 있는 것이 중급 과정입니다. 대사와 카메라는 '나'로부터 접근해서 타인이 봤을 때 나의 상태가 명확히 보이게끔 자신을 확장하는 작업에 들어갑니다. 그러기 위해 카메라로 보여지는 본인의 모습을 보면서 화면상 자연스러운 연기기술과 카메라 프레임 속에서 필요한 움직임에 대한 부분을 연구합니다.",
+    headline: "'나'로서 연기하기",
+    label: '중급 R Class',
+    letter: 'R',
   },
   {
     className: 'U Class',
-    description: '오디션과 촬영 현장에 필요한 선택, 집중, 대응 능력을 체계적으로 다듬습니다.',
-    goals: ['오디션 독백', '상대 연기', '즉흥 대응'],
-    icon: ClipboardCheck,
-    title: '실전 감각을 만드는 심화 과정',
+    cards: [
+      {
+        icon: FileText,
+        items: ['대사의 감정선 파악과 연기의 기능전달 구성하기', '캐릭터의 이해와 성격구축'],
+        title: '대본&대사 집중 훈련',
+      },
+      {
+        icon: Monitor,
+        items: ['모니터링을 통해 연기의 디테일을 잡는 방법과 표현 구체화하기', '시선, 제스처, 비즈니스, 더블액션 훈련'],
+        title: '카메라 심화훈련',
+      },
+      {
+        icon: Sparkles,
+        items: ['배우로서의 본인만의 매력성을 찾아서 캐릭터 구축하기', '대본 안의 인물로서 매력 있는 정서표현 구현'],
+        title: '매력 개발',
+      },
+    ],
+    description:
+      "'나'로서 연기에 상당 부분을 채워나갔다면, 이제는 캐릭터로의 접근을 시도해야 합니다. 상상을 통해 캐릭터를 창조하는 동시에 장면 속에 매 순간 진정성이 촉발되는 순간을 만들어내는 작업을 통해 연기를 배웁니다. 카메라에서 비춰진 본인의 모습에서 디테일을 살릴 방법을 알아가고 더 나아가 본인에게 어울리는 이미지를 찾습니다. 마지막으로 자신이 배우로서의 매력을 키워낼 방법들을 연기 코치진과 함께 연구합니다.",
+    headline: "'나'를 변화시키기",
+    label: '고급 U Class',
+    letter: 'U',
   },
   {
     className: 'D Class',
-    description: '프로필, 오디션, 캐스팅을 연결해 현장 진입을 준비하는 고급 단계입니다.',
-    goals: ['캐스팅 대응', '촬영 매너', '현장형 연기'],
-    icon: Medal,
-    title: '현장 진입을 준비하는 실전 과정',
+    cards: [
+      {
+        icon: Image,
+        items: ['출연했던 작품 캐스팅 디렉터와 함께 연기 모니터링 후 액팅 리뷰', '나에게 어울리는 이미지 메이킹 찾기'],
+        title: '모니터링 훈련',
+      },
+      {
+        icon: ScanFace,
+        items: ['상황별(드라마/영화/연극) 오디션/미팅 테크닉 알아보기', '오디션을 통한 개인별 연기 스타일, 특징 분석'],
+        title: '오디션 훈련',
+      },
+      {
+        icon: Drama,
+        items: ['작품선정 타입 캐스팅 후 전체 대본 리딩', '배우의 씬 장악력과 감독 눈높이에 맞는 캐릭터 분석'],
+        title: '심화 연기 훈련',
+      },
+    ],
+    description:
+      '연기자가 필드에서 캐스팅 기회를 잡을 수 있도록 연기의 완성도를 높이고, 배우로서 본인의 장점을 개발하는 과정입니다. 본인의 존재감을 해당 작품의 감독과 캐스팅 디렉터에게 어필할 방법과 오디션과 미팅에서 돋보일 방법을 연구합니다. 특히 오디션별 특징을 분석해서 작품 또는 매체에 맞게끔 미팅을 준비하게 하고, 감독이 원하는 장면과 캐릭터를 표현하는 것에 대한 테크닉을 배웁니다. 전문 D-Class에서는 신인배우가 오디션과 미팅을 보고 작품에 출연하기까지의 전체적인 부분을 연기적·실용적인 부분에 맞춰 디테일하게 준비하는 과정을 담았습니다.',
+    headline: "'나'를 알려주기",
+    label: '전문 D Class',
+    letter: 'D',
   },
   {
     className: 'A Class',
-    description: '아티스트로서 필요한 자기관리와 작품 선택 역량까지 함께 점검합니다.',
-    goals: ['작품 분석', '오디션 전략', '커리어 관리'],
-    icon: BarChart3,
-    title: '데뷔와 활동을 바라보는 최종 과정',
+    cards: [
+      {
+        icon: Clapperboard,
+        items: ['원테이크, 롱테이크 촬영 및 모니터링', '촬영현장의 이해(감독, 작가, 카메라, 조명, 음향의 이해)를 통한 연기력 향상 방법 연구'],
+        title: '심화 모니터링 훈련',
+      },
+      {
+        icon: AudioLines,
+        items: ['상황별 현장 로케이션 연기 수업', '작품 안에서의 캐릭터 간 연기 앙상블 연구'],
+        title: '심화 연기 훈련',
+      },
+    ],
+    description:
+      '신인배우가 본격적인 활동과 함께 대중적으로 인정받은 이후에도 현장에서 좋은 연기를 계속 이어 나가려면 지속적인 모니터링과 자기개발이 필요합니다. 특히 작품의 모니터링에 있어 촬영 분량의 원테이크와 롱테이크 부분의 호흡을 자세히 살펴봅니다. 또한, 다음 로케이션 촬영의 대본준비와 함께 상황별 기술적인 부분에 대한 이해도를 높인 상태에서 현장을 준비합니다. 마지막으로 평소 작품을 쉬는 기간에는 최근 유명 감독들의 연출 스타일을 연구하고, 그 작품 캐릭터 간의 연기 앙상블 등을 공부합니다.',
+    headline: "'나'로서 활동하기",
+    label: '배우 A Class',
+    letter: 'A',
   },
 ]
 
@@ -288,14 +396,35 @@ function buildCohorts(date = new Date()): CohortRow[] {
 export function GradeSystemTabs() {
   const [activeTab, setActiveTab] = useState<TabKey>('steps')
 
+  useEffect(() => {
+    function syncHashTab() {
+      const hashTab = window.location.hash.replace('#', '') as TabKey
+
+      if (tabs.some((tab) => tab.key === hashTab)) {
+        setActiveTab(hashTab)
+      }
+    }
+
+    syncHashTab()
+    window.addEventListener('hashchange', syncHashTab)
+
+    return () => window.removeEventListener('hashchange', syncHashTab)
+  }, [])
+
   function selectTab(tab: TabKey) {
     setActiveTab(tab)
     window.history.replaceState(null, '', `#${tab}`)
   }
 
   return (
-    <section className="bg-[#111] text-white">
-      <div className="container py-14 md:py-20">
+    <section className="relative overflow-hidden bg-[#111] text-white">
+      {activeTab === 'steps' ? (
+        <>
+          <RedCornerGlyph className="left-0 top-[930px] hidden h-[360px] w-[229px] -translate-x-[42%] lg:block" />
+          <RedCornerGlyph className="right-0 top-[2900px] hidden h-[360px] w-[212px] translate-x-[46%] rotate-180 lg:block" />
+        </>
+      ) : null}
+      <div className="container relative py-14 md:py-20">
         <nav aria-label="등급제 교육관리시스템" className="mb-16 border-b border-white/10">
           <div className="flex min-w-0 gap-8 overflow-x-auto md:gap-20">
             {tabs.map((tab) => {
@@ -333,32 +462,25 @@ export function GradeSystemTabs() {
 
 function StepsPanel() {
   return (
-    <div className="flex flex-col gap-16 md:gap-20">
-      <section className="max-w-[860px]">
-        <p className="mb-6 text-sm font-semibold leading-none text-brand">IRUDA</p>
-        <h2 className="max-w-[1080px] text-[34px] font-extrabold leading-[1.25] tracking-normal [word-break:keep-all] md:text-[44px]">
+    <div className="flex flex-col gap-16 md:gap-24">
+      <section>
+        <h2 className="max-w-[900px] text-[34px] font-extrabold leading-[1.25] tracking-normal [word-break:keep-all] md:text-[48px]">
           IRUDA 연기트레이닝 시스템입니다.
           <br />
           아트센터의 모든 교육은 ‘나’로부터 시작됩니다.
         </h2>
-        <p className="mt-8 max-w-[720px] text-base leading-[1.8] text-white/55">
-          I am Ready to Undertake the Dedication of Acting. 배우앤배움 아트센터는
-          기초부터 실전까지 단계별 수업과 평가를 통해 배우의 가능성을 구체적인
-          성장으로 이어갑니다.
+        <p className="mt-12 max-w-[720px] text-base leading-[1.8] text-white/55">
+          <AcronymSentence />
+          <br />
+          각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.
         </p>
       </section>
 
-      <div aria-hidden="true" className="grid grid-cols-5 gap-2 opacity-20 md:gap-4">
-        {['I', 'R', 'U', 'D', 'A'].map((letter) => (
-          <span className="text-[24vw] font-black leading-[0.75] md:text-[170px]" key={letter}>
-            {letter}
-          </span>
-        ))}
-      </div>
+      <IrudaWordmark />
 
-      <div className="flex flex-col gap-12">
-        {classes.map((item, index) => (
-          <ClassSection index={index + 1} item={item} key={item.className} />
+      <div className="flex flex-col gap-20 md:gap-24">
+        {stepClasses.map((item) => (
+          <ClassSection item={item} key={item.className} />
         ))}
       </div>
     </div>
@@ -366,40 +488,114 @@ function StepsPanel() {
 }
 
 function ClassSection({
-  index,
   item,
 }: {
-  index: number
-  item: (typeof classes)[number]
+  item: (typeof stepClasses)[number]
 }) {
-  const Icon = item.icon
-
   return (
-    <section className="border-t border-white/10 pt-10">
-      <div className="grid gap-8 lg:grid-cols-[180px_minmax(0,1fr)]">
-        <div className="flex items-start gap-3">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-brand text-xs font-black text-white">
-            {index}
+    <section className="border-t border-white/10 pt-16">
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="flex items-start gap-3 lg:col-span-1">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-sm font-black text-white">
+            {item.letter}
           </span>
-          <h3 className="text-base font-extrabold leading-[1.4]">{item.className}</h3>
+          <h3 className="pt-1 text-[24px] font-extrabold leading-[1.3]">{item.label}</h3>
         </div>
-        <div>
-          <h4 className="text-xl font-extrabold leading-[1.45]">{item.title}</h4>
-          <p className="mt-5 max-w-[780px] text-sm leading-[1.8] text-white/50">{item.description}</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {item.goals.map((goal) => (
-              <div className="min-h-[132px] bg-[#202020] p-6" key={goal}>
-                <Icon aria-hidden="true" className="mb-8 text-white/25" size={22} strokeWidth={1.8} />
-                <p className="text-base font-bold leading-[1.45]">{goal}</p>
-                <p className="mt-3 text-xs leading-[1.6] text-white/38">
-                  개별 피드백과 반복 훈련을 통해 다음 단계로 연결합니다.
-                </p>
-              </div>
-            ))}
-          </div>
+        <div className="lg:col-span-2">
+          <h4 className="text-[22px] font-extrabold leading-[1.45]">{item.headline}</h4>
+          <p className="mt-9 max-w-[760px] text-[15px] leading-[1.95] text-white/50 [word-break:keep-all]">
+            {item.description}
+          </p>
         </div>
       </div>
+      <div
+        className={cn(
+          'mt-20 grid gap-5 md:grid-cols-2',
+          item.cards.length === 4
+            ? 'lg:grid-cols-4'
+            : item.cards.length === 2
+              ? 'lg:grid-cols-2'
+              : 'lg:grid-cols-3',
+        )}
+      >
+        {item.cards.map((card) => {
+          const Icon = card.icon
+
+          return (
+            <article className="min-h-[220px] rounded-[8px] bg-[#202020] p-8" key={card.title}>
+              <Icon
+                aria-hidden="true"
+                className="mb-12 text-white/25"
+                size={28}
+                strokeWidth={2}
+              />
+              <h5 className="text-base font-extrabold leading-[1.45]">{card.title}</h5>
+              <ul className="mt-5 space-y-2 text-sm leading-[1.7] text-white/48">
+                {card.items.map((text) => (
+                  <li className="grid grid-cols-[4px_minmax(0,1fr)] gap-2 [word-break:keep-all]" key={text}>
+                    <span aria-hidden="true" className="mt-[0.78em] h-0.5 w-0.5 rounded-full bg-white/48" />
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          )
+        })}
+      </div>
     </section>
+  )
+}
+
+function AcronymSentence() {
+  return (
+    <>
+      <span className="text-brand">I</span> am <span className="text-brand">R</span>eady to{' '}
+      <span className="text-brand">U</span>ndertake the <span className="text-brand">D</span>
+      edication of <span className="text-brand">A</span>cting.
+    </>
+  )
+}
+
+function IrudaWordmark() {
+  const letters = [
+    { className: 'I Class', fileName: 'iruda-i.svg' },
+    { className: 'R Class', fileName: 'iruda-r.svg' },
+    { className: 'U Class', fileName: 'iruda-u.svg' },
+    { className: 'D Class', fileName: 'iruda-d.svg' },
+    { className: 'A Class', fileName: 'iruda-a.svg' },
+  ]
+
+  return (
+    <figure aria-label="IRUDA 클래스 구성" className="mt-4">
+      <div className="grid grid-cols-5 gap-3">
+        {letters.map((letter) => (
+          <div className="flex min-w-0 flex-col items-center gap-4" key={letter.className}>
+            <NextImage
+              alt=""
+              aria-hidden="true"
+              className="h-auto w-full"
+              height={216}
+              src={`${gradeAssetBase}/${letter.fileName}`}
+              width={216}
+            />
+            <span className="text-center text-sm font-extrabold uppercase leading-none text-white">
+              {letter.className}
+            </span>
+          </div>
+        ))}
+      </div>
+    </figure>
+  )
+}
+
+function RedCornerGlyph({ className }: { className?: string }) {
+  return (
+    <div aria-hidden="true" className={cn('pointer-events-none absolute text-brand', className)}>
+      <svg className="h-full w-full" fill="currentColor" viewBox="0 0 229 360" xmlns="http://www.w3.org/2000/svg">
+        <rect x="-31" width="160" height="360" />
+        <rect x="-131" width="360" height="160" />
+      </svg>
+    </div>
   )
 }
 
