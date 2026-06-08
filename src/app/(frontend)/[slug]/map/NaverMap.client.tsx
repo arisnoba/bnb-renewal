@@ -2,6 +2,7 @@
 
 import type { CenterLocation } from '@/lib/centerLocations'
 
+import { centerLocationList } from '@/lib/centerLocations'
 import { useEffect, useRef, useState } from 'react'
 
 type NaverLatLng = {
@@ -17,25 +18,27 @@ type NaverMapInstance = {
 
 type NaverMarker = {
   setMap: (map: NaverMapInstance | null) => void
-  setPosition: (latlng: NaverLatLng) => void
 }
 
-type NaverInfoWindow = {
-  open: (map: NaverMapInstance, marker: NaverMarker) => void
-  setContent: (content: string) => void
+type NaverLayer = {
+  setMap: (map: NaverMapInstance | null) => void
 }
 
 type NaverMapsNamespace = {
   Event: {
     addListener: (target: NaverMarker, eventName: string, listener: () => void) => void
   }
-  InfoWindow: new (options: { borderWidth?: number; content: string }) => NaverInfoWindow
+  LabelLayer?: new () => NaverLayer
   LatLng: new (lat: number, lng: number) => NaverLatLng
   Map: new (
     element: HTMLElement,
     options: {
       center: NaverLatLng
+      logoControl?: boolean
       mapDataControl?: boolean
+      mapTypeControl?: boolean
+      mapTypeId?: string
+      mapTypes?: unknown
       scaleControl?: boolean
       zoom: number
       zoomControl?: boolean
@@ -49,7 +52,12 @@ type NaverMapsNamespace = {
     map: NaverMapInstance
     position: NaverLatLng
     title?: string
+    zIndex?: number
   }) => NaverMarker
+  MapTypeRegistry?: new (mapTypes: Record<string, unknown>) => unknown
+  NaverStyleMapTypeOptions?: {
+    getVectorMap?: () => unknown
+  }
   Point: new (x: number, y: number) => NaverLatLng
 }
 
@@ -70,8 +78,8 @@ type NaverMapProps = {
 export function NaverMap({ location, scriptUrl }: NaverMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<NaverMapInstance | null>(null)
-  const markerRef = useRef<NaverMarker | null>(null)
-  const infoWindowRef = useRef<NaverInfoWindow | null>(null)
+  const labelLayerRef = useRef<NaverLayer | null>(null)
+  const markersRef = useRef<NaverMarker[]>([])
   const [loadResult, setLoadResult] = useState<'ready' | 'error' | null>(null)
   const status = !scriptUrl ? 'missing-key' : (loadResult ?? 'loading')
 
@@ -90,47 +98,36 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
         const center = new maps.LatLng(location.coordinates.lat, location.coordinates.lng)
 
         if (!mapRef.current) {
-          mapRef.current = new maps.Map(containerRef.current, {
-            center,
-            mapDataControl: false,
-            scaleControl: false,
-            zoom: 16,
-            zoomControl: true,
-          })
+          mapRef.current = new maps.Map(containerRef.current, mapOptions(maps, center))
+
+          if (maps.LabelLayer) {
+            labelLayerRef.current = new maps.LabelLayer()
+            labelLayerRef.current.setMap(mapRef.current)
+          }
         }
 
         const map = mapRef.current
 
-        map.setZoom(16)
+        map.setZoom(17)
         map.panTo(center)
 
-        if (!markerRef.current) {
-          markerRef.current = new maps.Marker({
+        markersRef.current.forEach((marker) => marker.setMap(null))
+        markersRef.current = centerLocationList.map((centerLocation, index) => {
+          const isActive = centerLocation.slug === location.slug
+          const markerPosition = markerPositionFor(centerLocation, index)
+
+          return new maps.Marker({
             icon: {
-              anchor: new maps.Point(18, 42),
-              content: '<span class="map-page__naver-marker" aria-hidden="true"></span>',
+              anchor: isActive ? new maps.Point(132, 92) : new maps.Point(52, 46),
+              content: mapMarkerContent(centerLocation, isActive),
             },
             map,
-            position: center,
-            title: location.name,
+            position: new maps.LatLng(markerPosition.lat, markerPosition.lng),
+            title: centerLocation.name,
+            zIndex: isActive ? 1000 : 100,
           })
-        } else {
-          markerRef.current.setPosition(center)
-          markerRef.current.setMap(map)
-        }
+        })
 
-        const infoContent = mapInfoWindowContent(location)
-
-        if (!infoWindowRef.current) {
-          infoWindowRef.current = new maps.InfoWindow({
-            borderWidth: 0,
-            content: infoContent,
-          })
-        } else {
-          infoWindowRef.current.setContent(infoContent)
-        }
-
-        infoWindowRef.current.open(map, markerRef.current)
         setLoadResult('ready')
       })
       .catch(() => {
@@ -141,6 +138,13 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
       isActive = false
     }
   }, [location, scriptUrl])
+
+  useEffect(() => {
+    return () => {
+      markersRef.current.forEach((marker) => marker.setMap(null))
+      labelLayerRef.current?.setMap(null)
+    }
+  }, [])
 
   return (
     <div className="relative min-h-[420px] overflow-hidden bg-black md:min-h-[586px]">
@@ -156,6 +160,27 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
       ) : null}
     </div>
   )
+}
+
+function mapOptions(maps: NaverMapsNamespace, center: NaverLatLng) {
+  const options: ConstructorParameters<NaverMapsNamespace['Map']>[1] = {
+    center,
+    logoControl: true,
+    mapDataControl: false,
+    mapTypeControl: false,
+    scaleControl: false,
+    zoom: 17,
+    zoomControl: true,
+  }
+
+  if (maps.MapTypeRegistry && maps.NaverStyleMapTypeOptions?.getVectorMap) {
+    options.mapTypeId = 'bnb-map'
+    options.mapTypes = new maps.MapTypeRegistry({
+      'bnb-map': maps.NaverStyleMapTypeOptions.getVectorMap(),
+    })
+  }
+
+  return options
 }
 
 function MapStatus({ children }: { children: React.ReactNode }) {
@@ -188,11 +213,38 @@ function loadNaverMaps(scriptUrl: string) {
   return window.naverMapsScriptPromise
 }
 
-function mapInfoWindowContent(location: CenterLocation) {
+function markerPositionFor(location: CenterLocation, index: number) {
+  const sameCoordinateLocations = centerLocationList.filter((candidate) =>
+    sameCoordinate(candidate, location),
+  )
+
+  if (sameCoordinateLocations.length === 1) {
+    return location.coordinates
+  }
+
+  const groupIndex = sameCoordinateLocations.findIndex((candidate) => candidate.slug === location.slug)
+  const angle = (Math.PI * 2 * groupIndex) / sameCoordinateLocations.length - Math.PI / 2
+  const radius = 0.00009 + index * 0.000005
+
+  return {
+    lat: location.coordinates.lat + Math.sin(angle) * radius,
+    lng: location.coordinates.lng + Math.cos(angle) * radius,
+  }
+}
+
+function sameCoordinate(a: CenterLocation, b: CenterLocation) {
+  return a.coordinates.lat === b.coordinates.lat && a.coordinates.lng === b.coordinates.lng
+}
+
+function mapMarkerContent(location: CenterLocation, isActive: boolean) {
   return `
-    <div class="map-page__info-window">
-      <strong>${escapeHtml(location.name)}</strong>
-      <span>${escapeHtml(location.address)}</span>
+    <div class="map-page__naver-marker" data-active="${isActive ? 'true' : 'false'}" aria-hidden="true">
+      <div class="map-page__naver-marker-card">
+        <span class="map-page__naver-marker-eyebrow">현재 선택</span>
+        <strong>${escapeHtml(location.label)}</strong>
+        <span>${escapeHtml(location.address)}</span>
+      </div>
+      <span class="map-page__naver-marker-pin"></span>
     </div>
   `
 }
