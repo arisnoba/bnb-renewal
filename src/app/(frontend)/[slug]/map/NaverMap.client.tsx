@@ -25,17 +25,6 @@ type NaverInfoWindow = {
   setContent: (content: string) => void
 }
 
-type GeocodeAddress = {
-  x: string
-  y: string
-}
-
-type GeocodeResponse = {
-  v2?: {
-    addresses?: GeocodeAddress[]
-  }
-}
-
 type NaverMapsNamespace = {
   Event: {
     addListener: (target: NaverMarker, eventName: string, listener: () => void) => void
@@ -62,15 +51,6 @@ type NaverMapsNamespace = {
     title?: string
   }) => NaverMarker
   Point: new (x: number, y: number) => NaverLatLng
-  Service?: {
-    Status: {
-      OK: string
-    }
-    geocode: (
-      options: { query: string },
-      callback: (status: string, response: GeocodeResponse) => void,
-    ) => void
-  }
 }
 
 declare global {
@@ -80,11 +60,6 @@ declare global {
     }
     naverMapsScriptPromise?: Promise<void>
   }
-}
-
-const seoulFallback = {
-  lat: 37.5048,
-  lng: 127.0065,
 }
 
 type NaverMapProps = {
@@ -112,11 +87,11 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
         if (!isActive || !containerRef.current || !window.naver) return
 
         const maps = window.naver.maps
-        const fallbackCenter = new maps.LatLng(seoulFallback.lat, seoulFallback.lng)
+        const center = new maps.LatLng(location.coordinates.lat, location.coordinates.lng)
 
         if (!mapRef.current) {
           mapRef.current = new maps.Map(containerRef.current, {
-            center: fallbackCenter,
+            center,
             mapDataControl: false,
             scaleControl: false,
             zoom: 16,
@@ -126,48 +101,37 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
 
         const map = mapRef.current
 
-        resolveAddress(maps, location.address)
-          .then((position) => {
-            if (!isActive) return
+        map.setZoom(16)
+        map.panTo(center)
 
-            const center = new maps.LatLng(position.lat, position.lng)
-
-            map.setZoom(16)
-            map.panTo(center)
-
-            if (!markerRef.current) {
-              markerRef.current = new maps.Marker({
-                icon: {
-                  anchor: new maps.Point(18, 42),
-                  content: '<span class="map-page__naver-marker" aria-hidden="true"></span>',
-                },
-                map,
-                position: center,
-                title: location.name,
-              })
-            } else {
-              markerRef.current.setPosition(center)
-              markerRef.current.setMap(map)
-            }
-
-            const infoContent = mapInfoWindowContent(location)
-
-            if (!infoWindowRef.current) {
-              infoWindowRef.current = new maps.InfoWindow({
-                borderWidth: 0,
-                content: infoContent,
-              })
-            } else {
-              infoWindowRef.current.setContent(infoContent)
-            }
-
-            infoWindowRef.current.open(map, markerRef.current)
-            setLoadResult('ready')
+        if (!markerRef.current) {
+          markerRef.current = new maps.Marker({
+            icon: {
+              anchor: new maps.Point(18, 42),
+              content: '<span class="map-page__naver-marker" aria-hidden="true"></span>',
+            },
+            map,
+            position: center,
+            title: location.name,
           })
-          .catch(() => {
-            map.setCenter(fallbackCenter)
-            setLoadResult('error')
+        } else {
+          markerRef.current.setPosition(center)
+          markerRef.current.setMap(map)
+        }
+
+        const infoContent = mapInfoWindowContent(location)
+
+        if (!infoWindowRef.current) {
+          infoWindowRef.current = new maps.InfoWindow({
+            borderWidth: 0,
+            content: infoContent,
           })
+        } else {
+          infoWindowRef.current.setContent(infoContent)
+        }
+
+        infoWindowRef.current.open(map, markerRef.current)
+        setLoadResult('ready')
       })
       .catch(() => {
         if (isActive) setLoadResult('error')
@@ -222,33 +186,6 @@ function loadNaverMaps(scriptUrl: string) {
   }
 
   return window.naverMapsScriptPromise
-}
-
-function resolveAddress(maps: NaverMapsNamespace, address: string) {
-  return new Promise<{ lat: number; lng: number }>((resolve, reject) => {
-    if (!maps.Service) {
-      reject(new Error('NAVER Maps geocoder is not loaded'))
-      return
-    }
-
-    maps.Service.geocode({ query: address }, (status, response) => {
-      if (status !== maps.Service?.Status.OK) {
-        reject(new Error('NAVER Maps geocode failed'))
-        return
-      }
-
-      const firstAddress = response.v2?.addresses?.[0]
-      const lng = Number(firstAddress?.x)
-      const lat = Number(firstAddress?.y)
-
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-        reject(new Error('NAVER Maps geocode returned an invalid coordinate'))
-        return
-      }
-
-      resolve({ lat, lng })
-    })
-  })
 }
 
 function mapInfoWindowContent(location: CenterLocation) {

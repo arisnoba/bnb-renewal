@@ -68,13 +68,13 @@ function resolveNaverMapScriptUrl() {
   if (keyId) {
     return `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(
       keyId,
-    )}&submodules=geocoder`
+    )}`
   }
 
   if (legacyClientId) {
     return `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURIComponent(
       legacyClientId,
-    )}&submodules=geocoder`
+    )}`
   }
 
   return null
