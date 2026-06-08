@@ -245,7 +245,7 @@ function sameCoordinate(a: CenterLocation, b: CenterLocation) {
 
 function mapMarkerContent(location: CenterLocation, isActive: boolean) {
   return `
-    <div class="map-page__naver-marker" data-active="${isActive ? 'true' : 'false'}" aria-hidden="true">
+    <div class="map-page__naver-marker" data-active="${isActive ? 'true' : 'false'}" data-center="${location.slug}" aria-hidden="true">
       ${
         isActive
           ? `<div class="map-page__naver-marker-card">

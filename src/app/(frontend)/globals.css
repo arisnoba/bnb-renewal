@@ -203,7 +203,29 @@
 }
 
 .map-page__naver-marker[data-active='false'] {
+  --map-marker-color: #8a919d;
+
   width: 104px;
+}
+
+.map-page__naver-marker[data-active='false'][data-center='art'] {
+  --map-marker-color: #e54545;
+}
+
+.map-page__naver-marker[data-active='false'][data-center='exam'] {
+  --map-marker-color: #3b82f6;
+}
+
+.map-page__naver-marker[data-active='false'][data-center='kids'] {
+  --map-marker-color: #22c55e;
+}
+
+.map-page__naver-marker[data-active='false'][data-center='highteen'] {
+  --map-marker-color: #a855f7;
+}
+
+.map-page__naver-marker[data-active='false'][data-center='avenue'] {
+  --map-marker-color: #f59e0b;
 }
 
 .map-page__naver-marker-card {
@@ -275,9 +297,11 @@
 }
 
 .map-page__naver-marker[data-active='false'] .map-page__naver-marker-pin {
-  background: #5f6368;
+  background: var(--map-marker-color);
   border-width: 4px;
-  box-shadow: 0 8px 18px rgb(0 0 0 / 22%);
+  box-shadow:
+    0 8px 18px rgb(0 0 0 / 28%),
+    0 0 0 6px color-mix(in srgb, var(--map-marker-color) 22%, transparent);
   height: 22px;
   margin-top: 7px;
   width: 22px;
