@@ -8,7 +8,11 @@ import { usePathname } from 'next/navigation'
 
 import { getHeaderMenu, headerCenterFromPathname, type HeaderMenuGroup } from './menu'
 
-export const HeaderNav: React.FC = () => {
+type HeaderNavProps = {
+  onMegaOpenChange?: (isOpen: boolean) => void
+}
+
+export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
   const pathname = usePathname()
   const center = headerCenterFromPathname(pathname)
   const menuGroups = getHeaderMenu(center)
@@ -21,6 +25,10 @@ export const HeaderNav: React.FC = () => {
     setIsMobileOpen(false)
     setActiveMobileGroupKey(null)
   }
+
+  useEffect(() => {
+    onMegaOpenChange?.(isMegaOpen)
+  }, [isMegaOpen, onMegaOpenChange])
 
   useEffect(() => {
     if (!isMobileOpen) return
@@ -37,6 +45,8 @@ export const HeaderNav: React.FC = () => {
     <>
       <div
         className="site-header__nav-zone"
+        data-mega-open={isMegaOpen ? 'true' : undefined}
+        style={navZoneStyle(menuGroups)}
         onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget)) {
             setIsMegaOpen(false)
@@ -47,11 +57,7 @@ export const HeaderNav: React.FC = () => {
       >
         <nav aria-label="주요 메뉴" className="site-header__nav">
           {menuGroups.map((group) => (
-            <div
-              className="site-header__desktop-item"
-              key={group.key}
-              style={desktopItemStyle(group)}
-            >
+            <div className="site-header__desktop-item" key={group.key}>
               <Link
                 className="site-header__nav-link"
                 href={group.href}
@@ -59,23 +65,24 @@ export const HeaderNav: React.FC = () => {
               >
                 {group.label}
               </Link>
-              <ul className="site-header__desktop-submenu">
-                {group.items.map((item) => (
-                  <li key={`${group.key}-${item.href}-${item.label}`}>
-                    <Link
-                      className="site-header__mega-link"
-                      href={item.href}
-                      onClick={() => setIsMegaOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className="site-header__desktop-submenu-frame">
+                <ul className="site-header__desktop-submenu">
+                  {group.items.map((item) => (
+                    <li key={`${group.key}-${item.href}-${item.label}`}>
+                      <Link
+                        className="site-header__submenu-link"
+                        href={item.href}
+                        onClick={() => setIsMegaOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </nav>
-        <MegaMenu isOpen={isMegaOpen} />
       </div>
       <div className="site-header__actions">
         <Link className="site-header__consult" href="/consult">
@@ -124,14 +131,16 @@ export const HeaderNav: React.FC = () => {
   )
 }
 
-function MegaMenu({ isOpen }: { isOpen: boolean }) {
-  return (
-    <div
-      aria-hidden={!isOpen}
-      className="site-header__mega"
-      data-open={isOpen ? 'true' : 'false'}
-    />
-  )
+type NavZoneStyle = React.CSSProperties & {
+  '--site-header-submenu-panel-height': string
+}
+
+function navZoneStyle(groups: HeaderMenuGroup[]): NavZoneStyle {
+  const rowCount = Math.max(1, ...groups.map((group) => group.items.length))
+
+  return {
+    '--site-header-submenu-panel-height': `${rowCount * 33 + 44}px`,
+  }
 }
 
 function MobileMenu({
@@ -212,32 +221,4 @@ function MobileMenu({
       </div>
     </div>
   )
-}
-
-type DesktopItemStyle = React.CSSProperties & {
-  '--site-header-column-width': string
-  '--site-header-label-width': string
-}
-
-function desktopItemStyle(group: HeaderMenuGroup): DesktopItemStyle {
-  const labelWidth = visualLabelWidth(group.label)
-  const columnWidth = [group.label, ...group.items.map((item) => item.label)].reduce(
-    (max, label) => Math.max(max, visualLabelWidth(label)),
-    labelWidth,
-  )
-
-  return {
-    '--site-header-column-width': `${Math.min(18, Math.max(7, columnWidth * 0.86 + 1.4)).toFixed(2)}rem`,
-    '--site-header-label-width': `${Math.min(12, Math.max(5.4, labelWidth * 0.92 + 1.2)).toFixed(2)}rem`,
-  }
-}
-
-function visualLabelWidth(label: string) {
-  return Array.from(label).reduce((width, character) => {
-    if (character === ' ') return width + 0.45
-    if (/[A-Za-z0-9&]/.test(character)) return width + 0.62
-    if (character === 'ㆍ') return width + 0.5
-
-    return width + 1
-  }, 0)
 }

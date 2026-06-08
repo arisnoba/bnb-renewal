@@ -100,12 +100,8 @@ function avenueMenu(): HeaderMenuGroup[] {
       label: '아티스트',
     },
     {
-      href: '/consult',
-      items: [
-        { href: '/consult', label: '온라인 상담신청' },
-        { href: '/avenue/map', label: '오시는 길' },
-        { href: '/avenue/faq', label: '자주하는 질문' },
-      ],
+      href: '/avenue/news',
+      items: supportItems('avenue'),
       key: 'support',
       label: '지원센터',
     },
@@ -247,31 +243,11 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
 }
 
 function supportItems(center: CenterSlug): HeaderMenuItem[] {
-  if (center === 'art') {
-    return [
-      { href: `/${center}/news`, label: 'NEWS&NOTICE' },
-      { href: centerHref(center, 'admission'), label: '입학안내' },
-      { href: centerHref(center, 'how-to-use'), label: '학원100%이용법' },
-      { href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' },
-      { href: `/${center}/faq`, label: '자주하는 질문' },
-    ]
-  }
-
   return [
     { href: `/${center}/news`, label: 'NEWS&NOTICE' },
     { href: centerHref(center, 'admission'), label: '입학안내' },
-    { href: centerHref(center, 'intro-video'), label: '학원 100% 소개영상' },
     { href: centerHref(center, 'how-to-use'), label: '학원100%이용법' },
     { href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' },
-    ...(center === 'exam'
-      ? [
-          { href: centerHref(center, 'special-system'), label: '특별한 시스템' },
-          { href: centerHref(center, 'membership'), label: '멤버십 서비스' },
-          { href: centerHref(center, 'scholarship'), label: '장학제도' },
-        ]
-      : []),
-    { href: centerHref(center, 'cs'), label: 'CS센터 운영안내' },
-    { href: '/consult', label: '온라인 상담신청' },
     { href: `/${center}/faq`, label: '자주하는 질문' },
   ]
 }

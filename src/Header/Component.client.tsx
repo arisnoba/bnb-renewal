@@ -11,6 +11,7 @@ import './index.scss'
 export const HeaderClient: React.FC = () => {
   /* Storing the value in a useState to avoid hydration errors */
   const headerRef = useRef<HTMLElement | null>(null)
+  const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
@@ -46,16 +47,25 @@ export const HeaderClient: React.FC = () => {
     if (!header) return
 
     const updateHeight = () => {
-      root.style.setProperty('--site-header-measured-height', `${header.offsetHeight}px`)
+      const headerHeight =
+        getComputedStyle(header).getPropertyValue('--site-header-height').trim() ||
+        getComputedStyle(root).getPropertyValue('--site-header-height').trim()
+
+      root.style.setProperty(
+        '--site-header-measured-height',
+        headerHeight || `${header.offsetHeight}px`,
+      )
     }
 
     updateHeight()
 
     const observer = new ResizeObserver(updateHeight)
     observer.observe(header)
+    window.addEventListener('resize', updateHeight)
 
     return () => {
       observer.disconnect()
+      window.removeEventListener('resize', updateHeight)
       root.style.removeProperty('--site-header-measured-height')
     }
   }, [])
@@ -63,7 +73,7 @@ export const HeaderClient: React.FC = () => {
   return (
     <header
       ref={headerRef}
-      className="site-header"
+      className={isMegaOpen ? 'site-header site-header--mega-open' : 'site-header'}
       data-scrolled={isScrolled ? 'true' : undefined}
       {...(theme ? { 'data-theme': theme } : {})}
     >
@@ -71,7 +81,7 @@ export const HeaderClient: React.FC = () => {
         <Link className="site-header__logo" href="/">
           <Logo loading="eager" priority="high" />
         </Link>
-        <HeaderNav />
+        <HeaderNav onMegaOpenChange={setIsMegaOpen} />
       </div>
     </header>
   )
