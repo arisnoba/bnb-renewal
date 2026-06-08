@@ -1,0 +1,87 @@
+.page-static--starcard {
+  background: #fff;
+  color: #111;
+}
+
+.section-starcard-list__title,
+.section-starcard-list__description,
+.section-starcard-list__summary h2,
+.section-starcard-list__summary p,
+.starcard-partner-card__title,
+.starcard-partner-modal__content,
+.starcard-partner-modal__body {
+  word-break: keep-all;
+}
+
+.starcard-partner-card {
+  border-radius: 8px;
+}
+
+.starcard-partner-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent);
+  outline-offset: 6px;
+}
+
+.starcard-partner-modal__panel {
+  scrollbar-width: thin;
+}
+
+.starcard-partner-modal__close {
+  border: 1px solid rgb(17 17 17 / 6%);
+}
+
+.starcard-partner-modal__media {
+  min-height: 0;
+}
+
+.starcard-partner-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.starcard-partner-modal__body p {
+  margin: 0;
+}
+
+.starcard-partner-modal__body strong {
+  color: #333;
+  font-weight: 800;
+}
+
+.starcard-partner-modal__body ul,
+.starcard-partner-modal__body ol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.starcard-partner-modal__body ul {
+  list-style: disc;
+}
+
+.starcard-partner-modal__body ol {
+  list-style: decimal;
+}
+
+.starcard-partner-modal__body li {
+  margin: 0;
+  padding-left: 0.25em;
+}
+
+.starcard-partner-modal__body li > p {
+  display: inline;
+}
+
+@media (max-width: 767px) {
+  .starcard-partner-modal {
+    align-items: flex-end;
+    padding: 20px 12px;
+  }
+
+  .starcard-partner-modal__panel {
+    max-height: calc(100vh - 40px);
+  }
+}

@@ -16,6 +16,8 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import '@/Main/BannerSlider.scss'
+import './faq/FaqArchive.scss'
+import './starcard/StarcardArchive.scss'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export const dynamic = 'force-dynamic'

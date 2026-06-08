@@ -53,8 +53,8 @@
   --color-brand-kids: #f5a623;
   --color-brand-avenue: #2bb673;
   --color-bg-footer: #0c0c0c;
-  --container-main: 1120px;
-  --container-sm: 800px;
+  --container-main: 1160px;
+  --container-sm: 840px;
 }
 
 @layer utilities {
@@ -371,6 +371,8 @@
   }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+
+    word-break: keep-all;
   }
 }
 

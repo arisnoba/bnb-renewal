@@ -484,7 +484,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       </section>
 
       {isPartnership ? (
-        <section className="grid gap-5">
+        <section className="grid gap-5" id="partnership">
           <SectionHeading index="02" title="제휴 신청" />
           <div className="grid items-start gap-5 md:grid-cols-2">
             <TextInputField control={form.control} label="회사명" name="companyName" required />

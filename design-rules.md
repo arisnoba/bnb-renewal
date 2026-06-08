@@ -9,6 +9,8 @@
 - **에이전트는 이 문서를 신뢰 기준(source of truth)으로 삼는다.**
 - 의심스러울 때는 "적게 만들기": 새 토큰·클래스·파일을 만들기 전에 기존 것으로 해결 가능한지 먼저 확인.
 - 공개 프론트엔드는 **라이트 모드 고정**이다. `[data-theme='dark']` 는 Payload Admin 전용이며, 프론트 컴포넌트에서는 다크 variant를 추가하지 않는다.
+- 공개 프론트엔드 구현은 **Tailwind 우선**이다. 레이아웃, 반응형, 고정 padding/margin, grid/flex, border, 색상, 폰트 크기 등 대부분의 시각 스타일은 `className`에 Tailwind 유틸리티로 작성한다.
+- 의미 클래스(`section-faq-list`, `section-faq-item__summary` 등)는 Tailwind를 대체하기 위한 스타일 파일 기준이 아니라, 후속 커스텀과 QA를 쉽게 하기 위한 **중요 요소 식별자/확장 hook**이다.
 
 ---
 
@@ -21,6 +23,12 @@
 | 아이콘 | **Font Awesome 7 Pro** | Solid 스타일 기준 |
 
 > **현재 코드 교체 필요**: `layout.tsx`의 `GeistSans` → `Pretendard`로 변경 (설치 전까지 임시 유지)
+
+### 줄바꿈 기준
+
+- 공개 프론트엔드는 한국어 웹사이트 기준으로 전역 `word-break: keep-all`을 적용한다.
+- 전역 `overflow-wrap: break-word`는 한국어 단어 중간 줄바꿈을 다시 허용할 수 있으므로 함께 두지 않는다.
+- 긴 URL, 영문 토큰, 숫자 조합 때문에 레이아웃이 터질 수 있는 요소에만 `break-words`, `break-all`, `[overflow-wrap:anywhere]`를 제한적으로 사용한다.
 
 ### Pretendard 설치
 ```bash
@@ -201,22 +209,80 @@ npm install pretendard
 
 ## 5. 레이아웃 / 컨테이너
 
+### Tailwind 우선 구현 기준
+
+`/{center}/grade-system` 구현 방식을 기준으로 삼는다. 대부분의 구조와 시각값은 Tailwind className에서 바로 확인 가능해야 한다.
+
+Tailwind로 작성해야 하는 것:
+
+- 반응형 레이아웃: `flex`, `grid`, `md:grid-cols-*`, `lg:*`, `overflow-*`
+- 고정 spacing: `py-20`, `md:py-[120px]`, `gap-5`, `mt-12`, `px-5`
+- 컨테이너 조합: `container`, `container-sm`, `container-fluid`
+- 일반 색상/테두리/배경: `bg-background`, `text-foreground`, `border-border`, `bg-brand`, `text-brand`
+- 일반 타이포그래피: `text-base`, `text-[48px]`, `font-bold`, `leading-[1.35]`
+- 일반 상태 스타일: `hover:*`, `focus-visible:*`, `data-[active=true]:*` 등 Tailwind로 표현 가능한 상태
+
+의미 클래스는 함께 붙인다. 예를 들어 FAQ 페이지는 다음처럼 작성한다.
+
+```tsx
+<main className="page-static bg-background text-foreground" data-center={center}>
+  <section className="section-faq-list py-20 md:py-[120px]">
+    <div className="container-sm">
+      <form className="section-faq-list__search flex h-[45px] overflow-hidden rounded-full border border-foreground/40">
+        <input className="section-faq-list__search-input min-w-0 flex-1 px-5 text-lg font-bold" />
+        <button className="section-faq-list__search-button grid size-[45px] place-items-center rounded-full bg-foreground" />
+      </form>
+    </div>
+  </section>
+</main>
+```
+
+이때 `section-faq-list__search` 같은 클래스는 나중에 해당 요소를 찾거나, Tailwind로 처리하기 어려운 최소 예외를 붙이기 위한 이름이다. 이 클래스만으로 padding, gap, display, responsive width를 전부 CSS 파일에 몰아넣지 않는다.
+
+### 아이콘 사용 기준
+
+- 버튼/링크 안의 방향, 닫기, 검색, 다운로드 같은 UI 기호는 텍스트 문자로 직접 쓰지 않는다. 예: `>`, `→`, `×`, `검색`용 문자 기호 금지.
+- 가능한 경우 `lucide-react` 아이콘을 사용한다. 예: `ChevronRight`, `X`, `Search`, `Download`.
+- 아이콘은 `aria-hidden="true"`를 붙이고, 버튼/링크의 접근 가능한 이름은 실제 텍스트나 `aria-label`로 제공한다.
+- 텍스트와 함께 쓰는 아이콘은 Tailwind로 크기와 간격을 명확히 둔다. 예: `<ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />`.
+- 아이콘을 만들기 위해 별도 SVG를 직접 작성하거나 CSS pseudo-element를 쓰는 것은 기존 아이콘 라이브러리에 적절한 아이콘이 없을 때만 허용한다.
+
 ### 커스텀 스타일 작성 위치
 
 | 범위 | 파일 | 방식 |
 |------|------|------|
-| 전역 토큰, container 정의, 공용 유틸 | `src/app/(frontend)/globals.css` `@layer` | CSS `clamp()` |
-| 섹션 고유 패딩·폰트 크기 등 | 섹션 컴포넌트 옆 colocated `index.scss` | SCSS 중첩 + CSS `clamp()` |
+| 전역 토큰, container 정의, 공용 유틸 | `src/app/(frontend)/globals.css` `@layer` | CSS 변수 또는 최소 유틸 |
+| 화면/섹션 고유 예외 스타일 | 섹션 컴포넌트 옆 colocated `*.css`/`*.scss` | Tailwind로 어려운 selector와 pseudo-element만 최소 작성 |
 
-- SCSS mixin 대신 **네이티브 CSS `clamp()`** 우선 사용. SCSS는 중첩/모듈 목적으로만 쓴다.
-- SCSS 파이프라인이 현재 미설치 상태. 섹션 스타일 파일 작성 전에 `npm install sass` 실행 필요.
+- 새 스타일 파일은 기본 선택지가 아니다. 먼저 Tailwind로 해결하고, 아래 예외에 해당할 때만 추가한다.
+- SCSS mixin 대신 네이티브 CSS를 우선 사용한다. SCSS는 이미 프로젝트에 쓰는 파일이 있거나 중첩이 꼭 필요할 때만 쓴다.
+- Tailwind arbitrary value(`md:py-[120px]`, `text-[48px]`, `leading-[1.35]`)는 피그마의 고정값을 반영할 때 허용한다.
+- 별도 CSS/SCSS를 추가하더라도 레이아웃과 spacing은 가능한 한 Tailwind className에 남겨 둔다.
 
-### 반응형 폰트 크기 — clamp() 사용 규칙
+### 별도 CSS/SCSS 허용 범위
 
-섹션별 커스텀 font-size는 CSS `clamp()`로 작성하고, `--fs-{name}` 형식의 CSS 변수 또는 섹션 scss 내 지역 클래스(`.section-hero__title`)를 사용한다. 임의 클래스명 생성 금지.
+다음 경우에만 의미 클래스를 selector로 사용해 별도 CSS/SCSS를 작성한다.
+
+- `details[open]`, `summary::-webkit-details-marker`처럼 HTML 상태나 브라우저 기본 UI 제어가 필요한 경우
+- `::before`, `::after`로 만드는 아이콘/장식처럼 Tailwind className으로 직접 표현하기 어려운 경우
+- Markdown/리치텍스트 출력처럼 내부 마크업을 직접 제어하기 어려운 콘텐츠 스타일
+- 전역 container, header offset, admin bar offset처럼 여러 화면이 공유하는 기반 규칙
+- Tailwind className이 지나치게 길어지고 같은 복잡 selector가 반복되는 경우
+
+반대로 다음은 별도 CSS/SCSS로 옮기지 않는다.
+
+- `display`, `flex/grid`, `gap`, `padding`, `margin`, `width`, `height` 같은 일반 레이아웃
+- `md:*`, `lg:*` 같은 일반 반응형 분기
+- `text-*`, `font-*`, `leading-*`, `bg-*`, `border-*`로 표현 가능한 기본 시각값
+
+### 반응형 폰트 크기 기준
+
+피그마 고정값이 있는 일반 텍스트는 Tailwind arbitrary value를 우선 사용한다. 예: `text-[34px] md:text-[48px] leading-[1.25]`.
+
+유동형 크기가 실제로 필요한 hero title 등은 CSS `clamp()`를 사용할 수 있다. 이때도 섹션 의미 클래스는 확장 hook으로 두고, 레이아웃은 Tailwind에 남긴다.
 
 ```scss
-// SectionHero/index.scss
+// Tailwind로 표현하기 어려운 유동형 타입 예외
 .section-hero {
   &__title {
     font-size: clamp(2rem, 5vw, 4rem);
@@ -228,9 +294,10 @@ npm install pretendard
 ```
 
 ### class 스타일링 기준
-- 반응형, 칼럼, display 등은 tw을 사용하여 직관적으로 작성한다.
-- 예외 요소(font-size, 각 section의 padding, margin)는 섹션 scss 또는 globals.css `@layer`에서 `clamp()`로 관리한다.
-- **각 섹션에는 `section-{name}` (kebab-case) classname이 필수**이며, 섹션 scss 파일로 컨트롤한다.
+- 반응형, 칼럼, display, spacing, 고정 padding/margin은 Tailwind를 사용하여 직관적으로 작성한다.
+- 예외 요소는 CSS/SCSS 또는 globals.css `@layer`에서 최소 관리한다.
+- **각 주요 섹션에는 `section-{name}` (kebab-case) classname을 함께 붙인다.** 이는 커스텀/QA용 hook이며, 섹션의 모든 기본 스타일을 CSS 파일로 컨트롤하라는 뜻이 아니다.
+- 주요 내부 요소에는 필요에 따라 `section-{name}__element` 형식의 클래스명을 함께 붙인다. 예: `section-faq-list__search`, `section-faq-item__summary`.
 - 페이지 루트에는 화면 타입을 구분하는 클래스가 필요하다. CMS 상세는 `page-detail`, Payload `pages` 기반 일반 정적 페이지는 `page-static`을 사용한다.
 
 ### 페이지 타입 클래스
@@ -280,14 +347,14 @@ npm install pretendard
   </header>
 </article>
 
-// 정적 페이지: page-static은 타입 표식이고, 섹션별 여백은 section scss에서 제어
-<main className="page-static">
-  <section className="section-hero" data-center="art">
+// 정적 페이지: page-static은 타입 표식이고, 섹션별 여백/레이아웃은 Tailwind가 우선 담당
+<main className="page-static bg-background text-foreground">
+  <section className="section-hero py-20 md:py-[120px]" data-center="art">
     <div className="container">
       {/* 콘텐츠 */}
     </div>
   </section>
-  <section className="section-about">
+  <section className="section-about py-16 md:py-24">
     <div className="container-sm">
       {/* 좁은 컨테이너가 필요한 경우 */}
     </div>
@@ -302,8 +369,8 @@ npm install pretendard
 | 클래스 | max-width | 용도 |
 |--------|-----------|------|
 | `container-fluid` | 100% | 전체 너비 섹션 |
-| `container` | 1120px | 기본 콘텐츠 영역 |
-| `container-sm` | 800px | 좁은 콘텐츠(텍스트 중심) |
+| `container` |1160px | 기본 콘텐츠 영역 |
+| `container-sm` | 840px | 좁은 콘텐츠(텍스트 중심) |
 
 모든 container 공통: `margin-inline: auto; padding-inline: 20px`
 
@@ -316,13 +383,13 @@ npm install pretendard
   }
   .container {
     width: 100%;
-    max-width: 1120px;
+    max-width: 1160px;
     margin-inline: auto;
     padding-inline: 20px;
   }
   .container-sm {
     width: 100%;
-    max-width: 800px;
+    max-width: 840px;
     margin-inline: auto;
     padding-inline: 20px;
   }
@@ -331,7 +398,7 @@ npm install pretendard
 
 ### GNB
 
-> ⚠️ 아래 수치는 **디자인 아트보드(1920px) 기준 참조값**이다. 실제 구현은 반응형/clamp() 적용. `padding: 400px` 등 고정값 하드코딩 금지.
+> ⚠️ 아래 수치는 **디자인 아트보드(1920px) 기준 참조값**이다. 실제 구현은 Tailwind 반응형 유틸리티를 우선 사용하고, 유동형 값이 꼭 필요할 때만 `clamp()`를 쓴다. `padding: 400px` 등 고정값 하드코딩 금지.
 
 - 전체 너비: 1920px (full-width)
 - 좌우 패딩: `40px`
@@ -358,7 +425,7 @@ npm install pretendard
 
 ### Footer
 
-> ⚠️ 아래 수치는 **디자인 아트보드(1920px) 기준 참조값**이다. 실제 구현은 반응형/clamp() 적용.
+> ⚠️ 아래 수치는 **디자인 아트보드(1920px) 기준 참조값**이다. 실제 구현은 Tailwind 반응형 유틸리티와 `container` 정렬을 우선 사용하고, 유동형 값이 꼭 필요할 때만 `clamp()`를 쓴다.
 
 - 전체 너비: 1920px (full-width)
 - 좌우 패딩: `400px` (각각) → 실제로는 `container` 내부 정렬로 구현
@@ -395,8 +462,8 @@ npm install pretendard
   --color-bg-footer: #0C0C0C;
 
   /* 컨테이너 (참고용) */
-  --container-main: 1120px;
-  --container-sm: 800px;
+  --container-main: 1160px;
+  --container-sm: 840px;
 }
 ```
 

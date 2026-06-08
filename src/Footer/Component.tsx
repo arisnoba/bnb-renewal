@@ -11,12 +11,6 @@ import { centerSlugFromPathname } from './centerInfo'
 
 const footerLogo = '/assets/footer/logo-bnb-footer.svg'
 
-const consultationLinks = [
-  { href: '/consult', label: '입학안내' },
-  { href: '/consult', label: '상담신청' },
-  { href: '/test/faq', label: '자주 묻는 질문' },
-]
-
 const fallbackFamilySites = [
   { href: '/art', label: 'ART CENTER', name: '아트센터' },
   { href: '/exam', label: 'EXAM CENTER', name: '입시센터' },
@@ -64,11 +58,16 @@ export async function Footer() {
     { href: '/consult', label: 'CS센터 운영안내' },
     { href: `/${center}/map`, label: '오시는 길' },
   ]
+  const consultationLinks = [
+    { href: '/consult', label: '입학안내' },
+    { href: '/consult', label: '상담신청' },
+    { href: `/${center}/faq`, label: '자주 묻는 질문' },
+  ]
   const copyrightYear = new Date().getFullYear()
 
   return (
     <footer className="mt-auto bg-bg-footer text-white">
-      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-10 px-5 py-16 font-['Pretendard','Pretendard_Variable','Apple_SD_Gothic_Neo','Noto_Sans_KR',sans-serif] md:px-8 lg:py-20">
+      <div className="mx-auto flex w-full container flex-col gap-10 px-5 py-16 md:px-8 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-5">
           <p className="text-[32px] font-semibold leading-[1.2] tracking-normal">
             배움의 시작이

@@ -46,6 +46,42 @@
 
 ---
 
+## 프론트 구현 스타일 원칙
+
+이 프로젝트의 공개 프론트엔드는 **Tailwind 우선**으로 구현한다. `/{center}/grade-system`처럼 레이아웃, 반응형 분기, 고정 padding/margin, grid/flex, 색상, 폰트 크기, border 등 대부분의 시각 스타일은 `className`의 Tailwind 유틸리티로 직접 작성한다.
+
+의미 있는 클래스명은 Tailwind를 대체하기 위한 것이 아니라, 나중에 화면별 커스텀을 쉽게 하기 위한 **식별자와 확장 훅**이다. 예를 들어 FAQ 페이지는 `section-faq-list`, `section-faq-list__search`, `section-faq-item__summary` 같은 클래스명을 주요 요소에 함께 붙일 수 있다. 단, 이 클래스의 기본 역할은 “중요 요소를 찾고 필요한 예외 스타일을 덧붙이는 것”이며, 반응형 레이아웃과 고정 spacing을 전부 별도 CSS로 옮기는 방식이 아니다.
+
+한국어 줄바꿈 품질을 위해 공개 프론트엔드는 전역 `word-break: keep-all`을 기본으로 사용한다. 전역 `overflow-wrap: break-word`는 한국어 단어 중간 줄바꿈을 다시 허용할 수 있으므로 함께 두지 않고, 긴 URL이나 영문 토큰이 있는 요소에만 `break-words`, `break-all`, `[overflow-wrap:anywhere]`를 제한적으로 사용한다.
+
+권장 형태:
+
+```tsx
+<section className="section-faq-list py-20 md:py-[120px]">
+  <div className="container-sm">
+    <form className="section-faq-list__search flex h-[45px] rounded-full border border-foreground/40">
+      {/* 검색 UI */}
+    </form>
+  </div>
+</section>
+```
+
+아이콘 사용 기준:
+
+- 버튼/링크 안의 방향, 닫기, 검색, 다운로드 같은 UI 기호는 `>`, `→`, `×` 같은 텍스트 문자로 직접 쓰지 않는다.
+- 가능한 경우 `lucide-react` 아이콘을 사용한다. 예: `ChevronRight`, `X`, `Search`, `Download`.
+- 아이콘은 `aria-hidden="true"`를 붙이고, 버튼/링크의 접근 가능한 이름은 실제 텍스트나 `aria-label`로 제공한다.
+- 텍스트와 함께 쓰는 아이콘은 Tailwind로 크기와 간격을 명확히 둔다. 예: `<ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />`.
+
+별도 CSS/SCSS는 다음처럼 Tailwind만으로 표현하기 어렵거나 재사용 커스텀이 필요한 경우에 제한한다.
+
+- `details[open]`, `summary::-webkit-details-marker`처럼 상태/브라우저 기본 스타일 제어가 필요한 경우
+- `::before`, `::after` 장식 요소. 아이콘은 우선 아이콘 컴포넌트를 사용한다.
+- Tailwind 유틸리티만으로 유지보수가 어려운 복잡한 selector
+- 페이지별 후속 커스텀을 위해 비워 두거나 최소화한 의미 클래스 hook
+
+---
+
 ## 01. 기업소개
 
 피그마 섹션 node-id: `38:6476`
