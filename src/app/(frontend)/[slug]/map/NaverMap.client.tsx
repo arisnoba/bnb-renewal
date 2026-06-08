@@ -57,6 +57,7 @@ declare global {
     naver?: {
       maps: NaverMapsNamespace
     }
+    naverMapsGlScriptPromise?: Promise<void>
     naverMapsScriptPromise?: Promise<void>
   }
 }
@@ -90,7 +91,7 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
         const center = new maps.LatLng(location.coordinates.lat, location.coordinates.lng)
 
         if (!mapRef.current) {
-          mapRef.current = new maps.Map(containerRef.current, mapOptions(maps, center))
+          mapRef.current = new maps.Map(containerRef.current, mapOptions(center))
         }
 
         const map = mapRef.current
@@ -148,7 +149,7 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
   )
 }
 
-function mapOptions(maps: NaverMapsNamespace, center: NaverLatLng) {
+function mapOptions(center: NaverLatLng) {
   const options: ConstructorParameters<NaverMapsNamespace['Map']>[1] = {
     center,
     customStyleId: naverMapCustomStyleId,
@@ -174,24 +175,49 @@ function MapStatus({ children }: { children: React.ReactNode }) {
 
 function loadNaverMaps(scriptUrl: string) {
   if (window.naver?.maps) {
-    return Promise.resolve()
+    return loadNaverMapsGl()
   }
 
   if (!window.naverMapsScriptPromise) {
     window.naverMapsScriptPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-
-      script.async = true
-      script.defer = true
-      script.onerror = () => reject(new Error('Failed to load NAVER Maps script'))
-      script.onload = () => resolve()
-      script.src = scriptUrl
-
-      document.head.appendChild(script)
+      appendScript(scriptUrl, resolve, () => reject(new Error('Failed to load NAVER Maps script')))
     })
   }
 
-  return window.naverMapsScriptPromise
+  return window.naverMapsScriptPromise.then(loadNaverMapsGl)
+}
+
+function loadNaverMapsGl() {
+  if (!window.naverMapsGlScriptPromise) {
+    window.naverMapsGlScriptPromise = new Promise((resolve, reject) => {
+      appendScript(
+        'https://oapi.map.naver.com/openapi/v3/maps-gl.js',
+        resolve,
+        () => reject(new Error('Failed to load NAVER Maps GL script')),
+      )
+    })
+  }
+
+  return window.naverMapsGlScriptPromise
+}
+
+function appendScript(src: string, onLoad: () => void, onError: () => void) {
+  const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`)
+
+  if (existingScript) {
+    onLoad()
+    return
+  }
+
+  const script = document.createElement('script')
+
+  script.async = true
+  script.defer = true
+  script.onerror = onError
+  script.onload = onLoad
+  script.src = src
+
+  document.head.appendChild(script)
 }
 
 function markerPositionFor(location: CenterLocation, index: number) {
@@ -223,7 +249,6 @@ function mapMarkerContent(location: CenterLocation, isActive: boolean) {
       ${
         isActive
           ? `<div class="map-page__naver-marker-card">
-              <span class="map-page__naver-marker-eyebrow">현재 선택</span>
               <strong>${escapeHtml(location.label)}</strong>
               <span>${escapeHtml(location.address)}</span>
             </div>`
