@@ -103,7 +103,7 @@ function avenueMenu(): HeaderMenuGroup[] {
       href: '/consult',
       items: [
         { href: '/consult', label: '온라인 상담신청' },
-        { href: '/avenue#location', label: '오시는 길' },
+        { href: '/avenue/map', label: '오시는 길' },
       ],
       key: 'support',
       label: '지원센터',
@@ -117,7 +117,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
       { href: '/art#company', label: '회사 소개' },
       { href: centerHref(center, 'about'), label: '센터 소개' },
       { href: centerHref(center, 'facilities'), label: '시설 안내' },
-      { href: centerHref(center, 'location'), label: '오시는 길' },
+      { href: `/${center}/map`, label: '오시는 길' },
     ]
   }
 
@@ -133,7 +133,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
         ]
       : []),
     { href: centerHref(center, 'facilities'), label: '시설 안내' },
-    { href: centerHref(center, 'location'), label: '오시는 길' },
+    { href: `/${center}/map`, label: '오시는 길' },
   ]
 }
 

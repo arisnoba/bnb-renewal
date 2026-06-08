@@ -193,6 +193,52 @@
   --error: oklch(45% 0.1 25deg);
 }
 
+.map-page__naver-marker {
+  background: var(--brand);
+  border: 4px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgb(0 0 0 / 28%);
+  display: block;
+  height: 28px;
+  position: relative;
+  width: 28px;
+}
+
+.map-page__naver-marker::after {
+  border-inline: 8px solid transparent;
+  border-top: 16px solid var(--brand);
+  content: '';
+  left: 50%;
+  position: absolute;
+  top: 18px;
+  transform: translateX(-50%);
+}
+
+.map-page__info-window {
+  background: #fff;
+  border: 1px solid rgb(0 0 0 / 20%);
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 16%);
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 190px;
+  padding: 12px 14px;
+}
+
+.map-page__info-window strong {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.map-page__info-window span {
+  color: rgb(0 0 0 / 58%);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
