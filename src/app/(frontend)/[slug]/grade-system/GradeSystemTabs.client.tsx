@@ -1,10 +1,13 @@
 'use client'
 
 import {
+  ArrowRight,
   AudioLines,
   Brain,
   CalendarDays,
   Clapperboard,
+  ClipboardCheck,
+  Clock,
   Drama,
   FileText,
   Heart,
@@ -13,6 +16,7 @@ import {
   ScanFace,
   Sparkles,
   Speech,
+  ThumbsUp,
   Users,
   Video,
 } from 'lucide-react'
@@ -217,6 +221,40 @@ const adultGradeRows = [
       '24개월 이상 이수자 중\n경력인정자\n<매니지먼트/\n드라마캐스팅본부 추천>',
   },
 ]
+
+type AdultGradeCard = {
+  className: string
+  department: string
+  experience: string
+  inHouse: string
+  level: string
+  major: string
+  process: string
+  transfer: string
+}
+
+// 모바일 카드용: process는 그룹 첫 행에만 있으므로 직전 값을 carry-forward.
+const adultGradeCards = adultGradeRows.reduce<AdultGradeCard[]>((acc, row) => {
+  const process = ('process' in row && row.process) || acc[acc.length - 1]?.process || ''
+  acc.push({
+    className: row.className,
+    department: row.department,
+    experience: row.experience,
+    inHouse: row.inHouse,
+    level: row.level,
+    major: row.major,
+    process,
+    transfer: row.transfer,
+  })
+  return acc
+}, [])
+
+const criteriaEntryLabels = [
+  { key: 'inHouse', label: '본학원' },
+  { key: 'transfer', label: '타학원' },
+  { key: 'major', label: '전공자' },
+  { key: 'experience', label: '경력 인정자' },
+] satisfies Array<{ key: 'experience' | 'inHouse' | 'major' | 'transfer'; label: string }>
 
 const promotionGroups = [
   {
@@ -623,7 +661,9 @@ function AdultGradeTable() {
   return (
     <section>
       <h3 className="mb-5 text-base font-extrabold leading-none">성인 등급 기준</h3>
-      <div className="overflow-x-auto">
+
+      {/* 데스크탑: 표 형태 (가독성 개선) */}
+      <div className="hidden overflow-x-auto lg:block">
         <table className="w-full table-fixed border-collapse text-center text-[12px] md:text-[13px]">
           <thead>
             <tr className="bg-[#343434] text-white">
@@ -639,10 +679,12 @@ function AdultGradeTable() {
               <CriteriaHeader rowSpan={2} width="w-[15%]">
                 관리부서
               </CriteriaHeader>
-              <CriteriaHeader colSpan={4}>승급 및 지원 기준</CriteriaHeader>
+              <CriteriaHeader className="border-l-2 border-l-brand/70" colSpan={4}>
+                승급 및 지원 기준
+              </CriteriaHeader>
             </tr>
             <tr className="bg-[#343434] text-white">
-              <CriteriaHeader>본학원</CriteriaHeader>
+              <CriteriaHeader className="border-l-2 border-l-brand/70">본학원</CriteriaHeader>
               <CriteriaHeader>타학원</CriteriaHeader>
               <CriteriaHeader>전공자</CriteriaHeader>
               <CriteriaHeader>경력 인정자</CriteriaHeader>
@@ -650,7 +692,10 @@ function AdultGradeTable() {
           </thead>
           <tbody>
             {adultGradeRows.map((row, index) => (
-              <tr className="bg-[#222] text-white/55" key={`${index}-${row.className}`}>
+              <tr
+                className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
+                key={`${index}-${row.className}`}
+              >
                 {row.process ? (
                   <CriteriaCell
                     className="bg-[#333] font-medium text-white"
@@ -659,17 +704,68 @@ function AdultGradeTable() {
                     {row.process}
                   </CriteriaCell>
                 ) : null}
-                <CriteriaCell>{row.className}</CriteriaCell>
+                <CriteriaCell className="font-medium text-white/80">{row.className}</CriteriaCell>
                 <CriteriaCell>{row.level}</CriteriaCell>
-                <CriteriaCell>{row.department}</CriteriaCell>
-                <CriteriaCell emphasis>{row.inHouse}</CriteriaCell>
-                <CriteriaCell>{row.transfer}</CriteriaCell>
-                <CriteriaCell>{row.major}</CriteriaCell>
-                <CriteriaCell emphasis={row.experience.includes('연기상')}>{row.experience}</CriteriaCell>
+                <CriteriaCell className="text-left align-top text-white/45">{row.department}</CriteriaCell>
+                <CriteriaCell className="border-l-2 border-l-brand/40 text-left align-top" emphasis>
+                  {row.inHouse}
+                </CriteriaCell>
+                <CriteriaCell className="text-left align-top">{row.transfer}</CriteriaCell>
+                <CriteriaCell className="text-left align-top">{row.major}</CriteriaCell>
+                <CriteriaCell
+                  className="text-left align-top"
+                  emphasis={row.experience.includes('연기상')}
+                >
+                  {row.experience}
+                </CriteriaCell>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* 모바일/태블릿: 클래스별 카드 */}
+      <div className="flex flex-col gap-4 lg:hidden">
+        {adultGradeCards.map((card, index) => (
+          <article
+            className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
+            key={`${index}-${card.className}`}
+          >
+            <header className="flex flex-wrap items-center gap-2 border-b border-[#363636] bg-[#262626] px-4 py-3">
+              <ClassBadge>{card.className}</ClassBadge>
+              <span className="text-sm font-bold text-white">{card.level}</span>
+              <span className="ml-auto whitespace-pre-line text-right text-[11px] font-medium leading-tight text-white/45">
+                {card.process.replace('\n', '')}
+              </span>
+            </header>
+            <dl className="divide-y divide-[#2c2c2c] text-[13px]">
+              <div className="flex gap-3 px-4 py-3">
+                <dt className="w-20 shrink-0 font-medium text-white/40">관리부서</dt>
+                <dd className="whitespace-pre-line leading-[1.55] text-white/70 [word-break:keep-all]">
+                  {card.department || '-'}
+                </dd>
+              </div>
+              {criteriaEntryLabels.map((entry) => {
+                const value = card[entry.key]
+                const isEmphasis = entry.key === 'inHouse' || value.includes('연기상')
+
+                return (
+                  <div className="flex gap-3 px-4 py-3" key={entry.key}>
+                    <dt className="w-20 shrink-0 font-medium text-white/40">{entry.label}</dt>
+                    <dd
+                      className={cn(
+                        'whitespace-pre-line leading-[1.55] text-white/70 [word-break:keep-all]',
+                        isEmphasis && value && 'font-medium text-[#f87171]',
+                      )}
+                    >
+                      {value || '-'}
+                    </dd>
+                  </div>
+                )
+              })}
+            </dl>
+          </article>
+        ))}
       </div>
     </section>
   )
@@ -679,15 +775,16 @@ function PromotionTable() {
   return (
     <section>
       <h3 className="mb-5 text-base font-extrabold leading-none">성인 승급 기준</h3>
-      <div className="overflow-x-auto">
+
+      {/* 데스크탑: 표 형태 */}
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full table-fixed border-collapse text-center text-[12px] md:text-[13px]">
           <thead>
             <tr className="bg-[#343434] text-white">
               <CriteriaHeader width="w-[7%]">과정</CriteriaHeader>
-              <CriteriaHeader width="w-[13%]">구분</CriteriaHeader>
-              <CriteriaHeader width="w-[14%]">승급 Class</CriteriaHeader>
+              <CriteriaHeader width="w-[20%]">승급 단계</CriteriaHeader>
               <CriteriaHeader width="w-[12%]">승급기준</CriteriaHeader>
-              <CriteriaHeader width="w-[30%]">승급 조건</CriteriaHeader>
+              <CriteriaHeader width="w-[31%]">승급 조건</CriteriaHeader>
               <CriteriaHeader>비고 사항</CriteriaHeader>
             </tr>
           </thead>
@@ -698,7 +795,10 @@ function PromotionTable() {
                 const firstOfType = group.rows.findIndex((item) => item.type === row.type) === index
 
                 return (
-                  <tr className="bg-[#222] text-white/55" key={`${group.process}-${row.type}-${row.criteria}`}>
+                  <tr
+                    className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
+                    key={`${group.process}-${row.type}-${row.criteria}`}
+                  >
                     {index === 0 ? (
                       <CriteriaCell
                         className="bg-[#333] font-medium text-white"
@@ -708,25 +808,82 @@ function PromotionTable() {
                       </CriteriaCell>
                     ) : null}
                     {firstOfType ? (
-                      <>
-                        <CriteriaCell rowSpan={typeSpan}>{row.type}</CriteriaCell>
-                        <CriteriaCell rowSpan={typeSpan}>
-                          <span className="mr-2">{row.target}</span>
-                          <ClassBadge>{row.targetClass}</ClassBadge>
-                        </CriteriaCell>
-                      </>
+                      <CriteriaCell rowSpan={typeSpan}>
+                        <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                          <span className="font-medium text-white/70">
+                            {row.type.replace(/\s*>\s*$/, '')}
+                          </span>
+                          <ArrowRight aria-hidden="true" className="text-brand" size={14} />
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className="text-white/70">{row.target}</span>
+                            <ClassBadge>{row.targetClass}</ClassBadge>
+                          </span>
+                        </span>
+                      </CriteriaCell>
                     ) : null}
-                    <CriteriaCell className={row.criteria === '활동경력' ? 'bg-[#333]' : undefined}>
-                      {row.criteria}
+                    <CriteriaCell>
+                      <CriteriaTypeBadge type={row.criteria} />
                     </CriteriaCell>
-                    <CriteriaCell>{row.condition}</CriteriaCell>
-                    <CriteriaCell emphasis>{row.note}</CriteriaCell>
+                    <CriteriaCell className="text-left align-top">{row.condition}</CriteriaCell>
+                    <CriteriaCell className="text-left align-top" emphasis>
+                      {row.note}
+                    </CriteriaCell>
                   </tr>
                 )
               }),
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* 모바일: 승급 단계별 카드 */}
+      <div className="flex flex-col gap-8 md:hidden">
+        {promotionGroups.map((group) => {
+          const types = [...new Set(group.rows.map((row) => row.type))]
+
+          return (
+            <div className="flex flex-col gap-4" key={group.process}>
+              <p className="whitespace-pre-line text-sm font-extrabold leading-tight text-white/80">
+                {group.process.replace('\n', ' ')}
+              </p>
+              {types.map((type) => {
+                const rows = group.rows.filter((row) => row.type === type)
+                const head = rows[0]
+
+                return (
+                  <article
+                    className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
+                    key={type}
+                  >
+                    <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-[#363636] bg-[#262626] px-4 py-3 text-sm">
+                      <span className="font-medium text-white/70">
+                        {type.replace(/\s*>\s*$/, '')}
+                      </span>
+                      <ArrowRight aria-hidden="true" className="text-brand" size={15} />
+                      <span className="font-bold text-white">{head.target}</span>
+                      <ClassBadge>{head.targetClass}</ClassBadge>
+                    </header>
+                    <ul className="divide-y divide-[#2c2c2c]">
+                      {rows.map((row) => (
+                        <li className="flex flex-col gap-2 px-4 py-3" key={row.criteria}>
+                          <CriteriaTypeBadge type={row.criteria} />
+                          <p className="text-[13px] leading-[1.55] text-white/70 [word-break:keep-all]">
+                            {row.condition}
+                          </p>
+                          {row.note ? (
+                            <p className="text-[12px] font-medium leading-[1.5] text-[#f87171] [word-break:keep-all]">
+                              {row.note}
+                            </p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                )
+              })}
+            </div>
+          )
+        })}
       </div>
     </section>
   )
@@ -790,6 +947,25 @@ function ClassBadge({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex rounded-full bg-brand px-2.5 py-1 text-[11px] font-bold leading-none text-white">
       {children}
+    </span>
+  )
+}
+
+const criteriaTypeMeta = {
+  기간: { icon: Clock },
+  추천: { icon: ThumbsUp },
+  오디션: { icon: ClipboardCheck },
+  활동경력: { icon: Clapperboard },
+} satisfies Record<string, { icon: typeof Clock }>
+
+function CriteriaTypeBadge({ type }: { type: string }) {
+  const meta = (criteriaTypeMeta as Record<string, { icon: typeof Clock } | undefined>)[type]
+  const Icon = meta?.icon
+
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold leading-none text-white/80">
+      {Icon ? <Icon aria-hidden="true" size={13} strokeWidth={2} /> : null}
+      {type}
     </span>
   )
 }
