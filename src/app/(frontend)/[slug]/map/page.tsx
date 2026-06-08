@@ -64,17 +64,18 @@ export default async function CenterMapPage({ params }: Args) {
 function resolveNaverMapScriptUrl() {
   const keyId = process.env.NEXT_PUBLIC_NAVER_MAPS_KEY_ID
   const legacyClientId = process.env.NEXT_PUBLIC_NAVER_MAPS_CLIENT_ID
+  const submodules = 'gl'
 
   if (keyId) {
     return `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(
       keyId,
-    )}`
+    )}&submodules=${submodules}`
   }
 
   if (legacyClientId) {
     return `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${encodeURIComponent(
       legacyClientId,
-    )}`
+    )}&submodules=${submodules}`
   }
 
   return null

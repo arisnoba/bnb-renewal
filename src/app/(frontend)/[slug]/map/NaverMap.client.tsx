@@ -20,25 +20,20 @@ type NaverMarker = {
   setMap: (map: NaverMapInstance | null) => void
 }
 
-type NaverLayer = {
-  setMap: (map: NaverMapInstance | null) => void
-}
-
 type NaverMapsNamespace = {
   Event: {
     addListener: (target: NaverMarker, eventName: string, listener: () => void) => void
   }
-  LabelLayer?: new () => NaverLayer
   LatLng: new (lat: number, lng: number) => NaverLatLng
   Map: new (
     element: HTMLElement,
     options: {
       center: NaverLatLng
+      customStyleId?: string
+      gl?: boolean
       logoControl?: boolean
       mapDataControl?: boolean
       mapTypeControl?: boolean
-      mapTypeId?: string
-      mapTypes?: unknown
       scaleControl?: boolean
       zoom: number
       zoomControl?: boolean
@@ -54,10 +49,6 @@ type NaverMapsNamespace = {
     title?: string
     zIndex?: number
   }) => NaverMarker
-  MapTypeRegistry?: new (mapTypes: Record<string, unknown>) => unknown
-  NaverStyleMapTypeOptions?: {
-    getVectorMap?: () => unknown
-  }
   Point: new (x: number, y: number) => NaverLatLng
 }
 
@@ -75,10 +66,11 @@ type NaverMapProps = {
   scriptUrl: string | null
 }
 
+const naverMapCustomStyleId = 'c4300a1b-6d48-49cd-8316-c3a91a0a7aa0'
+
 export function NaverMap({ location, scriptUrl }: NaverMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<NaverMapInstance | null>(null)
-  const labelLayerRef = useRef<NaverLayer | null>(null)
   const markersRef = useRef<NaverMarker[]>([])
   const [loadResult, setLoadResult] = useState<'ready' | 'error' | null>(null)
   const status = !scriptUrl ? 'missing-key' : (loadResult ?? 'loading')
@@ -99,11 +91,6 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
 
         if (!mapRef.current) {
           mapRef.current = new maps.Map(containerRef.current, mapOptions(maps, center))
-
-          if (maps.LabelLayer) {
-            labelLayerRef.current = new maps.LabelLayer()
-            labelLayerRef.current.setMap(mapRef.current)
-          }
         }
 
         const map = mapRef.current
@@ -123,7 +110,7 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
             },
             map,
             position: new maps.LatLng(markerPosition.lat, markerPosition.lng),
-            title: centerLocation.name,
+            title: isActive ? centerLocation.name : undefined,
             zIndex: isActive ? 1000 : 100,
           })
         })
@@ -142,7 +129,6 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
   useEffect(() => {
     return () => {
       markersRef.current.forEach((marker) => marker.setMap(null))
-      labelLayerRef.current?.setMap(null)
     }
   }, [])
 
@@ -165,19 +151,14 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
 function mapOptions(maps: NaverMapsNamespace, center: NaverLatLng) {
   const options: ConstructorParameters<NaverMapsNamespace['Map']>[1] = {
     center,
+    customStyleId: naverMapCustomStyleId,
+    gl: true,
     logoControl: true,
     mapDataControl: false,
     mapTypeControl: false,
     scaleControl: false,
     zoom: 17,
     zoomControl: true,
-  }
-
-  if (maps.MapTypeRegistry && maps.NaverStyleMapTypeOptions?.getVectorMap) {
-    options.mapTypeId = 'bnb-map'
-    options.mapTypes = new maps.MapTypeRegistry({
-      'bnb-map': maps.NaverStyleMapTypeOptions.getVectorMap(),
-    })
   }
 
   return options
@@ -239,11 +220,15 @@ function sameCoordinate(a: CenterLocation, b: CenterLocation) {
 function mapMarkerContent(location: CenterLocation, isActive: boolean) {
   return `
     <div class="map-page__naver-marker" data-active="${isActive ? 'true' : 'false'}" aria-hidden="true">
-      <div class="map-page__naver-marker-card">
-        <span class="map-page__naver-marker-eyebrow">현재 선택</span>
-        <strong>${escapeHtml(location.label)}</strong>
-        <span>${escapeHtml(location.address)}</span>
-      </div>
+      ${
+        isActive
+          ? `<div class="map-page__naver-marker-card">
+              <span class="map-page__naver-marker-eyebrow">현재 선택</span>
+              <strong>${escapeHtml(location.label)}</strong>
+              <span>${escapeHtml(location.address)}</span>
+            </div>`
+          : ''
+      }
       <span class="map-page__naver-marker-pin"></span>
     </div>
   `
