@@ -161,6 +161,15 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
+  if (center === 'art') {
+    return [
+      { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
+      { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
+      { href: centerHref(center, 'profiles'), label: '교육진 소개' },
+      { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
+    ]
+  }
+
   return [
     { href: centerHref(center, 'grade-system'), label: '등급제 교육관리시스템' },
     { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
