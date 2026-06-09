@@ -109,7 +109,7 @@ function avenueMenu(): HeaderMenuGroup[] {
 }
 
 function aboutItems(center: CenterSlug): HeaderMenuItem[] {
-  if (center === 'art') {
+  if (center === 'art' || center === 'exam') {
     return [
       { href: '/art#company', label: '회사 소개' },
       { href: centerHref(center, 'about'), label: '센터 소개' },
@@ -120,14 +120,8 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
 
   return [
     { href: '/art#company', label: '회사 소개' },
-    ...(center === 'exam' || center === 'highteen' || center === 'kids'
+    ...(center === 'highteen' || center === 'kids'
       ? [{ href: centerHref(center, 'greeting'), label: '대표인사말' }]
-      : []),
-    ...(center === 'exam'
-      ? [
-          { href: centerHref(center, 'history'), label: '연혁' },
-          { href: centerHref(center, 'subsidiaries'), label: '자회사 안내' },
-        ]
       : []),
     { href: centerHref(center, 'facilities'), label: '시설 안내' },
     { href: `/${center}/map`, label: '오시는 길' },

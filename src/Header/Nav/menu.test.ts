@@ -13,6 +13,10 @@ function supportLabelsFor(center: Parameters<typeof getHeaderMenu>[0]) {
   return getHeaderMenu(center).find((group) => group.key === 'support')?.items.map((item) => item.label) ?? []
 }
 
+function labelsForGroup(center: Parameters<typeof getHeaderMenu>[0], key: string) {
+  return getHeaderMenu(center).find((group) => group.key === key)?.items.map((item) => item.label) ?? []
+}
+
 test('headerCenterFromPathname reads the first center segment with art fallback', () => {
   assert.equal(headerCenterFromPathname('/exam/news'), 'exam')
   assert.equal(headerCenterFromPathname('/kids/profiles/kim-seoha'), 'kids')
@@ -43,11 +47,15 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   const groupLabels = menu.map((group) => group.label)
   const labels = labelsFor('exam')
 
+  assert.deepEqual(labelsForGroup('exam', 'about'), labelsForGroup('art', 'about'))
   assert.ok(groupLabels.includes('합격현황'))
   assert.ok(groupLabels.includes('합격자 소개'))
   assert.ok(labels.includes('입시반 커리큘럼'))
   assert.ok(labels.includes('대학교 합격현황'))
   assert.ok(labels.includes('수강생 합격후기'))
+  assert.ok(!labels.includes('대표인사말'))
+  assert.ok(!labels.includes('연혁'))
+  assert.ok(!labels.includes('자회사 안내'))
   assert.ok(!labels.includes('장학제도'))
   assert.ok(!labels.includes('온라인 상담신청'))
 })
