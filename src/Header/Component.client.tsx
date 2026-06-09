@@ -1,5 +1,6 @@
 'use client'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
+import type { Theme as HeaderTheme } from '@/providers/Theme/types'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
@@ -13,7 +14,7 @@ export const HeaderClient: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [theme, setTheme] = useState<string | null>(null)
+  const [theme, setTheme] = useState<HeaderTheme | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
 
@@ -23,8 +24,9 @@ export const HeaderClient: React.FC = () => {
   }, [pathname])
 
   useEffect(() => {
-    if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (headerTheme === undefined) return
+
+    setTheme(headerTheme)
   }, [headerTheme])
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export const HeaderClient: React.FC = () => {
   return (
     <header
       ref={headerRef}
-      className={isMegaOpen ? 'site-header site-header--mega-open' : 'site-header'}
+      className={isMegaOpen ? 'site-header is-hover' : 'site-header'}
       data-scrolled={isScrolled ? 'true' : undefined}
       {...(theme ? { 'data-theme': theme } : {})}
     >
