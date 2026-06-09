@@ -112,6 +112,7 @@ import * as migration_20260602_183000_main_statistics_global_fields from './2026
 import * as migration_20260602_184000_drop_main_statistics_collection_lock_rel from './20260602_184000_drop_main_statistics_collection_lock_rel'
 import * as migration_20260602_185000_main_settings_collection_lock_rels from './20260602_185000_main_settings_collection_lock_rels'
 import * as migration_20260608_120000_star_card_category from './20260608_120000_star_card_category'
+import * as migration_20260609_163500_terms from './20260609_163500_terms'
 
 export const migrations = [
   {
@@ -683,5 +684,10 @@ export const migrations = [
     up: migration_20260608_120000_star_card_category.up,
     down: migration_20260608_120000_star_card_category.down,
     name: '20260608_120000_star_card_category',
+  },
+  {
+    up: migration_20260609_163500_terms.up,
+    down: migration_20260609_163500_terms.down,
+    name: '20260609_163500_terms',
   },
 ]

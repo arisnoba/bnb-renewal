@@ -30,6 +30,7 @@ import { ScreenAppearances } from './src/collections/ScreenAppearances'
 import { SocialLinks } from './src/collections/SocialLinks'
 import { StarCards } from './src/collections/StarCards'
 import { Teachers } from './src/collections/Teachers'
+import { Terms } from './src/collections/Terms'
 import { Users } from './src/collections/Users'
 import { applyAdminTimestampFields } from './src/collections/adminTimestampFields'
 import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoints'
@@ -87,6 +88,7 @@ export default buildConfig({
       MainBanners,
       SocialLinks,
       Histories,
+      Terms,
       Teachers,
       Curriculums,
       HighteenSpecialClasses,
