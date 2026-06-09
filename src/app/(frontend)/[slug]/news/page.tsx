@@ -8,6 +8,10 @@ type Args = {
   params: Promise<{
     slug: string
   }>
+  searchParams: Promise<{
+    category?: string
+    page?: string
+  }>
 }
 
 export const dynamic = 'force-dynamic'
@@ -27,9 +31,25 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   }
 }
 
-export default async function CenterNewsIndex({ params: paramsPromise }: Args) {
+export default async function CenterNewsIndex({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: Args) {
   const { slug } = await paramsPromise
+  const { category, page } = await searchParamsPromise
   const center = assertCenter(slug)
 
-  return <NewsArchive center={center} title={`${getCenterLabel(center)} 뉴스`} />
+  return (
+    <NewsArchive
+      activeCategory={category}
+      center={center}
+      page={parsePage(page)}
+    />
+  )
+}
+
+function parsePage(value: string | undefined) {
+  const page = Number(value)
+
+  return Number.isInteger(page) && page > 0 ? page : 1
 }

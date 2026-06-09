@@ -30,8 +30,10 @@ export function getNewsImageAlt(news: NewsLike) {
   return media?.alt || news.title || ''
 }
 
-export function getNewsUrl(news: Pick<News, 'slug'>) {
-  return `/news/${encodeURIComponent(news.slug)}`
+export function getNewsUrl(news: Pick<News, 'slug'>, center?: string) {
+  const path = `/news/${encodeURIComponent(news.slug)}`
+
+  return center ? `/${encodeURIComponent(center)}${path}` : path
 }
 
 export function generateNewsMeta(news: NewsLike | null): Metadata {

@@ -1,10 +1,12 @@
 import { Media } from '@/components/Media/Renderer'
-import type { News } from '@/payload-types'
 import {
-  getNewsDescription,
-  getNewsThumbnailMedia,
-  getNewsUrl,
-} from '@/utilities/newsFallbacks'
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+} from '@/components/ui/pagination'
+import type { News } from '@/payload-types'
+import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 import Link from 'next/link'
@@ -12,127 +14,296 @@ import React from 'react'
 
 import PageClient from './page.client'
 
-type NewsArchiveProps = {
-  center?: string
-  title?: string
+const newsCategories = [
+  {
+    key: 'audition-casting',
+    label: '오디션 · 캐스팅공지',
+    match: ['오디션', '캐스팅공지', '캐스팅진행'],
+  },
+  {
+    key: 'casting-confirmed',
+    label: '캐스팅 확정',
+    match: ['캐스팅확정'],
+  },
+  {
+    key: 'casting-onair',
+    label: '캐스팅 OnAir',
+    match: ['OnAir'],
+  },
+  {
+    key: 'education-news',
+    label: '교육 · 운영 · 소식',
+    match: ['교육', '운영', '소식'],
+  },
+] as const
+
+const pageSize = 5
+type NewsCategory = (typeof newsCategories)[number]
+type NewsPageResult = {
+  docs: (Partial<News> & Pick<News, 'id' | 'slug' | 'title'>)[]
+  page: number
+  totalDocs: number
+  totalPages: number
 }
 
-export async function NewsArchive({ center, title = '뉴스' }: NewsArchiveProps) {
+type NewsArchiveProps = {
+  activeCategory?: string
+  center: string
+  page?: number
+  title?: React.ReactNode
+}
+
+export async function NewsArchive({
+  activeCategory,
+  center,
+  page = 1,
+  title = (
+    <>
+      배우앤배움의 새로운 소식과
+      <br />
+      다양한 활동 이야기를 전합니다.
+    </>
+  ),
+}: NewsArchiveProps) {
   const payload = await getPayload({ config: configPromise })
-  const where: Where = center
-    ? {
-        and: [
-          {
-            displayStatus: {
-              equals: 'published',
-            },
-          },
-          {
-            or: [
-              {
-                centers: {
-                  contains: center,
-                },
-              },
-              {
-                centers: {
-                  contains: 'all',
-                },
-              },
-            ],
-          },
-        ],
-      }
-    : {
+  const category = getCategoryByKey(activeCategory) ?? normalizeCategory(activeCategory)
+  const currentPage = Math.max(1, page)
+  const baseWhere: Where = {
+    and: [
+      {
         displayStatus: {
           equals: 'published',
         },
-      }
-
-  const news = await payload
-    .find({
-      collection: 'news',
-      depth: 1,
-      limit: 24,
-      overrideAccess: false,
-      select: {
-        category: true,
-        excerpt: true,
-        meta: true,
-        publishedAt: true,
-        slug: true,
-        thumbnailMedia: true,
-        title: true,
       },
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page: 1,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+      {
+        or: [
+          {
+            centers: {
+              contains: center,
+            },
+          },
+          {
+            centers: {
+              contains: 'all',
+            },
+          },
+        ],
+      },
+    ],
+  }
+
+  const news = category
+    ? await findCategorizedNews({
+        category,
+        page: currentPage,
+        payload,
+        where: baseWhere,
+      })
+    : await findNewsPage({
+        page: currentPage,
+        payload,
+        where: baseWhere,
+      })
+  const totalPages = Math.max(news.totalPages || 1, 1)
 
   return (
-    <main className="page page-light page-news-archive page-top-offset pb-24">
+    <main className="page page-light page-news-archive page-top-offset" data-center={center}>
       <PageClient />
-      <div className="container mb-12">
-        <div className="page-heading max-w-3xl">
-          <p className="page-eyebrow uppercase tracking-[0.14em] text-muted-foreground">
-            News
-          </p>
-          <h1 className="page-title">{title}</h1>
-        </div>
-      </div>
 
-      <div className="container">
-        {news.docs.length === 0 ? (
-          <p className="text-muted-foreground">등록된 뉴스가 없습니다.</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {news.docs.map((item) => (
-              <NewsCard key={item.id} news={item} />
+      <section className="section-news-list" aria-labelledby="news-list-title">
+        <div className="section-news-list__container">
+          <header className="section-news-list__head page-heading">
+            <p className="section-news-list__eyebrow page-eyebrow">NEWS&amp;NOTICE</p>
+            <h1 id="news-list-title" className="section-news-list__title page-title">
+              {title}
+            </h1>
+          </header>
+
+          <nav className="section-news-list__tabs" aria-label="뉴스 분류">
+            <NewsCategoryLink
+              active={!category}
+              href={newsArchiveHref({ center })}
+              label="전체"
+            />
+            {newsCategories.map((item) => (
+              <NewsCategoryLink
+                active={category?.key === item.key}
+                href={newsArchiveHref({ category: item.key, center })}
+                key={item.key}
+                label={item.label}
+              />
             ))}
-          </div>
-        )}
-      </div>
+          </nav>
+
+          {news.docs.length === 0 ? (
+            <p className="section-news-list__empty">등록된 뉴스가 없습니다.</p>
+          ) : (
+            <div className="section-news-list__items">
+              {news.docs.map((item) => (
+                <NewsCard center={center} key={item.id} news={item} />
+              ))}
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <NewsPagination
+              activeCategory={category?.key ?? null}
+              center={center}
+              page={Math.min(news.page || currentPage, totalPages)}
+              totalPages={totalPages}
+            />
+          )}
+        </div>
+      </section>
     </main>
   )
 }
 
-function NewsCard({ news }: { news: Partial<News> & Pick<News, 'id' | 'slug' | 'title'> }) {
+function NewsCard({
+  center,
+  news,
+}: {
+  center: string
+  news: Partial<News> & Pick<News, 'id' | 'slug' | 'title'>
+}) {
   const media = getNewsThumbnailMedia(news)
-  const description = getNewsDescription(news)
+  const categoryLabel = getNewsCategoryLabel(news.category) ?? news.category
+  const description = getNewsArchiveDescription(news)
   const publishedAt = formatDate(news.publishedAt)
 
   return (
-    <Link className="group block h-full" href={getNewsUrl(news)}>
-      <article className="h-full overflow-hidden rounded-lg border border-border bg-card transition-colors group-hover:border-muted-foreground/50">
-        <div className="aspect-[4/3] overflow-hidden bg-muted">
+    <Link className="section-news-card group" href={getNewsUrl(news, center)}>
+      <article className="section-news-card__inner">
+        <div className="section-news-card__media">
           {media ? (
             <Media
-              imgClassName="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              pictureClassName="block h-full w-full"
+              imgClassName="section-news-card__image"
+              pictureClassName="section-news-card__picture"
               resource={media}
-              size="(max-width: 768px) 100vw, 33vw"
+              size="146px"
             />
           ) : null}
         </div>
-        <div className="p-5">
-          <div className="mb-3 flex flex-wrap gap-2 text-xs font-medium text-muted-foreground">
-            {news.category && <span>{news.category}</span>}
-            {publishedAt && <span>{publishedAt}</span>}
+        <div className="section-news-card__content">
+          <div className="section-news-card__main">
+            <h2 className="section-news-card__title">{news.title}</h2>
+            {description && <p className="section-news-card__description">{description}</p>}
+            {categoryLabel && (
+              <div className="section-news-card__badges">
+                <span className="section-news-card__badge">{categoryLabel}</span>
+              </div>
+            )}
           </div>
-          <h2 className="line-clamp-2 text-xl font-semibold leading-snug tracking-normal">
-            {news.title}
-          </h2>
-          {description && (
-            <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
-              {description}
-            </p>
+          {publishedAt && (
+            <time className="section-news-card__date" dateTime={news.publishedAt ?? undefined}>
+              {publishedAt}
+            </time>
           )}
         </div>
       </article>
+    </Link>
+  )
+}
+
+function NewsCategoryLink({
+  active,
+  href,
+  label,
+}: {
+  active: boolean
+  href: string
+  label: string
+}) {
+  return (
+    <Link
+      aria-current={active ? 'page' : undefined}
+      className="section-news-list__tab"
+      data-active={active ? 'true' : 'false'}
+      href={href}
+    >
+      {label}
+    </Link>
+  )
+}
+
+function NewsPagination({
+  activeCategory,
+  center,
+  page,
+  totalPages,
+}: {
+  activeCategory: string | null
+  center: string
+  page: number
+  totalPages: number
+}) {
+  const pages = paginationWindow(page, totalPages)
+
+  return (
+    <Pagination aria-label="뉴스 페이지" className="section-news-pagination">
+      <PaginationContent className="section-news-pagination__content">
+        <PaginationItem>
+          <NewsPaginationLink
+            disabled={page <= 1}
+            href={newsArchiveHref({ category: activeCategory, center, page: page - 1 })}
+          >
+            이전
+          </NewsPaginationLink>
+        </PaginationItem>
+        {pages.map((item, index) => (
+          <PaginationItem key={item === 'ellipsis' ? `ellipsis-${index}` : item}>
+            {item === 'ellipsis' ? (
+              <PaginationEllipsis className="section-news-pagination__ellipsis" />
+            ) : (
+              <NewsPaginationLink
+                active={page === item}
+                href={newsArchiveHref({ category: activeCategory, center, page: item })}
+              >
+                {item}
+              </NewsPaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+        <PaginationItem>
+          <NewsPaginationLink
+            disabled={page >= totalPages}
+            href={newsArchiveHref({ category: activeCategory, center, page: page + 1 })}
+          >
+            다음
+          </NewsPaginationLink>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  )
+}
+
+function NewsPaginationLink({
+  active,
+  children,
+  disabled,
+  href,
+}: {
+  active?: boolean
+  children: React.ReactNode
+  disabled?: boolean
+  href: string
+}) {
+  if (disabled) {
+    return (
+      <span className="section-news-pagination__link" data-disabled="true">
+        {children}
+      </span>
+    )
+  }
+
+  return (
+    <Link
+      aria-current={active ? 'page' : undefined}
+      className="section-news-pagination__link"
+      data-active={active ? 'true' : 'false'}
+      href={href}
+    >
+      {children}
     </Link>
   )
 }
@@ -148,9 +319,259 @@ function formatDate(value: string | null | undefined) {
     return undefined
   }
 
-  return new Intl.DateTimeFormat('ko-KR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit',
-  }).format(date)
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}.${month}.${day}`
+}
+
+function normalizeCategory(value: string | null | undefined) {
+  if (!value) {
+    return null
+  }
+
+  const normalizedValue = normalizeCategoryText(value)
+
+  return (
+    newsCategories.find((category) =>
+      category.match.some((categoryValue) => normalizedValue.includes(categoryValue.toLowerCase())),
+    ) ?? null
+  )
+}
+
+function getCategoryByKey(value: string | null | undefined) {
+  return newsCategories.find((category) => category.key === value) ?? null
+}
+
+function getNewsCategoryLabel(value: string | null | undefined) {
+  const category = normalizeCategory(value)
+
+  return category?.label
+}
+
+async function findNewsPage({
+  page,
+  payload,
+  where,
+}: {
+  page: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  where: Where
+}): Promise<NewsPageResult> {
+  const result = await payload
+    .find({
+      collection: 'news',
+      depth: 1,
+      limit: pageSize,
+      overrideAccess: false,
+      page,
+      select: newsArchiveSelect,
+      where,
+    })
+    .catch(() => ({
+      docs: [],
+      page,
+      totalDocs: 0,
+      totalPages: 0,
+    }))
+
+  return {
+    docs: result.docs,
+    page: result.page ?? page,
+    totalDocs: result.totalDocs,
+    totalPages: result.totalPages,
+  }
+}
+
+async function findCategorizedNews({
+  category,
+  page,
+  payload,
+  where,
+}: {
+  category: NewsCategory
+  page: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  where: Where
+}): Promise<NewsPageResult> {
+  const categoryCandidates = await payload
+    .find({
+      collection: 'news',
+      depth: 0,
+      limit: 10000,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        category: true,
+      },
+      sort: '-publishedAt',
+      where,
+    })
+    .catch(() => ({
+      docs: [],
+    }))
+  const matchingIds = categoryCandidates.docs
+    .filter((news) => categoryMatches(news.category, category))
+    .map((news) => news.id)
+  const totalDocs = matchingIds.length
+  const totalPages = Math.max(Math.ceil(totalDocs / pageSize), 1)
+  const safePage = Math.min(Math.max(page, 1), totalPages)
+  const pageIds = matchingIds.slice((safePage - 1) * pageSize, safePage * pageSize)
+
+  if (pageIds.length === 0) {
+    return {
+      docs: [],
+      page: safePage,
+      totalDocs,
+      totalPages,
+    }
+  }
+
+  const result = await payload
+    .find({
+      collection: 'news',
+      depth: 1,
+      limit: pageSize,
+      overrideAccess: false,
+      pagination: false,
+      select: newsArchiveSelect,
+      sort: '-publishedAt',
+      where: {
+        and: [
+          where,
+          {
+            id: {
+              in: pageIds,
+            },
+          },
+        ],
+      },
+    })
+    .catch(() => ({
+      docs: [],
+    }))
+
+  return {
+    docs: result.docs,
+    page: safePage,
+    totalDocs,
+    totalPages,
+  }
+}
+
+const newsArchiveSelect = {
+  category: true,
+  body: true,
+  excerpt: true,
+  publishedAt: true,
+  slug: true,
+  thumbnailMedia: true,
+  title: true,
+} as const
+
+function categoryMatches(value: string | null | undefined, category: NewsCategory) {
+  const normalizedValue = normalizeCategoryText(value ?? '')
+
+  return category.match.some((categoryValue) =>
+    normalizedValue.includes(normalizeCategoryText(categoryValue)),
+  )
+}
+
+function normalizeCategoryText(value: string) {
+  return value.replace(/[\s·ㆍ・.]+/g, '').toLowerCase()
+}
+
+function newsArchiveHref({
+  category,
+  center,
+  page,
+}: {
+  category?: string | null
+  center: string
+  page?: number
+}) {
+  const params = new URLSearchParams()
+
+  if (category) {
+    params.set('category', category)
+  }
+
+  if (page && page > 1) {
+    params.set('page', String(page))
+  }
+
+  const query = params.toString()
+
+  return `/${center}/news${query ? `?${query}` : ''}`
+}
+
+function paginationWindow(page: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  if (page <= 4) {
+    return [1, 2, 3, 4, 5, 'ellipsis' as const, totalPages]
+  }
+
+  if (page >= totalPages - 3) {
+    return [
+      1,
+      'ellipsis' as const,
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ]
+  }
+
+  return [1, 'ellipsis' as const, page - 1, page, page + 1, 'ellipsis' as const, totalPages]
+}
+
+function getNewsArchiveDescription(news: Partial<News>) {
+  const excerpt = news.excerpt?.trim()
+
+  if (excerpt) {
+    return excerpt
+  }
+
+  return truncateText(extractLexicalText(news.body), 160)
+}
+
+function extractLexicalText(value: News['body'] | undefined) {
+  const textParts: string[] = []
+
+  collectLexicalText(value, textParts)
+
+  return textParts.join(' ').replace(/\s+/g, ' ').trim()
+}
+
+function collectLexicalText(value: unknown, textParts: string[]) {
+  if (!value || typeof value !== 'object') {
+    return
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectLexicalText(item, textParts))
+    return
+  }
+
+  const node = value as { children?: unknown; root?: unknown; text?: unknown }
+
+  if (typeof node.text === 'string') {
+    textParts.push(node.text)
+  }
+
+  collectLexicalText(node.root, textParts)
+  collectLexicalText(node.children, textParts)
+}
+
+function truncateText(value: string, maxLength: number) {
+  if (value.length <= maxLength) {
+    return value
+  }
+
+  return `${value.slice(0, maxLength).trim()}...`
 }

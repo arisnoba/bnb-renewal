@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
-
-import { NewsArchive } from './NewsArchive'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export default async function NewsIndex() {
-  return <NewsArchive />
+  redirect('/art/news')
 }
 
 export function generateMetadata(): Metadata {
