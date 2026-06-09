@@ -1,5 +1,6 @@
 'use client'
 
+import { Search } from 'lucide-react'
 import Link from 'next/link'
 import React, { useMemo, useRef, useState } from 'react'
 
@@ -74,7 +75,7 @@ export function FaqArchiveClient({
             className="section-faq-list__search-button"
             type="submit"
           >
-            <span aria-hidden="true" />
+            <Search aria-hidden="true" size={18} strokeWidth={2.4} />
           </button>
         </form>
 
@@ -147,6 +148,11 @@ function CategoryLink({
 
 type MarkdownBlock =
   | {
+      href: string
+      label: string
+      type: 'button'
+    }
+  | {
       rows: string[][]
       type: 'table'
     }
@@ -165,9 +171,13 @@ function MarkdownAnswer({ content }: { content: string }) {
           return <MarkdownTable key={index} rows={block.rows} />
         }
 
+        if (block.type === 'button') {
+          return <MarkdownButton href={block.href} key={index} label={block.label} />
+        }
+
         return (
           <p className="section-faq-answer__paragraph" key={index}>
-            {block.lines.join('\n')}
+            {renderInlineMarkdownLinks(block.lines.join('\n'))}
           </p>
         )
       })}
@@ -202,6 +212,35 @@ function MarkdownTable({ rows }: { rows: string[][] }) {
   )
 }
 
+function MarkdownButton({ href, label }: { href: string; label: string }) {
+  if (!isSafeFaqHref(href)) {
+    return (
+      <p className="section-faq-answer__paragraph">
+        {`[${label}](${href})`}
+      </p>
+    )
+  }
+
+  if (isInternalFaqHref(href)) {
+    return (
+      <Link className="section-faq-answer__button" href={href}>
+        {label}
+      </Link>
+    )
+  }
+
+  return (
+    <a
+      className="section-faq-answer__button"
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      {label}
+    </a>
+  )
+}
+
 function toMarkdownBlocks(content: string): MarkdownBlock[] {
   const lines = content.split('\n')
   const blocks: MarkdownBlock[] = []
@@ -224,6 +263,18 @@ function toMarkdownBlocks(content: string): MarkdownBlock[] {
 
     if (!line.trim()) {
       flushParagraph()
+      continue
+    }
+
+    const button = parseMarkdownLink(line)
+
+    if (button) {
+      flushParagraph()
+      blocks.push({
+        href: button.href,
+        label: button.label,
+        type: 'button',
+      })
       continue
     }
 
@@ -276,4 +327,77 @@ function parseMarkdownTableRow(line: string) {
     .replace(/\|$/, '')
     .split('|')
     .map((cell) => cell.trim())
+}
+
+function renderInlineMarkdownLinks(text: string) {
+  const nodes: React.ReactNode[] = []
+  const linkPattern = /\[([^\]\n]+)\]\(([^)\s]+)\)/g
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = linkPattern.exec(text))) {
+    const [raw, label, href] = match
+
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index))
+    }
+
+    if (isSafeFaqHref(href)) {
+      nodes.push(
+        isInternalFaqHref(href) ? (
+          <Link className="section-faq-answer__link" href={href} key={match.index}>
+            {label}
+          </Link>
+        ) : (
+          <a
+            className="section-faq-answer__link"
+            href={href}
+            key={match.index}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {label}
+          </a>
+        ),
+      )
+    } else {
+      nodes.push(raw)
+    }
+
+    lastIndex = match.index + raw.length
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex))
+  }
+
+  return nodes
+}
+
+function parseMarkdownLink(line: string) {
+  const match = line.trim().match(/^\[([^\]\n]+)\]\(([^)\s]+)\)$/)
+
+  if (!match) {
+    return null
+  }
+
+  return {
+    href: match[2],
+    label: match[1],
+  }
+}
+
+function isInternalFaqHref(href: string) {
+  return (href.startsWith('/') && !href.startsWith('//')) || href.startsWith('#')
+}
+
+function isSafeFaqHref(href: string) {
+  return (
+    isInternalFaqHref(href) ||
+    href.startsWith('#') ||
+    href.startsWith('http://') ||
+    href.startsWith('https://') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:')
+  )
 }

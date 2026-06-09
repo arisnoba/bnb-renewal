@@ -134,6 +134,7 @@
     "@payloadcms/richtext-lexical": "^3.82.1",
     "@payloadcms/ui": "^3.82.1",
     "@radix-ui/react-checkbox": "^1.3.3",
+    "@radix-ui/react-dialog": "^1.1.16",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-radio-group": "^1.3.8",

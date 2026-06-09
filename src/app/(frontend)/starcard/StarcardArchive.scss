@@ -1,37 +1,150 @@
-.page-static--starcard {
-  background: #fff;
-  color: #111;
-}
-
-.section-starcard-list__title,
-.section-starcard-list__description,
-.section-starcard-list__summary h2,
-.section-starcard-list__summary p,
-.starcard-partner-card__title,
-.starcard-partner-modal__content,
-.starcard-partner-modal__body {
-  word-break: keep-all;
-}
 
 .starcard-partner-card {
   border-radius: 8px;
 }
 
+.page-starcard[data-center='art'] {
+  --starcard-brand: var(--color-brand-art);
+}
+
+.page-starcard[data-center='exam'] {
+  --starcard-brand: var(--color-brand-exam);
+}
+
+.page-starcard[data-center='highteen'] {
+  --starcard-brand: var(--color-brand-highteen);
+}
+
+.page-starcard[data-center='kids'] {
+  --starcard-brand: var(--color-brand-kids);
+}
+
+.page-starcard[data-center='avenue'] {
+  --starcard-brand: var(--color-brand-avenue);
+}
+
+.page-starcard .text-brand {
+  color: var(--starcard-brand, var(--brand));
+}
+
+.page-starcard .bg-brand {
+  background-color: var(--starcard-brand, var(--brand));
+}
+
+.page-starcard .hover\:border-brand:hover {
+  border-color: var(--starcard-brand, var(--brand));
+}
+
+.page-starcard .hover\:text-brand:hover {
+  color: var(--starcard-brand, var(--brand));
+}
+
+.page-starcard .hover\:bg-brand:hover {
+  background-color: var(--starcard-brand, var(--brand));
+}
+
 .starcard-partner-card:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent);
+  outline: 3px solid color-mix(in srgb, var(--starcard-brand, var(--brand)) 45%, transparent);
   outline-offset: 6px;
 }
 
 .starcard-partner-modal__panel {
+  max-height: calc(100vh - 80px);
   scrollbar-width: thin;
+}
+
+.starcard-partner-modal__header {
+  position: relative;
+  z-index: 1;
+}
+
+.starcard-partner-modal__title-row {
+  width: min(100%, 720px);
+}
+
+.starcard-partner-modal__discount-badge {
+  margin-top: 6px;
 }
 
 .starcard-partner-modal__close {
   border: 1px solid rgb(17 17 17 / 6%);
 }
 
-.starcard-partner-modal__media {
+.starcard-partner-modal__content {
   min-height: 0;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.starcard-partner-modal__map-link {
+  height: 45px;
+  min-height: 45px;
+}
+
+.starcard-partner-modal__image-section {
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  width: 100%;
+}
+
+.starcard-partner-modal__media {
+  aspect-ratio: 16 / 9;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.starcard-partner-modal__swiper {
+  aspect-ratio: 16 / 9;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  .swiper-wrapper {
+    aspect-ratio: 16 / 9;
+    height: 100%;
+  }
+
+  .swiper-slide {
+    aspect-ratio: 16 / 9;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .swiper-pagination {
+    bottom: 14px;
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    left: 50%;
+    line-height: 0;
+    position: absolute;
+    transform: translateX(-50%);
+    width: auto;
+    z-index: 2;
+  }
+
+  .swiper-pagination-bullet {
+    background: rgb(255 255 255 / 62%);
+    border-radius: 999px;
+    cursor: pointer;
+    height: 6px;
+    margin: 0;
+    opacity: 1;
+    transition:
+      background-color 160ms ease,
+      width 160ms ease;
+    width: 6px;
+  }
+
+  .swiper-pagination-bullet-active {
+    background: #fff;
+    width: 18px;
+  }
 }
 
 .starcard-partner-modal__body {
@@ -82,6 +195,16 @@
   }
 
   .starcard-partner-modal__panel {
+    height: calc(100vh - 40px);
     max-height: calc(100vh - 40px);
+  }
+
+  .starcard-partner-modal__title-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .starcard-partner-modal__discount-badge {
+    margin-top: 0;
   }
 }

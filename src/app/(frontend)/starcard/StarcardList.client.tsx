@@ -2,22 +2,47 @@
 
 import { ChevronRight, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { Autoplay, Pagination } from 'swiper/modules'
+import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Media } from '@/components/Media/Renderer'
 import RichText from '@/components/RichText'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import type { Media as MediaType, StarCard } from '@/payload-types'
 
 export type StarcardListItem = {
   body: StarCard['body'] | null
+  category: StarCard['category'] | null
   discountRate: string | null
   id: number
   image: MediaType | null
+  images: MediaType[]
   mapUrl: string | null
   title: string
 }
 
 type StarcardListProps = {
   items: StarcardListItem[]
+}
+
+const categoryLabels: Record<NonNullable<StarCard['category']>, string> = {
+  beauty: '뷰티',
+  cafe: '카페',
+  hairMakeup: '헤어&메이크업',
+  health: '헬스',
+  medical: '메디컬',
+  profile: '프로필',
+}
+
+function categoryLabel(value: StarcardListItem['category']) {
+  return value ? categoryLabels[value] : '스타카드 제휴업체'
 }
 
 export function StarcardList({ items }: StarcardListProps) {
@@ -68,7 +93,7 @@ export function StarcardList({ items }: StarcardListProps) {
             <span className="starcard-partner-card__meta mt-4 flex min-w-0 items-end justify-between gap-3">
               <span className="min-w-0">
                 <span className="starcard-partner-card__category block truncate text-sm font-bold leading-[1.45] text-muted-foreground">
-                  스타카드 제휴업체
+                  {categoryLabel(item.category)}
                 </span>
                 <span className="starcard-partner-card__title mt-1 block truncate text-base font-extrabold leading-[1.45] text-foreground">
                   {item.title}
@@ -99,77 +124,115 @@ function StarcardModal({
   onClose: () => void
 }) {
   return (
-    <div
-      aria-modal="true"
-      className="starcard-partner-modal fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-5 py-10"
-      role="dialog"
-    >
-      <button
-        aria-label="상세 닫기"
-        className="absolute inset-0 cursor-default appearance-none border-0 bg-transparent p-0"
-        onClick={onClose}
-        type="button"
-      />
-      <div className="starcard-partner-modal__panel relative max-h-[min(820px,calc(100vh-80px))] w-full max-w-[920px] overflow-y-auto rounded-[8px] bg-background text-foreground shadow-2xl">
-        <button
-          aria-label="상세 닫기"
-          className="starcard-partner-modal__close absolute right-4 top-4 z-10 grid size-10 place-items-center rounded-full bg-background/85 text-foreground/70 shadow-sm transition-colors hover:text-foreground"
-          onClick={onClose}
-          type="button"
-        >
-          <X aria-hidden="true" size={20} strokeWidth={2.2} />
-        </button>
-
-        <div className="grid gap-0 md:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
-          <div className="starcard-partner-modal__media bg-muted">
-            {item.image ? (
-              <Media
-                alt={item.title}
-                className="h-full w-full"
-                imgClassName="h-full w-full object-cover"
-                pictureClassName="block aspect-square h-full w-full"
-                resource={{ ...item.image, alt: item.title }}
-                size="(max-width: 768px) 100vw, 420px"
-              />
-            ) : (
-              <div className="aspect-square w-full" />
-            )}
+    <Dialog open onOpenChange={(open) => {
+      if (!open) {
+        onClose()
+      }
+    }}>
+      <DialogContent className="starcard-partner-modal__panel flex h-[min(820px,calc(100vh-80px))] max-w-[920px] flex-col overflow-hidden border-0 p-0">
+        <DialogHeader className="starcard-partner-modal__header shrink-0 flex-row items-start justify-between gap-5 border-b border-foreground/10 bg-background px-8 py-6 text-left md:px-10">
+          <div className="min-w-0">
+            <p className="mb-3 text-sm font-bold leading-[1.4] text-brand">
+              {categoryLabel(item.category)}
+            </p>
+            <div className="starcard-partner-modal__title-row flex min-w-0 items-start gap-4">
+              <DialogTitle className="min-w-0 flex-1 text-[28px] font-extrabold leading-[1.3] tracking-normal md:text-[34px]">
+                {item.title}
+              </DialogTitle>
+              {item.discountRate ? (
+                <span className="starcard-partner-modal__discount-badge shrink-0 rounded-full bg-foreground px-4 py-2 text-sm font-extrabold leading-none text-background">
+                  ~ {item.discountRate} 할인
+                </span>
+              ) : null}
+            </div>
           </div>
+          <DialogClose
+            aria-label="상세 닫기"
+            className="starcard-partner-modal__close grid size-10 shrink-0 place-items-center rounded-full bg-background/85 text-foreground/70 shadow-sm transition-colors hover:text-foreground"
+            type="button"
+          >
+            <X aria-hidden="true" size={20} strokeWidth={2.2} />
+          </DialogClose>
+        </DialogHeader>
+        <DialogDescription className="sr-only">
+          스타카드 제휴업체 혜택, 이용방법, 위치, 이미지 상세 정보
+        </DialogDescription>
 
-          <div className="starcard-partner-modal__content flex flex-col p-8 md:p-10">
-            <p className="mb-4 text-sm font-bold leading-[1.4] text-brand">STAR CARD</p>
-            <h2 className="mb-2 text-[28px] font-extrabold leading-[1.3] tracking-normal md:text-[34px]">
-              {item.title}
-            </h2>
-            {item.discountRate ? (
-              <span className="w-fit shrink-0 rounded-full bg-foreground px-4 py-2 text-sm font-extrabold leading-none text-background">
-                {item.discountRate}
-              </span>
-            ) : null}
+        <div className="starcard-partner-modal__content flex min-h-0 flex-1 flex-col overflow-y-auto px-8 pb-8 pt-6 md:px-10 md:pb-10">
+          {item.body ? (
+            <RichText
+              className="starcard-partner-modal__body text-[15px] font-medium leading-[1.8] text-muted-foreground"
+              data={item.body}
+              enableGutter={false}
+              enableProse={false}
+            />
+          ) : null}
 
-            {item.body ? (
-              <RichText
-                className="starcard-partner-modal__body mt-8 text-[15px] font-medium leading-[1.8] text-muted-foreground"
-                data={item.body}
-                enableGutter={false}
-                enableProse={false}
-              />
-            ) : null}
+          {item.mapUrl ? (
+            <a
+              className="starcard-partner-modal__map-link mt-5 inline-flex w-fit items-center justify-center rounded-full border border-foreground/20 bg-transparent px-5 text-sm font-extrabold leading-none text-muted-foreground transition-colors hover:border-foreground/45 hover:text-foreground"
+              href={item.mapUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              위치 확인하기
+              <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
+            </a>
+          ) : null}
 
-            {item.mapUrl ? (
-              <a
-                className="starcard-partner-modal__map-link mt-10 inline-flex h-[45px] w-fit items-center justify-center rounded-full bg-brand px-5 text-sm font-extrabold leading-none text-white transition-colors hover:bg-black hover:text-white"
-                href={item.mapUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                위치 확인하기
-                <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
-              </a>
-            ) : null}
+          <div className="starcard-partner-modal__image-section mt-10">
+            <StarcardModalImages item={item} />
           </div>
         </div>
-      </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function StarcardModalImages({ item }: { item: StarcardListItem }) {
+  const images = item.images.length > 0 ? item.images : item.image ? [item.image] : []
+  const shouldRoll = images.length > 1
+
+  return (
+    <div className="starcard-partner-modal__media bg-muted">
+      {images.length > 0 ? (
+        <Swiper
+          autoplay={
+            shouldRoll
+              ? {
+                  delay: 3500,
+                  disableOnInteraction: false,
+                }
+              : false
+          }
+          className="starcard-partner-modal__swiper"
+          loop={shouldRoll}
+          modules={[Autoplay, Pagination]}
+          pagination={
+            shouldRoll
+              ? {
+                  clickable: true,
+                }
+              : false
+          }
+          slidesPerView={1}
+        >
+          {images.map((image, index) => (
+            <SwiperSlide key={`${image.id}-${index}`}>
+              <Media
+                alt={index === 0 ? item.title : `${item.title} 이미지 ${index + 1}`}
+                className="h-full w-full"
+                imgClassName="h-full w-full object-cover"
+                pictureClassName="block aspect-video h-full w-full"
+                resource={{ ...image, alt: item.title }}
+                size="(max-width: 768px) 100vw, 920px"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className="aspect-video w-full" />
+      )}
     </div>
   )
 }

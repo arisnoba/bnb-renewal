@@ -56,19 +56,19 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
     : [...displayFaqs].reverse()
 
   return (
-    <main className="page-static page-static--faq" data-center={center}>
+    <main className="page page-light page-faq page-top-offset" data-center={center}>
       <PageClient />
 
       <section className="section-faq-list" aria-labelledby="faq-list-title">
         <div className="container-sm">
-          <div className="section-faq-list__head">
-            <p className="section-faq-list__eyebrow">자주하는 질문</p>
-            <h1 id="faq-list-title" className="section-faq-list__title">
+          <div className="section-faq-list__head page-heading">
+            <p className="section-faq-list__eyebrow page-eyebrow">자주하는 질문</p>
+            <h1 id="faq-list-title" className="section-faq-list__title page-title">
               배우앤배움 FAQ입니다.
               <br />
               궁금한 내용을 확인해보세요.
             </h1>
-            <div className="section-faq-list__description">
+            <div className="section-faq-list__description page-description">
               <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p>
               <p>더 궁금한점이 있으시면 CS상담센터에 문의 바랍니다.</p>
             </div>
