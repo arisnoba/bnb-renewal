@@ -76,10 +76,9 @@ export async function getLegalTermPageData(
   })
 
   const versions = versionsResult.docs as TypeWithVersion<Term>[]
+  const selectableVersions = getSelectableVersions(current, versions)
   const selectedVersion = requestedVersion
-    ? versions.find(
-        (version) => String(version.id) === requestedVersion && !isCurrentSnapshot(current, version),
-      )
+    ? selectableVersions.find((version) => String(version.id) === requestedVersion)
     : undefined
   const selectedDocument = selectedVersion?.version ?? current
   const selectedVersionValue = selectedVersion ? String(selectedVersion.id) : ''
@@ -91,23 +90,39 @@ export async function getLegalTermPageData(
     selectedVersion: selectedVersionValue,
     title: selectedDocument.title,
     updatedAt: selectedDocument.updatedAt ?? null,
-    versions: buildVersionOptions(current, versions),
+    versions: buildVersionOptions(current, selectableVersions),
   }
 }
 
 function buildVersionOptions(current: Term, versions: TypeWithVersion<Term>[]): LegalVersionOption[] {
-  const historicalVersions = versions.filter((version) => !isCurrentSnapshot(current, version))
-
   return [
     {
       label: formatLegalDate(current.effectiveDate ?? current.updatedAt),
       value: '',
     },
-    ...historicalVersions.map((version) => ({
+    ...versions.map((version) => ({
       label: formatLegalDate(version.version.effectiveDate ?? version.updatedAt),
       value: String(version.id),
     })),
   ]
+}
+
+function getSelectableVersions(current: Term, versions: TypeWithVersion<Term>[]) {
+  const seenEffectiveDates = new Set([versionDateKey(current.effectiveDate ?? current.updatedAt)])
+
+  return versions.filter((version) => {
+    if (isCurrentSnapshot(current, version)) {
+      return false
+    }
+
+    const key = versionDateKey(version.version.effectiveDate ?? version.updatedAt)
+    if (seenEffectiveDates.has(key)) {
+      return false
+    }
+
+    seenEffectiveDates.add(key)
+    return true
+  })
 }
 
 function isCurrentSnapshot(current: Term, version: TypeWithVersion<Term>) {
@@ -117,6 +132,19 @@ function isCurrentSnapshot(current: Term, version: TypeWithVersion<Term>) {
     version.version.effectiveDate === current.effectiveDate &&
     version.version.updatedAt === current.updatedAt
   )
+}
+
+function versionDateKey(value: string | null | undefined) {
+  if (!value) {
+    return 'unknown'
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return date.toISOString().slice(0, 10)
 }
 
 export function formatLegalDate(value: string | null | undefined) {

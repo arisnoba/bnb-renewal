@@ -13,8 +13,10 @@ type LexicalTextNode = {
   version: number
 }
 
+type LexicalInlineNode = LexicalTextNode | Record<string, unknown>
+
 type LexicalParagraphNode = {
-  children?: LexicalTextNode[]
+  children?: LexicalInlineNode[]
   direction?: 'ltr' | 'rtl' | null
   format?: ''
   indent?: number
@@ -23,7 +25,7 @@ type LexicalParagraphNode = {
 }
 
 type LexicalListItemNode = {
-  children: LexicalTextNode[]
+  children: LexicalInlineNode[]
   direction: 'ltr' | 'rtl' | null
   format: ''
   indent: number
@@ -46,29 +48,10 @@ type LexicalListNode = {
 
 type LexicalNode = LexicalParagraphNode | LexicalListNode | Record<string, unknown>
 
-function paragraphText(node: LexicalParagraphNode) {
-  return (node.children ?? [])
-    .filter((child) => child.type === 'text')
-    .map((child) => child.text)
-    .join('')
-}
-
-function textNode(text: string, source?: LexicalTextNode): LexicalTextNode {
-  return {
-    detail: source?.detail ?? 0,
-    format: source?.format ?? 0,
-    mode: source?.mode ?? 'normal',
-    style: source?.style ?? '',
-    text,
-    type: 'text',
-    version: source?.version ?? 1,
-  }
-}
-
-function listNode(items: LexicalTextNode[]): LexicalListNode {
+function listNode(items: LexicalInlineNode[][]): LexicalListNode {
   return {
     children: items.map((item, index) => ({
-      children: [item],
+      children: item,
       direction: null,
       format: '',
       indent: 0,
@@ -87,10 +70,35 @@ function listNode(items: LexicalTextNode[]): LexicalListNode {
   }
 }
 
+function stripBulletMarker(children: LexicalInlineNode[]) {
+  let stripped = false
+
+  return children
+    .map((child) => {
+      if (stripped || child.type !== 'text' || typeof child.text !== 'string') {
+        return child
+      }
+
+      const nextText = child.text.replace(/^-\s+/, '')
+      if (nextText === child.text) {
+        return child
+      }
+
+      stripped = true
+      return {
+        ...child,
+        text: nextText,
+      }
+    })
+    .filter((child) => {
+      return !(child.type === 'text' && typeof child.text === 'string' && child.text.length === 0)
+    })
+}
+
 function normalizeBulletParagraphs(body: DefaultTypedEditorState) {
   const children = body.root.children as LexicalNode[]
   const nextChildren: LexicalNode[] = []
-  let currentItems: LexicalTextNode[] = []
+  let currentItems: LexicalInlineNode[][] = []
 
   const flushItems = () => {
     if (!currentItems.length) {
@@ -109,16 +117,17 @@ function normalizeBulletParagraphs(body: DefaultTypedEditorState) {
     }
 
     const paragraph = child as LexicalParagraphNode
-    const text = paragraphText(paragraph)
-    const match = text.match(/^-\s+(.+)$/)
+    const paragraphChildren = paragraph.children ?? []
+    const firstText = paragraphChildren.find((node) => node.type === 'text' && typeof node.text === 'string')
+    const hasBulletMarker = typeof firstText?.text === 'string' && /^-\s+/.test(firstText.text)
 
-    if (!match) {
+    if (!hasBulletMarker) {
       flushItems()
       nextChildren.push(child)
       continue
     }
 
-    currentItems.push(textNode(match[1], paragraph.children?.[0]))
+    currentItems.push(stripBulletMarker(paragraphChildren))
   }
 
   flushItems()
