@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import { centerLocationList, centerLocations } from '@/lib/centerLocations'
 
@@ -32,6 +33,7 @@ const naverMapScriptUrl = resolveNaverMapScriptUrl()
 export default async function CenterMapPage({ params }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
+  const decoIcons = getPageDecoIcons(2, `map-hero-${center}`)
 
   return (
     <main className="page page-dark map-page" data-center={center}>
@@ -43,11 +45,14 @@ export default async function CenterMapPage({ params }: Args) {
           style={{ backgroundImage: "url('/assets/map/map-hero.png')" }}
         />
         <div className="absolute inset-0 bg-black/45" />
-        <div className="pointer-events-none absolute -left-16 top-[15%] h-56 w-56 text-brand md:h-[360px] md:w-[360px]">
-          <div className="absolute inset-x-[28%] inset-y-0 bg-current" />
-          <div className="absolute inset-x-0 top-0 h-[44%] bg-current" />
-        </div>
-        <div className="pointer-events-none absolute -right-20 bottom-[8%] h-56 w-56 rounded-full border-[52px] border-brand md:h-[360px] md:w-[360px] md:border-[84px]" />
+        <PageDeco
+          className="-left-16 top-[15%] h-56 w-56 md:h-[360px] md:w-[360px]"
+          icon={decoIcons[0]}
+        />
+        <PageDeco
+          className="-right-20 bottom-[8%] h-56 w-56 md:h-[360px] md:w-[360px]"
+          icon={decoIcons[1]}
+        />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
           <h1 className="page-title font-['Pyeojin_Gothic','Pretendard',sans-serif]">
             <span className="block text-brand">배우앤배움</span>

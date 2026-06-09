@@ -23,6 +23,7 @@ import {
 import NextImage from 'next/image'
 import { useEffect, useState } from 'react'
 
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { cn } from '@/utilities/ui'
 
 type TabKey = 'steps' | 'criteria' | 'cohorts'
@@ -34,6 +35,7 @@ const tabs = [
 ] satisfies Array<{ key: TabKey; label: string }>
 
 const gradeAssetBase = '/assets/art/grade-system'
+const gradeSystemDecoIcons = getPageDecoIcons(4, 'grade-system')
 
 const stepClasses = [
   {
@@ -458,8 +460,14 @@ export function GradeSystemTabs() {
     <section className="relative overflow-hidden bg-[#111] text-white">
       {activeTab === 'steps' ? (
         <>
-          <RedCornerGlyph className="left-0 top-[930px] hidden h-[360px] w-[229px] -translate-x-[42%] lg:block" />
-          <RedCornerGlyph className="right-0 top-[2900px] hidden h-[360px] w-[212px] translate-x-[46%] rotate-180 lg:block" />
+          <PageDeco
+            className="left-0 top-[930px] hidden h-[360px] w-[360px] -translate-x-[42%] lg:block"
+            icon={gradeSystemDecoIcons[2]}
+          />
+          <PageDeco
+            className="right-0 top-[2900px] hidden h-[360px] w-[360px] translate-x-[46%] lg:block"
+            icon={gradeSystemDecoIcons[3]}
+          />
         </>
       ) : null}
       <div className="container relative py-14 md:py-20">
@@ -623,17 +631,6 @@ function IrudaWordmark() {
         ))}
       </div>
     </figure>
-  )
-}
-
-function RedCornerGlyph({ className }: { className?: string }) {
-  return (
-    <div aria-hidden="true" className={cn('pointer-events-none absolute text-brand', className)}>
-      <svg className="h-full w-full" fill="currentColor" viewBox="0 0 229 360" xmlns="http://www.w3.org/2000/svg">
-        <rect x="-31" width="160" height="360" />
-        <rect x="-131" width="360" height="160" />
-      </svg>
-    </div>
   )
 }
 

@@ -111,6 +111,38 @@ npm install pretendard
 </main>
 ```
 
+### 페이지 데코 요소
+
+페이지 전반의 배경 장식은 직접 `div`, 인라인 SVG, `border-brand` 도형을 새로 만들지 않고 `PageDeco`를 사용한다.
+
+- 공통 컴포넌트: `src/components/PageDeco`
+- 공통 클래스: `.page-deco`
+- 에셋 위치: `public/assets/common/deco/icon-*.svg`
+- 색상 제어: SVG 내부 `fill`을 수정하지 않고 CSS mask + `currentColor`로 제어한다.
+- 브랜드 색상: 페이지 또는 섹션 상위에 `data-center`를 두고, 데코는 `text-brand`/`--brand` 흐름을 따른다.
+- 접근성: 장식 목적이므로 `aria-hidden="true"` 상태를 유지한다.
+
+페이지에 여러 데코를 배치할 때는 같은 페이지 안에서 아이콘이 겹치지 않게 `getPageDecoIcons(count, seed)`로 페이지 단위 아이콘 순서를 만든다. 각 데코가 독립적으로 `random`을 고르면 같은 페이지 안에서 중복될 수 있으므로 새 페이지에서는 페이지 단위 seed를 우선 사용한다.
+
+```tsx
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+
+const decoIcons = getPageDecoIcons(2, `map-hero-${center}`)
+
+<section className="relative overflow-hidden" data-center={center}>
+  <PageDeco
+    className="-left-16 top-[15%] h-56 w-56 md:h-[360px] md:w-[360px]"
+    icon={decoIcons[0]}
+  />
+  <PageDeco
+    className="-right-20 bottom-[8%] h-56 w-56 md:h-[360px] md:w-[360px]"
+    icon={decoIcons[1]}
+  />
+</section>
+```
+
+나중에 패럴렉스나 스크롤 인터랙션을 붙일 수 있도록 `PageDeco`의 `className`, `data-deco-icon`, `data-parallax`를 확장 hook으로 사용한다. 아이콘 방향이 의미를 가지는 경우 `rotate-180` 같은 회전 유틸리티를 이전 장식에서 그대로 가져오지 말고, 실제 아이콘 방향을 확인한 뒤 필요한 경우에만 적용한다.
+
 ### 기본 팔레트 (Neutral)
 | 토큰 | Hex |
 |------|-----|

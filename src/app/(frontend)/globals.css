@@ -146,6 +146,20 @@
   color: #fff;
 }
 
+.page-deco {
+  background-color: currentColor;
+  color: var(--brand);
+  display: block;
+  mask-image: var(--page-deco-image);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: var(--page-deco-image);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
 .page-top-offset {
   padding-top: var(--page-top-offset-padding);
 }

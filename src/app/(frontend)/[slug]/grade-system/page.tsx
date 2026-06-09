@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import { notFound } from 'next/navigation'
 
@@ -35,6 +36,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 export default async function ArtGradeSystemPage({ params }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
+  const decoIcons = getPageDecoIcons(4, 'grade-system')
 
   if (center !== 'art') {
     notFound()
@@ -50,8 +52,14 @@ export default async function ArtGradeSystemPage({ params }: Args) {
           style={{ backgroundImage: "url('/assets/art/grade-system-hero.png')" }}
         />
         <div className="absolute inset-0 bg-black/55" />
-        <div className="pointer-events-none absolute -left-20 top-[22%] h-56 w-56 rounded-full border-[72px] border-brand md:-left-28 md:h-[360px] md:w-[360px] md:border-[112px]" />
-        <div className="pointer-events-none absolute -right-12 bottom-[10%] h-48 w-48 border-[56px] border-brand md:-right-20 md:h-[300px] md:w-[300px] md:border-[86px]" />
+        <PageDeco
+          className="-left-20 top-[22%] h-56 w-56 md:-left-28 md:h-[360px] md:w-[360px]"
+          icon={decoIcons[0]}
+        />
+        <PageDeco
+          className="-right-12 bottom-[10%] h-48 w-48 md:-right-20 md:h-[300px] md:w-[300px]"
+          icon={decoIcons[1]}
+        />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
           <h1 className="page-title">
             <span className="block text-brand">교육</span>
