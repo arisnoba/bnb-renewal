@@ -21,7 +21,7 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
   const initialInquiryType = resolveInitialInquiryType(await searchParams)
 
   return (
-    <main className="bg-background pb-24 text-foreground" style={consultLightThemeVars}>
+    <main className="page page-light page-consult pb-24" style={consultLightThemeVars}>
       <ConsultationLightTheme />
       <section className="relative min-h-[520px] overflow-hidden bg-foreground text-background">
         <div
@@ -34,12 +34,12 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
         />
         <div className="absolute inset-0 bg-foreground/45" />
         <div className="container relative flex min-h-[520px] flex-col justify-end pb-14 pt-36">
-          <div className="max-w-3xl">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-background/75">
+          <div className="page-heading page-hero-dark max-w-3xl">
+            <p className="page-eyebrow uppercase tracking-[0.14em]">
               Consultation
             </p>
-            <h1 className="text-5xl font-semibold tracking-normal md:text-7xl">상담하기</h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-background/80 md:text-lg">
+            <h1 className="page-title">상담하기</h1>
+            <p className="page-description max-w-2xl">
               배우앤배움의 센터별 상담과 제휴 문의를 한 페이지에서 신청할 수 있습니다.
             </p>
           </div>

@@ -1,0 +1,104 @@
+.page {
+  --page-eyebrow-color: var(--brand);
+  --page-eyebrow-font-size: 20px;
+  --page-eyebrow-font-weight: 700;
+  --page-eyebrow-line-height: 1.4;
+  --page-eyebrow-margin-bottom: 40px;
+  --page-title-color: var(--foreground);
+  --page-title-font-size: clamp(34px, 4vw, 48px);
+  --page-title-font-weight: 800;
+  --page-title-line-height: 1.35;
+  --page-title-margin-top: 0;
+  --page-title-margin-bottom: 0;
+  --page-description-color: var(--muted-foreground);
+  --page-description-font-size: 16px;
+  --page-description-font-weight: 400;
+  --page-description-line-height: 1.65;
+  --page-description-margin-top: 40px;
+  --page-description-max-width: 620px;
+}
+
+.page-heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-eyebrow {
+  color: var(--page-eyebrow-color);
+  font-size: var(--page-eyebrow-font-size);
+  font-weight: var(--page-eyebrow-font-weight);
+  line-height: var(--page-eyebrow-line-height);
+  margin-bottom: var(--page-eyebrow-margin-bottom);
+}
+
+.page-title {
+  color: var(--page-title-color);
+  font-size: var(--page-title-font-size);
+  font-weight: var(--page-title-font-weight);
+  letter-spacing: 0;
+  line-height: var(--page-title-line-height);
+  margin: var(--page-title-margin-top) 0 var(--page-title-margin-bottom);
+  text-wrap: balance;
+  word-break: keep-all;
+  & + .page-description {
+    margin-top: var(--page-description-margin-top);
+  }
+}
+
+.page-description {
+  color: var(--page-description-color);
+  font-size: var(--page-description-font-size);
+  font-weight: var(--page-description-font-weight);
+  line-height: var(--page-description-line-height);
+  max-width: var(--page-description-max-width);
+  word-break: keep-all;
+}
+
+.page-description p,
+.section-faq-list__description p {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+.section-faq-list__description .section-faq-list__description-title {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.page-hero-dark {
+  --page-eyebrow-color: rgb(255 255 255 / 75%);
+  --page-title-color: #fff;
+  --page-description-color: rgb(255 255 255 / 80%);
+}
+
+.page-consult .page-hero-dark {
+  --page-title-font-size: clamp(48px, 5.8vw, 72px);
+  --page-title-font-weight: 600;
+  --page-title-line-height: 1.05;
+  --page-description-font-size: clamp(16px, 1.4vw, 18px);
+  --page-description-line-height: 1.75;
+  --page-description-margin-top: 24px;
+}
+
+.page-grade-system,
+.map-page {
+  --page-title-color: #fff;
+  --page-title-font-size: clamp(44px, 5vw, 64px);
+  --page-title-font-weight: 800;
+  --page-title-line-height: 1.15;
+}
+
+.page-grade-system {
+  --page-title-line-height: 1.12;
+}
+
+@media (max-width: 767px) {
+  .page {
+    --page-eyebrow-font-size: 16px;
+    --page-title-font-size: 34px;
+    --page-description-font-size: 15px;
+  }
+}

@@ -41,7 +41,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
   }
 
   return (
-    <main className="bg-[#111] text-white" data-center="art">
+    <main className="page page-dark page-grade-system" data-center="art">
       <PageClient />
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
         <div
@@ -53,7 +53,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
         <div className="pointer-events-none absolute -left-20 top-[22%] h-56 w-56 rounded-full border-[72px] border-brand md:-left-28 md:h-[360px] md:w-[360px] md:border-[112px]" />
         <div className="pointer-events-none absolute -right-12 bottom-[10%] h-48 w-48 border-[56px] border-brand md:-right-20 md:h-[300px] md:w-[300px] md:border-[86px]" />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1 className="ml-[96px] text-[44px] font-extrabold leading-[1.12] tracking-normal md:ml-[132px] md:text-[64px] lg:ml-[156px]">
+          <h1 className="page-title">
             <span className="block text-brand">교육</span>
             <span className="block">등급제</span>
             <span className="block">교육관리시스템</span>

@@ -34,7 +34,7 @@ export default async function CenterMapPage({ params }: Args) {
   const center = assertCenter(slug)
 
   return (
-    <main className="map-page bg-[#111] text-white" data-center={center}>
+    <main className="page page-dark map-page" data-center={center}>
       <MapPageClient />
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
         <div
@@ -49,7 +49,7 @@ export default async function CenterMapPage({ params }: Args) {
         </div>
         <div className="pointer-events-none absolute -right-20 bottom-[8%] h-56 w-56 rounded-full border-[52px] border-brand md:h-[360px] md:w-[360px] md:border-[84px]" />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
-          <h1 className="font-['Pyeojin_Gothic','Pretendard',sans-serif] text-[44px] font-extrabold leading-[1.15] tracking-normal md:text-[60px]">
+          <h1 className="page-title font-['Pyeojin_Gothic','Pretendard',sans-serif]">
             <span className="block text-brand">배우앤배움</span>
             <span className="block">오시는 길</span>
           </h1>

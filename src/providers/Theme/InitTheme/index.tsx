@@ -1,10 +1,11 @@
+import Script from 'next/script'
 import React from 'react'
 
 import { defaultTheme, themeLocalStorageKey } from '../ThemeSelector/types'
 
 export const InitTheme: React.FC = () => {
   return (
-    <script
+    <Script
       dangerouslySetInnerHTML={{
         __html: `
   (function () {

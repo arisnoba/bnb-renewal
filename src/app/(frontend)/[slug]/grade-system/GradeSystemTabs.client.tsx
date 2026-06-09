@@ -182,7 +182,7 @@ const adultGradeRows = [
     inHouse: 'I Class 승급자\n*외부작품 오디션은 R Class부터 응시가능합니다.',
     level: '중급',
     major: '2~4년제 전공자 중\n1학년 이상 재학/휴학자\n<레벨테스트>',
-    transfer: '5개월 이상 이수자 중\n레벨테스트',
+    transfer: '5개월 이상 이수자 중 레벨테스트',
   },
   {
     className: 'U Class',
@@ -679,12 +679,12 @@ function AdultGradeTable() {
               <CriteriaHeader rowSpan={2} width="w-[15%]">
                 관리부서
               </CriteriaHeader>
-              <CriteriaHeader className="border-l-2 border-l-brand/70" colSpan={4}>
+              <CriteriaHeader colSpan={4}>
                 승급 및 지원 기준
               </CriteriaHeader>
             </tr>
             <tr className="bg-[#343434] text-white">
-              <CriteriaHeader className="border-l-2 border-l-brand/70">본학원</CriteriaHeader>
+              <CriteriaHeader>본학원</CriteriaHeader>
               <CriteriaHeader>타학원</CriteriaHeader>
               <CriteriaHeader>전공자</CriteriaHeader>
               <CriteriaHeader>경력 인정자</CriteriaHeader>
@@ -707,7 +707,7 @@ function AdultGradeTable() {
                 <CriteriaCell className="font-medium text-white/80">{row.className}</CriteriaCell>
                 <CriteriaCell>{row.level}</CriteriaCell>
                 <CriteriaCell className="text-left align-top text-white/45">{row.department}</CriteriaCell>
-                <CriteriaCell className="border-l-2 border-l-brand/40 text-left align-top" emphasis>
+                <CriteriaCell className="text-left align-top" emphasis>
                   {row.inHouse}
                 </CriteriaCell>
                 <CriteriaCell className="text-left align-top">{row.transfer}</CriteriaCell>
@@ -932,7 +932,7 @@ function CriteriaCell({
   return (
     <td
       className={cn(
-        'whitespace-pre-line border border-[#363636] px-3 py-4 leading-[1.55] [word-break:keep-all]',
+        'border border-[#363636] px-3 py-4 leading-[1.55] [word-break:keep-all] text-left',
         emphasis && 'font-medium text-[#f87171]',
         className,
       )}
@@ -963,7 +963,7 @@ function CriteriaTypeBadge({ type }: { type: string }) {
   const Icon = meta?.icon
 
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold leading-none text-white/80">
+    <span className="inline-flex gap-1.5 text-sm font-bold leading-none text-white/80">
       {Icon ? <Icon aria-hidden="true" size={13} strokeWidth={2} /> : null}
       {type}
     </span>

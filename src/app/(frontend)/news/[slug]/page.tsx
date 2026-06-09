@@ -64,19 +64,19 @@ export default async function NewsDetail({ params: paramsPromise }: Args) {
   const body = hasLexicalContent(news.body) ? news.body : undefined
 
   return (
-    <article className="pt-20 pb-24 page-detail">
+    <article className="page page-light page-detail page-top-offset pb-24">
       <PageClient />
 
-      <header className="container max-w-5xl">
-        <div className="mb-8 text-sm text-muted-foreground">
+      <header className="container page-heading max-w-5xl">
+        <div className="page-eyebrow text-muted-foreground">
           {news.category && <span>{news.category}</span>}
           {news.category && publishedAt && <span className="mx-2">/</span>}
           {publishedAt && <time dateTime={news.publishedAt ?? undefined}>{publishedAt}</time>}
         </div>
-        <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-normal md:text-5xl">
+        <h1 className="page-title max-w-4xl">
           {news.title}
         </h1>
-        {description && <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{description}</p>}
+        {description && <p className="page-description max-w-3xl">{description}</p>}
       </header>
 
       {media && (

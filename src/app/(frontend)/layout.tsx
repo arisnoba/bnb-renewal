@@ -11,6 +11,7 @@ import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
+import { defaultTheme } from '@/providers/Theme/shared'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
@@ -18,6 +19,7 @@ import './globals.css'
 import '@/Main/BannerSlider.scss'
 import './faq/FaqArchive.scss'
 import './starcard/StarcardArchive.scss'
+import './page-typography.scss'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export const dynamic = 'force-dynamic'
@@ -26,7 +28,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html
+      className={cn(GeistSans.variable, GeistMono.variable)}
+      data-theme={defaultTheme}
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />

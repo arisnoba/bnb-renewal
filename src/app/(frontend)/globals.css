@@ -85,7 +85,7 @@
     var(--admin-bar-height, 0px) +
     var(--site-header-measured-height, var(--site-header-height, 84px))
   );
-  --page-detail-padding-top: var(--page-top-offset);
+  --page-top-offset-padding: var(--page-top-offset);
   --brand: var(--color-brand-art);
   --background: oklch(100% 0 0deg);
   --foreground: oklch(14.5% 0 0deg);
@@ -131,8 +131,23 @@
   }
 }
 
-.page-detail {
-  padding-top: var(--page-detail-padding-top);
+.page {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.page-light {
+  background: #fff;
+  color: #111;
+}
+
+.page-dark {
+  background: #111;
+  color: #fff;
+}
+
+.page-top-offset {
+  padding-top: var(--page-top-offset-padding);
 }
 
 [data-center='art'] {
@@ -370,8 +385,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground min-h-[100vh] flex flex-col;
-
+    @apply bg-background text-foreground flex flex-col;
+    min-height: 100vh;
     word-break: keep-all;
   }
 }

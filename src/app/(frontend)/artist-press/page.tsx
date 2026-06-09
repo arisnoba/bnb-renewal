@@ -48,14 +48,14 @@ export default async function ArtistPressIndex() {
     }))
 
   return (
-    <main className="pt-24 pb-24">
+    <main className="page page-light page-artist-press-archive page-top-offset pb-24">
       <PageClient />
       <div className="container mb-12">
-        <div className="max-w-3xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <div className="page-heading max-w-3xl">
+          <p className="page-eyebrow uppercase tracking-[0.14em] text-muted-foreground">
             Artist Press
           </p>
-          <h1 className="text-4xl font-semibold tracking-normal md:text-5xl">출신 아티스트</h1>
+          <h1 className="page-title">출신 아티스트</h1>
         </div>
       </div>
 
