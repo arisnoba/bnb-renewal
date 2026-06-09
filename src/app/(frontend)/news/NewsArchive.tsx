@@ -5,6 +5,7 @@ import {
   PaginationEllipsis,
   PaginationItem,
 } from '@/components/ui/pagination'
+import type { CenterSlug } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
@@ -14,7 +15,15 @@ import React from 'react'
 
 import PageClient from './page.client'
 
-const newsCategories = [
+type NewsCategory = {
+  key: string
+  label: string
+  match: readonly string[]
+  matchMode?: 'contains' | 'exact'
+  legacyKeys?: readonly string[]
+}
+
+const defaultNewsCategories = [
   {
     key: 'audition-casting',
     label: '오디션 · 캐스팅공지',
@@ -35,10 +44,35 @@ const newsCategories = [
     label: '교육 · 운영 · 소식',
     match: ['교육', '운영', '소식'],
   },
-] as const
+] as const satisfies readonly NewsCategory[]
+
+const examNewsCategories = [
+  {
+    key: 'pass-results',
+    label: '합격현황',
+    match: ['합격현황', '대학합격현황', '예고합격현황'],
+    matchMode: 'exact',
+    legacyKeys: ['university-results', 'arts-high-results'],
+  },
+  {
+    key: 'admission-schedule',
+    label: '수시·정시 일정',
+    match: ['수시·정시 일정', '수시ㆍ정시일정공지', '수시전형일정', '정시전형일정'],
+    matchMode: 'exact',
+  },
+  {
+    key: 'education-news',
+    label: '교육·운영·소식',
+    match: ['교육·운영·소식', '교육', '운영', '교육ㆍ운영ㆍ소식', '공지'],
+    matchMode: 'exact',
+  },
+] as const satisfies readonly NewsCategory[]
+
+const newsCategoriesByCenter: Partial<Record<CenterSlug, readonly NewsCategory[]>> = {
+  exam: examNewsCategories,
+}
 
 const pageSize = 5
-type NewsCategory = (typeof newsCategories)[number]
 type NewsPageResult = {
   docs: (Partial<News> & Pick<News, 'id' | 'slug' | 'title'>)[]
   page: number
@@ -66,7 +100,10 @@ export async function NewsArchive({
   ),
 }: NewsArchiveProps) {
   const payload = await getPayload({ config: configPromise })
-  const category = getCategoryByKey(activeCategory) ?? normalizeCategory(activeCategory)
+  const newsCategories = getNewsCategoriesForCenter(center)
+  const category =
+    getCategoryByKey(activeCategory, newsCategories) ??
+    normalizeCategory(activeCategory, newsCategories)
   const currentPage = Math.max(1, page)
   const baseWhere: Where = {
     and: [
@@ -140,7 +177,12 @@ export async function NewsArchive({
           ) : (
             <div className="section-news-list__items">
               {news.docs.map((item) => (
-                <NewsCard center={center} key={item.id} news={item} />
+                <NewsCard
+                  center={center}
+                  key={item.id}
+                  news={item}
+                  newsCategories={newsCategories}
+                />
               ))}
             </div>
           )}
@@ -162,12 +204,14 @@ export async function NewsArchive({
 function NewsCard({
   center,
   news,
+  newsCategories,
 }: {
   center: string
   news: Partial<News> & Pick<News, 'id' | 'slug' | 'title'>
+  newsCategories: readonly NewsCategory[]
 }) {
   const media = getNewsThumbnailMedia(news)
-  const categoryLabel = getNewsCategoryLabel(news.category) ?? news.category
+  const categoryLabel = getNewsCategoryLabel(news.category, newsCategories) ?? news.category
   const description = getNewsArchiveDescription(news)
   const publishedAt = formatDate(news.publishedAt)
 
@@ -186,16 +230,16 @@ function NewsCard({
         </div>
         <div className="section-news-card__content">
           <div className="section-news-card__main">
-            <h2 className="section-news-card__title">{news.title}</h2>
-            {description && <p className="section-news-card__description">{description}</p>}
+            <h2 className="font-bold section-news-card__title">{news.title}</h2>
+            {description && <p className="text-sm section-news-card__description">{description}</p>}
             {categoryLabel && (
               <div className="section-news-card__badges">
-                <span className="section-news-card__badge">{categoryLabel}</span>
+                <span className="text-sm section-news-card__badge">{categoryLabel}</span>
               </div>
             )}
           </div>
           {publishedAt && (
-            <time className="section-news-card__date" dateTime={news.publishedAt ?? undefined}>
+            <time className="section-news-card__date text-sm" dateTime={news.publishedAt ?? undefined}>
               {publishedAt}
             </time>
           )}
@@ -326,7 +370,14 @@ function formatDate(value: string | null | undefined) {
   return `${year}.${month}.${day}`
 }
 
-function normalizeCategory(value: string | null | undefined) {
+export function getNewsCategoriesForCenter(center: string): readonly NewsCategory[] {
+  return newsCategoriesByCenter[center as CenterSlug] ?? defaultNewsCategories
+}
+
+function normalizeCategory(
+  value: string | null | undefined,
+  newsCategories: readonly NewsCategory[],
+) {
   if (!value) {
     return null
   }
@@ -334,18 +385,26 @@ function normalizeCategory(value: string | null | undefined) {
   const normalizedValue = normalizeCategoryText(value)
 
   return (
-    newsCategories.find((category) =>
-      category.match.some((categoryValue) => normalizedValue.includes(categoryValue.toLowerCase())),
+    newsCategories.find((category) => categoryMatches(normalizedValue, category)) ?? null
+  )
+}
+
+function getCategoryByKey(
+  value: string | null | undefined,
+  newsCategories: readonly NewsCategory[],
+) {
+  return (
+    newsCategories.find(
+      (category) => category.key === value || category.legacyKeys?.includes(value ?? ''),
     ) ?? null
   )
 }
 
-function getCategoryByKey(value: string | null | undefined) {
-  return newsCategories.find((category) => category.key === value) ?? null
-}
-
-function getNewsCategoryLabel(value: string | null | undefined) {
-  const category = normalizeCategory(value)
+function getNewsCategoryLabel(
+  value: string | null | undefined,
+  newsCategories: readonly NewsCategory[],
+) {
+  const category = normalizeCategory(value, newsCategories)
 
   return category?.label
 }
@@ -473,9 +532,13 @@ const newsArchiveSelect = {
 function categoryMatches(value: string | null | undefined, category: NewsCategory) {
   const normalizedValue = normalizeCategoryText(value ?? '')
 
-  return category.match.some((categoryValue) =>
-    normalizedValue.includes(normalizeCategoryText(categoryValue)),
-  )
+  return category.match.some((categoryValue) => {
+    const normalizedCategory = normalizeCategoryText(categoryValue)
+
+    return category.matchMode === 'exact'
+      ? normalizedValue === normalizedCategory
+      : normalizedValue.includes(normalizedCategory)
+  })
 }
 
 function normalizeCategoryText(value: string) {

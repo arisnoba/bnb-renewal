@@ -7,6 +7,7 @@ import React from 'react'
 import { Toaster } from 'sonner'
 
 import { AdminBar } from '@/components/AdminBar'
+import { CookieBanner } from '@/components/legal/CookieBanner'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
@@ -51,6 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header />
           {children}
           <Footer />
+          <CookieBanner />
           <Toaster position="top-center" richColors />
         </Providers>
       </body>
