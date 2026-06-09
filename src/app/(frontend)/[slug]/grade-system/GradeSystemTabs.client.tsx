@@ -510,7 +510,7 @@ function StepsPanel() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <section>
-        <h2 className="max-w-[900px] text-[34px] font-extrabold leading-[1.25] tracking-normal [word-break:keep-all] md:text-[48px]">
+        <h2 className="max-w-[900px] text-[34px] font-bold leading-[1.25] tracking-normal [word-break:keep-all] md:text-[48px]">
           IRUDA 연기트레이닝 시스템입니다.
           <br />
           아트센터의 모든 교육은 ‘나’로부터 시작됩니다.
@@ -619,7 +619,7 @@ function IrudaWordmark() {
             <NextImage
               alt=""
               aria-hidden="true"
-              className="h-auto w-full"
+              className="h-auto w-full opacity-10"
               height={216}
               src={`${gradeAssetBase}/${letter.fileName}`}
               width={216}
@@ -810,7 +810,7 @@ function PromotionTable() {
                           <span className="font-medium text-white/70">
                             {row.type.replace(/\s*>\s*$/, '')}
                           </span>
-                          <ArrowRight aria-hidden="true" className="text-brand" size={14} />
+                          <ArrowRight aria-hidden="true" className="text-white" size={14} />
                           <span className="inline-flex items-center gap-1.5">
                             <span className="text-white/70">{row.target}</span>
                             <ClassBadge>{row.targetClass}</ClassBadge>
