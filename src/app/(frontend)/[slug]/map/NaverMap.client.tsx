@@ -134,7 +134,7 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
   }, [])
 
   return (
-    <div className="relative min-h-[420px] overflow-hidden bg-black md:min-h-[586px]">
+    <div className="relative z-0 min-h-[420px] overflow-hidden bg-black md:min-h-[586px]">
       <div ref={containerRef} className="h-[420px] w-full md:h-[586px]" />
       {status === 'loading' ? (
         <MapStatus>지도를 불러오는 중입니다.</MapStatus>
