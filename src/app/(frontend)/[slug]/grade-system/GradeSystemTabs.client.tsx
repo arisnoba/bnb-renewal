@@ -167,64 +167,65 @@ const stepClasses = [
 
 const adultGradeRows = [
   {
-    process: '배움\n과정',
+    classCode: 'I',
     className: 'I Class',
-    department: '교육 본부',
-    experience: '해당사항 없음',
+    department: '교육본부',
+    experience: '',
     inHouse: '연기 처음인 자',
     level: '초급',
-    major: '해당사항 없음',
-    processSpan: 3,
+    major: '',
+    process: '배움',
     transfer: '1~4개월 이수자',
   },
   {
+    classCode: 'R',
     className: 'R Class',
-    department: '교육 본부',
-    experience: '해당사항 없음',
-    inHouse: 'I Class 승급자\n*외부작품 오디션은 R Class부터 응시가능합니다.',
-    level: '중급',
-    major: '2~4년제 전공자 중\n1학년 이상 재학/휴학자\n<레벨테스트>',
-    transfer: '5개월 이상 이수자 중 레벨테스트',
-  },
-  {
-    className: 'U Class',
-    department: '주)교육본부\n부)매니지먼트본부\n부)광고에이전시본부',
+    department: '교육본부',
     experience: '',
-    inHouse: 'R Class 승급자\n*매니지먼트 위탁배우',
-    level: '고급',
-    major: '2~4년제 전공자 중\n2학년 이상 재학/휴학자\n<레벨테스트>',
-    transfer: '12개월 이상 이수자 중\n레벨테스트',
-  },
-  {
-    process: '배우\n과정',
-    className: 'I Class',
-    department:
-      '주)매니지먼트본부\n부)광고에이전시본부\n부)드라마캐스팅본부\n* 대표이사 특별관리\n(작품 & 오디션)',
-    experience:
-      '드라마, 영화 조/단역이상\n경력 인정자\n뮤직비디오/뮤지컬 경력 인정자\n* 학교 작품 제외',
-    inHouse: 'U Class 승급자',
-    level: '초급',
-    major:
-      '4년제 전공자\n(서울예대포함) 중\n3학년 이상 이수자/졸업자\n<레벨테스트>\n혹은 매니지먼트본부 추천',
-    processSpan: 2,
-    transfer: '18개월 이상 이수자 중\n레벨테스트\n<광고에이전시/\n매니지먼트본부 추천>',
-  },
-  {
-    className: 'R Class',
-    department:
-      '주)매니지먼트본부\n부)광고에이전시본부\n부)드라마캐스팅본부\n* 대표이사 특별관리\n(작품 & 오디션)',
-    experience:
-      '드라마, 영화 조/단역이상\n경력 인정자\n뮤직비디오 다수출연\n경력 인정자\n독립영화제 및 연극제\n연기상 수상자',
-    inHouse: 'D Class 승급자',
+    inHouse: 'I Class 승급자\n* 외부작품 오디션은 R Class부터 응시 가능합니다.',
     level: '중급',
-    major:
-      '4년제 전공자\n(서울예대포함) 졸업자 중\n경력인정자\n<레벨테스트>\n혹은 매니지먼트본부 추천',
-    transfer:
-      '24개월 이상 이수자 중\n경력인정자\n<매니지먼트/\n드라마캐스팅본부 추천>',
+    major: '- 2~4년제 전공자 중 1학년 이상 재학/휴학자\n- 레벨 테스트',
+    process: '배움',
+    transfer: '5개월 이상 이수자 중 레벨 테스트',
   },
-]
+  {
+    classCode: 'U',
+    className: 'U Class',
+    department: '교육본부\n매니지먼트본부\n광고에이전시본부',
+    experience: '',
+    inHouse: '- R Class 승급자\n- 매니지먼트 위탁배우',
+    level: '고급',
+    major: '- 2~4년제 전공자 중 2학년 이상 재학/휴학자\n- 레벨 테스트',
+    process: '배움',
+    transfer: '12개월 이상 이수자 중 레벨 테스트',
+  },
+  {
+    classCode: 'D',
+    className: 'D Class',
+    department: '매니지먼트본부\n광고에이전시본부\n드라마캐스팅본부',
+    experience: '- 드라마, 영화 조/단역 이상\n- 뮤지컬/연극 출연\n* 학교 작품 제외',
+    inHouse: 'U Class 승급자',
+    level: '전문',
+    major: '- 4년제 전공자 (서울예대포함) 중 3학년 이상 이수자/졸업자\n- 레벨 테스트\n- 매니지먼트본부 추천',
+    process: '배우',
+    transfer: '- 18개월 이상 이수자 중 경력 인정자\n- 레벨 테스트\n- 매니지먼트본부 추천',
+  },
+  {
+    classCode: 'A',
+    className: 'A Class',
+    department: '매니지먼트본부\n광고에이전시본부\n드라마캐스팅본부\n대표이사 특별관리',
+    experience:
+      '- 드라마, 영화 조/단역 이상\n- 뮤지컬/연극 다수 출연\n- 독립영화제 및 연극제 연기상 수상자',
+    inHouse: 'D Class 승급자',
+    level: '배우',
+    major: '- 4년제 전공자 (서울예대포함)졸업자 중 경력인정자\n- 레벨 테스트\n- 매니지먼트본부 추천',
+    process: '배우',
+    transfer: '- 24개월 이상 이수자 중 경력인정자\n- 레벨 테스트\n- 드라마캐스팅본부 추천',
+  },
+] satisfies AdultGradeRow[]
 
 type AdultGradeCard = {
+  classCode: string
   className: string
   department: string
   experience: string
@@ -235,21 +236,7 @@ type AdultGradeCard = {
   transfer: string
 }
 
-// 모바일 카드용: process는 그룹 첫 행에만 있으므로 직전 값을 carry-forward.
-const adultGradeCards = adultGradeRows.reduce<AdultGradeCard[]>((acc, row) => {
-  const process = ('process' in row && row.process) || acc[acc.length - 1]?.process || ''
-  acc.push({
-    className: row.className,
-    department: row.department,
-    experience: row.experience,
-    inHouse: row.inHouse,
-    level: row.level,
-    major: row.major,
-    process,
-    transfer: row.transfer,
-  })
-  return acc
-}, [])
+type AdultGradeRow = AdultGradeCard
 
 const criteriaEntryLabels = [
   { key: 'inHouse', label: '본학원' },
@@ -260,120 +247,112 @@ const criteriaEntryLabels = [
 
 const promotionGroups = [
   {
-    process: '배움\n과정',
+    from: { classCode: 'I', label: 'I 초급' },
     rows: [
       {
-        condition: '초급반 4개월 이수시 자동 승급',
-        criteria: '기간',
+        condition: '초급반 4개월 이수 시 승급',
+        method: '기간',
         note: '',
-        target: '중급',
-        targetClass: 'R Class',
-        type: '초급 I Class >',
       },
       {
         condition: '교육본부 추천/강사진 추천',
-        criteria: '추천',
-        note: '* 이수 기간 상관없이 승급 가능',
-        target: '중급',
-        targetClass: 'R Class',
-        type: '초급 I Class >',
+        method: '추천',
+        note: '이수 기간 상관없이 승급',
       },
+    ],
+    to: { classCode: 'R', label: 'R 중급' },
+  },
+  {
+    from: { classCode: 'R', label: 'R 중급' },
+    rows: [
       {
         condition: '중급반 6-10개월 이수',
-        criteria: '기간',
-        note: '중급반 6개월이상 이수 시 승급대상으로 선정',
-        target: '고급',
-        targetClass: 'U Class',
-        type: '중급 R Class >',
+        method: '기간',
+        note: '승급대상 선정',
       },
       {
-        condition: '교육본부/매니지먼트본부/강사진 추천',
-        criteria: '추천',
-        note: '* 이수 기간 상관없이 승급 가능',
-        target: '고급',
-        targetClass: 'U Class',
-        type: '중급 R Class >',
+        condition: '교육본부, 매니지먼트본부, 강사진 추천',
+        method: '추천',
+        note: '이수 기간 상관없이 승급',
       },
       {
         condition: '교육본부 심사결과',
-        criteria: '오디션',
-        note: '',
-        target: '고급',
-        targetClass: 'U Class',
-        type: '중급 R Class >',
+        method: '오디션',
+        note: '이수 기간 상관없이 승급',
       },
     ],
+    to: { classCode: 'U', label: 'U 고급' },
   },
   {
-    process: '배우\n과정',
+    from: { classCode: 'U', label: 'U 고급' },
     rows: [
       {
         condition: '고급반 6-10개월 이수',
-        criteria: '기간',
-        note: '고급반 6개월이상 이수 시 승급대상으로 선정',
-        target: '전문',
-        targetClass: 'D Class',
-        type: '고급 U Class >',
+        method: '기간',
+        note: '승급대상 선정',
       },
       {
-        condition: '교육본부/매니지먼트본부/강사진 추천',
-        criteria: '추천',
-        note: '* 고급반 6개월이상 이수자 중 추천',
-        target: '전문',
-        targetClass: 'D Class',
-        type: '고급 U Class >',
+        condition: '교육본부, 매니지먼트본부, 강사진 추천',
+        method: '추천',
+        note: '6개월이상 이수자 중 추천',
       },
       {
-        condition: '교육/매니지먼트/드라마캐스팅 본부 심사결과',
-        criteria: '오디션',
-        note: '* 이수 기간 상관없이 승급 가능',
-        target: '전문',
-        targetClass: 'D Class',
-        type: '고급 U Class >',
+        condition: '교육, 매니지먼트, 드라마캐스팅 본부 심사결과',
+        method: '오디션',
+        note: '이수 기간 상관없이 승급',
       },
       {
         condition: '드라마, 영화 조/단역 이상 출연',
-        criteria: '활동경력',
-        note: '',
-        target: '전문',
-        targetClass: 'D Class',
-        type: '고급 U Class >',
+        method: '활동경력',
+        note: '이수 기간 상관없이 승급',
       },
+    ],
+    to: { classCode: 'D', label: 'D 전문' },
+  },
+  {
+    from: { classCode: 'D', label: 'D 전문' },
+    rows: [
       {
         condition: '전문반 6-10개월 이수',
-        criteria: '기간',
-        note: '전문반 6개월이상 이수 시 승급대상으로 선정',
-        target: '배우',
-        targetClass: 'A Class',
-        type: '전문 D Class >',
+        method: '기간',
+        note: '승급대상 선정',
       },
       {
-        condition: '대표원장/캐스팅디렉터/매니지먼트본부 추천',
-        criteria: '추천',
-        note: '* 전문반 6개월이상 이수자 중 추천',
-        target: '배우',
-        targetClass: 'A Class',
-        type: '전문 D Class >',
+        condition: '대표원장, 캐스팅디렉터, 매니지먼트본부 추천',
+        method: '추천',
+        note: '6개월이상 이수자 중 추천',
       },
       {
-        condition: '매니지먼트본부/드라마캐스팅본부/대표이사 심사결과',
-        criteria: '오디션',
-        note: '* 이수 기간 상관없이 승급 가능',
-        target: '배우',
-        targetClass: 'A Class',
-        type: '전문 D Class >',
+        condition: '매니지먼트본부, 드라마캐스팅본부, 대표이사 심사결과',
+        method: '오디션',
+        note: '이수 기간 상관없이 승급',
       },
       {
         condition: '드라마, 영화 조연급 이상 다수 출연',
-        criteria: '활동경력',
-        note: '',
-        target: '배우',
-        targetClass: 'A Class',
-        type: '전문 D Class >',
+        method: '활동경력',
+        note: '이수 기간 상관없이 승급',
       },
     ],
+    to: { classCode: 'A', label: 'A 배우' },
   },
-]
+] satisfies PromotionGroup[]
+
+type PromotionGroup = {
+  from: PromotionClass
+  rows: PromotionRow[]
+  to: PromotionClass
+}
+
+type PromotionClass = {
+  classCode: string
+  label: string
+}
+
+type PromotionRow = {
+  condition: string
+  method: '기간' | '오디션' | '추천' | '활동경력'
+  note: string
+}
 
 const cohortStartYear = 2010
 
@@ -457,7 +436,7 @@ export function GradeSystemTabs() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-[#111] text-white">
+    <section className="section-p-block-xs relative overflow-hidden bg-[#111] text-white">
       {activeTab === 'steps' ? (
         <>
           <PageDeco
@@ -470,7 +449,7 @@ export function GradeSystemTabs() {
           />
         </>
       ) : null}
-      <div className="container relative py-14 md:py-20">
+      <div className="container relative">
         <nav aria-label="등급제 교육관리시스템" className="mb-16 border-b border-white/10">
           <div className="flex min-w-0 gap-8 overflow-x-auto md:gap-20">
             {tabs.map((tab) => {
@@ -510,7 +489,7 @@ function StepsPanel() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <section>
-        <h2 className="max-w-[900px] text-[34px] font-bold leading-[1.25] tracking-normal [word-break:keep-all] md:text-[48px]">
+        <h2 className="max-w-[900px] text-[34px] font-bold leading-[1.25] tracking-normal md:text-[48px]">
           IRUDA 연기트레이닝 시스템입니다.
           <br />
           아트센터의 모든 교육은 ‘나’로부터 시작됩니다.
@@ -549,7 +528,7 @@ function ClassSection({
         </div>
         <div className="lg:col-span-2">
           <h4 className="text-[22px] font-extrabold leading-[1.45]">{item.headline}</h4>
-          <p className="mt-9 max-w-[760px] text-[15px] leading-[1.95] text-white/50 [word-break:keep-all]">
+          <p className="mt-9 max-w-[760px] text-[15px] leading-[1.95] text-white/50">
             {item.description}
           </p>
         </div>
@@ -578,7 +557,7 @@ function ClassSection({
               <h5 className="text-base font-extrabold leading-[1.45]">{card.title}</h5>
               <ul className="mt-5 space-y-2 text-sm leading-[1.7] text-white/48">
                 {card.items.map((text) => (
-                  <li className="grid grid-cols-[4px_minmax(0,1fr)] gap-2 [word-break:keep-all]" key={text}>
+                  <li className="grid grid-cols-[4px_minmax(0,1fr)] gap-2" key={text}>
                     <span aria-hidden="true" className="mt-[0.78em] h-0.5 w-0.5 rounded-full bg-white/48" />
                     <span>{text}</span>
                   </li>
@@ -638,7 +617,7 @@ function CriteriaPanel() {
   return (
     <div className="flex flex-col gap-16 md:gap-20">
       <section className="">
-        <h2 className="text-[30px] font-extrabold leading-[1.35] [word-break:keep-all] md:text-[42px]">
+        <h2 className="text-[30px] font-extrabold leading-[1.35] md:text-[42px]">
           정기적인 오디션을 통해 단계별로 초급 I반, 중급 R반,
           <br />
           고급 U반, 전문 D반, 배우 A반으로 클래스가 편성됩니다.
@@ -658,29 +637,24 @@ function AdultGradeTable() {
   return (
     <section>
       <h3 className="mb-5 text-base font-extrabold leading-none">성인 등급 기준</h3>
+      <p className="mb-4 text-xs leading-[1.65] text-white/45">
+        배정 Class는 아래 항목 중 충족되는 조건을 기준으로 진행되며, R Class부터 레벨테스트가 진행됩니다.
+      </p>
 
       {/* 데스크탑: 표 형태 (가독성 개선) */}
       <div className="hidden overflow-x-auto lg:block">
-        <table className="w-full table-fixed border-collapse text-center text-[12px] md:text-[13px]">
+        <table className="w-full table-fixed border-collapse text-left text-[14px]">
           <thead>
             <tr className="bg-[#343434] text-white">
-              <CriteriaHeader rowSpan={2} width="w-[7%]">
-                과정
-              </CriteriaHeader>
-              <CriteriaHeader rowSpan={2} width="w-[10%]">
+              <CriteriaHeader width="w-[8%]">
                 Class
               </CriteriaHeader>
-              <CriteriaHeader rowSpan={2} width="w-[8%]">
-                Level
+              <CriteriaHeader width="w-[8%]">
+                과정
               </CriteriaHeader>
-              <CriteriaHeader rowSpan={2} width="w-[15%]">
+              <CriteriaHeader width="w-[18%]">
                 관리부서
               </CriteriaHeader>
-              <CriteriaHeader colSpan={4}>
-                승급 및 지원 기준
-              </CriteriaHeader>
-            </tr>
-            <tr className="bg-[#343434] text-white">
               <CriteriaHeader>본학원</CriteriaHeader>
               <CriteriaHeader>타학원</CriteriaHeader>
               <CriteriaHeader>전공자</CriteriaHeader>
@@ -693,27 +667,33 @@ function AdultGradeTable() {
                 className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
                 key={`${index}-${row.className}`}
               >
-                {row.process ? (
-                  <CriteriaCell
-                    className="bg-[#333] font-medium text-white"
-                    rowSpan={row.processSpan}
-                  >
-                    {row.process}
-                  </CriteriaCell>
-                ) : null}
-                <CriteriaCell className="font-medium text-white/80">{row.className}</CriteriaCell>
-                <CriteriaCell>{row.level}</CriteriaCell>
-                <CriteriaCell className="text-left align-top text-white/45">{row.department}</CriteriaCell>
-                <CriteriaCell className="text-left align-top" emphasis>
-                  {row.inHouse}
+                <CriteriaCell className="text-center align-top">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <GradeBadge code={row.classCode}>{row.classCode}</GradeBadge>
+                    <span className="text-[12px] font-medium text-white/45">{row.level}</span>
+                  </div>
                 </CriteriaCell>
-                <CriteriaCell className="text-left align-top">{row.transfer}</CriteriaCell>
-                <CriteriaCell className="text-left align-top">{row.major}</CriteriaCell>
-                <CriteriaCell
-                  className="text-left align-top"
-                  emphasis={row.experience.includes('연기상')}
-                >
-                  {row.experience}
+                <CriteriaCell className="text-center align-top">
+                  <ProcessBadge process={row.process} />
+                </CriteriaCell>
+                <CriteriaCell className="align-top text-white/55">{row.department}</CriteriaCell>
+                <CriteriaCell className="text-left align-top">
+                  <CriteriaText
+                    highlightTerms={['매니지먼트 위탁배우']}
+                    value={row.inHouse}
+                  />
+                </CriteriaCell>
+                <CriteriaCell className="text-left align-top">
+                  <CriteriaText value={row.transfer} />
+                </CriteriaCell>
+                <CriteriaCell className="text-left align-top">
+                  <CriteriaText value={row.major} />
+                </CriteriaCell>
+                <CriteriaCell className="text-left align-top">
+                  <CriteriaText
+                    // highlightTerms={['조/단역', '다수 출연', '연기상']}
+                    value={row.experience}
+                  />
                 </CriteriaCell>
               </tr>
             ))}
@@ -723,39 +703,42 @@ function AdultGradeTable() {
 
       {/* 모바일/태블릿: 클래스별 카드 */}
       <div className="flex flex-col gap-4 lg:hidden">
-        {adultGradeCards.map((card, index) => (
+        {adultGradeRows.map((card, index) => (
           <article
             className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
             key={`${index}-${card.className}`}
           >
             <header className="flex flex-wrap items-center gap-2 border-b border-[#363636] bg-[#262626] px-4 py-3">
-              <ClassBadge>{card.className}</ClassBadge>
+              <GradeBadge code={card.classCode}>{card.classCode}</GradeBadge>
               <span className="text-sm font-bold text-white">{card.level}</span>
-              <span className="ml-auto whitespace-pre-line text-right text-[11px] font-medium leading-tight text-white/45">
-                {card.process.replace('\n', '')}
-              </span>
+              <ProcessBadge className="ml-auto" process={card.process} />
             </header>
-            <dl className="divide-y divide-[#2c2c2c] text-[13px]">
+            <dl className="divide-y divide-[#2c2c2c] text-[14px]">
               <div className="flex gap-3 px-4 py-3">
                 <dt className="w-20 shrink-0 font-medium text-white/40">관리부서</dt>
-                <dd className="whitespace-pre-line leading-[1.55] text-white/70 [word-break:keep-all]">
+                <dd className="whitespace-pre-line leading-[1.55] text-white/70">
                   {card.department || '-'}
                 </dd>
               </div>
               {criteriaEntryLabels.map((entry) => {
                 const value = card[entry.key]
-                const isEmphasis = entry.key === 'inHouse' || value.includes('연기상')
 
                 return (
                   <div className="flex gap-3 px-4 py-3" key={entry.key}>
                     <dt className="w-20 shrink-0 font-medium text-white/40">{entry.label}</dt>
-                    <dd
-                      className={cn(
-                        'whitespace-pre-line leading-[1.55] text-white/70 [word-break:keep-all]',
-                        isEmphasis && value && 'font-medium text-[#f87171]',
-                      )}
-                    >
-                      {value || '-'}
+                    <dd className="leading-[1.55] text-white/70">
+                      <CriteriaText
+                        highlightTerms={[
+                          '외부작품',
+                          '매니지먼트',
+                          '경력 인정자',
+                          '경력인정자',
+                          '조/단역',
+                          '다수 출연',
+                          '연기상',
+                        ]}
+                        value={value}
+                      />
                     </dd>
                   </div>
                 )
@@ -775,55 +758,46 @@ function PromotionTable() {
 
       {/* 데스크탑: 표 형태 */}
       <div className="hidden overflow-x-auto md:block">
-        <table className="w-full table-fixed border-collapse text-center text-[12px] md:text-[13px]">
+        <table className="w-full table-fixed border-collapse text-left text-[14px]">
           <thead>
             <tr className="bg-[#343434] text-white">
-              <CriteriaHeader width="w-[7%]">과정</CriteriaHeader>
-              <CriteriaHeader width="w-[20%]">승급 단계</CriteriaHeader>
-              <CriteriaHeader width="w-[12%]">승급기준</CriteriaHeader>
-              <CriteriaHeader width="w-[31%]">승급 조건</CriteriaHeader>
-              <CriteriaHeader>비고 사항</CriteriaHeader>
+              <CriteriaHeader width="w-[22%]">승급 경로</CriteriaHeader>
+              <CriteriaHeader width="w-[12%]">방법</CriteriaHeader>
+              <CriteriaHeader>조건</CriteriaHeader>
+              <CriteriaHeader width="w-[28%]">비고</CriteriaHeader>
             </tr>
           </thead>
           <tbody>
             {promotionGroups.map((group) =>
               group.rows.map((row, index) => {
-                const typeSpan = group.rows.filter((item) => item.type === row.type).length
-                const firstOfType = group.rows.findIndex((item) => item.type === row.type) === index
-
                 return (
                   <tr
-                    className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
-                    key={`${group.process}-${row.type}-${row.criteria}`}
+                    className={cn(
+                      'bg-[#222] text-white/55 transition-colors hover:bg-[#262626]',
+                      index === 0 && 'border-t border-[#444]',
+                    )}
+                    key={`${group.from.classCode}-${group.to.classCode}-${row.method}`}
                   >
                     {index === 0 ? (
-                      <CriteriaCell
-                        className="bg-[#333] font-medium text-white"
-                        rowSpan={group.rows.length}
-                      >
-                        {group.process}
-                      </CriteriaCell>
-                    ) : null}
-                    {firstOfType ? (
-                      <CriteriaCell rowSpan={typeSpan}>
+                      <CriteriaCell className="align-middle" rowSpan={group.rows.length}>
                         <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-                          <span className="font-medium text-white/70">
-                            {row.type.replace(/\s*>\s*$/, '')}
-                          </span>
-                          <ArrowRight aria-hidden="true" className="text-white" size={14} />
-                          <span className="inline-flex items-center gap-1.5">
-                            <span className="text-white/70">{row.target}</span>
-                            <ClassBadge>{row.targetClass}</ClassBadge>
-                          </span>
+                          <GradeBadge code={group.from.classCode}>{group.from.label}</GradeBadge>
+                          <ArrowRight aria-hidden="true" className="text-white/70" size={14} />
+                          <GradeBadge code={group.to.classCode}>{group.to.label}</GradeBadge>
                         </span>
                       </CriteriaCell>
                     ) : null}
                     <CriteriaCell>
-                      <CriteriaTypeBadge type={row.criteria} />
+                      <CriteriaTypeBadge type={row.method} />
                     </CriteriaCell>
                     <CriteriaCell className="text-left align-top">{row.condition}</CriteriaCell>
-                    <CriteriaCell className="text-left align-top" emphasis>
-                      {row.note}
+                    <CriteriaCell className="text-left align-top">
+                      <CriteriaText
+                        highlightTerms={[
+                          '이수 기간 상관없이',
+                        ]}
+                        value={row.note}
+                      />
                     </CriteriaCell>
                   </tr>
                 )
@@ -836,49 +810,38 @@ function PromotionTable() {
       {/* 모바일: 승급 단계별 카드 */}
       <div className="flex flex-col gap-8 md:hidden">
         {promotionGroups.map((group) => {
-          const types = [...new Set(group.rows.map((row) => row.type))]
-
           return (
-            <div className="flex flex-col gap-4" key={group.process}>
-              <p className="whitespace-pre-line text-sm font-extrabold leading-tight text-white/80">
-                {group.process.replace('\n', ' ')}
-              </p>
-              {types.map((type) => {
-                const rows = group.rows.filter((row) => row.type === type)
-                const head = rows[0]
-
-                return (
-                  <article
-                    className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
-                    key={type}
-                  >
-                    <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-[#363636] bg-[#262626] px-4 py-3 text-sm">
-                      <span className="font-medium text-white/70">
-                        {type.replace(/\s*>\s*$/, '')}
-                      </span>
-                      <ArrowRight aria-hidden="true" className="text-brand" size={15} />
-                      <span className="font-bold text-white">{head.target}</span>
-                      <ClassBadge>{head.targetClass}</ClassBadge>
-                    </header>
-                    <ul className="divide-y divide-[#2c2c2c]">
-                      {rows.map((row) => (
-                        <li className="flex flex-col gap-2 px-4 py-3" key={row.criteria}>
-                          <CriteriaTypeBadge type={row.criteria} />
-                          <p className="text-[13px] leading-[1.55] text-white/70 [word-break:keep-all]">
-                            {row.condition}
-                          </p>
-                          {row.note ? (
-                            <p className="text-[12px] font-medium leading-[1.5] text-[#f87171] [word-break:keep-all]">
-                              {row.note}
-                            </p>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ul>
-                  </article>
-                )
-              })}
-            </div>
+            <article
+              className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
+              key={`${group.from.classCode}-${group.to.classCode}`}
+            >
+              <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-[#363636] bg-[#262626] px-4 py-3 text-sm">
+                <GradeBadge code={group.from.classCode}>{group.from.label}</GradeBadge>
+                <ArrowRight aria-hidden="true" className="text-brand" size={15} />
+                <GradeBadge code={group.to.classCode}>{group.to.label}</GradeBadge>
+              </header>
+              <ul className="divide-y divide-[#2c2c2c]">
+                {group.rows.map((row) => (
+                  <li className="flex flex-col gap-2 px-4 py-3" key={row.method}>
+                    <CriteriaTypeBadge type={row.method} />
+                    <p className="text-[14px] leading-[1.55] text-white/70">
+                      {row.condition}
+                    </p>
+                    {row.note ? (
+                      <p className="text-[12px] leading-[1.5] text-white/70">
+                        <CriteriaText
+                          highlightTerms={[
+                            '이수 기간 상관없이',
+                            '6개월이상 이수자 중 추천',
+                          ]}
+                          value={row.note}
+                        />
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </article>
           )
         })}
       </div>
@@ -902,7 +865,7 @@ function CriteriaHeader({
   return (
     <th
       className={cn(
-        'border border-[#444] px-3 py-4 text-center font-bold leading-[1.55] [word-break:keep-all]',
+        'border border-[#444] px-3 py-4 text-center text-[13px] font-bold leading-[1.55]',
         width,
         className,
       )}
@@ -929,8 +892,8 @@ function CriteriaCell({
   return (
     <td
       className={cn(
-        'border border-[#363636] px-3 py-4 leading-[1.55] [word-break:keep-all] text-left',
-        emphasis && 'font-medium text-[#f87171]',
+        'border border-[#363636] px-3 py-4 text-[14px] leading-[1.55] text-left',
+        emphasis && 'font-medium text-white',
         className,
       )}
       rowSpan={rowSpan}
@@ -940,10 +903,91 @@ function CriteriaCell({
   )
 }
 
-function ClassBadge({ children }: { children: React.ReactNode }) {
+function CriteriaText({
+  emphasizeLine,
+  highlightTerms = [],
+  value,
+}: {
+  emphasizeLine?: (line: string, lineIndex: number) => boolean
+  highlightTerms?: string[]
+  value: string
+}) {
+  if (!value) {
+    return <span className="text-white/35">-</span>
+  }
+
+  const lines = value.split('\n')
+  const hasBulletLines = lines.some((line) => line.startsWith('- '))
+
   return (
-    <span className="inline-flex rounded-full bg-brand px-2.5 py-1 text-[11px] font-bold leading-none text-white">
+    <span className="flex flex-col gap-0.5">
+      {lines.map((line, lineIndex) => {
+        const isBulletLine = line.startsWith('- ')
+        const isSubNote = line.startsWith('<') || line.startsWith('*')
+        const text = isBulletLine ? line.slice(2) : line
+        const isHighlighted = highlightTerms.some((term) => line.includes(term))
+
+        return (
+          <span
+            className={cn(
+              hasBulletLines && !isBulletLine && !isSubNote && 'pl-3.5',
+              isSubNote && 'mt-1 text-[12px] text-white/45',
+              (isHighlighted || emphasizeLine?.(line, lineIndex)) && 'font-medium text-white',
+            )}
+            key={`${line}-${lineIndex}`}
+          >
+            {isBulletLine ? (
+              <span className="flex items-start gap-2">
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'mt-[0.62em] h-1 w-1 shrink-0 rounded-full bg-white/55',
+                    isHighlighted && 'bg-white',
+                  )}
+                />
+                <span>{text}</span>
+              </span>
+            ) : (
+              text
+            )}
+          </span>
+        )
+      })}
+    </span>
+  )
+}
+
+const gradeBadgeClassNames: Record<string, string> = {
+  A: 'bg-[#eeedfe] text-[#534ab7]',
+  D: 'bg-[#faeeda] text-[#854f0b]',
+  I: 'bg-[#f1efe8] text-[#5f5e5a]',
+  R: 'bg-[#e1f5ee] text-[#0f6e56]',
+  U: 'bg-[#e6f1fb] text-[#185fa5]',
+}
+
+function GradeBadge({ children, code }: { children: React.ReactNode; code: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex whitespace-nowrap rounded px-2 py-1 text-[12px] font-bold leading-none',
+        gradeBadgeClassNames[code] || 'bg-white/10 text-white/70',
+      )}
+    >
       {children}
+    </span>
+  )
+}
+
+function ProcessBadge({ className, process }: { className?: string; process: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex whitespace-nowrap rounded bg-[#e6f1fb] px-2 py-1 text-[12px] font-bold leading-none text-[#185fa5]',
+        process === '배움' && 'bg-[#e1f5ee] text-[#0f6e56]',
+        className,
+      )}
+    >
+      {process}
     </span>
   )
 }
@@ -960,7 +1004,7 @@ function CriteriaTypeBadge({ type }: { type: string }) {
   const Icon = meta?.icon
 
   return (
-    <span className="inline-flex gap-1.5 text-sm font-bold leading-none text-white/80">
+    <span className="inline-flex gap-1.5 text-[14px] font-bold leading-none text-white/80">
       {Icon ? <Icon aria-hidden="true" size={13} strokeWidth={2} /> : null}
       {type}
     </span>
@@ -1029,7 +1073,7 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
                     <td
                       data-cohort-year="true"
                       className={cn(
-                        'border border-[#363636] bg-[#262626] px-5 py-4 font-bold leading-[1.55] text-white/72 [word-break:keep-all]',
+                        'border border-[#363636] bg-[#262626] px-5 py-4 font-bold leading-[1.55] text-white/72',
                         index % 2 === 1 && 'bg-[#222]',
                       )}
                       rowSpan={yearSpan}
@@ -1037,13 +1081,13 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
                       {cohort.year}
                     </td>
                   ) : null}
-                  <td className="border border-[#363636] px-5 py-4 leading-[1.55] [word-break:keep-all]">
+                  <td className="border border-[#363636] px-5 py-4 leading-[1.55]">
                     {cohort.half}
                   </td>
-                  <td className="border border-[#363636] px-5 py-4 leading-[1.55] [word-break:keep-all]">
+                  <td className="border border-[#363636] px-5 py-4 leading-[1.55]">
                     {cohort.period}
                   </td>
-                  <td className="border border-[#363636] px-5 py-4 font-bold leading-[1.55] [word-break:keep-all]">
+                  <td className="border border-[#363636] px-5 py-4 font-bold leading-[1.55]">
                     {cohort.number}기
                   </td>
                 </tr>

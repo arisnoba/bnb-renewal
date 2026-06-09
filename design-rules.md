@@ -248,7 +248,8 @@ const decoIcons = getPageDecoIcons(2, `map-hero-${center}`)
 Tailwind로 작성해야 하는 것:
 
 - 반응형 레이아웃: `flex`, `grid`, `md:grid-cols-*`, `lg:*`, `overflow-*`
-- 고정 spacing: `py-20`, `md:py-[120px]`, `gap-5`, `mt-12`, `px-5`
+- 고정 spacing: `gap-5`, `mt-12`, `px-5`
+- 섹션 상하 여백: `section-p-block-base`, `section-p-t-sm`, `section-p-b-lg` 같은 공용 section padding 유틸
 - 컨테이너 조합: `container`, `container-sm`, `container-fluid`
 - 일반 색상/테두리/배경: `bg-background`, `text-foreground`, `border-border`, `bg-brand`, `text-brand`
 - 일반 타이포그래피: `text-base`, `text-[48px]`, `font-bold`, `leading-[1.35]`
@@ -258,7 +259,7 @@ Tailwind로 작성해야 하는 것:
 
 ```tsx
 <main className="page page-light page-faq page-top-offset" data-center={center}>
-  <section className="section-faq-list py-20 md:py-[120px]">
+  <section className="section-faq-list section-p-block-base">
     <div className="container-sm">
       <form className="section-faq-list__search flex h-[45px] overflow-hidden rounded-full border border-foreground/40">
         <input className="section-faq-list__search-input min-w-0 flex-1 px-5 text-lg font-bold" />
@@ -290,7 +291,8 @@ Tailwind로 작성해야 하는 것:
 
 - 새 스타일 파일은 기본 선택지가 아니다. 먼저 Tailwind로 해결하고, 아래 예외에 해당할 때만 추가한다.
 - SCSS mixin 대신 네이티브 CSS를 우선 사용한다. SCSS는 이미 프로젝트에 쓰는 파일이 있거나 중첩이 꼭 필요할 때만 쓴다.
-- Tailwind arbitrary value(`md:py-[120px]`, `text-[48px]`, `leading-[1.35]`)는 피그마의 고정값을 반영할 때 허용한다.
+- Tailwind arbitrary value(`text-[48px]`, `leading-[1.35]`)는 피그마의 고정값을 반영할 때 허용한다.
+- `main > section > .container*` 구조의 대표 섹션 상하 여백은 `section-p-{t,b,block}-{xs,sm,base,lg}` 유틸을 우선 사용한다. 기준 최대값은 `xs: 80px`, `sm: 100px`, `base: 120px`, `lg: 160px`이며, `src/app/(frontend)/section-spacing.scss`에서 `fluid-space`로 관리한다.
 - 별도 CSS/SCSS를 추가하더라도 레이아웃과 spacing은 가능한 한 Tailwind className에 남겨 둔다.
 
 ### 별도 CSS/SCSS 허용 범위
@@ -411,14 +413,14 @@ Tailwind로 작성해야 하는 것:
   </header>
 </article>
 
-// hero가 있는 정적 페이지: 섹션별 여백/레이아웃은 Tailwind가 우선 담당
+// hero가 있는 정적 페이지: 대표 섹션 여백은 section padding 유틸을 사용
 <main className="page page-dark page-landing">
-  <section className="section-hero py-20 md:py-[120px]" data-center="art">
+  <section className="section-hero section-p-block-base" data-center="art">
     <div className="container">
       {/* 콘텐츠 */}
     </div>
   </section>
-  <section className="section-about py-16 md:py-24">
+  <section className="section-about section-p-block-sm">
     <div className="container-sm">
       {/* 좁은 컨테이너가 필요한 경우 */}
     </div>
@@ -427,7 +429,7 @@ Tailwind로 작성해야 하는 것:
 
 // hero 없이 콘텐츠가 바로 시작되는 정적 페이지
 <main className="page page-light page-faq page-top-offset">
-  <section className="section-faq-list py-20 md:py-[120px]">
+  <section className="section-faq-list section-p-block-base">
     <div className="container">
       {/* 콘텐츠 */}
     </div>

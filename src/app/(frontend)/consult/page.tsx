@@ -54,7 +54,7 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
         </div>
       </section>
 
-      <section className="container mt-14">
+      <section className="container section-p-block-sm">
         <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
           <aside className="lg:sticky lg:top-24">
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">

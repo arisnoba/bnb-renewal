@@ -1,9 +1,5 @@
 @use '../../../styles/mixins' as *;
 
-.section-faq-list {
-  @include fluid-space(padding-block, 40px, 80px);
-}
-
 .section-faq-list__head {
   margin-bottom: 60px;
 }

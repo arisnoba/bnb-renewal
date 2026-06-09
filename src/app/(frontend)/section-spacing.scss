@@ -1,0 +1,35 @@
+@use '../../styles/mixins' as *;
+@use 'sass:map';
+
+$section-spacing-scale: (
+  xs: (
+    min: 56px,
+    max: 80px,
+  ),
+  sm: (
+    min: 72px,
+    max: 100px,
+  ),
+  base: (
+    min: 80px,
+    max: 120px,
+  ),
+  lg: (
+    min: 112px,
+    max: 160px,
+  ),
+);
+
+@each $name, $size in $section-spacing-scale {
+  .section-p-t-#{$name} {
+    @include fluid-space(padding-top, map.get($size, min), map.get($size, max));
+  }
+
+  .section-p-b-#{$name} {
+    @include fluid-space(padding-bottom, map.get($size, min), map.get($size, max));
+  }
+
+  .section-p-block-#{$name} {
+    @include fluid-space(padding-block, map.get($size, min), map.get($size, max));
+  }
+}

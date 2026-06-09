@@ -23,7 +23,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
     <main className="page page-light page-starcard page-top-offset" data-center={center}>
       <PageClient />
 
-      <section className="section-starcard-list min-h-screen section-padding">
+      <section className="section-starcard-list section-p-block-base min-h-screen">
         <div className="container">
           <header className="section-starcard-list__head grid gap-12 lg:grid-cols-[minmax(0,620px)_1fr] lg:items-start">
             <div>

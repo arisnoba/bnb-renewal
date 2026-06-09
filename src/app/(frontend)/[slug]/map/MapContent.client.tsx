@@ -19,7 +19,7 @@ export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
   const selectedLocation = centerLocations[selectedCenter]
 
   return (
-    <section className="container py-20 md:py-[120px]" data-center={selectedCenter}>
+    <section className="container section-p-block-base" data-center={selectedCenter}>
       <div className="mb-12 flex flex-col gap-10">
         <div>
           <p className="mb-10 text-xl font-bold leading-[1.4] text-brand">오시는 길</p>

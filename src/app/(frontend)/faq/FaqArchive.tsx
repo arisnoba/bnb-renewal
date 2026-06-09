@@ -60,7 +60,7 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
     <main className="page page-light page-faq page-top-offset" data-center={center}>
       <PageClient />
 
-      <section className="section-faq-list" aria-labelledby="faq-list-title">
+      <section className="section-faq-list section-p-block-base" aria-labelledby="faq-list-title">
         <div className="container-sm">
           <div className="section-faq-list__head page-heading">
             <p className="section-faq-list__eyebrow page-eyebrow">자주하는 질문</p>

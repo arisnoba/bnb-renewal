@@ -147,7 +147,7 @@ export async function NewsArchive({
     <main className="page page-light page-news-archive page-top-offset" data-center={center}>
       <PageClient />
 
-      <section className="section-news-list" aria-labelledby="news-list-title">
+      <section className="section-news-list section-p-block-base" aria-labelledby="news-list-title">
         <div className="section-news-list__container">
           <header className="section-news-list__head page-heading">
             <p className="section-news-list__eyebrow page-eyebrow">NEWS&amp;NOTICE</p>

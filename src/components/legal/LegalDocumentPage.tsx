@@ -32,7 +32,7 @@ export function LegalDocumentPage({ document }: { document: LegalTermPageData })
         </div>
       </section>
 
-      <section className="container-sm pt-12">
+      <section className="container-sm section-p-t-xs">
           <RichText
             className="legal-richtext text-white/70 prose-headings:text-white prose-h2:mt-10 prose-h2:text-xl prose-p:leading-8 prose-p:text-white/65 prose-a:text-white prose-a:underline prose-a:decoration-white/35 prose-a:underline-offset-4 prose-a:transition-colors hover:prose-a:text-white hover:prose-a:decoration-white"
             data={document.body}
