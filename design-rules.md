@@ -225,12 +225,14 @@ Tailwind로 작성해야 하는 것:
 의미 클래스는 함께 붙인다. 예를 들어 FAQ 페이지는 다음처럼 작성한다.
 
 ```tsx
-<main className="page-static bg-background text-foreground" data-center={center}>
+<main className="page page-light page-faq page-top-offset" data-center={center}>
   <section className="section-faq-list py-20 md:py-[120px]">
     <div className="container-sm">
       <form className="section-faq-list__search flex h-[45px] overflow-hidden rounded-full border border-foreground/40">
         <input className="section-faq-list__search-input min-w-0 flex-1 px-5 text-lg font-bold" />
-        <button className="section-faq-list__search-button grid size-[45px] place-items-center rounded-full bg-foreground" />
+        <button className="section-faq-list__search-button grid size-[45px] place-items-center rounded-full bg-foreground text-background">
+          <Search aria-hidden="true" size={18} strokeWidth={2.4} />
+        </button>
       </form>
     </div>
   </section>
@@ -298,17 +300,25 @@ Tailwind로 작성해야 하는 것:
 - 예외 요소는 CSS/SCSS 또는 globals.css `@layer`에서 최소 관리한다.
 - **각 주요 섹션에는 `section-{name}` (kebab-case) classname을 함께 붙인다.** 이는 커스텀/QA용 hook이며, 섹션의 모든 기본 스타일을 CSS 파일로 컨트롤하라는 뜻이 아니다.
 - 주요 내부 요소에는 필요에 따라 `section-{name}__element` 형식의 클래스명을 함께 붙인다. 예: `section-faq-list__search`, `section-faq-item__summary`.
-- 페이지 루트에는 화면 타입을 구분하는 클래스가 필요하다. CMS 상세는 `page-detail`, Payload `pages` 기반 일반 정적 페이지는 `page-static`을 사용한다.
+- 페이지 루트에는 공통 루트, 표면 톤, 페이지 식별 클래스, 상단 offset 클래스를 분리해서 사용한다. 모든 공개 페이지 루트에는 `page`를 붙이고, 흰/검 표면 톤은 `page-light`/`page-dark`로 표시한다. 식별 클래스는 `page-landing`, `page-faq`, `page-starcard`, `page-detail`처럼 실제 화면/템플릿을 드러내고, 고정 GNB/관리자 바 아래에서 첫 콘텐츠가 시작되어야 하면 별도로 `page-top-offset`을 붙인다.
 
-### 페이지 타입 클래스
+### 페이지 루트 클래스
 
 | 클래스 | 적용 대상 | 역할 |
 |--------|-----------|------|
-| `page-detail` | `/news/[slug]`, `/artist-press/[slug]`, 프로필 상세처럼 개별 콘텐츠를 보여주는 상세 페이지 | 관리자 바와 고정 GNB 높이를 반영해 본문 시작 위치를 보정한다. |
-| `page-static` | `/`, `/{center}`, 기타 Payload `pages` 기반 정적 페이지 | 정적/섹션형 화면임을 표시한다. 기본 상단 padding은 강제하지 않는다. |
-| `page-static--center` | 센터 랜딩 정적 페이지 | 센터 전용 메인 배너/소셜 섹션을 포함하는 정적 페이지를 구분한다. |
+| `page` | 모든 공개 페이지 루트 | 전체 페이지 공통 제어 훅이다. |
+| `page-light` | 흰 배경/검정 텍스트 기반 페이지 | 밝은 표면 톤을 표시한다. |
+| `page-dark` | 검정 배경/흰 텍스트 기반 페이지 | 어두운 표면 톤을 표시한다. |
+| `page-landing` | `/`, `/{center}` 같은 랜딩/섹션 조립형 페이지 | 랜딩 화면임을 표시한다. |
+| `page-landing--center` | 센터 랜딩 페이지 | 센터 전용 메인 배너/소셜 섹션을 포함하는 랜딩을 구분한다. |
+| `page-faq` | `/{center}/faq` | FAQ 목록 화면임을 표시한다. |
+| `page-starcard` | `/{center}/starcard` | 스타카드 제휴업체 화면임을 표시한다. |
+| `page-detail` | `/news/[slug]`, `/artist-press/[slug]`, 프로필 상세처럼 개별 콘텐츠를 보여주는 상세 페이지 | 개별 콘텐츠 상세 화면임을 표시한다. |
+| `page-top-offset` | hero 없이 바로 콘텐츠가 시작되는 페이지, 상세 페이지 | 관리자 바와 고정 GNB 높이를 반영해 본문 시작 위치를 보정한다. |
 
-`page-detail`의 상단 여백은 Tailwind `pt-*` 값에 의존하지 않고 아래 전역 변수로 관리한다.
+표면 톤과 상단 offset은 페이지 식별 클래스에 묶지 않는다. `오시는 길`, `등급제 교육관리시스템`처럼 hero 비주얼이 있는 화면은 `page-dark`를 쓰되 hero 섹션이 자체 여백을 담당하므로 `page-top-offset`을 붙이지 않는다. `자주하는 질문`, `스타카드`, 상세 페이지처럼 첫 콘텐츠가 바로 시작되는 화면은 `page-light page-top-offset`을 붙인다.
+
+`page-top-offset`의 상단 여백은 Tailwind `pt-*` 값에 의존하지 않고 아래 전역 변수로 관리한다.
 
 ```css
 :root {
@@ -318,7 +328,7 @@ Tailwind로 작성해야 하는 것:
     var(--admin-bar-height, 0px) +
     var(--site-header-measured-height, var(--site-header-height, 84px))
   );
-  --page-detail-padding-top: var(--page-top-offset);
+  --page-top-offset-padding: var(--page-top-offset);
 }
 
 @media (max-width: 640px) {
@@ -327,28 +337,43 @@ Tailwind로 작성해야 하는 것:
   }
 }
 
-.page-detail {
-  padding-top: var(--page-detail-padding-top);
+.page {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.page-light {
+  background: #fff;
+  color: #111;
+}
+
+.page-dark {
+  background: #111;
+  color: #fff;
+}
+
+.page-top-offset {
+  padding-top: var(--page-top-offset-padding);
 }
 ```
 
 - `--admin-bar-height`는 로그인한 관리자 바가 보일 때 실측값으로 갱신한다.
 - `--site-header-measured-height`는 렌더된 GNB 높이를 실측한 값이며, 없을 때는 `--site-header-height`를 fallback으로 사용한다.
-- 상세 페이지에서 `pt-20`, `pt-24` 같은 고정 상단 padding을 추가하더라도 최종 상단 padding은 `.page-detail` 규칙이 담당한다.
-- `page-static`에는 이 offset을 자동 적용하지 않는다. 정적 페이지 hero는 대개 GNB 오버레이를 전제로 하므로 화면별 섹션에서 직접 여백을 제어한다.
+- 상단 offset이 필요한 페이지에는 `pt-20`, `pt-24` 같은 고정 상단 padding을 추가하지 않는다. 최종 상단 padding은 `.page-top-offset` 규칙이 담당한다.
+- 페이지 식별 클래스에는 배경색이나 offset을 자동 적용하지 않는다. hero 없는 페이지에는 `page page-light page-faq page-top-offset`처럼 각 축을 같이 쓰고, hero가 있는 페이지는 화면별 섹션에서 직접 여백을 제어한다.
 
 ### 마크업 구조 패턴
 
 ```tsx
-// 상세 페이지: page-detail이 관리자 바 + GNB offset을 담당
-<article className="page-detail pb-24">
+// 상세 페이지: page-detail은 페이지 식별, page-top-offset은 관리자 바 + GNB offset 담당
+<article className="page page-light page-detail page-top-offset pb-24">
   <header className="container">
     {/* 상세 제목 */}
   </header>
 </article>
 
-// 정적 페이지: page-static은 타입 표식이고, 섹션별 여백/레이아웃은 Tailwind가 우선 담당
-<main className="page-static bg-background text-foreground">
+// hero가 있는 정적 페이지: 섹션별 여백/레이아웃은 Tailwind가 우선 담당
+<main className="page page-dark page-landing">
   <section className="section-hero py-20 md:py-[120px]" data-center="art">
     <div className="container">
       {/* 콘텐츠 */}
@@ -357,6 +382,15 @@ Tailwind로 작성해야 하는 것:
   <section className="section-about py-16 md:py-24">
     <div className="container-sm">
       {/* 좁은 컨테이너가 필요한 경우 */}
+    </div>
+  </section>
+</main>
+
+// hero 없이 콘텐츠가 바로 시작되는 정적 페이지
+<main className="page page-light page-faq page-top-offset">
+  <section className="section-faq-list py-20 md:py-[120px]">
+    <div className="container">
+      {/* 콘텐츠 */}
     </div>
   </section>
 </main>

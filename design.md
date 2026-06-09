@@ -32,17 +32,28 @@
 
 ---
 
-## 페이지 타입 클래스
+## 페이지 루트 클래스
 
-페이지 루트는 화면 성격을 구분할 수 있는 타입 클래스를 가진다. 타입 클래스는 디자인/레이아웃 규칙의 적용 범위를 제한하기 위한 기준이며, 섹션 클래스(`section-{name}`)와 함께 사용한다.
+페이지 루트 클래스는 공통 루트, 표면 톤, 상단 offset 필요 여부, 페이지 식별자를 분리해서 쓴다. 페이지 식별자가 배경색이나 상단 padding 적용 여부를 결정하지 않는다.
+
+- 공통 루트 클래스: `page`
+- 표면 톤 클래스: `page-light`, `page-dark`
+- 상단 offset 클래스: `page-top-offset`
+- 페이지 식별 클래스: `page-landing`, `page-faq`, `page-starcard`, `page-detail`처럼 실제 화면/템플릿을 표시한다.
 
 | 클래스 | 대상 | 현재 적용 예 |
 |--------|------|--------------|
-| `page-detail` | CMS 데이터 기반 상세 페이지. 고정 GNB와 관리자 바 아래에서 본문이 시작되어야 하는 화면 | `/news/[slug]`, `/artist-press/[slug]`, `/profiles/[slug]`, `/{center}/profiles/{profileSlug}` |
-| `page-static` | Payload `pages` 기반 일반 정적 페이지. 화면별 hero/section이 자체 상단 여백을 제어하는 화면 | `/`, `/{center}`, 기타 정적 페이지 slug |
-| `page-static--center` | 센터 랜딩처럼 메인 배너/센터 전용 섹션을 포함하는 정적 페이지 보조 클래스 | `/{center}` |
+| `page` | 모든 공개 페이지 루트 | 전체 페이지 공통 제어 |
+| `page-light` | 흰 배경/검정 텍스트 기반 페이지 | FAQ, 스타카드, 상세 페이지 |
+| `page-dark` | 검정 배경/흰 텍스트 기반 페이지 | 센터 랜딩, 오시는 길, 등급제 교육관리시스템 |
+| `page-landing` | 랜딩/섹션 조립형 페이지 | `/`, `/{center}` |
+| `page-landing--center` | 센터 랜딩 보조 클래스 | `/{center}` |
+| `page-faq` | FAQ 목록 페이지 | `/{center}/faq` |
+| `page-starcard` | 스타카드 제휴업체 페이지 | `/{center}/starcard` |
+| `page-detail` | CMS 데이터 기반 상세 페이지 | `/news/[slug]`, `/artist-press/[slug]`, `/profiles/[slug]`, `/{center}/profiles/{profileSlug}` |
+| `page-top-offset` | hero 없이 첫 콘텐츠가 고정 GNB/관리자 바 아래에서 시작되어야 하는 화면 | 상세 페이지, `/{center}/faq`, `/{center}/starcard` |
 
-`page-detail`은 로그인 여부에 따라 높이가 달라지는 관리자 바와 고정 헤더를 피해야 하므로, 전역 CSS 변수 기반 상단 padding을 사용한다. `page-static`은 기본적으로 padding을 강제하지 않는다.
+`page-top-offset`은 로그인 여부에 따라 높이가 달라지는 관리자 바와 고정 헤더를 피해야 하므로, 전역 CSS 변수 기반 상단 padding을 사용한다. hero가 GNB 뒤로 깔리는 화면은 `page-top-offset`을 붙이지 않고 hero 섹션 자체에서 여백을 제어한다.
 
 ---
 
