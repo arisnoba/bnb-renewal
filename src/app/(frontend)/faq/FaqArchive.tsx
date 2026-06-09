@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
+import Link from 'next/link'
 import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
@@ -69,8 +70,13 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
               궁금한 내용을 확인해보세요.
             </h1>
             <div className="section-faq-list__description page-description">
-              <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p>
-              <p>더 궁금한점이 있으시면 CS상담센터에 문의 바랍니다.</p>
+              {/* <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p> */}
+              <p>
+                더 궁금한 점이 있으시면 <Link href={'/consult'} className="text-brand hover:underline">
+                  CS상담센터에 문의
+                </Link>
+                바랍니다.
+              </p>
             </div>
           </div>
 
