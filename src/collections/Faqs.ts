@@ -35,6 +35,9 @@ const answerModeOptions = [
   { label: '센터별 답변', value: 'centerVariants' },
 ]
 
+const faqAnswerMarkdownDescription =
+  '표는 마크다운 표를 사용합니다. 버튼은 한 줄에 [버튼 문구](/현재-경로) 형식으로 입력합니다. 예: [수강료 안내 바로가기](/art#admission)'
+
 const variantCenterFields = [
   { field: 'centerArt', label: '아트센터' },
   { field: 'centerExam', label: '입시센터' },
@@ -330,7 +333,7 @@ export const Faqs: CollectionConfig = {
         condition: (_data, siblingData) =>
           siblingData?.answerMode !== 'centerVariants' ||
           !hasMultipleFaqCenters(siblingData?.centers),
-        description: '선택한 센터에 같은 답변을 노출할 때 사용합니다.',
+        description: `선택한 센터에 같은 답변을 노출할 때 사용합니다. ${faqAnswerMarkdownDescription}`,
         rows: 8,
       },
     },
@@ -421,6 +424,7 @@ export const Faqs: CollectionConfig = {
           label: '답변',
           required: true,
           admin: {
+            description: faqAnswerMarkdownDescription,
             rows: 8,
           },
         },

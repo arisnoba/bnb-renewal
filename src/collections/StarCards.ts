@@ -40,6 +40,19 @@ const starCardCentersField: SelectField = {
   defaultValue: ['all'],
 }
 
+const starCardCategoryOptions = [
+  { label: '헬스', value: 'health' },
+  { label: '프로필', value: 'profile' },
+  { label: '메디컬', value: 'medical' },
+  { label: '헤어&메이크업', value: 'hairMakeup' },
+  { label: '뷰티', value: 'beauty' },
+  { label: '카페', value: 'cafe' },
+]
+
+const validateStarCardCategory: Validate<unknown> = (value) => {
+  return value ? true : '분류를 선택해야 합니다.'
+}
+
 export const StarCards: CollectionConfig = {
   slug: 'star-cards',
   labels: {
@@ -50,6 +63,7 @@ export const StarCards: CollectionConfig = {
   admin: {
     defaultColumns: [
       'title',
+      'category',
       'centers',
       'displayOrder',
       'displayStatus',
@@ -80,11 +94,22 @@ export const StarCards: CollectionConfig = {
         fields: [
           adminRow([
             {
+              name: 'category',
+              type: 'select',
+              label: '분류',
+              options: starCardCategoryOptions,
+              validate: validateStarCardCategory,
+              admin: {
+                className: 'bnb-admin-required-field',
+                width: '33%',
+              },
+            },
+            {
               name: 'mapUrl',
               type: 'text',
               label: '지도/외부 링크',
               admin: {
-                width: '50%',
+                width: '33%',
               },
             },
             {
@@ -92,7 +117,7 @@ export const StarCards: CollectionConfig = {
               type: 'text',
               label: '할인율',
               admin: {
-                width: '50%',
+                width: '33%',
               },
             },
           ]),

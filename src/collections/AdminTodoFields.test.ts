@@ -19,6 +19,7 @@ type FieldWithName = Field & {
       Field?: unknown
     }
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => boolean
+    description?: string
     placeholder?: string
   }
   defaultValue?: unknown
@@ -155,6 +156,7 @@ test('faqs place centers below question and limit center-specific answers', asyn
   const answerMode = getField(Faqs, 'answerMode')
   const sharedAnswer = getField(Faqs, 'sharedAnswer')
   const variants = getField(Faqs, 'variants')
+  const answer = getField(Faqs, 'answer')
   const displayStatus = getField(Faqs, 'displayStatus')
 
   assert.deepEqual(fieldNames(Faqs.fields.slice(0, 3)), ['title', 'centers', 'category', 'answerMode'])
@@ -166,6 +168,8 @@ test('faqs place centers below question and limit center-specific answers', asyn
   assert.equal(answerMode.admin?.condition?.({}, { centers: ['art'] }), false)
   assert.equal(answerMode.admin?.condition?.({}, { centers: ['art', 'exam'] }), true)
   assert.equal(sharedAnswer.label, '단일 답변')
+  assert.match(String(sharedAnswer.admin?.description), /\[수강료 안내 바로가기\]\(\/art#admission\)/)
+  assert.match(String(answer.admin?.description), /\[수강료 안내 바로가기\]\(\/art#admission\)/)
   assert.equal(sharedAnswer.admin?.condition?.({}, { answerMode: 'centerVariants', centers: ['art'] }), true)
   assert.equal(variants.admin?.condition?.({}, { answerMode: 'centerVariants', centers: ['art'] }), false)
   assert.equal(await category.validate?.('', validationOptions()), '분류를 선택해야 합니다.')
@@ -231,10 +235,17 @@ test('faq bulk edits do not clear existing centers with empty transient form val
 
 test('star cards require at least one image and default centers to all', async () => {
   const bodyImages = getField(StarCards, 'bodyImages')
+  const category = getField(StarCards, 'category')
   const imageMedia = getField(StarCards, 'imageMedia')
   const centers = getField(StarCards, 'centers')
 
   assert.equal(bodyImages.minRows, 1)
+  assert.deepEqual(
+    (category.options as { value: string }[]).map((option) => option.value),
+    ['health', 'profile', 'medical', 'hairMakeup', 'beauty', 'cafe'],
+  )
+  assert.equal(await category.validate?.('', validationOptions()), '분류를 선택해야 합니다.')
+  assert.equal(category.admin?.className, 'bnb-admin-required-field')
   assert.equal(await bodyImages.validate?.([], validationOptions()), '이미지를 하나 이상 등록해야 합니다.')
   assert.equal(await imageMedia.validate?.(null, validationOptions()), '이미지를 선택해야 합니다.')
   assert.equal(imageMedia.admin?.className, 'bnb-admin-required-field')

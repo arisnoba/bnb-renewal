@@ -110,6 +110,8 @@ import * as migration_20260602_181000_main_statistics from './20260602_181000_ma
 import * as migration_20260602_182000_main_statistics_center from './20260602_182000_main_statistics_center'
 import * as migration_20260602_183000_main_statistics_global_fields from './20260602_183000_main_statistics_global_fields'
 import * as migration_20260602_184000_drop_main_statistics_collection_lock_rel from './20260602_184000_drop_main_statistics_collection_lock_rel'
+import * as migration_20260602_185000_main_settings_collection_lock_rels from './20260602_185000_main_settings_collection_lock_rels'
+import * as migration_20260608_120000_star_card_category from './20260608_120000_star_card_category'
 
 export const migrations = [
   {
@@ -671,5 +673,15 @@ export const migrations = [
     up: migration_20260602_184000_drop_main_statistics_collection_lock_rel.up,
     down: migration_20260602_184000_drop_main_statistics_collection_lock_rel.down,
     name: '20260602_184000_drop_main_statistics_collection_lock_rel',
+  },
+  {
+    up: migration_20260602_185000_main_settings_collection_lock_rels.up,
+    down: migration_20260602_185000_main_settings_collection_lock_rels.down,
+    name: '20260602_185000_main_settings_collection_lock_rels',
+  },
+  {
+    up: migration_20260608_120000_star_card_category.up,
+    down: migration_20260608_120000_star_card_category.down,
+    name: '20260608_120000_star_card_category',
   },
 ]

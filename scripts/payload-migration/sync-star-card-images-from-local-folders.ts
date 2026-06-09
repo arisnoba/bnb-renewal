@@ -19,12 +19,16 @@ type Options = {
 }
 
 type StarCardFolderConfig = {
+  category: StarCardCategory
+  displayStatus?: string
   folder: string
   order: number
   slug: string
   title: string
   titleAliases?: string[]
 }
+
+type StarCardCategory = 'beauty' | 'cafe' | 'hairMakeup' | 'health' | 'medical' | 'profile'
 
 type StarCardRow = {
   display_order: string | null
@@ -66,12 +70,14 @@ const IMAGE_EXTENSIONS = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.sv
 
 const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
   {
+    category: 'health',
     folder: '1. 휴메이크 휘트니스',
     order: 1,
     slug: 'humake-fitness-nonhyeon',
     title: '휴메이크 휘트니스 논현점',
   },
   {
+    category: 'profile',
     folder: '2. 배우화 스튜디오',
     order: 2,
     slug: 'baewoohwa',
@@ -79,24 +85,28 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['배우화 스튜디오'],
   },
   {
+    category: 'medical',
     folder: '3. CK성모안과',
     order: 3,
     slug: 'ck-st-mary-eye-clinic',
     title: 'CK성모안과',
   },
   {
+    category: 'medical',
     folder: '4. 강남미라인치과',
     order: 4,
     slug: 'gangnam-miline-dental',
     title: '강남미라인치과',
   },
   {
+    category: 'medical',
     folder: '5. 강남젠틀치과',
     order: 5,
     slug: 'gangnam-gentle-dental',
     title: '강남젠틀치과',
   },
   {
+    category: 'medical',
     folder: '6. 클레어치과의원',
     order: 6,
     slug: 'claire-dental-clinic',
@@ -104,12 +114,14 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['클레어치과'],
   },
   {
+    category: 'medical',
     folder: '7. 제림 성형외과',
     order: 7,
     slug: 'jerim-plastic-surgery',
     title: '제림 성형외과',
   },
   {
+    category: 'medical',
     folder: '9. 리쥬엘 의원',
     order: 9,
     slug: 'rejuel-clinic-gangnam',
@@ -117,6 +129,7 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['리쥬엘 의원'],
   },
   {
+    category: 'medical',
     folder: '10. 모텐셜 의원',
     order: 10,
     slug: 'motential-clinic',
@@ -124,6 +137,7 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['모텐셜 의원'],
   },
   {
+    category: 'medical',
     folder: '11. THE아름다운의원',
     order: 11,
     slug: 'the-areumdaun-clinic',
@@ -131,18 +145,21 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['THE아름다운의원'],
   },
   {
+    category: 'medical',
     folder: '12. 빌리프 성형외과',
     order: 12,
     slug: 'vlif-plastic-surgery',
     title: '빌리프 성형외과',
   },
   {
+    category: 'medical',
     folder: '12. 십장생 한의원',
     order: 13,
     slug: 'sipjangsaeng-korean-medicine',
     title: '십장생 한의원',
   },
   {
+    category: 'medical',
     folder: '14. 오다 한의원',
     order: 14,
     slug: 'oda-korean-medicine-gangnam',
@@ -150,18 +167,21 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['오다 한의원'],
   },
   {
+    category: 'hairMakeup',
     folder: '15. 순수',
     order: 15,
     slug: 'soonsoo',
     title: '순수',
   },
   {
+    category: 'hairMakeup',
     folder: '16. MUAH(도산 무아)',
     order: 16,
     slug: 'muah',
     title: 'MUAH(도산 무아)',
   },
   {
+    category: 'hairMakeup',
     folder: '17. YONING(요닝)',
     order: 17,
     slug: 'yoning',
@@ -169,24 +189,28 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['YONING(요닝)'],
   },
   {
+    category: 'hairMakeup',
     folder: '18. 정샘물 인스피레이션',
     order: 18,
     slug: 'jungsaemmool-inspiration',
     title: '정샘물 인스피레이션',
   },
   {
+    category: 'hairMakeup',
     folder: '19. 메이븐 바이 범호',
     order: 19,
     slug: 'maven-by-bumho',
     title: '메이븐 바이 범호',
   },
   {
+    category: 'hairMakeup',
     folder: '20. 드블랙 맨즈헤어',
     order: 20,
     slug: 'de-black-mens-hair',
     title: '드블랙 맨즈헤어',
   },
   {
+    category: 'beauty',
     folder: '21. 코뿔소안경원',
     order: 21,
     slug: 'rhinoceros-optical',
@@ -194,30 +218,35 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
     titleAliases: ['코뿔소안경원'],
   },
   {
+    category: 'cafe',
     folder: '23. 디어밀',
     order: 23,
     slug: 'dearmeal',
     title: '디어밀',
   },
   {
+    category: 'cafe',
     folder: '24. 더벤티 논현역점',
     order: 24,
     slug: 'the-venti',
     title: '더벤티 논현역점',
   },
   {
+    category: 'cafe',
     folder: '25. 댕크커피',
     order: 25,
     slug: 'dank-coffee',
     title: '댕크커피',
   },
   {
+    category: 'cafe',
     folder: '26. 어딕티브',
     order: 26,
     slug: 'addictive',
     title: '어딕티브',
   },
   {
+    category: 'cafe',
     folder: '27. RE&(카페 리엔)',
     order: 27,
     slug: 're-and',
@@ -228,12 +257,14 @@ const STAR_CARD_FOLDERS: StarCardFolderConfig[] = [
 
 const ORDER_ONLY_STAR_CARDS = [
   {
+    category: 'medical',
     displayStatus: 'published',
     order: 8,
     slug: 'chloen-plastic-surgery',
     title: '클로엔 성형외과',
   },
   {
+    category: 'beauty',
     displayStatus: 'archived',
     order: 22,
     slug: 'glow-beauty',
@@ -370,10 +401,10 @@ async function syncOrderOnlyStarCard({
   await pool.query(
     `
       UPDATE star_cards
-      SET display_order = $1, display_status = $2, updated_at = NOW()
-      WHERE id = $3
+      SET category = $1, display_order = $2, display_status = $3, updated_at = NOW()
+      WHERE id = $4
     `,
-    [config.order, config.displayStatus, starCard.id],
+    [config.category, config.order, config.displayStatus, starCard.id],
   )
   await normalizeBodyImageOrder(pool, starCard.id)
 
@@ -521,10 +552,10 @@ async function syncStarCard({
     await pool.query(
       `
         UPDATE star_cards
-        SET display_order = $1, updated_at = NOW()
-        WHERE id = $2
+        SET category = $1, display_order = $2, updated_at = NOW()
+        WHERE id = $3
       `,
-      [config.order, starCard.id],
+      [config.category, config.order, starCard.id],
     )
 
     return {
@@ -569,6 +600,7 @@ async function createStarCard(pool: Pool, config: StarCardFolderConfig) {
     `
       INSERT INTO star_cards (
         title,
+        category,
         display_status,
         display_order,
         published_at,
@@ -578,10 +610,10 @@ async function createStarCard(pool: Pool, config: StarCardFolderConfig) {
         created_at,
         updated_at
       )
-      VALUES ($1, 'published', $2, NOW(), '배우앤배움 전체 센터', false, $3, NOW(), NOW())
+      VALUES ($1, $2, 'published', $3, NOW(), '배우앤배움 전체 센터', false, $4, NOW(), NOW())
       RETURNING id, title, slug, display_order, display_status
     `,
-    [config.title, config.order, config.slug],
+    [config.title, config.category, config.order, config.slug],
   )
   const starCard = result.rows[0]
 

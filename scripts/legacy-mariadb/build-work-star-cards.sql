@@ -15,6 +15,7 @@ CREATE TABLE `bnb_legacy_work`.`star_cards` (
   `source_id` int(11) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `title` varchar(255) NOT NULL,
+  `category` varchar(32) DEFAULT NULL,
   `normalized_title` varchar(255) NOT NULL,
   `body_html` mediumtext DEFAULT NULL,
   `map_url` text DEFAULT NULL,
@@ -83,6 +84,7 @@ INSERT INTO `bnb_legacy_work`.`star_cards` (
   `source_id`,
   `slug`,
   `title`,
+  `category`,
   `normalized_title`,
   `body_html`,
   `map_url`,
@@ -128,6 +130,34 @@ SELECT
     ELSE CONCAT('star-card-', `representative`.`wr_id`)
   END AS `slug`,
   TRIM(`representative`.`wr_subject`) AS `title`,
+  CASE `representative`.`wr_id`
+    WHEN 24 THEN 'health'
+    WHEN 46 THEN 'profile'
+    WHEN 57 THEN 'medical'
+    WHEN 59 THEN 'medical'
+    WHEN 66 THEN 'medical'
+    WHEN 52 THEN 'medical'
+    WHEN 58 THEN 'medical'
+    WHEN 75 THEN 'medical'
+    WHEN 61 THEN 'medical'
+    WHEN 78 THEN 'medical'
+    WHEN 74 THEN 'medical'
+    WHEN 80 THEN 'medical'
+    WHEN 18 THEN 'hairMakeup'
+    WHEN 69 THEN 'hairMakeup'
+    WHEN 68 THEN 'hairMakeup'
+    WHEN 76 THEN 'hairMakeup'
+    WHEN 45 THEN 'hairMakeup'
+    WHEN 70 THEN 'hairMakeup'
+    WHEN 67 THEN 'beauty'
+    WHEN 49 THEN 'beauty'
+    WHEN 73 THEN 'cafe'
+    WHEN 64 THEN 'cafe'
+    WHEN 65 THEN 'cafe'
+    WHEN 79 THEN 'cafe'
+    WHEN 11 THEN 'cafe'
+    ELSE NULL
+  END AS `category`,
   `representative`.`normalized_title`,
   NULLIF(`representative`.`wr_content`, '') AS `body_html`,
   CASE
