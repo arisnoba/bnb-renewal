@@ -4,13 +4,25 @@ import React, { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 import { ChevronDown, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
+import type { CenterSlug } from '@/lib/centers'
+import { centers } from '@/lib/centers'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { getHeaderMenu, headerCenterFromPathname, type HeaderMenuGroup } from './menu'
 
 type HeaderNavProps = {
   onMegaOpenChange?: (isOpen: boolean) => void
 }
+
+const headerCenterOptions: CenterSlug[] = ['art', 'exam', 'highteen', 'kids', 'avenue']
 
 export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
   const pathname = usePathname()
@@ -88,10 +100,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         <Link className="site-header__consult" href="/consult">
           온라인상담
         </Link>
-        <Link className="site-header__family" href="/">
-          <span>Family Site</span>
-          <ChevronDown aria-hidden="true" size={16} strokeWidth={2.4} />
-        </Link>
+        <HeaderCenterSelect currentCenter={center} />
       </div>
       <div className="site-header__mobile-actions">
         <Link className="site-header__mobile-consult" href="/consult">
@@ -128,6 +137,41 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         onLinkClick={closeMenus}
       />
     </>
+  )
+}
+
+function HeaderCenterSelect({ currentCenter }: { currentCenter: CenterSlug }) {
+  const router = useRouter()
+
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger
+        aria-label="센터 선택"
+        className="site-header__center-select-trigger"
+        type="button"
+      >
+        <span className="site-header__center-select-label">센터 선택</span>
+        <ChevronDown aria-hidden="true" size={16} strokeWidth={2.4} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="site-header__center-select-content">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>센터 선택</DropdownMenuLabel>
+          {headerCenterOptions.map((option) => (
+            <DropdownMenuCheckboxItem
+              checked={option === currentCenter}
+              key={option}
+              onSelect={() => {
+                if (option === currentCenter) return
+
+                router.push(`/${option}`)
+              }}
+            >
+              {centers[option]}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
