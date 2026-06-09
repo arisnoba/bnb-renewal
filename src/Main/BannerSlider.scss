@@ -1,3 +1,5 @@
+@use '../styles/mixins' as *;
+
 .main-banner-swiper {
   background: #111;
 
@@ -80,10 +82,9 @@
   border: clamp(76px, 7.4vw, 142px) solid var(--brand);
   border-radius: 50%;
   bottom: -4%;
-  height: clamp(260px, 29.2vw, 560px);
+  @include fluid-size(260px, 560px);
   position: absolute;
   right: -3%;
-  width: clamp(260px, 29.2vw, 560px);
   z-index: 2;
 }
 
@@ -119,7 +120,7 @@
 
 .section-main-banner__title {
   color: #fff;
-  font-size: clamp(44px, 3.55vw, 68px);
+  @include fluid-type(44px, 68px);
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1.05;
@@ -129,7 +130,7 @@
 
 .section-main-banner__description {
   color: rgba(255, 255, 255, 0.78);
-  font-size: clamp(15px, 1vw, 18px);
+  @include fluid-type(15px, 18px);
   font-weight: 600;
   line-height: 1.65;
   margin: 22px 0 0;

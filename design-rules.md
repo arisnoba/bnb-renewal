@@ -22,7 +22,7 @@
 | 본문/UI 전체 | **Pretendard** | 한국어 + 영문 통합 |
 | 아이콘 | **Font Awesome 7 Pro** | Solid 스타일 기준 |
 
-> **현재 코드 교체 필요**: `layout.tsx`의 `GeistSans` → `Pretendard`로 변경 (설치 전까지 임시 유지)
+> **현재 코드 상태**: `globals.css`에서 Pretendard 우선 fallback 스택 사용. Pretendard 패키지/CDN은 아직 미설치.
 
 ### 줄바꿈 기준
 
@@ -313,16 +313,23 @@ Tailwind로 작성해야 하는 것:
 
 피그마 고정값이 있는 일반 텍스트는 Tailwind arbitrary value를 우선 사용한다. 예: `text-[34px] md:text-[48px] leading-[1.25]`.
 
-유동형 크기가 실제로 필요한 hero title 등은 CSS `clamp()`를 사용할 수 있다. 이때도 섹션 의미 클래스는 확장 hook으로 두고, 레이아웃은 Tailwind에 남긴다.
+유동형 크기가 실제로 필요한 hero title, 특수 padding 등은 `src/styles/_mixins.scss`의 `fluid-type`, `fluid-space`, `fluid-size`를 사용한다. 이때도 섹션 의미 클래스는 확장 hook으로 두고, 일반 레이아웃은 Tailwind에 남긴다.
 
 ```scss
+@use '@/styles/mixins' as *;
+
 // Tailwind로 표현하기 어려운 유동형 타입 예외
 .section-hero {
   &__title {
-    font-size: clamp(2rem, 5vw, 4rem);
+    @include fluid-type(32px, 64px);
   }
+
   &__subtitle {
-    font-size: clamp(1rem, 2vw, 1.5rem);
+    @include fluid-type(16px, 24px);
+  }
+
+  &__media {
+    @include fluid-space(padding-block, 48px, 96px);
   }
 }
 ```
@@ -554,4 +561,4 @@ Tailwind로 작성해야 하는 것:
 - [ ] 기업소개 섹션 내용 확인 (현재 이름이 교육 화면과 혼용되어 있음)
 - [ ] 상담센터 섹션 디자인 (피그마 미완성)
 - [ ] **센터 브랜드 컬러 5종 실제 HEX 확정** (현재 임시값 — 피그마에서 추출 후 `@theme` 교체)
-- [ ] **Pretendard / Font Awesome 7 Pro 실제 설치** (현재 GeistSans 임시 사용)
+- [ ] **Pretendard / Font Awesome 7 Pro 실제 설치**

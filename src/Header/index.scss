@@ -1,3 +1,5 @@
+@use '../styles/mixins' as *;
+
 .site-header {
   --site-header-nav-column-width: clamp(128px, 10vw, 164px);
   --site-header-submenu-panel-height: 209px;
@@ -89,7 +91,7 @@
   grid-template-columns: minmax(116px, 1fr) auto minmax(240px, 1fr);
   grid-template-rows: var(--site-header-height);
   height: var(--site-header-height);
-  padding-inline: clamp(20px, 2.1vw, 40px);
+  @include fluid-space(padding-inline, 20px, 40px);
   position: relative;
   z-index: 2;
 }
@@ -398,7 +400,7 @@
 .site-header__mobile-root-link {
   align-items: center;
   display: flex;
-  font-size: clamp(30px, 8vw, 42px);
+  @include fluid-type(30px, 42px);
   font-weight: 900;
   justify-content: space-between;
   line-height: 1.14;
@@ -443,7 +445,7 @@
 
 .site-header__mobile-detail-title {
   color: #fff;
-  font-size: clamp(30px, 8vw, 42px);
+  @include fluid-type(30px, 42px);
   font-weight: 900;
   line-height: 1.14;
   text-decoration: none;
