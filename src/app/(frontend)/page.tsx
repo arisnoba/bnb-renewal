@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 
-import ExpandOnHover, {
-  type ExpandCardItem,
-} from '@/components/ui/expand-cards'
+import ImageGallery, {
+  type ImageGalleryItem,
+} from '@/components/ui/image-gallery'
 
 export const dynamic = 'force-dynamic'
 
-const gateCenters: ExpandCardItem[] = [
+const gateCenters: ImageGalleryItem[] = [
   {
     label: 'ART CENTER',
     title: '아트센터',
@@ -57,5 +57,5 @@ export const metadata: Metadata = {
 }
 
 export default function GatePage() {
-  return <ExpandOnHover items={gateCenters} />
+  return <ImageGallery items={gateCenters} />
 }
