@@ -52,7 +52,7 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
           {publishedAt && <time dateTime={news.publishedAt ?? undefined}>{publishedAt}</time>}
         </div>
         <h1 className="page-title max-w-4xl">{news.title}</h1>
-        {description && <p className="page-description max-w-3xl">{description}</p>}
+        {description && <p className="page-desc max-w-3xl">{description}</p>}
       </header>
 
       {media && (

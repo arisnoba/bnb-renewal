@@ -277,6 +277,7 @@ Tailwind로 작성해야 하는 것:
 ### 아이콘 사용 기준
 
 - 버튼/링크 안의 방향, 닫기, 검색, 다운로드 같은 UI 기호는 텍스트 문자로 직접 쓰지 않는다. 예: `>`, `→`, `×`, `검색`용 문자 기호 금지.
+- UI용 아이콘은 프로젝트의 기본 아이콘 컴포넌트인 `lucide-react`를 우선 사용한다.
 - 가능한 경우 `lucide-react` 아이콘을 사용한다. 예: `ChevronRight`, `X`, `Search`, `Download`.
 - 아이콘은 `aria-hidden="true"`를 붙이고, 버튼/링크의 접근 가능한 이름은 실제 텍스트나 `aria-label`로 제공한다.
 - 텍스트와 함께 쓰는 아이콘은 Tailwind로 크기와 간격을 명확히 둔다. 예: `<ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />`.

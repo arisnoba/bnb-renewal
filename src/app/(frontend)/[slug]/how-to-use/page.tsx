@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 
+import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 import { assertCenter } from '@/lib/centers'
+import { cn } from '@/utilities/ui'
 
 import PageClient from '../page.client'
 
@@ -123,6 +125,9 @@ const services: ServiceItem[] = [
   },
 ]
 
+const desktopLastRowStartIndex = services.length - (services.length % 2 === 0 ? 2 : 1)
+const hasDesktopEmptyCell = services.length % 2 === 1
+
 export function generateStaticParams() {
   return [{ slug: 'art' }]
 }
@@ -155,51 +160,80 @@ export default async function ArtHowToUsePage({ params }: Args) {
     <main className="page page-light page-how-to-use page-top-offset" data-center="art">
       <PageClient pageTone="light" />
 
-      <section className="section-how-to-use" aria-labelledby="how-to-use-title">
-        <div className="section-how-to-use__container">
-          <header className="section-how-to-use__head">
-            <p className="section-how-to-use__eyebrow">학원100%이용법</p>
-            <h1 id="how-to-use-title" className="section-how-to-use__title">
+      <section
+        className="section-how-to-use section-p-block-base bg-white text-[#222]"
+        aria-labelledby="how-to-use-title"
+      >
+        <div className="container-sm">
+          <header className="section-how-to-use__head mb-[52px] md:mb-20">
+            <h1 className="page-eyebrow">학원100%이용법</h1>
+            <h2 id="how-to-use-title" className="page-title">
               배우앤배움 아트센터 곳곳에 숨어있는
-              <br />
+              <br className="hidden md:block" />
               프리미엄 서비스를 만나보세요.
-            </h1>
-            <div className="section-how-to-use__intro">
-              <p className="section-how-to-use__tip">
-                TIP 배우앤배움 아트센터 곳곳에 숨어있는 프리미엄 서비스에 대한 상세
-                안내입니다.
-              </p>
-              <p>학원 100%이용법을 통해 배우앤배움의 다양한 혜택을 최대한 활용해 보세요.</p>
-            </div>
+            </h2>
+            <p className="page-desc">
+              <span className="font-bold text-black">
+                배우앤배움 곳곳에 숨어있는 프리미엄 서비스
+              </span>
+              <br />
+              학원 100%이용법을 통해 배우앤배움의 다양한 혜택을 최대한 활용해보세요.
+            </p>
+            
           </header>
 
-          <div className="section-how-to-use__grid">
-            {services.map((service) => (
-              <article className="section-how-to-use__card" id={service.id} key={service.id}>
-                <Image
-                  alt=""
-                  aria-hidden="true"
-                  className="section-how-to-use__icon"
-                  height={60}
-                  src={`/assets/icons/fa/${service.icon}.svg`}
-                  width={60}
-                />
-                <div className="section-how-to-use__body">
-                  <h2 className="section-how-to-use__card-title">{service.title}</h2>
-                  <p className="section-how-to-use__card-description">{service.description}</p>
-                  <span className="section-how-to-use__more" aria-label={`${service.title} 자세히 보기`}>
-                    자세히 보기
-                    <Image
-                      alt=""
-                      aria-hidden="true"
-                      height={14}
-                      src="/assets/icons/fa/angle-right.svg"
-                      width={6}
-                    />
-                  </span>
-                </div>
-              </article>
-            ))}
+          <div className="section-how-to-use__grid grid border border-[#ddd] md:grid-cols-2">
+            {services.map((service, index) => {
+              const isDesktopLeftColumn = index % 2 === 0
+              const isDesktopLastRow = index >= desktopLastRowStartIndex
+
+              return (
+                <article
+                  className={cn(
+                    'section-how-to-use__card flex min-h-[300px] flex-col p-7 md:min-h-[349px] md:p-10',
+                    index < services.length - 1 && 'border-b border-[#e5e5e5]',
+                    isDesktopLeftColumn && 'md:border-r md:border-[#e5e5e5]',
+                    isDesktopLastRow && 'md:border-b-0',
+                  )}
+                  id={service.id}
+                  key={service.id}
+                >
+                  <Image
+                    alt=""
+                    aria-hidden="true"
+                    className="section-how-to-use__icon block size-[60px] object-contain object-left opacity-70"
+                    height={60}
+                    src={`/assets/icons/fa/${service.icon}.svg`}
+                    width={60}
+                  />
+                  <div className="section-how-to-use__body mt-12 flex flex-1 flex-col justify-end md:mt-14">
+                    <h2 className="section-how-to-use__card-title m-0 text-[21px] font-semibold leading-[1.35] text-[#222] md:text-[24px]">
+                      {service.title}
+                    </h2>
+                    <p className="section-how-to-use__card-description m-0 mt-7 text-[15px] font-normal leading-[1.5] text-[#777] md:text-[16px]">
+                      {service.description}
+                    </p>
+                    <span
+                      className="section-how-to-use__more mt-7 inline-flex w-fit items-center gap-2.5 text-[14px] font-extrabold leading-[1.4] text-[#222]"
+                      aria-label={`${service.title} 자세히 보기`}
+                    >
+                      자세히 보기
+                      <ChevronRight
+                        aria-hidden="true"
+                        className="section-how-to-use__more-icon size-[14px] opacity-80"
+                        strokeWidth={2.2}
+                      />
+                    </span>
+                  </div>
+                </article>
+              )
+            })}
+            {hasDesktopEmptyCell ? (
+              <div
+                aria-hidden="true"
+                className="section-how-to-use__empty-cell hidden min-h-[349px] border-t border-[#e5e5e5] md:block"
+              />
+            ) : null}
           </div>
         </div>
       </section>

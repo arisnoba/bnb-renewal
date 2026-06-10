@@ -33,7 +33,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
               <h1 className="section-starcard-list__title page-title">
                 배우앤배움 스타카드
               </h1>
-              <p className="section-starcard-list__description page-description">
+              <p className="section-starcard-list__description page-desc">
                 배우앤배움 스타카드는 수강생들의 편의를 위해 헬스, 뷰티, 병원,
                 레스토랑 등 배우앤배움과 제휴를 맺은 다양한 편의시설의 할인 또는
                 추가혜택을 누리실 수 있는 배우앤배움 멤버쉽 서비스입니다.

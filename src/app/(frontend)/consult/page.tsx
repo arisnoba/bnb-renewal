@@ -37,7 +37,7 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
               Consultation
             </p>
             <h1 className="page-title">상담하기</h1>
-            <p className="page-description max-w-2xl">
+            <p className="page-desc max-w-2xl">
               배우앤배움의 센터별 상담과 제휴 문의를 한 페이지에서 신청할 수 있습니다.
             </p>
           </div>

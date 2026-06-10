@@ -76,7 +76,7 @@ export default async function ArtistPressDetail({ params: paramsPromise }: Args)
         <h1 className="page-title max-w-4xl">
           {artistPress.title}
         </h1>
-        {description && <p className="page-description max-w-3xl">{description}</p>}
+        {description && <p className="page-desc max-w-3xl">{description}</p>}
       </header>
 
       {media && (
