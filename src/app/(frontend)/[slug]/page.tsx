@@ -124,7 +124,7 @@ export default async function Page({ params: paramsPromise }: Args) {
           : 'page page-light page-landing'
       }
     >
-      <PageClient />
+      <PageClient headerTheme={center ? 'dark' : 'light'} />
 
       {draft && <LivePreviewListener />}
 

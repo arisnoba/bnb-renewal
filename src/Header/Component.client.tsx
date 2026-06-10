@@ -6,7 +6,9 @@ import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { Logo } from '@/components/Logo/Logo'
+import { centerLogoFor } from '@/lib/centerLogos'
 import { HeaderNav } from './Nav'
+import { headerCenterFromPathname } from './Nav/menu'
 import './index.scss'
 
 export const HeaderClient: React.FC = () => {
@@ -17,6 +19,8 @@ export const HeaderClient: React.FC = () => {
   const [theme, setTheme] = useState<HeaderTheme | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
+  const center = headerCenterFromPathname(pathname)
+  const centerLogo = centerLogoFor(center)
 
   useEffect(() => {
     setHeaderTheme(null)
@@ -80,8 +84,8 @@ export const HeaderClient: React.FC = () => {
       {...(theme ? { 'data-theme': theme } : {})}
     >
       <div className="container-fluid site-header__inner">
-        <Link className="site-header__logo" href="/">
-          <Logo loading="eager" priority="high" />
+        <Link className="site-header__logo" href={`/${center}`}>
+          <Logo loading="eager" priority="high" {...centerLogo} />
         </Link>
         <HeaderNav onMegaOpenChange={setIsMegaOpen} />
       </div>

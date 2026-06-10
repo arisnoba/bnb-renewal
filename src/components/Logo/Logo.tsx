@@ -1,25 +1,33 @@
 import clsx from 'clsx'
+import Image from 'next/image'
 import React from 'react'
 
 interface Props {
+  alt?: string
   className?: string
+  height?: number
   loading?: 'lazy' | 'eager'
   priority?: 'auto' | 'high' | 'low'
+  src: string
+  width?: number
 }
 
 export const Logo = (props: Props) => {
-  const { className } = props
+  const { alt = '배우앤배움', className, height = 36, loading, priority, src, width = 120 } = props
 
   return (
-    <span
-      aria-label="배우앤배움"
+    <Image
+      alt={alt}
       className={clsx(
-        'inline-flex items-end gap-1 text-[22px] font-black leading-none tracking-normal text-current',
+        'block h-auto max-w-full',
         className,
       )}
-    >
-      <span>배우앤배움</span>
-      <span className="mb-0.5 text-[8px] font-black uppercase leading-none">Art Center</span>
-    </span>
+      fetchPriority={priority}
+      height={height}
+      loading={loading}
+      priority={priority === 'high'}
+      src={src}
+      width={width}
+    />
   )
 }

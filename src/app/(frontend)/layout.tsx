@@ -12,6 +12,7 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { defaultTheme } from '@/providers/Theme/shared'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode, headers } from 'next/headers'
+import { FrontendChrome } from './FrontendChrome.client'
 
 import './globals.css'
 import '@/Main/BannerSlider.scss'
@@ -34,7 +35,7 @@ export default async function RootLayout({
   const isGatePage = pathname === '/'
 
   return (
-    <html data-theme={defaultTheme} lang="en" suppressHydrationWarning>
+    <html data-theme={defaultTheme} lang="ko" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -48,9 +49,13 @@ export default async function RootLayout({
             }}
           />
 
-          {!isGatePage && <Header />}
-          {children}
-          {!isGatePage && <Footer />}
+          <FrontendChrome
+            footer={<Footer />}
+            header={<Header />}
+            initialIsGatePage={isGatePage}
+          >
+            {children}
+          </FrontendChrome>
           <CookieBanner />
           <Toaster position="top-center" richColors />
         </Providers>

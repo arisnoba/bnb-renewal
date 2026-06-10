@@ -7,9 +7,8 @@ import React from 'react'
 
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { FooterAddress } from './Address.client'
+import { FooterLogo } from './FooterLogo.client'
 import { centerSlugFromPathname } from './centerInfo'
-
-const footerLogo = '/assets/footer/logo-bnb-footer.svg'
 
 const fallbackFamilySites = [
   { href: '/art', label: 'ART CENTER', name: '아트센터' },
@@ -104,9 +103,7 @@ export async function Footer() {
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-6">
           <div className="flex flex-col items-start gap-6 lg:min-h-[234px] lg:justify-between">
-            <Link aria-label="배우앤배움 홈" href="/">
-              <Image alt="" height={38} priority src={footerLogo} width={120} />
-            </Link>
+            <FooterLogo initialCenter={center} />
 
             <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
               <Link className="text-[#666] transition-colors hover:text-white" href="/terms">
