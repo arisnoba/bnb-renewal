@@ -1,14 +1,14 @@
 'use client'
 
-import { useHeaderTheme } from '@/providers/HeaderTheme'
+import { usePageTone } from '@/providers/PageTone'
 import { useEffect } from 'react'
 
 export default function MapPageClient() {
-  const { setHeaderTheme } = useHeaderTheme()
+  const { setPageTone } = usePageTone()
 
   useEffect(() => {
-    setHeaderTheme('light')
-  }, [setHeaderTheme])
+    setPageTone('dark')
+  }, [setPageTone])
 
   return null
 }

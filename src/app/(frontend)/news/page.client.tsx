@@ -1,14 +1,14 @@
 'use client'
 
-import { useHeaderTheme } from '@/providers/HeaderTheme'
+import { usePageTone } from '@/providers/PageTone'
 import React, { useEffect } from 'react'
 
 const PageClient: React.FC = () => {
-  const { setHeaderTheme } = useHeaderTheme()
+  const { setPageTone } = usePageTone()
 
   useEffect(() => {
-    setHeaderTheme('light')
-  }, [setHeaderTheme])
+    setPageTone('light')
+  }, [setPageTone])
 
   return <React.Fragment />
 }

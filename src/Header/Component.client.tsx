@@ -1,6 +1,4 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
-import type { Theme as HeaderTheme } from '@/providers/Theme/types'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
@@ -16,22 +14,9 @@ export const HeaderClient: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [theme, setTheme] = useState<HeaderTheme | null>(null)
-  const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
   const center = headerCenterFromPathname(pathname)
   const centerLogo = centerLogoFor(center)
-
-  useEffect(() => {
-    setHeaderTheme(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname])
-
-  useEffect(() => {
-    if (headerTheme === undefined) return
-
-    setTheme(headerTheme)
-  }, [headerTheme])
 
   useEffect(() => {
     const updateScrolled = () => {
@@ -81,7 +66,6 @@ export const HeaderClient: React.FC = () => {
       ref={headerRef}
       className={isMegaOpen ? 'site-header is-hover' : 'site-header'}
       data-scrolled={isScrolled ? 'true' : undefined}
-      {...(theme ? { 'data-theme': theme } : {})}
     >
       <div className="container-fluid site-header__inner">
         <Link className="site-header__logo" href={`/${center}`}>

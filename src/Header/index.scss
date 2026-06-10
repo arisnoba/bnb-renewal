@@ -68,7 +68,7 @@
     color: #fff;
   }
 
-  &[data-theme='light'] {
+  body[data-page-tone='light'] & {
     --site-header-control-border-color: rgba(255, 255, 255, 0.7);
     --site-header-control-hover-bg: rgba(255, 255, 255, 0.12);
     --site-header-family-border-color: transparent;

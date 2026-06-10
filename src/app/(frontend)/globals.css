@@ -4,7 +4,7 @@
 
 @config '../../../tailwind.config.mjs';
 
-@custom-variant dark (&:is([data-theme='dark'] *));
+@custom-variant dark (&:is([data-page-tone='dark'] *));
 @custom-variant sm (@media (width >= theme(--breakpoint-sm)));
 @custom-variant md (@media (width >= theme(--breakpoint-md)));
 @custom-variant lg (@media (width >= theme(--breakpoint-lg)));
@@ -184,7 +184,7 @@
   --brand: var(--color-brand-avenue);
 }
 
-[data-theme='dark'] {
+body[data-page-tone='dark'] {
   --background: oklch(14.5% 0 0deg);
   --foreground: oklch(98.5% 0 0deg);
   --card: oklch(17% 0 0deg);
@@ -403,13 +403,4 @@
     min-height: 100vh;
     word-break: keep-all;
   }
-}
-
-html {
-  opacity: 0;
-}
-
-html[data-theme='dark'],
-html[data-theme='light'] {
-  opacity: initial;
 }

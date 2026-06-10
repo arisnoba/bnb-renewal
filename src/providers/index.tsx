@@ -1,14 +1,10 @@
 import React from 'react'
 
-import { HeaderThemeProvider } from './HeaderTheme'
-import { ThemeProvider } from './Theme'
+import { PageToneProvider, type PageTone } from './PageTone'
 
 export const Providers: React.FC<{
   children: React.ReactNode
-}> = ({ children }) => {
-  return (
-    <ThemeProvider>
-      <HeaderThemeProvider>{children}</HeaderThemeProvider>
-    </ThemeProvider>
-  )
+  initialPageTone?: PageTone
+}> = ({ children, initialPageTone }) => {
+  return <PageToneProvider initialPageTone={initialPageTone}>{children}</PageToneProvider>
 }

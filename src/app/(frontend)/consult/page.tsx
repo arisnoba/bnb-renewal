@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import type { CSSProperties } from 'react'
 
 import { ConsultationForm } from './ConsultationForm'
-import { ConsultationLightTheme } from './ConsultationLightTheme'
 import {
   type ConsultationSearchParams,
   resolveInitialInquiryType,
@@ -22,7 +21,6 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
 
   return (
     <main className="page page-light page-consult pb-24" style={consultLightThemeVars}>
-      <ConsultationLightTheme />
       <section className="relative min-h-[520px] overflow-hidden bg-foreground text-background">
         <div
           aria-hidden="true"
