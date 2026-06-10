@@ -11,7 +11,7 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { defaultTheme } from '@/providers/Theme/shared'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 
 import './globals.css'
 import '@/Main/BannerSlider.scss'
@@ -24,15 +24,17 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 export const dynamic = 'force-dynamic'
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { isEnabled } = await draftMode()
+  const pathname = (await headers()).get('x-pathname')
+  const isGatePage = pathname === '/'
 
   return (
-    <html
-      data-theme={defaultTheme}
-      lang="en"
-      suppressHydrationWarning
-    >
+    <html data-theme={defaultTheme} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -46,9 +48,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }}
           />
 
-          <Header />
+          {!isGatePage && <Header />}
           {children}
-          <Footer />
+          {!isGatePage && <Footer />}
           <CookieBanner />
           <Toaster position="top-center" richColors />
         </Providers>
