@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
 
 import { cn } from '@/utilities/ui'
 
@@ -15,11 +14,11 @@ export type ImageGalleryItem = {
 }
 
 const images = [
-  'https://images.unsplash.com/photo-1719368472026-dc26f70a9b76?q=80&h=900&w=900&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1649265825072-f7dd6942baed?q=80&h=900&w=900&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1555212697-194d092e3b8f?q=80&h=900&w=900&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1729086046027-09979ade13fd?q=80&h=900&w=900&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1601568494843-772eb04aca5d?q=80&h=900&w=900&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1719368472026-dc26f70a9b76?q=80&h=800&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1649265825072-f7dd6942baed?q=80&h=800&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1555212697-194d092e3b8f?q=80&h=800&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1729086046027-09979ade13fd?q=80&h=800&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1601568494843-772eb04aca5d?q=80&h=800&w=800&auto=format&fit=crop',
 ]
 
 const defaultItems: ImageGalleryItem[] = [
@@ -68,11 +67,9 @@ type ImageGalleryProps = {
 export default function ImageGallery({
   items = defaultItems,
 }: ImageGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
-
   return (
-    <section className="min-h-screen w-full bg-black text-white">
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col justify-center gap-10 px-4 py-10 md:px-6 lg:py-12">
+    <section className="flex min-h-screen w-full flex-col items-center justify-center bg-black py-12 text-white">
+      <div className="flex w-full max-w-7xl flex-col gap-10 px-4 md:px-6">
         <div className="flex flex-col gap-3">
           <p className="text-sm font-bold uppercase leading-none text-white/55">
             BNB INDUSTRY
@@ -82,44 +79,31 @@ export default function ImageGallery({
           </h1>
         </div>
 
-        <div
-          className="flex w-full flex-col gap-3 lg:h-[34rem] lg:flex-row lg:items-stretch"
-          onMouseLeave={() => setActiveIndex(null)}
-        >
-          {items.map((item, index) => {
-            const isActive = activeIndex === index
-            const hasActiveCard = activeIndex !== null
+        <div className="flex h-auto w-full flex-col items-stretch gap-3 lg:h-[520px] lg:flex-row">
+          {items.map((item) => {
             const isEnabled = item.enabled !== false
             const cardClassName = cn(
-              'group relative h-[22rem] w-full overflow-hidden rounded-[8px] bg-[#111] text-left outline-none transition-all duration-500 ease-in-out focus-visible:ring-4 focus-visible:ring-white/30 lg:h-full',
-              hasActiveCard && isActive && 'lg:w-full lg:flex-[3_1_0%]',
-              hasActiveCard && !isActive && 'lg:w-44 lg:flex-none',
-              !hasActiveCard && 'lg:w-56 lg:flex-1',
+              'group relative h-[320px] w-full flex-grow overflow-hidden rounded-lg bg-[#111] text-left transition-all duration-500 lg:h-full lg:w-56 hover:lg:w-full',
               isEnabled ? 'cursor-pointer' : 'cursor-default',
             )
             const content = (
               <>
                 <span
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105"
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 group-focus-visible:scale-105"
                   style={{ backgroundImage: `url(${item.image})` }}
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5" />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5" />
                 {!isEnabled ? (
                   <span className="absolute inset-0 bg-black/45" />
                 ) : null}
-                <span className="absolute inset-x-0 bottom-0 flex min-h-[168px] flex-col items-start justify-end gap-3 p-5 text-left text-white md:p-6">
+                <span className="absolute inset-x-0 bottom-0 flex min-h-[172px] flex-col items-start justify-end gap-3 p-5 text-white md:p-6">
                   <span className="whitespace-nowrap text-[11px] font-extrabold uppercase leading-none text-white/70">
                     {item.label}
                   </span>
                   <span className="whitespace-nowrap text-[26px] font-extrabold leading-tight tracking-normal">
                     {item.title}
                   </span>
-                  <span
-                    className={cn(
-                      'max-w-[25rem] text-sm font-medium leading-[1.55] text-white/82 opacity-0 transition-opacity duration-300',
-                      isActive && 'opacity-100',
-                    )}
-                  >
+                  <span className="max-w-[25rem] text-sm font-medium leading-[1.55] text-white/82 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                     {item.description}
                   </span>
                   {!isEnabled ? (
@@ -137,8 +121,6 @@ export default function ImageGallery({
                   aria-disabled="true"
                   className={cardClassName}
                   key={item.href}
-                  onFocus={() => setActiveIndex(index)}
-                  onMouseEnter={() => setActiveIndex(index)}
                 >
                   {content}
                 </div>
@@ -146,13 +128,7 @@ export default function ImageGallery({
             }
 
             return (
-              <Link
-                className={cardClassName}
-                href={item.href}
-                key={item.href}
-                onFocus={() => setActiveIndex(index)}
-                onMouseEnter={() => setActiveIndex(index)}
-              >
+              <Link className={cardClassName} href={item.href} key={item.href}>
                 {content}
               </Link>
             )
