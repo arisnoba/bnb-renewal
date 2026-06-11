@@ -50,6 +50,12 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
   assert.equal(
     getHeaderMenu('art')
+      .find((group) => group.key === 'casting')
+      ?.items.find((item) => item.label === '드라마ㆍ광고 출연장면')?.href,
+    '/art/screen-appearances',
+  )
+  assert.equal(
+    getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
     '/art/artist-press',

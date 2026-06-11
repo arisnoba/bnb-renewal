@@ -1,0 +1,542 @@
+import { Media } from '@/components/Media/Renderer'
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+} from '@/components/ui/pagination'
+import type { CenterSlug } from '@/lib/centers'
+import type { Media as PayloadMedia, Profile, ScreenAppearance } from '@/payload-types'
+import configPromise from '@payload-config'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { getPayload, type Where } from 'payload'
+import React from 'react'
+
+type ScreenAppearancesArchiveProps = {
+  center: CenterSlug
+  page?: number
+}
+
+type ScreenAppearanceListItem = Pick<
+  ScreenAppearance,
+  | 'airDateLabel'
+  | 'appearanceType'
+  | 'actorInputMode'
+  | 'bodyImages'
+  | 'className'
+  | 'createdAt'
+  | 'id'
+  | 'introText'
+  | 'linkedProfiles'
+  | 'performerName'
+  | 'projectTitle'
+  | 'publishedAt'
+  | 'roleName'
+  | 'slug'
+  | 'title'
+>
+
+type ScreenAppearancesPageResult = {
+  docs: ScreenAppearanceListItem[]
+  page: number
+  totalDocs: number
+  totalPages: number
+}
+
+const pageSize = 12
+const heroImageLimit = 12
+
+export async function ScreenAppearancesArchive({
+  center,
+  page = 1,
+}: ScreenAppearancesArchiveProps) {
+  const payload = await getPayload({ config: configPromise })
+  const currentPage = Math.max(1, page)
+  const decoIcons = getPageDecoIcons(3, `screen-appearances-${center}`)
+  const where: Where = {
+    and: [
+      {
+        displayStatus: {
+          equals: 'published',
+        },
+      },
+      {
+        centers: {
+          equals: center,
+        },
+      },
+    ],
+  }
+  const [appearances, heroImages] = await Promise.all([
+    findScreenAppearancesPage({
+      page: currentPage,
+      payload,
+      where,
+    }),
+    findHeroImages({
+      payload,
+      where,
+    }),
+  ])
+  const totalPages = Math.max(appearances.totalPages || 1, 1)
+  const safePage = Math.min(appearances.page || currentPage, totalPages)
+
+  return (
+    <main className="page page-light page-screen-appearances" data-center={center}>
+      <section
+        className="section-screen-appearances-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        aria-labelledby="screen-appearances-hero-title"
+        data-page-tone="dark"
+      >
+        <HeroImageWall images={heroImages} />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <PageDeco
+          className="-left-20 top-[36%] h-56 w-56 md:-left-28 md:h-[360px] md:w-[360px]"
+          icon={decoIcons[0]}
+        />
+        <PageDeco
+          className="right-[-72px] top-[12%] h-56 w-56 md:right-[-104px] md:h-[360px] md:w-[360px]"
+          icon={decoIcons[1]}
+        />
+        <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+          <h1
+            id="screen-appearances-hero-title"
+            className="section-screen-appearances-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          >
+            <span className="block text-brand">캐스팅</span>
+            <span className="block">드라마ㆍ광고 출연장면</span>
+          </h1>
+        </div>
+      </section>
+
+      <section
+        className="section-screen-appearances-list section-p-block-base bg-white text-neutral-900"
+        aria-labelledby="screen-appearances-list-title"
+      >
+        <div className="container">
+          <header className="section-screen-appearances-list__head mb-14 md:mb-20">
+            <p className="section-screen-appearances-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
+              이달의 드라마 · 광고 출연장면
+            </p>
+            <h2
+              id="screen-appearances-list-title"
+              className="section-screen-appearances-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
+            >
+              배우앤배움 수강생들의
+              <br />
+              드라마 · 광고 촬영장면을 만나보세요.
+            </h2>
+            <p className="section-screen-appearances-list__description mt-6 type-body-m leading-[1.6] text-neutral-500 md:mt-8">
+              배우들에 관한 개인정보는 해당 법률의 규정에 따라 보호받고 있습니다.
+            </p>
+          </header>
+
+          {appearances.docs.length === 0 ? (
+            <p className="section-screen-appearances-list__empty border-y border-neutral-200 py-18 text-center type-title-s font-semibold text-neutral-500">
+              등록된 출연장면이 없습니다.
+            </p>
+          ) : (
+            <div className="section-screen-appearances-list__grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {appearances.docs.map((appearance) => (
+                <ScreenAppearanceCard appearance={appearance} key={appearance.id} />
+              ))}
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <ScreenAppearancesPagination
+              center={center}
+              page={safePage}
+              totalPages={totalPages}
+            />
+          )}
+        </div>
+      </section>
+    </main>
+  )
+}
+
+function HeroImageWall({ images }: { images: PayloadMedia[] }) {
+  if (images.length === 0) {
+    return <div className="absolute inset-0 bg-neutral-950" aria-hidden="true" />
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 grid grid-cols-3 gap-2 opacity-70 blur-[0.2px] md:-inset-x-12 md:-top-20 md:grid-cols-6 md:rotate-[-4deg] md:scale-110 md:gap-4"
+    >
+      {images.map((image, index) => (
+        <div
+          className="relative min-h-[190px] overflow-hidden bg-neutral-900 md:min-h-[260px]"
+          key={`${image.id}-${index}`}
+        >
+          <Media
+            fill
+            htmlElement={null}
+            imgClassName="size-full object-cover grayscale"
+            pictureClassName="block size-full"
+            resource={image}
+            size="(max-width: 767px) 34vw, 18vw"
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceListItem }) {
+  const projectTitle = appearance.projectTitle?.trim() || appearance.title
+  const projectMeta = getAppearanceTypeLabel(appearance.appearanceType)
+  const screenImage = getScreenImage(appearance)
+  const performer = getPerformer(appearance)
+  const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
+  const airDate = formatDate(appearance.airDateLabel)
+  const roleText = [appearance.roleName, airDate ? `방영일 ${airDate}` : null]
+    .filter(Boolean)
+    .join(' · ')
+
+  return (
+    <article className="section-screen-appearances-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
+      <div className="section-screen-appearances-card__head flex min-h-[76px] items-center gap-3 px-5 py-4">
+        <span className="section-screen-appearances-card__mark flex size-10 shrink-0 items-center justify-center rounded-full border border-neutral-300 bg-white type-caption-s font-bold leading-none text-brand">
+          BNB
+        </span>
+        <div className="section-screen-appearances-card__project min-w-0">
+          <p className="line-clamp-1 type-body-s font-semibold leading-[1.2] text-neutral-500">
+            {projectMeta}
+          </p>
+          <h3 className="line-clamp-1 type-title-s font-bold leading-[1.5] text-neutral-600">
+            {projectTitle}
+          </h3>
+        </div>
+      </div>
+
+      <div className="section-screen-appearances-card__media relative aspect-[302/200] overflow-hidden bg-neutral-100">
+        {screenImage ? (
+          <Media
+            fill
+            htmlElement={null}
+            imgClassName="size-full object-cover transition duration-300 hover:scale-[1.035]"
+            pictureClassName="block size-full"
+            resource={screenImage}
+            size="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 280px"
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center type-label-m font-semibold text-neutral-400">
+            NO IMAGE
+          </div>
+        )}
+      </div>
+
+      <div className="section-screen-appearances-card__body bg-neutral-100">
+        <div className="section-screen-appearances-card__performer flex gap-3 p-5">
+          <ProfileAvatar performer={performer} />
+          <div className="min-w-0 flex-1 space-y-1 type-body-s font-medium leading-[1.6] text-neutral-500">
+            <p className="line-clamp-1">이름 : {performer.name}</p>
+            {appearance.className && (
+              <p className="line-clamp-1">클래스 : {appearance.className}</p>
+            )}
+            {roleText && <p className="line-clamp-2">{roleText}</p>}
+            {!roleText && appearance.introText && (
+              <p className="line-clamp-2">{appearance.introText}</p>
+            )}
+          </div>
+        </div>
+        <div className="section-screen-appearances-card__date flex items-center justify-between border-t border-neutral-200 px-5 py-3 type-caption-s font-medium leading-[1.35] text-neutral-400">
+          <span>등록일</span>
+          {registrationDate ? (
+            <time dateTime={appearance.publishedAt ?? appearance.createdAt}>
+              {registrationDate}
+            </time>
+          ) : (
+            <span>-</span>
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function ProfileAvatar({ performer }: { performer: PerformerInfo }) {
+  if (performer.profileImageMedia) {
+    return (
+      <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
+        <Media
+          fill
+          htmlElement={null}
+          imgClassName="size-full object-cover object-top"
+          pictureClassName="block size-full"
+          resource={performer.profileImageMedia}
+          size="48px"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white type-label-m font-bold text-brand"
+    >
+      {performer.name.slice(0, 1)}
+    </div>
+  )
+}
+
+function ScreenAppearancesPagination({
+  center,
+  page,
+  totalPages,
+}: {
+  center: CenterSlug
+  page: number
+  totalPages: number
+}) {
+  const pages = paginationWindow(page, totalPages)
+
+  return (
+    <Pagination aria-label="출연장면 페이지" className="section-screen-appearances-pagination mt-16 md:mt-20">
+      <PaginationContent className="section-screen-appearances-pagination__content gap-1">
+        <PaginationItem>
+          <ScreenAppearancesPaginationLink
+            disabled={page <= 1}
+            href={screenAppearancesHref({ center, page: page - 1 })}
+          >
+            <ChevronLeft aria-hidden="true" className="size-4" strokeWidth={2.2} />
+            이전
+          </ScreenAppearancesPaginationLink>
+        </PaginationItem>
+        {pages.map((item, index) => (
+          <PaginationItem key={item === 'ellipsis' ? `ellipsis-${index}` : item}>
+            {item === 'ellipsis' ? (
+              <PaginationEllipsis className="size-9 type-label-m font-medium" />
+            ) : (
+              <ScreenAppearancesPaginationLink
+                active={page === item}
+                href={screenAppearancesHref({ center, page: item })}
+              >
+                {item}
+              </ScreenAppearancesPaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+        <PaginationItem>
+          <ScreenAppearancesPaginationLink
+            disabled={page >= totalPages}
+            href={screenAppearancesHref({ center, page: page + 1 })}
+          >
+            다음
+            <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
+          </ScreenAppearancesPaginationLink>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  )
+}
+
+function ScreenAppearancesPaginationLink({
+  active,
+  children,
+  disabled,
+  href,
+}: {
+  active?: boolean
+  children: React.ReactNode
+  disabled?: boolean
+  href: string
+}) {
+  const className =
+    'inline-flex h-9 min-w-9 items-center justify-center gap-1 rounded-lg px-3 type-label-m font-medium leading-none text-neutral-900 transition hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand data-[active=true]:border data-[active=true]:border-neutral-200 data-[active=true]:bg-white data-[active=true]:shadow-sm data-[disabled=true]:pointer-events-none data-[disabled=true]:text-neutral-400'
+
+  if (disabled) {
+    return (
+      <span className={className} data-disabled="true">
+        {children}
+      </span>
+    )
+  }
+
+  return (
+    <Link
+      aria-current={active ? 'page' : undefined}
+      className={className}
+      data-active={active ? 'true' : 'false'}
+      href={href}
+    >
+      {children}
+    </Link>
+  )
+}
+
+async function findScreenAppearancesPage({
+  page,
+  payload,
+  where,
+}: {
+  page: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  where: Where
+}): Promise<ScreenAppearancesPageResult> {
+  const result = await payload
+    .find({
+      collection: 'screen-appearances',
+      depth: 2,
+      limit: pageSize,
+      overrideAccess: false,
+      page,
+      select: screenAppearancesArchiveSelect,
+      sort: '-publishedAt',
+      where,
+    })
+    .catch(() => ({
+      docs: [],
+      page,
+      totalDocs: 0,
+      totalPages: 0,
+    }))
+
+  return {
+    docs: result.docs as ScreenAppearanceListItem[],
+    page: result.page ?? page,
+    totalDocs: result.totalDocs,
+    totalPages: result.totalPages,
+  }
+}
+
+async function findHeroImages({
+  payload,
+  where,
+}: {
+  payload: Awaited<ReturnType<typeof getPayload>>
+  where: Where
+}) {
+  const result = await payload
+    .find({
+      collection: 'screen-appearances',
+      depth: 1,
+      limit: heroImageLimit,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        bodyImages: true,
+      },
+      sort: '-publishedAt',
+      where,
+    })
+    .catch(() => ({
+      docs: [],
+    }))
+
+  return result.docs
+    .map((appearance) => getScreenImage(appearance as Pick<ScreenAppearance, 'bodyImages'>))
+    .filter((image): image is PayloadMedia => Boolean(image))
+}
+
+const screenAppearancesArchiveSelect = {
+  airDateLabel: true,
+  appearanceType: true,
+  actorInputMode: true,
+  bodyImages: true,
+  className: true,
+  createdAt: true,
+  introText: true,
+  linkedProfiles: true,
+  performerName: true,
+  projectTitle: true,
+  publishedAt: true,
+  roleName: true,
+  slug: true,
+  title: true,
+} as const
+
+type PerformerInfo = {
+  name: string
+  profileImageMedia?: PayloadMedia | null
+}
+
+function getPerformer(appearance: ScreenAppearanceListItem): PerformerInfo {
+  if (appearance.actorInputMode === 'manual') {
+    return {
+      name: appearance.performerName?.trim() || '배우앤배움 수강생',
+    }
+  }
+
+  const profiles = appearance.linkedProfiles
+    ?.filter((profile): profile is Profile => typeof profile === 'object' && profile !== null)
+    .filter((profile) => Boolean(profile.name))
+  const profile = profiles?.[0]
+  const names = profiles?.map((item) => item.name).join(', ')
+
+  return {
+    name: names || appearance.performerName?.trim() || '배우앤배움 수강생',
+    profileImageMedia:
+      profile?.profileImageMedia && typeof profile.profileImageMedia === 'object'
+        ? profile.profileImageMedia
+        : null,
+  }
+}
+
+function getScreenImage(
+  appearance: Pick<ScreenAppearance, 'bodyImages'> | ScreenAppearanceListItem,
+) {
+  const image = appearance.bodyImages?.find((item) => typeof item.image === 'object')?.image
+
+  return image && typeof image === 'object' ? image : null
+}
+
+function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
+  return value === 'commercial' ? '광고 출연장면' : '드라마 출연장면'
+}
+
+function screenAppearancesHref({ center, page }: { center: CenterSlug; page?: number }) {
+  if (!page || page <= 1) {
+    return `/${center}/screen-appearances`
+  }
+
+  return `/${center}/screen-appearances?page=${page}`
+}
+
+function paginationWindow(page: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  if (page <= 4) {
+    return [1, 2, 3, 4, 5, 'ellipsis' as const, totalPages]
+  }
+
+  if (page >= totalPages - 3) {
+    return [
+      1,
+      'ellipsis' as const,
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ]
+  }
+
+  return [1, 'ellipsis' as const, page - 1, page, page + 1, 'ellipsis' as const, totalPages]
+}
+
+function formatDate(value: string | null | undefined) {
+  if (!value) {
+    return undefined
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return undefined
+  }
+
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}

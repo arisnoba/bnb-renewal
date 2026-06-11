@@ -127,7 +127,7 @@
 
 | 화면 | 피그마 이름 | 피그마 링크 | 구현 |
 |------|-----------|------------|------|
-| 이달의 드라마 목록 | bnb_아트센터_03캐스팅_01이달의드라마 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:649) | ❌ |
+| 이달의 드라마 목록 | bnb_아트센터_03캐스팅_01이달의드라마 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:649) | ✅ `/{center}/screen-appearances` |
 | 이달의 드라마 상세 | bnb_아트센터_03캐스팅_01이달의드라마_상세 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:389) | ❌ |
 | 캐스팅 출연현황 (Desktop) | bnb_아트센터_03캐스팅_02캐스팅출연현황 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:972) | ❌ |
 | 캐스팅 출연현황 (Mobile) | bnb_아트센터_03캐스팅_02캐스팅출연현황 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=21:3647) | ❌ |
@@ -171,7 +171,7 @@
 
 | 구현됨 | 미구현 |
 |--------|--------|
-| `/audition` — 오디션 지원 | 기업소개 전체 |
+| `/audition` — 오디션 지원<br />`/{center}/screen-appearances` — 드라마ㆍ광고 출연장면 | 기업소개 전체 |
 | `/news` — 뉴스 목록 | 교육 전체 |
 | `/news/[slug]` — 뉴스 상세 | 캐스팅 (오디션 제외) |
 | `/artist-press` — 아티스트 보도자료 | 매니지먼트 전체 |

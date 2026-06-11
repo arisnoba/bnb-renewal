@@ -182,7 +182,7 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
 
   if (center === 'art') {
     return [
-      { href: centerHref(center, 'screen-appearances'), label: '드라마ㆍ광고 출연장면' },
+      { href: screenAppearancesHref(center), label: '드라마ㆍ광고 출연장면' },
       { href: centerHref(center, 'casting-status'), label: '진행중인 캐스팅 출연현황' },
       { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
       { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
@@ -191,7 +191,7 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
   }
 
   return [
-    { href: centerHref(center, 'screen-appearances'), label: '드라마ㆍ광고 출연장면' },
+    { href: screenAppearancesHref(center), label: '드라마ㆍ광고 출연장면' },
     { href: centerHref(center, 'casting-status'), label: '진행중인 캐스팅 출연현황' },
     { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
     ...(center === 'kids' || center === 'highteen'
@@ -250,6 +250,10 @@ function supportItems(center: CenterSlug): HeaderMenuItem[] {
 
 function centerHref(center: CenterSlug, anchor: string) {
   return `/${center}#${anchor}`
+}
+
+function screenAppearancesHref(center: CenterSlug) {
+  return `/${center}/screen-appearances`
 }
 
 function teachersHref(center: CenterSlug) {
