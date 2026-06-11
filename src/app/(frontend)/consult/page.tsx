@@ -59,7 +59,7 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
               Request
             </p>
             <h2 className="mt-3 text-3xl font-semibold tracking-normal">상담 신청</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">
+            <p className="mt-4 type-body-s leading-7 text-muted-foreground">
               문의 유형에 따라 필요한 항목만 표시됩니다. 센터별 상담과 제휴 신청을 같은
               양식에서 확인합니다.
             </p>

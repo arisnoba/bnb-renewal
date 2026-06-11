@@ -704,7 +704,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 
       <section className="flex gap-4 flex-col">
         <h2 className="text-lg font-semibold tracking-normal">개인정보 수집 및 이용 방침</h2>
-        <div className="max-h-40 overflow-y-auto rounded-md border bg-background p-4 text-sm leading-6 text-muted-foreground">
+        <div className="max-h-40 overflow-y-auto rounded-md border bg-background p-4 type-body-s leading-6 text-muted-foreground">
           상담 신청 확인과 안내를 위해 이름, 생년월일, 연락처, 거주지역, 문의 유형,
           예약 희망일, 연기 경험 정보 또는 제휴 신청 정보를 수집합니다. 수집된 정보는 상담
           안내 및 문의 처리 목적으로만 사용되며, 이용 목적 달성 후 내부 보관 정책에 따라 파기됩니다.{' '}
@@ -781,7 +781,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p
           className={cn(
-            'text-sm leading-6',
+            'type-body-s leading-6',
             submitError ? 'font-medium text-destructive' : 'text-muted-foreground',
           )}
           role={submitError ? 'alert' : undefined}
