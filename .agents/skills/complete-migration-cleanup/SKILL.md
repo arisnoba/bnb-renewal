@@ -1,6 +1,6 @@
 ---
 name: complete-migration-cleanup
-description: Project workflow for bnb-renewal local migration cleanup completion. Use when the user says a collection/table cleanup is done, asks for "정제 끝났어", "마이그레이션 정제 완료", "레거시 DB 및 칼럼 정리", or wants Codex to verify local Postgres/Payload data and remove obsolete local legacy columns, fields, and migration-only code.
+description: Project workflow for bnb-renewal local migration cleanup completion. Use when the user says a collection/table cleanup is done, asks for "정제 끝났어", "마이그레이션 정제 완료", "레거시 DB 및 칼럼 정리", or wants the agent to verify local Postgres/Payload data and remove obsolete local legacy columns, fields, and migration-only code.
 ---
 
 # Complete Migration Cleanup

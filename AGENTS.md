@@ -42,6 +42,26 @@ npm run lint        # ESLint 검사
 
 ---
 
+## 프론트 퍼블리싱 규칙 (필수)
+
+공개 프론트엔드(`src/app/(frontend)`)의 페이지·섹션·컴포넌트를 만들거나 마크업/스타일을 수정할 때는 아래를 반드시 따른다.
+
+1. **신뢰 기준 문서를 먼저 읽는다**: `design-rules.md`(코딩 디자인 룰)와 `design.md`(사이트 구조·피그마 매핑). 기억에 의존하지 말고 작업 전에 관련 섹션을 실제로 연다.
+2. **프로젝트 스킬 `frontend-publishing`을 사용한다** (`.agents/skills/frontend-publishing/SKILL.md`). 절대 규칙 12와 자가 점검 체크리스트가 정리되어 있다.
+3. **작업 후 정적 검사를 돌린다**: `npm run check:design` (error 0건이어야 완료).
+
+요약 절대 규칙: 라이트 모드 고정(`dark:` 금지) · Tailwind 우선 · 페이지 루트 4축(`page` + `page-light|dark` + 식별 클래스 + 필요 시 `page-top-offset`) · top-offset 페이지에 고정 `pt-*` 금지 · 브랜드 컬러는 `data-center` + `*-brand` · UI 기호는 lucide-react 아이콘.
+
+---
+
+## 에이전트 스킬 운영 기준
+
+- 프로젝트 스킬의 정본은 `.agents/skills/<name>/SKILL.md` 하나다 (Codex가 직접 읽는 위치).
+- `.claude/skills/<name>`은 정본을 가리키는 심볼릭 링크다 (Claude Code가 읽는 위치). **두 곳에 내용을 복사하지 말고, 스킬 추가/수정은 항상 `.agents/skills/`에서 한다.**
+- 새 스킬 추가 절차: `.agents/skills/<name>/SKILL.md` 작성 → `ln -s ../../.agents/skills/<name> .claude/skills/<name>`.
+
+---
+
 ## 코드 리뷰 체크리스트 (PayloadCMS 컬렉션)
 
 컬렉션 변경 시 검토 항목:

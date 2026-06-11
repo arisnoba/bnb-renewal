@@ -1,0 +1,4 @@
+interface:
+  display_name: "프론트 퍼블리싱 규칙"
+  short_description: "design.md / design-rules.md 기반 공개 프론트 퍼블리싱 규칙을 적용합니다"
+  default_prompt: "Use $frontend-publishing to implement or modify public frontend pages following design.md and design-rules.md."

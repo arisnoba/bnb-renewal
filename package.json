@@ -11,6 +11,7 @@
     "start": "next start",
     "check:design": "node scripts/check-fluid-styles.mjs",
     "lint": "eslint .",
+    "check:design": "node scripts/check-design-rules.mjs",
     "typecheck": "tsc --noEmit",
     "payload": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js",
     "payload:generate-types": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js generate:types",
