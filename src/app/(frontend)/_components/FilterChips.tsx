@@ -39,6 +39,7 @@ export function FilterChips({
           data-active={item.active ? 'true' : 'false'}
           href={item.href}
           key={item.href}
+          scroll={false}
         >
           <span>{item.label}</span>
           {typeof item.count === 'number' && (

@@ -1,7 +1,7 @@
 # IA SEO URL 정책
 
 > 목적: 센터별 URL, SEO, canonical, sitemap, redirect 기준을 한 문서로 관리한다.
-> 마지막 갱신: 2026-05-26
+> 마지막 갱신: 2026-06-11
 
 ## 기본 결론
 
@@ -126,6 +126,34 @@ const center = domainMap[host] ?? subdomain
 - SEO 설명은 `meta.description` -> excerpt/요약 가능 필드 순서다.
 - SEO 이미지는 `meta.image` -> 대표 media -> legacy path 순서다.
 - legacy path는 신규 필드가 비어 있을 때만 fallback으로 사용한다.
+
+## 목록 필터 URL 및 스크롤 기준
+
+목록 페이지의 필터, 탭, 페이지네이션처럼 콘텐츠 표시 상태를 바꾸는 UI는 사용자 공유와 접근성을 위해 URL 상태를 유지한다.
+
+권장:
+
+```text
+/art/rookies?filter=women
+/art/faq?category=admission
+/art/news?category=education-news&page=2
+```
+
+단, 이런 쿼리 파라미터는 센터별 독립 URL처럼 강한 SEO 랜딩 페이지로 보지 않는다. 검색 노출의 대표 URL은 쿼리 없는 목록 URL을 기본으로 삼고, 필터 쿼리는 사용자의 현재 탐색 상태, 공유 링크, 뒤로가기/앞으로가기 복원을 위한 보조 URL로 취급한다.
+
+구현 기준:
+
+- 필터 UI는 가능하면 공용 `FilterChips`를 사용한다.
+- 필터 링크는 실제 `href`를 가진 `next/link`로 둔다. 버튼만으로 상태를 바꾸지 않는다.
+- 같은 목록 안에서 필터만 바뀌는 전환은 `scroll={false}`를 적용해 현재 스크롤 위치를 유지한다.
+- 콘텐츠 영역에 로딩이 필요하더라도 GNB, 헤더, 필터 영역이 페이지 상단으로 튀지 않게 한다.
+- 쿼리 파라미터는 canonical에서 제외한다. 예: `/art/faq?category=admission`의 canonical은 `/art/faq`를 기본으로 한다.
+- sitemap에는 기본 목록 URL과 상세 URL을 우선 포함한다. 필터별 URL은 별도 색인 목적이 분명한 경우에만 추가한다.
+
+예외 기준:
+
+- 필터 결과가 별도 검색 의도를 충분히 가진 독립 랜딩 페이지라면 쿼리가 아니라 경로 기반 URL로 승격한다.
+- 뉴스처럼 업데이트 주기가 높고 카테고리별 유입 가치가 큰 경우에도 먼저 canonical, title, description, sitemap 포함 여부를 별도로 정한 뒤 색인 대상으로 다룬다.
 
 ## Redirect/Sitemap 기준
 
