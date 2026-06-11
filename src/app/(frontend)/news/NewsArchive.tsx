@@ -177,7 +177,7 @@ export async function NewsArchive({
           <FilterChips
             ariaLabel="뉴스 분류"
             className="section-news-list__tabs"
-            itemClassName="section-news-list__tab type-label-l font-extrabold leading-[1.4]"
+            itemClassName="section-news-list__tab type-label-l font-semibold leading-[1.4]"
             items={categoryItems}
             tone="dark"
           />

@@ -141,11 +141,11 @@ const decoIcons = getPageDecoIcons(2, `map-hero-${center}`)
 
 <section className="relative overflow-hidden" data-center={center}>
   <PageDeco
-    className="-left-16 top-[15%] h-56 w-56 md:h-[360px] md:w-[360px]"
+    className="-left-16 top-[15%] h-56 w-56 md:h-90 md:w-90"
     icon={decoIcons[0]}
   />
   <PageDeco
-    className="-right-20 bottom-[8%] h-56 w-56 md:h-[360px] md:w-[360px]"
+    className="-right-20 bottom-[8%] h-56 w-56 md:h-90 md:w-90"
     icon={decoIcons[1]}
   />
 </section>

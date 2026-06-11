@@ -165,7 +165,7 @@ export default async function ArtHowToUsePage({ params }: Args) {
         aria-labelledby="how-to-use-title"
       >
         <div className="container">
-          <header className="section-how-to-use__head mb-[52px] md:mb-20">
+          <header className="section-how-to-use__head mb-13 md:mb-20">
             <h1 className="page-eyebrow">학원100%이용법</h1>
             <h2 id="how-to-use-title" className="page-title">
               배우앤배움 아트센터 곳곳에 숨어있는
@@ -210,7 +210,7 @@ export default async function ArtHowToUsePage({ params }: Args) {
                     <h2 className="section-how-to-use__card-title m-0 type-headline-s font-semibold leading-[1.35] text-[#222]">
                       {service.title}
                     </h2>
-                    <p className="section-how-to-use__card-description m-0 mt-7 type-body-m font-normal leading-[1.5] text-[#777]">
+                    <p className="section-how-to-use__card-description m-0 mt-7 type-body-m font-normal leading-normal text-[#777]">
                       {service.description}
                     </p>
                     <span

@@ -97,8 +97,8 @@ export function FaqArchiveClient({
         <FilterChips
           ariaLabel="FAQ 분류"
           className="section-faq-list__tabs"
-          countClassName="section-faq-list__tab-count type-label-m font-extrabold leading-none"
-          itemClassName="section-faq-list__tab type-title-m font-bold leading-[1.4]"
+          countClassName="section-faq-list__tab-count type-title-m font-semibold leading-none"
+          itemClassName="section-faq-list__tab type-title-m font-semibold leading-[1.4]"
           items={categoryItems}
           tone="brand"
         />
@@ -117,7 +117,7 @@ export function FaqArchiveClient({
                 </span>
                 <span className="section-faq-item__icon" aria-hidden="true" />
               </summary>
-              <div className="section-faq-item__answer type-body-m leading-[1.5]">
+              <div className="section-faq-item__answer type-body-m leading-normal">
                 <MarkdownAnswer content={faq.answer} />
               </div>
             </details>
