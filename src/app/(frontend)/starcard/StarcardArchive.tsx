@@ -73,7 +73,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
 
         <div className="container mt-24 md:mt-[132px]">
           <div className="section-starcard-list__summary mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <h2 className="m-0 text-[24px] font-extrabold leading-[1.4] tracking-normal text-foreground">
+            <h2 className="m-0 type-headline-s font-extrabold leading-[1.4] tracking-normal text-foreground">
               스타카드 제휴업체
             </h2>
             <p className="m-0 type-body-s leading-[1.6] text-muted-foreground">
@@ -84,7 +84,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
           {items.length > 0 ? (
             <StarcardList items={items} />
           ) : (
-            <div className="section-starcard-list__empty py-16 text-center text-base text-muted-foreground">
+            <div className="section-starcard-list__empty py-16 text-center type-body-m text-muted-foreground">
               등록된 스타카드 제휴업체가 없습니다.
             </div>
           )}

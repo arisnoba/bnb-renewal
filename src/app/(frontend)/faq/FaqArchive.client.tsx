@@ -63,7 +63,7 @@ export function FaqArchiveClient({
         >
           <input
             aria-label="FAQ 검색어"
-            className="section-faq-list__search-input"
+            className="section-faq-list__search-input type-title-m font-bold leading-[1.4]"
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="궁금한 내용을 검색해보세요."
             ref={inputRef}
@@ -103,8 +103,12 @@ export function FaqArchiveClient({
           visibleFaqs.map((faq, index) => (
             <details className="section-faq-item" key={faq.id} open={index === 0}>
               <summary className="section-faq-item__summary">
-                <span className="section-faq-item__index type-label-m font-extrabold leading-[1.2]">Q</span>
-                <span className="section-faq-item__question type-title-m leading-[1.4]">{faq.title}</span>
+                <span className="section-faq-item__index type-label-m font-extrabold leading-[1.2]">
+                  Q
+                </span>
+                <span className="section-faq-item__question type-title-m leading-[1.4]">
+                  {faq.title}
+                </span>
                 <span className="section-faq-item__icon" aria-hidden="true" />
               </summary>
               <div className="section-faq-item__answer type-body-m leading-[1.5]">
@@ -113,7 +117,7 @@ export function FaqArchiveClient({
             </details>
           ))
         ) : (
-          <div className="section-faq-list__empty">
+          <div className="section-faq-list__empty type-title-s font-bold">
             {normalizedSearchQuery ? '검색 결과가 없습니다.' : '표시할 FAQ가 없습니다.'}
           </div>
         )}
@@ -136,12 +140,14 @@ function CategoryLink({
   return (
     <Link
       aria-current={active ? 'page' : undefined}
-      className="section-faq-list__tab"
+      className="section-faq-list__tab type-title-m font-bold leading-[1.4]"
       data-active={active ? 'true' : 'false'}
       href={href}
     >
       <span>{label}</span>
-      <span className="section-faq-list__tab-count type-label-m font-extrabold leading-none">{count}</span>
+      <span className="section-faq-list__tab-count type-label-m font-extrabold leading-none">
+        {count}
+      </span>
     </Link>
   )
 }
@@ -190,7 +196,7 @@ function MarkdownTable({ rows }: { rows: string[][] }) {
 
   return (
     <div className="section-faq-answer__table-wrap">
-      <table className="section-faq-answer__table">
+      <table className="section-faq-answer__table type-body-s">
         <thead>
           <tr>
             {head.map((cell, index) => (
@@ -223,7 +229,10 @@ function MarkdownButton({ href, label }: { href: string; label: string }) {
 
   if (isInternalFaqHref(href)) {
     return (
-      <Link className="section-faq-answer__button" href={href}>
+      <Link
+        className="section-faq-answer__button type-label-m font-extrabold leading-[1.2]"
+        href={href}
+      >
         {label}
       </Link>
     )
@@ -231,7 +240,7 @@ function MarkdownButton({ href, label }: { href: string; label: string }) {
 
   return (
     <a
-      className="section-faq-answer__button"
+      className="section-faq-answer__button type-label-m font-extrabold leading-[1.2]"
       href={href}
       rel="noopener noreferrer"
       target="_blank"

@@ -94,7 +94,7 @@ export async function ProfileDetailPage({
         </div>
 
         <div>
-          <div className="mb-5 flex flex-wrap gap-2 text-sm text-muted-foreground">
+          <div className="mb-5 flex flex-wrap gap-2 type-label-m text-muted-foreground">
             {profile.centers.map((profileCenter) => (
               <span className="rounded-full border border-border px-3 py-1" key={profileCenter}>
                 {profileCenter === 'all' ? '전체' : getCenterLabel(profileCenter)}
@@ -105,23 +105,23 @@ export async function ProfileDetailPage({
             )}
           </div>
 
-          <h1 className="text-4xl font-semibold leading-tight tracking-normal md:text-6xl">
+          <h1 className="type-display-xl font-semibold leading-tight tracking-normal">
             {profile.name}
           </h1>
-          <p className="mt-3 text-xl text-muted-foreground">{profile.englishName}</p>
+          <p className="mt-3 type-title-l text-muted-foreground">{profile.englishName}</p>
 
           {(profile.height || profile.weight) && (
-            <dl className="mt-8 grid max-w-sm grid-cols-2 gap-4 text-sm">
+            <dl className="mt-8 grid max-w-sm grid-cols-2 gap-4 type-body-s">
               {profile.height && (
                 <div>
                   <dt className="text-muted-foreground">키</dt>
-                  <dd className="mt-1 text-lg font-medium">{profile.height}</dd>
+                  <dd className="mt-1 type-title-m font-medium">{profile.height}</dd>
                 </div>
               )}
               {profile.weight && (
                 <div>
                   <dt className="text-muted-foreground">몸무게</dt>
-                  <dd className="mt-1 text-lg font-medium">{profile.weight}</dd>
+                  <dd className="mt-1 type-title-m font-medium">{profile.weight}</dd>
                 </div>
               )}
             </dl>
@@ -129,7 +129,7 @@ export async function ProfileDetailPage({
 
           {careerItems.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-2xl font-semibold">경력</h2>
+              <h2 className="type-headline-s font-semibold">경력</h2>
               <div className="mt-6 divide-y divide-border border-y border-border">
                 {careerItems.map((item) => (
                   <div className="grid gap-3 py-5 md:grid-cols-[140px_1fr]" key={item.id ?? item.title}>

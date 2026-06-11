@@ -23,7 +23,7 @@ export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
       <div className="mb-12 flex flex-col gap-10">
         <div>
           <p className="mb-10 type-title-l font-bold leading-[1.4] text-brand">오시는 길</p>
-          <h2 className="font-['Pyeojin_Gothic','Pretendard',sans-serif] text-[36px] font-bold leading-[1.25] tracking-normal md:text-5xl md:leading-[1.35]">
+          <h2 className="font-['Pyeojin_Gothic','Pretendard',sans-serif] type-display-l font-bold leading-[1.25] tracking-normal md:leading-[1.35]">
             배우의 가능성이 완성되는 공간
             <br />
             {selectedLocation.name}

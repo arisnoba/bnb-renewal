@@ -103,7 +103,7 @@ function ArtistPressCard({
           ) : null}
         </div>
         <div className="p-5">
-          <div className="mb-3 flex flex-wrap gap-2 text-xs font-medium text-muted-foreground">
+          <div className="mb-3 flex flex-wrap gap-2 type-caption-s font-medium text-muted-foreground">
             {artistPress.actorName && <span>{artistPress.actorName}</span>}
             {artistPress.generation && <span>{artistPress.generation}</span>}
             {publishedAt && <span>{publishedAt}</span>}

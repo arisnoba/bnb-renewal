@@ -489,7 +489,7 @@ function StepsPanel() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <section>
-        <h2 className="max-w-[900px] text-[34px] font-bold leading-[1.25] tracking-normal md:text-[48px]">
+        <h2 className="max-w-[900px] type-display-l font-bold leading-[1.25] tracking-normal">
           IRUDA 연기트레이닝 시스템입니다.
           <br />
           아트센터의 모든 교육은 ‘나’로부터 시작됩니다.
@@ -521,14 +521,14 @@ function ClassSection({
     <section className="border-t border-white/10 pt-16">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="flex items-start gap-3 lg:col-span-1">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand text-sm font-black text-white">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand type-label-m font-black text-white">
             {item.letter}
           </span>
-          <h3 className="pt-1 text-[24px] font-extrabold leading-[1.3]">{item.label}</h3>
+          <h3 className="pt-1 type-headline-s font-extrabold leading-[1.3]">{item.label}</h3>
         </div>
         <div className="lg:col-span-2">
-          <h4 className="text-[22px] font-extrabold leading-[1.45]">{item.headline}</h4>
-          <p className="mt-9 max-w-[760px] text-[15px] leading-[1.95] text-white/50">
+          <h4 className="type-headline-s font-extrabold leading-[1.45]">{item.headline}</h4>
+          <p className="mt-9 max-w-[760px] type-body-m leading-[1.95] text-white/50">
             {item.description}
           </p>
         </div>
@@ -617,7 +617,7 @@ function CriteriaPanel() {
   return (
     <div className="flex flex-col gap-16 md:gap-20">
       <section className="">
-        <h2 className="text-[30px] font-extrabold leading-[1.35] md:text-[42px]">
+        <h2 className="type-headline-xl font-extrabold leading-[1.35]">
           정기적인 오디션을 통해 단계별로 초급 I반, 중급 R반,
           <br />
           고급 U반, 전문 D반, 배우 A반으로 클래스가 편성됩니다.
@@ -643,7 +643,7 @@ function AdultGradeTable() {
 
       {/* 데스크탑: 표 형태 (가독성 개선) */}
       <div className="hidden overflow-x-auto lg:block">
-        <table className="w-full table-fixed border-collapse text-left text-[14px]">
+        <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
             <tr className="bg-[#343434] text-white">
               <CriteriaHeader width="w-[8%]">
@@ -670,7 +670,7 @@ function AdultGradeTable() {
                 <CriteriaCell className="text-center align-top">
                   <div className="flex flex-col items-center gap-1.5">
                     <GradeBadge code={row.classCode}>{row.classCode}</GradeBadge>
-                    <span className="text-[12px] font-medium text-white/45">{row.level}</span>
+                    <span className="type-caption-s font-medium text-white/45">{row.level}</span>
                   </div>
                 </CriteriaCell>
                 <CriteriaCell className="text-center align-top">
@@ -710,10 +710,10 @@ function AdultGradeTable() {
           >
             <header className="flex flex-wrap items-center gap-2 border-b border-[#363636] bg-[#262626] px-4 py-3">
               <GradeBadge code={card.classCode}>{card.classCode}</GradeBadge>
-              <span className="text-sm font-bold text-white">{card.level}</span>
+              <span className="type-label-m font-bold text-white">{card.level}</span>
               <ProcessBadge className="ml-auto" process={card.process} />
             </header>
-            <dl className="divide-y divide-[#2c2c2c] text-[14px]">
+            <dl className="divide-y divide-[#2c2c2c] type-body-s">
               <div className="flex gap-3 px-4 py-3">
                 <dt className="w-20 shrink-0 font-medium text-white/40">관리부서</dt>
                 <dd className="whitespace-pre-line leading-[1.55] text-white/70">
@@ -758,7 +758,7 @@ function PromotionTable() {
 
       {/* 데스크탑: 표 형태 */}
       <div className="hidden overflow-x-auto md:block">
-        <table className="w-full table-fixed border-collapse text-left text-[14px]">
+        <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
             <tr className="bg-[#343434] text-white">
               <CriteriaHeader width="w-[22%]">승급 경로</CriteriaHeader>
@@ -815,7 +815,7 @@ function PromotionTable() {
               className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
               key={`${group.from.classCode}-${group.to.classCode}`}
             >
-              <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-[#363636] bg-[#262626] px-4 py-3 text-sm">
+              <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-[#363636] bg-[#262626] px-4 py-3 type-label-m">
                 <GradeBadge code={group.from.classCode}>{group.from.label}</GradeBadge>
                 <ArrowRight aria-hidden="true" className="text-brand" size={15} />
                 <GradeBadge code={group.to.classCode}>{group.to.label}</GradeBadge>
@@ -931,7 +931,7 @@ function CriteriaText({
           <span
             className={cn(
               hasBulletLines && !isBulletLine && !isSubNote && 'pl-3.5',
-              isSubNote && 'mt-1 text-[12px] text-white/45',
+          isSubNote && 'mt-1 type-caption-s text-white/45',
               (isHighlighted || emphasizeLine?.(line, lineIndex)) && 'font-medium text-white',
             )}
             key={`${line}-${lineIndex}`}
@@ -1018,7 +1018,7 @@ function CohortsPanel() {
   return (
     <div className="flex flex-col gap-12">
       <section className="max-w-[760px]">
-        <h2 className="text-[32px] font-extrabold leading-[1.3] md:text-[44px]">기수 안내</h2>
+        <h2 className="type-headline-xl font-extrabold leading-[1.3]">기수 안내</h2>
         <p className="mt-7 type-body-s leading-[1.85] text-white/50">
           배우앤배움 아트센터에서는 매해 상반기, 하반기로 나누어 배우앤배움
           기수를 부여하고 있습니다. 최초 2010년 상반기 1기가 시작되었으며,
@@ -1044,7 +1044,7 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
         <h3 className="type-title-s font-extrabold leading-none">기수 목록</h3>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full table-fixed border-collapse text-left text-sm">
+        <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
             <tr className="bg-[#343434] text-white">
               <th className="w-[18%] border border-[#444] px-5 py-4 font-bold" scope="col">

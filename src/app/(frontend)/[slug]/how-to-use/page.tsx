@@ -207,10 +207,10 @@ export default async function ArtHowToUsePage({ params }: Args) {
                     width={60}
                   />
                   <div className="section-how-to-use__body mt-12 flex flex-1 flex-col justify-end md:mt-14">
-                    <h2 className="section-how-to-use__card-title m-0 text-[21px] font-semibold leading-[1.35] text-[#222] md:text-[24px]">
+                    <h2 className="section-how-to-use__card-title m-0 type-headline-s font-semibold leading-[1.35] text-[#222]">
                       {service.title}
                     </h2>
-                    <p className="section-how-to-use__card-description m-0 mt-7 text-[15px] font-normal leading-[1.5] text-[#777] md:text-[16px]">
+                    <p className="section-how-to-use__card-description m-0 mt-7 type-body-m font-normal leading-[1.5] text-[#777]">
                       {service.description}
                     </p>
                     <span

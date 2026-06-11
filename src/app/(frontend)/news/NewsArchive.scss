@@ -16,18 +16,12 @@
 
 .section-news-list__eyebrow {
   color: #c80000;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.4;
   margin: 0 0 48px;
 }
 
 .section-news-list__title {
   color: #222;
-  font-size: 48px;
-  font-weight: 800;
   letter-spacing: 0;
-  line-height: 1.35;
   margin: 0;
   word-break: keep-all;
 }
@@ -46,11 +40,8 @@
   border-radius: 9999px;
   color: rgb(34 34 34 / 42%);
   display: inline-flex;
-  font-size: 16px;
-  font-weight: 800;
   height: 41px;
   justify-content: center;
-  line-height: 1.4;
   padding-inline: 20px;
   text-decoration: none;
   transition:
@@ -127,9 +118,7 @@
 .section-news-card__title {
   color: #222;
   display: -webkit-box;
-  font-size: 20px;
   letter-spacing: 0;
-  line-height: 1.4;
   margin: 0;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -141,9 +130,7 @@
   color: rgb(34 34 34 / 55%);
   display: -webkit-box;
 
-  font-weight: 500;
   letter-spacing: 0;
-  line-height: 1.5;
   margin: 8px 0 0;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -163,19 +150,14 @@
   border-radius: 9999px;
   color: #222;
   display: inline-flex;
-  font-weight: 500;
   height: 30px;
   justify-content: center;
-  line-height: 1;
   padding-inline: 14px;
   white-space: nowrap;
 }
 
 .section-news-card__date {
   color: rgb(34 34 34 / 45%);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.2;
   text-align: right;
   white-space: nowrap;
 }
@@ -196,11 +178,8 @@
   align-items: center;
   color: #222;
   display: inline-flex;
-  font-size: 14px;
-  font-weight: 800;
   height: 36px;
   justify-content: center;
-  line-height: 1;
   min-width: 18px;
   text-decoration: none;
 }
@@ -218,8 +197,6 @@
 .section-news-list__empty {
   border-block: 1px solid rgb(34 34 34 / 10%);
   color: rgb(34 34 34 / 55%);
-  font-size: 16px;
-  font-weight: 600;
   margin: 0;
   padding-block: 72px;
   text-align: center;
@@ -239,13 +216,7 @@
   }
 
   .section-news-list__eyebrow {
-    font-size: 15px;
     margin-bottom: 24px;
-  }
-
-  .section-news-list__title {
-    font-size: 34px;
-    line-height: 1.28;
   }
 
   .section-news-list__tabs {
@@ -254,7 +225,6 @@
   }
 
   .section-news-list__tab {
-    font-size: 13px;
     height: 36px;
     padding-inline: 14px;
   }
@@ -276,26 +246,16 @@
     gap: 6px;
   }
 
-  .section-news-card__title {
-    font-size: 16px;
-  }
-
-  .section-news-card__description {
-    font-size: 13px;
-  }
-
   .section-news-card__badges {
     margin-top: 12px;
   }
 
   .section-news-card__badge {
-    font-size: 12px;
     height: 28px;
     padding-inline: 12px;
   }
 
   .section-news-card__date {
-    font-size: 12px;
     text-align: left;
   }
 

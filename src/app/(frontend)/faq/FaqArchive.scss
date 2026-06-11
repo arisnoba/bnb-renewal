@@ -1,22 +1,14 @@
-@use '../../../styles/mixins' as *;
-
 .section-faq-list__head {
   margin-bottom: 60px;
 }
 
 .section-faq-list__eyebrow {
   color: var(--brand);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.4;
   margin: 0;
 }
 
 .section-faq-list__title {
   color: #222;
-  @include fluid-type(34px, 48px);
-  font-weight: 800;
-  line-height: 1.35;
   margin: 0;
   word-break: keep-all;
 }
@@ -30,9 +22,6 @@
 
 .section-faq-list__description p {
   color: #666;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.5;
   margin: 0;
 }
 
@@ -66,11 +55,8 @@
   color: #222;
   display: inline-flex;
   gap: 8px;
-  font-size: 18px;
-  font-weight: 700;
   height: 45px;
   justify-content: center;
-  line-height: 1.4;
   opacity: 0.4;
   padding: 0 20px;
   text-decoration: none;
@@ -121,10 +107,7 @@
   border: 0;
   color: #222;
   flex: 1 1 auto;
-  font-size: 18px;
-  font-weight: 700;
   height: 100%;
-  line-height: 1.4;
   min-width: 0;
   outline: 0;
   padding: 0 20px;
@@ -266,10 +249,7 @@
   border: 1px solid #111;
   color: #fff;
   display: inline-flex;
-  font-size: 15px;
-  font-weight: 800;
   justify-content: center;
-  line-height: 1.2;
   min-height: 44px;
   padding: 12px 18px;
   text-decoration: none;
@@ -315,8 +295,6 @@
 .section-faq-list__empty {
   border-bottom: 1px solid rgb(34 34 34 / 10%);
   color: #666;
-  font-size: 16px;
-  font-weight: 700;
   padding-block: 64px;
   text-align: center;
 }
@@ -331,17 +309,12 @@
     margin-bottom: 40px;
   }
 
-  .section-faq-list__eyebrow {
-    font-size: 17px;
-  }
-
   .section-faq-list__tools {
     align-items: stretch;
     margin-bottom: 40px;
   }
 
   .section-faq-list__tab {
-    font-size: 15px;
     height: 38px;
     padding-inline: 14px;
   }
@@ -355,10 +328,6 @@
     flex-basis: 38px;
     height: 38px;
     width: 38px;
-  }
-
-  .section-faq-list__search-input {
-    font-size: 15px;
   }
 
   .section-faq-item[open] {

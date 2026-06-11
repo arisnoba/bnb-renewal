@@ -167,7 +167,7 @@ function mapOptions(center: NaverLatLng) {
 
 function MapStatus({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute inset-0 grid place-items-center bg-black text-center text-sm font-semibold text-white/70">
+        <div className="absolute inset-0 grid place-items-center bg-black text-center type-label-m font-semibold text-white/70">
       {children}
     </div>
   )
@@ -249,8 +249,8 @@ function mapMarkerContent(location: CenterLocation, isActive: boolean) {
       ${
         isActive
           ? `<div class="map-page__naver-marker-card">
-              <strong>${escapeHtml(location.label)}</strong>
-              <span>${escapeHtml(location.address)}</span>
+              <strong class="type-title-m font-extrabold leading-[1.2]">${escapeHtml(location.label)}</strong>
+              <span class="type-label-s leading-[1.35]">${escapeHtml(location.address)}</span>
             </div>`
           : ''
       }

@@ -136,7 +136,7 @@ function StarcardModal({
               {categoryLabel(item.category)}
             </p>
             <div className="starcard-partner-modal__title-row flex min-w-0 items-start gap-4">
-              <DialogTitle className="min-w-0 flex-1 text-[28px] font-extrabold leading-[1.3] tracking-normal md:text-[34px]">
+              <DialogTitle className="min-w-0 flex-1 type-headline-l font-extrabold leading-[1.3] tracking-normal">
                 {item.title}
               </DialogTitle>
               {item.discountRate ? (
@@ -161,7 +161,7 @@ function StarcardModal({
         <div className="starcard-partner-modal__content flex min-h-0 flex-1 flex-col overflow-y-auto px-8 pb-8 pt-6 md:px-10 md:pb-10">
           {item.body ? (
             <RichText
-              className="starcard-partner-modal__body text-[15px] font-medium leading-[1.8] text-muted-foreground"
+              className="starcard-partner-modal__body type-body-m font-medium leading-[1.8] text-muted-foreground"
               data={item.body}
               enableGutter={false}
               enableProse={false}

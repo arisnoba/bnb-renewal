@@ -281,9 +281,6 @@ body[data-page-tone='dark'] {
 
 .map-page__naver-marker-eyebrow {
   color: var(--brand);
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.2;
 }
 
 .map-page__naver-marker[data-active='false'] .map-page__naver-marker-eyebrow,
@@ -291,23 +288,13 @@ body[data-page-tone='dark'] {
   display: none;
 }
 
-.map-page__naver-marker-card strong {
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
 .map-page__naver-marker[data-active='false'] .map-page__naver-marker-card strong {
   color: rgb(255 255 255 / 88%);
-  font-size: 12px;
-  line-height: 1.2;
   white-space: nowrap;
 }
 
 .map-page__naver-marker-card span:not(.map-page__naver-marker-eyebrow) {
   color: rgb(255 255 255 / 70%);
-  font-size: 12px;
-  line-height: 1.35;
   word-break: keep-all;
 }
 

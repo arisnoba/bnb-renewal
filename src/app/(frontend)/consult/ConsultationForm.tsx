@@ -470,7 +470,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                     <Label
                       className={cn(
                         controlClassName,
-                        'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
+                        'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 type-label-m font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
                       )}
                       htmlFor={id}
                     >
@@ -703,7 +703,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       )}
 
       <section className="flex gap-4 flex-col">
-        <h2 className="text-lg font-semibold tracking-normal">개인정보 수집 및 이용 방침</h2>
+        <h2 className="type-title-m font-semibold tracking-normal">개인정보 수집 및 이용 방침</h2>
         <div className="max-h-40 overflow-y-auto rounded-md border bg-background p-4 type-body-s leading-6 text-muted-foreground">
           상담 신청 확인과 안내를 위해 이름, 생년월일, 연락처, 거주지역, 문의 유형,
           예약 희망일, 연기 경험 정보 또는 제휴 신청 정보를 수집합니다. 수집된 정보는 상담
@@ -743,7 +743,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                     }}
                   />
                 </FormControl>
-                <FormLabel className="text-sm leading-5">
+                <FormLabel className="type-label-m leading-5">
                   개인정보 수집 및 이용 방침에 동의합니다. <RequiredMark />
                 </FormLabel>
               </div>
@@ -772,7 +772,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
             />
           </>
         ) : (
-          <p className="text-sm text-destructive">
+          <p className="type-body-s text-destructive">
             자동 제출 방지 설정이 준비되지 않았습니다.
           </p>
         )}
@@ -789,7 +789,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           {submitError ??
             '제출 전 자동 제출 방지 확인을 진행한 뒤 상담 문의로 저장됩니다.'}
         </p>
-        <Button className="h-12 px-8 text-base" disabled={isSubmitting} type="submit">
+        <Button className="h-12 px-8 type-label-l" disabled={isSubmitting} type="submit">
           {isSubmitting ? '접수 중' : '상담 신청 접수'}
         </Button>
       </div>
@@ -802,8 +802,8 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 function SectionHeading({ index, title }: { index: string; title: string }) {
   return (
     <div className="flex items-center gap-3 border-b pb-3">
-      <span className="font-mono text-sm text-muted-foreground">{index}</span>
-      <h2 className="text-xl font-semibold tracking-normal">{title}</h2>
+      <span className="font-mono type-label-m text-muted-foreground">{index}</span>
+      <h2 className="type-title-l font-semibold tracking-normal">{title}</h2>
     </div>
   )
 }
@@ -1099,7 +1099,7 @@ function RadioButtonGroup({
                   <Label
                     className={cn(
                       controlClassName,
-                      'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
+        'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 type-label-m font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
                       (getFieldMessage(errors, name) || fieldState.invalid) &&
                         'border-destructive/60 text-destructive',
                     )}

@@ -55,10 +55,10 @@ export default async function ConsultPage({ searchParams }: ConsultPageProps) {
       <section className="container section-p-block-sm">
         <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
           <aside className="lg:sticky lg:top-24">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="type-label-m font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Request
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-normal">상담 신청</h2>
+            <h2 className="mt-3 type-headline-l font-semibold tracking-normal">상담 신청</h2>
             <p className="mt-4 type-body-s leading-7 text-muted-foreground">
               문의 유형에 따라 필요한 항목만 표시됩니다. 센터별 상담과 제휴 신청을 같은
               양식에서 확인합니다.
@@ -99,8 +99,8 @@ const consultLightThemeVars = {
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid gap-1">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="text-base font-semibold">{value}</p>
+      <p className="type-body-s text-muted-foreground">{label}</p>
+      <p className="type-title-s font-semibold">{value}</p>
     </div>
   )
 }

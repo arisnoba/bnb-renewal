@@ -150,8 +150,13 @@ export async function NewsArchive({
       <section className="section-news-list section-p-block-base" aria-labelledby="news-list-title">
         <div className="section-news-list__container">
           <header className="section-news-list__head page-heading">
-            <p className="section-news-list__eyebrow page-eyebrow">NEWS&amp;NOTICE</p>
-            <h1 id="news-list-title" className="section-news-list__title page-title">
+            <p className="section-news-list__eyebrow page-eyebrow type-title-l font-extrabold leading-[1.4]">
+              NEWS&amp;NOTICE
+            </p>
+            <h1
+              id="news-list-title"
+              className="section-news-list__title page-title type-display-l font-extrabold leading-[1.35] max-sm:leading-[1.28]"
+            >
               {title}
             </h1>
           </header>
@@ -173,7 +178,9 @@ export async function NewsArchive({
           </nav>
 
           {news.docs.length === 0 ? (
-            <p className="section-news-list__empty">등록된 뉴스가 없습니다.</p>
+            <p className="section-news-list__empty type-title-s font-semibold">
+              등록된 뉴스가 없습니다.
+            </p>
           ) : (
             <div className="section-news-list__items">
               {news.docs.map((item) => (
@@ -230,16 +237,27 @@ function NewsCard({
         </div>
         <div className="section-news-card__content">
           <div className="section-news-card__main">
-            <h2 className="font-bold section-news-card__title">{news.title}</h2>
-            {description && <p className="text-sm section-news-card__description">{description}</p>}
+            <h2 className="section-news-card__title type-title-l font-bold leading-[1.4]">
+              {news.title}
+            </h2>
+            {description && (
+              <p className="section-news-card__description type-body-s font-medium leading-[1.5]">
+                {description}
+              </p>
+            )}
             {categoryLabel && (
               <div className="section-news-card__badges">
-                <span className="text-sm section-news-card__badge">{categoryLabel}</span>
+                <span className="section-news-card__badge type-label-m leading-none">
+                  {categoryLabel}
+                </span>
               </div>
             )}
           </div>
           {publishedAt && (
-            <time className="section-news-card__date text-sm" dateTime={news.publishedAt ?? undefined}>
+            <time
+              className="section-news-card__date type-label-m leading-[1.2]"
+              dateTime={news.publishedAt ?? undefined}
+            >
               {publishedAt}
             </time>
           )}
@@ -261,7 +279,7 @@ function NewsCategoryLink({
   return (
     <Link
       aria-current={active ? 'page' : undefined}
-      className="section-news-list__tab"
+      className="section-news-list__tab type-label-l font-extrabold leading-[1.4]"
       data-active={active ? 'true' : 'false'}
       href={href}
     >
@@ -297,7 +315,9 @@ function NewsPagination({
         {pages.map((item, index) => (
           <PaginationItem key={item === 'ellipsis' ? `ellipsis-${index}` : item}>
             {item === 'ellipsis' ? (
-              <PaginationEllipsis className="section-news-pagination__ellipsis" />
+              <PaginationEllipsis
+                className="section-news-pagination__ellipsis type-label-m font-extrabold leading-none"
+              />
             ) : (
               <NewsPaginationLink
                 active={page === item}
@@ -334,7 +354,10 @@ function NewsPaginationLink({
 }) {
   if (disabled) {
     return (
-      <span className="section-news-pagination__link" data-disabled="true">
+      <span
+        className="section-news-pagination__link type-label-m font-extrabold leading-none"
+        data-disabled="true"
+      >
         {children}
       </span>
     )
@@ -343,7 +366,7 @@ function NewsPaginationLink({
   return (
     <Link
       aria-current={active ? 'page' : undefined}
-      className="section-news-pagination__link"
+      className="section-news-pagination__link type-label-m font-extrabold leading-none"
       data-active={active ? 'true' : 'false'}
       href={href}
     >
