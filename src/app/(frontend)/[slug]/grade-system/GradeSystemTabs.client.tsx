@@ -459,7 +459,7 @@ export function GradeSystemTabs() {
                 <button
                   aria-selected={isActive}
                   className={cn(
-                    'relative h-14 shrink-0 text-base font-bold leading-none text-white/35 transition-colors hover:text-white',
+                    'relative h-14 shrink-0 type-label-l font-bold leading-none text-white/35 transition-colors hover:text-white',
                     isActive && 'text-brand',
                   )}
                   key={tab.key}
@@ -494,7 +494,7 @@ function StepsPanel() {
           <br />
           아트센터의 모든 교육은 ‘나’로부터 시작됩니다.
         </h2>
-        <p className="mt-12 max-w-[720px] text-base leading-[1.8] text-white/55">
+        <p className="mt-12 max-w-[720px] type-body-m leading-[1.8] text-white/55">
           <AcronymSentence />
           <br />
           각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.
@@ -554,8 +554,8 @@ function ClassSection({
                 size={28}
                 strokeWidth={2}
               />
-              <h5 className="text-base font-extrabold leading-[1.45]">{card.title}</h5>
-              <ul className="mt-5 space-y-2 text-sm leading-[1.7] text-white/48">
+              <h5 className="type-title-s font-extrabold leading-[1.45]">{card.title}</h5>
+              <ul className="mt-5 space-y-2 type-body-s leading-[1.7] text-white/48">
                 {card.items.map((text) => (
                   <li className="grid grid-cols-[4px_minmax(0,1fr)] gap-2" key={text}>
                     <span aria-hidden="true" className="mt-[0.78em] h-0.5 w-0.5 rounded-full bg-white/48" />
@@ -603,7 +603,7 @@ function IrudaWordmark() {
               src={`${gradeAssetBase}/${letter.fileName}`}
               width={216}
             />
-            <span className="text-center text-sm font-extrabold uppercase leading-none text-white">
+            <span className="text-center type-label-m font-extrabold uppercase leading-none text-white">
               {letter.className}
             </span>
           </div>
@@ -622,7 +622,7 @@ function CriteriaPanel() {
           <br />
           고급 U반, 전문 D반, 배우 A반으로 클래스가 편성됩니다.
         </h2>
-        <p className="mt-8 text-base leading-[1.85] text-white/50">
+        <p className="mt-8 type-body-m leading-[1.85] text-white/50">
           전체 수강생은 전공생 30%, 비전공생 40%, 엔터테인먼트교육생 30%로 이루어져 있으며, 각 클래스에 따라 수강생의 담당 관리부서가 교체됩니다.<br/> 배우앤배움 교육팀에서는 기존 단일 오디션 형태의 승급 평가 방식에서 탈피하여 두 달 과정의 커리큘럼에 대한 전반적인 이수 평가를 도입하였습니다. <br/>커리큘럼이 끝나는 마지막 주에는 각 클래스의 강사진들이 연기자 평가서를 교육팀에 제출하게 되며, 이를 통해 학생들은 본인의 승급 여부와 함께 개인의 연기성장에 대한 정확한 피드백을 전달받게 됩니다.
         </p>
       </section>
@@ -636,8 +636,8 @@ function CriteriaPanel() {
 function AdultGradeTable() {
   return (
     <section>
-      <h3 className="mb-5 text-base font-extrabold leading-none">성인 등급 기준</h3>
-      <p className="mb-4 text-xs leading-[1.65] text-white/45">
+      <h3 className="mb-5 type-title-s font-extrabold leading-none">성인 등급 기준</h3>
+      <p className="mb-4 type-caption-s leading-[1.65] text-white/45">
         배정 Class는 아래 항목 중 충족되는 조건을 기준으로 진행되며, R Class부터 레벨테스트가 진행됩니다.
       </p>
 
@@ -754,7 +754,7 @@ function AdultGradeTable() {
 function PromotionTable() {
   return (
     <section>
-      <h3 className="mb-5 text-base font-extrabold leading-none">성인 승급 기준</h3>
+      <h3 className="mb-5 type-title-s font-extrabold leading-none">성인 승급 기준</h3>
 
       {/* 데스크탑: 표 형태 */}
       <div className="hidden overflow-x-auto md:block">
@@ -824,11 +824,11 @@ function PromotionTable() {
                 {group.rows.map((row) => (
                   <li className="flex flex-col gap-2 px-4 py-3" key={row.method}>
                     <CriteriaTypeBadge type={row.method} />
-                    <p className="text-[14px] leading-[1.55] text-white/70">
+                    <p className="type-body-s leading-[1.55] text-white/70">
                       {row.condition}
                     </p>
                     {row.note ? (
-                      <p className="text-[12px] leading-[1.5] text-white/70">
+                      <p className="type-caption-s leading-[1.5] text-white/70">
                         <CriteriaText
                           highlightTerms={[
                             '이수 기간 상관없이',
@@ -865,7 +865,7 @@ function CriteriaHeader({
   return (
     <th
       className={cn(
-        'border border-[#444] px-3 py-4 text-center text-[13px] font-bold leading-[1.55]',
+        'border border-[#444] px-3 py-4 text-center type-caption-m font-bold leading-[1.55]',
         width,
         className,
       )}
@@ -892,7 +892,7 @@ function CriteriaCell({
   return (
     <td
       className={cn(
-        'border border-[#363636] px-3 py-4 text-[14px] leading-[1.55] text-left',
+        'border border-[#363636] px-3 py-4 type-body-s leading-[1.55] text-left',
         emphasis && 'font-medium text-white',
         className,
       )}
@@ -969,7 +969,7 @@ function GradeBadge({ children, code }: { children: React.ReactNode; code: strin
   return (
     <span
       className={cn(
-        'inline-flex whitespace-nowrap rounded px-2 py-1 text-[12px] font-bold leading-none',
+        'inline-flex whitespace-nowrap rounded px-2 py-1 type-label-s font-bold leading-none',
         gradeBadgeClassNames[code] || 'bg-white/10 text-white/70',
       )}
     >
@@ -982,7 +982,7 @@ function ProcessBadge({ className, process }: { className?: string; process: str
   return (
     <span
       className={cn(
-        'inline-flex whitespace-nowrap rounded bg-[#e6f1fb] px-2 py-1 text-[12px] font-bold leading-none text-[#185fa5]',
+        'inline-flex whitespace-nowrap rounded bg-[#e6f1fb] px-2 py-1 type-label-s font-bold leading-none text-[#185fa5]',
         process === '배움' && 'bg-[#e1f5ee] text-[#0f6e56]',
         className,
       )}
@@ -1004,7 +1004,7 @@ function CriteriaTypeBadge({ type }: { type: string }) {
   const Icon = meta?.icon
 
   return (
-    <span className="inline-flex gap-1.5 text-[14px] font-bold leading-none text-white/80">
+    <span className="inline-flex gap-1.5 type-label-m font-bold leading-none text-white/80">
       {Icon ? <Icon aria-hidden="true" size={13} strokeWidth={2} /> : null}
       {type}
     </span>
@@ -1019,7 +1019,7 @@ function CohortsPanel() {
     <div className="flex flex-col gap-12">
       <section className="max-w-[760px]">
         <h2 className="text-[32px] font-extrabold leading-[1.3] md:text-[44px]">기수 안내</h2>
-        <p className="mt-7 text-sm leading-[1.85] text-white/50">
+        <p className="mt-7 type-body-s leading-[1.85] text-white/50">
           배우앤배움 아트센터에서는 매해 상반기, 하반기로 나누어 배우앤배움
           기수를 부여하고 있습니다. 최초 2010년 상반기 1기가 시작되었으며,
           현재 {latestCohort?.year}년 {latestCohort?.half} 기준 {latestCohort?.number}기까지
@@ -1028,7 +1028,7 @@ function CohortsPanel() {
       </section>
 
       <CohortTable cohorts={cohorts} />
-      <p className="text-xs leading-[1.7] text-white/35">
+      <p className="type-caption-s leading-[1.7] text-white/35">
         상반기 기수는 1월부터 6월 30일까지, 하반기 기수는 7월부터 12월 31일까지
         산정됩니다.
       </p>
@@ -1041,7 +1041,7 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
     <section>
       <div className="mb-5 flex items-center gap-3">
         <CalendarDays aria-hidden="true" className="text-brand" size={18} />
-        <h3 className="text-base font-extrabold leading-none">기수 목록</h3>
+        <h3 className="type-title-s font-extrabold leading-none">기수 목록</h3>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full table-fixed border-collapse text-left text-sm">
