@@ -46,7 +46,17 @@ npm install pretendard
 | GNB 메뉴 | 16px | 900 (Black) | 135% |
 | 버튼 텍스트 | 14px | 700 (Bold) | 135% |
 
-> 전체 타입 스케일은 피그마 화면별 텍스트 노드 확인 후 보완 후 작업 시작.
+### 타입 스케일 토큰 (`type-{role}-{size}`)
+
+공통 텍스트 크기의 단일 정의처는 `src/app/(frontend)/type-scale.scss`다. 피그마 "Text-size styles"(role × size)를 클래스로 매핑했고, 크기 변경은 마크업이 아니라 이 파일의 `$type-scale` 맵에서만 한다.
+
+- 클래스: `type-display-{xl,l,m,s}`, `type-headline-{xl,l,m,s}`, `type-title-{l,m,s}`, `type-body-{l,m,s}`, `type-label-{l,m,s}`, `type-caption-{m,s}`
+- 토큰은 **font-size + 디폴트 line-height + 디폴트 font-weight**만 책임진다. 굵기/서체 세부 조정은 Tailwind로 조합한다. 예: 피그마 `headline---l--semi-bold` → `type-headline-l font-semibold`, `title---m--extra-bold` → `type-title-m font-extrabold`. 피그마의 weight/서체 변형 스타일을 별도 클래스로 만들지 않는다.
+- display/headline은 fluid(clamp), title 이하(body/label/caption)는 고정 크기다. 피그마 값은 데스크톱(max) 기준이며, **모바일 min 값은 임의 초안 상태** — 모바일 시안 확정 시 맵에서 교체.
+- `@layer components`에 선언되어 있어 Tailwind 유틸리티(`font-bold`, `text-sm` 등)가 토큰 디폴트를 항상 덮을 수 있다.
+- 새 텍스트 크기가 필요하면 임의 `text-[Npx]`를 만들기 전에 기존 슬롯 재사용을 먼저 검토하고, 같은 값이 반복되면 슬롯을 추가한다.
+
+> 피그마 caption 그룹은 위계 역전이 있어(`caption---l--medium` 0.75rem < `caption---m` 0.81rem) 코드에서는 m(13px) > s(12px)로 정리함 — 디자이너 확인 필요.
 
 ---
 
@@ -559,7 +569,7 @@ Tailwind로 작성해야 하는 것:
 
 ## 미확인 항목 (추후 보완 필요)
 
-- [ ] 전체 타이포그래피 스케일 (h1~h6, body, caption 등)
+- [x] 전체 타이포그래피 스케일 → `type-{role}-{size}` 토큰 초안 완료 (`src/app/(frontend)/type-scale.scss`). 단 **모바일 min 값은 임의 초안** — 모바일 시안 확정 후 교체 필요
 - [ ] 모바일 레이아웃 (GNB, 컨테이너 패딩 변화)
 - [ ] 기업소개 섹션 내용 확인 (현재 이름이 교육 화면과 혼용되어 있음)
 - [ ] 상담센터 섹션 디자인 (피그마 미완성)

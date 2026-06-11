@@ -20,6 +20,7 @@ import './news/NewsArchive.scss'
 import './starcard/StarcardArchive.scss'
 import './page-typography.scss'
 import './section-spacing.scss'
+import './type-scale.scss'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export const dynamic = 'force-dynamic'
