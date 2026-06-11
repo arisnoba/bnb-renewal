@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "check:design": "node scripts/check-design-rules.mjs",
     "typecheck": "tsc --noEmit",
     "payload": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js",
     "payload:generate-types": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js generate:types",
