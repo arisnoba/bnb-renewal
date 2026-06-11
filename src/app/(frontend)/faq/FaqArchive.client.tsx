@@ -103,11 +103,11 @@ export function FaqArchiveClient({
           visibleFaqs.map((faq, index) => (
             <details className="section-faq-item" key={faq.id} open={index === 0}>
               <summary className="section-faq-item__summary">
-                <span className="section-faq-item__index">Q</span>
-                <span className="section-faq-item__question">{faq.title}</span>
+                <span className="section-faq-item__index type-label-m font-extrabold leading-[1.2]">Q</span>
+                <span className="section-faq-item__question type-title-m leading-[1.4]">{faq.title}</span>
                 <span className="section-faq-item__icon" aria-hidden="true" />
               </summary>
-              <div className="section-faq-item__answer">
+              <div className="section-faq-item__answer type-body-m leading-[1.5]">
                 <MarkdownAnswer content={faq.answer} />
               </div>
             </details>
@@ -141,7 +141,7 @@ function CategoryLink({
       href={href}
     >
       <span>{label}</span>
-      <span className="section-faq-list__tab-count">{count}</span>
+      <span className="section-faq-list__tab-count type-label-m font-extrabold leading-none">{count}</span>
     </Link>
   )
 }
