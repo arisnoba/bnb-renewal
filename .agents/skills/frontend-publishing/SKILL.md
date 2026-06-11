@@ -26,7 +26,7 @@ description: 공개 프론트엔드 퍼블리싱 규칙 적용 워크플로우. 
 6. **브랜드 컬러는 토큰 경유** — 상위에 `data-center` 속성을 두고 `text-brand`/`bg-brand`/`border-brand`만 사용한다. `text-brand-art`처럼 센터별 클래스 직접 지정 금지.
 7. **UI 기호는 아이콘 컴포넌트** — `>`, `→`, `×` 같은 텍스트 문자 금지. `lucide-react` 아이콘 + `aria-hidden="true"` + 접근 가능한 이름(텍스트 또는 `aria-label`).
 8. **컨테이너 구조** — `main > section > .container|.container-sm|.container-fluid`. 콘텐츠 폭: 기본 1160px(`container`), 텍스트 중심 840px(`container-sm`).
-9. **섹션 상하 여백 유틸** — 대표 섹션 여백은 `section-p-{t,b,block}-{xs,sm,base,lg}` 공용 유틸 우선 (`src/app/(frontend)/section-spacing.scss`).
+9. **섹션 상하 여백 유틸** — 대표 섹션 여백은 `section-p-{t,b,block}-{xs,sm,base,lg}` 공용 유틸 우선 (`src/styles/_section-spacing.scss`).
 10. **새 CSS/SCSS는 마지막 수단** — `details[open]`, `::before/::after` 장식, 리치텍스트 출력 등 design-rules.md §5 허용 범위에서만 colocated 파일 작성. 일반 레이아웃/반응형/색은 옮기지 않는다.
 11. **배경 장식은 PageDeco** — 직접 div/SVG 장식 금지. `PageDeco` + 페이지 단위 `getPageDecoIcons(count, seed)` 사용, `aria-hidden="true"` 유지.
 12. **한국어 줄바꿈** — 전역 `word-break: keep-all` 전제. `break-words`/`break-all`/`[overflow-wrap:anywhere]`는 긴 URL·영문 토큰 요소에만 제한적으로 사용.

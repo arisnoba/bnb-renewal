@@ -13,6 +13,7 @@ import { getPayload, type Where } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
+import { FilterChips } from '../_components/FilterChips'
 import PageClient from './page.client'
 
 type NewsCategory = {
@@ -142,6 +143,18 @@ export async function NewsArchive({
         where: baseWhere,
       })
   const totalPages = Math.max(news.totalPages || 1, 1)
+  const categoryItems = [
+    {
+      active: !category,
+      href: newsArchiveHref({ center }),
+      label: '전체',
+    },
+    ...newsCategories.map((item) => ({
+      active: category?.key === item.key,
+      href: newsArchiveHref({ category: item.key, center }),
+      label: item.label,
+    })),
+  ]
 
   return (
     <main className="page page-light page-news-archive page-top-offset" data-center={center}>
@@ -161,21 +174,13 @@ export async function NewsArchive({
             </h1>
           </header>
 
-          <nav className="section-news-list__tabs" aria-label="뉴스 분류">
-            <NewsCategoryLink
-              active={!category}
-              href={newsArchiveHref({ center })}
-              label="전체"
-            />
-            {newsCategories.map((item) => (
-              <NewsCategoryLink
-                active={category?.key === item.key}
-                href={newsArchiveHref({ category: item.key, center })}
-                key={item.key}
-                label={item.label}
-              />
-            ))}
-          </nav>
+          <FilterChips
+            ariaLabel="뉴스 분류"
+            className="section-news-list__tabs"
+            itemClassName="section-news-list__tab type-label-l font-extrabold leading-[1.4]"
+            items={categoryItems}
+            tone="dark"
+          />
 
           {news.docs.length === 0 ? (
             <p className="section-news-list__empty type-title-s font-semibold">
@@ -263,27 +268,6 @@ function NewsCard({
           )}
         </div>
       </article>
-    </Link>
-  )
-}
-
-function NewsCategoryLink({
-  active,
-  href,
-  label,
-}: {
-  active: boolean
-  href: string
-  label: string
-}) {
-  return (
-    <Link
-      aria-current={active ? 'page' : undefined}
-      className="section-news-list__tab type-label-l font-extrabold leading-[1.4]"
-      data-active={active ? 'true' : 'false'}
-      href={href}
-    >
-      {label}
     </Link>
   )
 }

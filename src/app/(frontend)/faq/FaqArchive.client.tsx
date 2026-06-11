@@ -5,6 +5,7 @@ import Link from 'next/link'
 import React, { useMemo, useRef, useState } from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
+import { FilterChips } from '../_components/FilterChips'
 
 export type FaqCategoryTab = {
   count: number
@@ -37,6 +38,20 @@ export function FaqArchiveClient({
   const [searchQuery, setSearchQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
+  const categoryItems = [
+    {
+      active: !activeCategory,
+      count: totalCount,
+      href: `/${center}/faq`,
+      label: '전체',
+    },
+    ...categoryTabs.map((category) => ({
+      active: activeCategory === category.value,
+      count: category.count,
+      href: `/${center}/faq?category=${category.value}`,
+      label: category.label,
+    })),
+  ]
   const visibleFaqs = useMemo(() => {
     if (!normalizedSearchQuery) {
       return faqs
@@ -79,23 +94,14 @@ export function FaqArchiveClient({
           </button>
         </form>
 
-        <nav className="section-faq-list__tabs" aria-label="FAQ 분류">
-          <CategoryLink
-            active={!activeCategory}
-            count={totalCount}
-            href={`/${center}/faq`}
-            label="전체"
-          />
-          {categoryTabs.map((category) => (
-            <CategoryLink
-              active={activeCategory === category.value}
-              count={category.count}
-              href={`/${center}/faq?category=${category.value}`}
-              key={category.value}
-              label={category.label}
-            />
-          ))}
-        </nav>
+        <FilterChips
+          ariaLabel="FAQ 분류"
+          className="section-faq-list__tabs"
+          countClassName="section-faq-list__tab-count type-label-m font-extrabold leading-none"
+          itemClassName="section-faq-list__tab type-title-m font-bold leading-[1.4]"
+          items={categoryItems}
+          tone="brand"
+        />
       </div>
 
       <div className="section-faq-list__items">
@@ -123,32 +129,6 @@ export function FaqArchiveClient({
         )}
       </div>
     </>
-  )
-}
-
-function CategoryLink({
-  active,
-  count,
-  href,
-  label,
-}: {
-  active: boolean
-  count: number
-  href: string
-  label: string
-}) {
-  return (
-    <Link
-      aria-current={active ? 'page' : undefined}
-      className="section-faq-list__tab type-title-m font-bold leading-[1.4]"
-      data-active={active ? 'true' : 'false'}
-      href={href}
-    >
-      <span>{label}</span>
-      <span className="section-faq-list__tab-count type-label-m font-extrabold leading-none">
-        {count}
-      </span>
-    </Link>
   )
 }
 

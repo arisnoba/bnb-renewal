@@ -1,17 +1,17 @@
-@use '../../styles/mixins' as *;
+@use 'mixins' as *;
 @use 'sass:map';
 
 $section-spacing-scale: (
   xs: (
-    min: 56px,
+    min: 40px,
     max: 80px,
   ),
   sm: (
-    min: 72px,
+    min: 48px,
     max: 100px,
   ),
   base: (
-    min: 80px,
+    min: 60px,
     max: 120px,
   ),
   lg: (

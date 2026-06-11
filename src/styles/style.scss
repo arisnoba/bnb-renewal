@@ -1,0 +1,16 @@
+// Public frontend style entrypoint.
+// Keep actual emitted CSS imports here; reusable Sass helpers live in partials.
+
+// Legacy/shared feature styles.
+@use '../Main/BannerSlider';
+
+// Page-level exception styles kept next to their frontend routes.
+@use '../app/(frontend)/faq/FaqArchive';
+@use '../app/(frontend)/news/NewsArchive';
+@use '../app/(frontend)/starcard/StarcardArchive';
+
+// Shared frontend utilities and component primitives.
+@use 'filter-chips';
+@use 'page-typography';
+@use 'section-spacing';
+@use 'type-scale';

@@ -1,0 +1,78 @@
+.filter-chips {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-chips__item {
+  align-items: center;
+  border: 1px solid var(--filter-chip-border);
+  border-radius: 9999px;
+  color: var(--filter-chip-color);
+  display: inline-flex;
+  gap: 8px;
+  height: 45px;
+  justify-content: center;
+  padding-inline: 20px;
+  text-decoration: none;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    opacity 180ms ease;
+  white-space: nowrap;
+}
+
+.filter-chips__count {
+  align-items: center;
+  display: inline-flex;
+  opacity: 0.7;
+}
+
+.filter-chips--dark {
+  --filter-chip-active-background: #222;
+  --filter-chip-active-border: #222;
+  --filter-chip-border: rgb(34 34 34 / 24%);
+  --filter-chip-color: rgb(34 34 34 / 42%);
+}
+
+.filter-chips--brand {
+  --filter-chip-active-background: var(--brand);
+  --filter-chip-active-border: var(--brand);
+  --filter-chip-border: rgb(34 34 34 / 40%);
+  --filter-chip-color: #222;
+}
+
+.filter-chips--brand .filter-chips__item {
+  opacity: 0.4;
+}
+
+.filter-chips__item:hover,
+.filter-chips__item[data-active='true'] {
+  background: var(--filter-chip-active-background);
+  border-color: var(--filter-chip-active-border);
+  color: #fff;
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .filter-chips {
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-chips__item {
+    flex: 0 0 auto;
+    height: 38px;
+    padding-inline: 14px;
+  }
+}

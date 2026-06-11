@@ -48,7 +48,7 @@ npm install pretendard
 
 ### 타입 스케일 토큰 (`type-{role}-{size}`)
 
-공통 텍스트 크기의 단일 정의처는 `src/app/(frontend)/type-scale.scss`다. 피그마 "Text-size styles"(role × size)를 클래스로 매핑했고, 크기 변경은 마크업이 아니라 이 파일의 `$type-scale` 맵에서만 한다.
+공통 텍스트 크기의 단일 정의처는 `src/styles/_type-scale.scss`다. 피그마 "Text-size styles"(role × size)를 클래스로 매핑했고, 크기 변경은 마크업이 아니라 이 파일의 `$type-scale` 맵에서만 한다.
 
 - 클래스: `type-display-{xl,l,m,s}`, `type-headline-{xl,l,m,s}`, `type-title-{l,m,s}`, `type-body-{l,m,s}`, `type-label-{l,m,s}`, `type-caption-{m,s}`
 - 토큰은 **font-size + 디폴트 line-height + 디폴트 font-weight**만 책임진다. 굵기/서체 세부 조정은 Tailwind로 조합한다. 예: 피그마 `headline---l--semi-bold` → `type-headline-l font-semibold`, `title---m--extra-bold` → `type-title-m font-extrabold`. 피그마의 weight/서체 변형 스타일을 별도 클래스로 만들지 않는다.
@@ -303,7 +303,7 @@ Tailwind로 작성해야 하는 것:
 - 새 스타일 파일은 기본 선택지가 아니다. 먼저 Tailwind로 해결하고, 아래 예외에 해당할 때만 추가한다.
 - SCSS mixin 대신 네이티브 CSS를 우선 사용한다. SCSS는 이미 프로젝트에 쓰는 파일이 있거나 중첩이 꼭 필요할 때만 쓴다.
 - Tailwind arbitrary value(`text-[48px]`, `leading-[1.35]`)는 피그마의 고정값을 반영할 때 허용한다.
-- `main > section > .container*` 구조의 대표 섹션 상하 여백은 `section-p-{t,b,block}-{xs,sm,base,lg}` 유틸을 우선 사용한다. 기준 최대값은 `xs: 80px`, `sm: 100px`, `base: 120px`, `lg: 160px`이며, `src/app/(frontend)/section-spacing.scss`에서 `fluid-space`로 관리한다.
+- `main > section > .container*` 구조의 대표 섹션 상하 여백은 `section-p-{t,b,block}-{xs,sm,base,lg}` 유틸을 우선 사용한다. 기준 최대값은 `xs: 80px`, `sm: 100px`, `base: 120px`, `lg: 160px`이며, `src/styles/_section-spacing.scss`에서 `fluid-space`로 관리한다.
 - 별도 CSS/SCSS를 추가하더라도 레이아웃과 spacing은 가능한 한 Tailwind className에 남겨 둔다.
 
 ### 별도 CSS/SCSS 허용 범위
@@ -569,7 +569,7 @@ Tailwind로 작성해야 하는 것:
 
 ## 미확인 항목 (추후 보완 필요)
 
-- [x] 전체 타이포그래피 스케일 → `type-{role}-{size}` 토큰 초안 완료 (`src/app/(frontend)/type-scale.scss`). 단 **모바일 min 값은 임의 초안** — 모바일 시안 확정 후 교체 필요
+- [x] 전체 타이포그래피 스케일 → `type-{role}-{size}` 토큰 초안 완료 (`src/styles/_type-scale.scss`). 단 **모바일 min 값은 임의 초안** — 모바일 시안 확정 후 교체 필요
 - [ ] 모바일 레이아웃 (GNB, 컨테이너 패딩 변화)
 - [ ] 기업소개 섹션 내용 확인 (현재 이름이 교육 화면과 혼용되어 있음)
 - [ ] 상담센터 섹션 디자인 (피그마 미완성)
