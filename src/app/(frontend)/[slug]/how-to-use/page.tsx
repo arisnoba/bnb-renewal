@@ -50,24 +50,24 @@ const services: ServiceItem[] = [
     title: '프로필 제작 및 PPT 디자인 서비스',
   },
   {
-    description: '국내에서 이루어지는 모든 드라마&영화&광고 오디션의 정보를 취합해 보관하고 있습니다.',
+    description: '국내에서 이루어지는 모든 드라마, 영화, 광고 오디션의 정보를 취합해 보관하고 있습니다.',
     icon: 'clapperboard-play',
     id: 'audition-info',
-    title: '드라마&영화&광고 오디션 정보안내',
+    title: '드라마, 영화, 광고 오디션 정보안내',
   },
   {
     description:
       '아트센터 1층 DID에서 드라마 편성 예정에 관한 정보 및 현재 진행중인 드라마의 시놉시스를 확인하실 수 있습니다.',
     icon: 'tv-retro',
     id: 'drama-synopsis',
-    title: '2025년 드라마 편성표&드라마 시놉시스 비치서비스',
+    title: '드라마 편성표, 시놉시스 비치서비스',
   },
   {
     description:
       '아트센터 1층 DID에서 영화 편성 예정에 관한 정보 및 현재 진행중인 드라마의 시놉시스를 확인하실 수 있습니다.',
     icon: 'camera-movie',
     id: 'movie-synopsis',
-    title: '2025년 영화 라인업&영화 시놉시스 비치서비스',
+    title: '영화 라인업, 시놉시스 비치서비스',
   },
   {
     description: '아트센터 1층 DID에서 국내 주요 광고모델 에이전시 50여 곳의 정보를 확인하실 수 있습니다.',
@@ -80,14 +80,14 @@ const services: ServiceItem[] = [
       '배우앤배움 아트센터는 운영시간이 지난 후에도 지문 인식을 통해 출입할 수 있도록 운영되고 있습니다.',
     icon: 'fingerprint',
     id: 'security',
-    title: '24시간 연습실 이용&지문 등록 보안서비스',
+    title: '24시간 연습실 이용, 지문 등록 보안서비스',
   },
   {
     description:
       '배우앤배움의 개인연습실은 특수 제작된 방음문과 2중 방음벽으로 마감되어 완벽한 방음 환경을 구현하였습니다.',
     icon: 'buildings',
     id: 'practice-room',
-    title: '개인연습실&그룹스터디룸 제공',
+    title: '개인연습실, 그룹스터디룸 제공',
   },
   {
     description:
@@ -164,7 +164,7 @@ export default async function ArtHowToUsePage({ params }: Args) {
         className="section-how-to-use section-p-block-base bg-white text-[#222]"
         aria-labelledby="how-to-use-title"
       >
-        <div className="container-sm">
+        <div className="container">
           <header className="section-how-to-use__head mb-[52px] md:mb-20">
             <h1 className="page-eyebrow">학원100%이용법</h1>
             <h2 id="how-to-use-title" className="page-title">

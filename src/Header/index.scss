@@ -401,7 +401,7 @@
   align-items: center;
   display: flex;
   @include fluid-type(30px, 42px);
-  font-weight: 900;
+  font-weight: 600;
   justify-content: space-between;
   line-height: 1.14;
   min-height: 58px;
@@ -446,7 +446,7 @@
 .site-header__mobile-detail-title {
   color: #fff;
   @include fluid-type(30px, 42px);
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.14;
   text-decoration: none;
 }
@@ -464,7 +464,7 @@
   color: rgba(255, 255, 255, 0.72);
   display: block;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.45;
   padding: 11px 0;
   text-decoration: none;

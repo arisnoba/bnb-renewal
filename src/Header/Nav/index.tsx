@@ -221,7 +221,7 @@ function MobileMenu({
                 type="button"
               >
                 <span>{group.label}</span>
-                <ChevronRight aria-hidden="true" size={22} strokeWidth={2.4} />
+                <ChevronRight aria-hidden="true" size={24} strokeWidth={2.4} />
               </button>
             ))}
             <Link className="site-header__mobile-root-link" href="/consult" onClick={onLinkClick}>
