@@ -23,7 +23,7 @@ const publicTestPages = [
   },
   {
     description: '출신 아티스트 언론/소개 콘텐츠 공개 목록',
-    href: '/artist-press',
+    href: '/art/artist-press',
     label: '출신 아티스트',
   },
   {

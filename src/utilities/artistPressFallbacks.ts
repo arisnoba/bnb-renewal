@@ -24,12 +24,18 @@ export function getArtistPressThumbnailMedia(artistPress: ArtistPressLike) {
   return asMedia(artistPress.thumbnailMedia)
 }
 
+export function getArtistPressAgencyLogoMedia(artistPress: ArtistPressLike) {
+  return asMedia(artistPress.agencyLogoMedia)
+}
+
 export function getArtistPressSeoImageMedia(artistPress: ArtistPressLike) {
   return asMedia(artistPress.meta?.image) || asMedia(artistPress.thumbnailMedia)
 }
 
-export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'slug'>) {
-  return `/artist-press/${encodeURIComponent(artistPress.slug)}`
+export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'slug'>, center?: string) {
+  const path = `/artist-press/${encodeURIComponent(artistPress.slug)}`
+
+  return center ? `/${center}${path}` : path
 }
 
 export function generateArtistPressMeta(artistPress: ArtistPressLike | null): Metadata {

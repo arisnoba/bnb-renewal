@@ -6,6 +6,7 @@
 
 // Page-level exception styles kept next to their frontend routes.
 @use '../app/(frontend)/faq/FaqArchive';
+@use '../app/(frontend)/artist-press/ArtistPressArchive';
 @use '../app/(frontend)/news/NewsArchive';
 @use '../app/(frontend)/starcard/StarcardArchive';
 

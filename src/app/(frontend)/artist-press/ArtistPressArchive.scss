@@ -1,0 +1,328 @@
+.section-artist-press-hero {
+  background: #000;
+  color: #fff;
+  height: 800px;
+  overflow: hidden;
+  position: relative;
+}
+
+.section-artist-press-hero__background {
+  background:
+    linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 60%)),
+    url('/assets/artist-press/hero.png') center 36% / cover no-repeat;
+  inset: 0;
+  opacity: 0.6;
+  position: absolute;
+}
+
+.section-artist-press-hero__deco {
+  height: 360px;
+  width: 360px;
+}
+
+.section-artist-press-hero__deco--left {
+  left: -156px;
+  top: 345px;
+}
+
+.section-artist-press-hero__deco--center {
+  border-radius: 9999px;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(40%);
+}
+
+.section-artist-press-hero__deco--right {
+  right: -124px;
+  top: 133px;
+}
+
+.section-artist-press-hero__content {
+  bottom: 120px;
+  left: max(20px, calc((100vw - 1120px) / 2));
+  position: absolute;
+  width: min(100% - 40px, 420px);
+  z-index: 1;
+}
+
+.section-artist-press-hero__eyebrow {
+  color: var(--brand);
+  margin: 0 0 4px;
+}
+
+.section-artist-press-hero__title {
+  color: #fff;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.section-artist-press-list {
+  background: #fff;
+  color: #222;
+  padding-block: 120px;
+}
+
+.section-artist-press-list__container {
+  margin-inline: auto;
+  width: min(100% - 40px, 1120px);
+}
+
+.section-artist-press-list__head {
+  margin-bottom: 100px;
+}
+
+.section-artist-press-list__eyebrow {
+  color: var(--brand);
+  margin: 0 0 40px;
+}
+
+.section-artist-press-list__title {
+  color: #222;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.section-artist-press-list__description {
+  color: #666;
+  margin: 40px 0 0;
+  word-break: keep-all;
+}
+
+.section-artist-press-list__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.section-artist-press-list__empty {
+  border-block: 1px solid rgb(34 34 34 / 10%);
+  color: rgb(34 34 34 / 55%);
+  margin: 0;
+  padding-block: 72px;
+  text-align: center;
+}
+
+.section-artist-press-card {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
+.section-artist-press-card__inner {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.section-artist-press-card:hover .section-artist-press-card__inner {
+  box-shadow: 0 10px 24px rgb(0 0 0 / 8%);
+  transform: translateY(-2px);
+}
+
+.section-artist-press-card__media {
+  aspect-ratio: 268 / 200;
+  background: #f3f3f3;
+  overflow: hidden;
+  width: 100%;
+}
+
+.section-artist-press-card__picture,
+.section-artist-press-card__image {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.section-artist-press-card__picture {
+  position: relative;
+}
+
+.section-artist-press-card__image {
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 260ms ease;
+}
+
+.section-artist-press-card:hover .section-artist-press-card__image {
+  transform: scale(1.035);
+}
+
+.section-artist-press-card__body {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.section-artist-press-card__copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.section-artist-press-card__actor {
+  color: #222;
+  margin: 0;
+}
+
+.section-artist-press-card__description {
+  color: #666;
+  margin: 4px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-artist-press-card__agency {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 9999px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 40px;
+  justify-content: center;
+  overflow: hidden;
+  width: 40px;
+}
+
+.section-artist-press-card__agency-picture,
+.section-artist-press-card__agency-image {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.section-artist-press-card__agency-image {
+  object-fit: contain;
+}
+
+.section-artist-press-card__agency-fallback {
+  color: #222;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.section-artist-press-card__date {
+  border-top: 1px solid rgb(0 0 0 / 10%);
+  color: #999;
+  display: block;
+  margin-top: auto;
+  padding: 12px 20px;
+}
+
+.section-artist-press-pagination {
+  margin-top: 60px;
+}
+
+.section-artist-press-pagination__content {
+  gap: 4px;
+}
+
+.section-artist-press-pagination__link,
+.section-artist-press-pagination__ellipsis {
+  align-items: center;
+  border-radius: 8px;
+  color: #0a0a0a;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  min-width: 36px;
+  padding-inline: 12px;
+  text-decoration: none;
+}
+
+.section-artist-press-pagination__link[data-active='true'] {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 10%);
+}
+
+.section-artist-press-pagination__link[data-disabled='true'] {
+  color: rgb(34 34 34 / 35%);
+}
+
+@media (max-width: 1279px) {
+  .section-artist-press-list__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  .section-artist-press-list__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .section-artist-press-hero {
+    height: 620px;
+  }
+
+  .section-artist-press-hero__deco {
+    border-width: 64px;
+    height: 220px;
+    width: 220px;
+  }
+
+  .section-artist-press-hero__deco--left {
+    left: -120px;
+    top: 300px;
+  }
+
+  .section-artist-press-hero__deco--center {
+    bottom: -70px;
+    transform: translateX(8%);
+  }
+
+  .section-artist-press-hero__deco--right {
+    right: -112px;
+    top: 110px;
+  }
+
+  .section-artist-press-hero__content {
+    bottom: 72px;
+    width: min(100% - 32px, 360px);
+  }
+
+  .section-artist-press-list {
+    padding-block: 72px 88px;
+  }
+
+  .section-artist-press-list__container {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .section-artist-press-list__head {
+    margin-bottom: 48px;
+  }
+
+  .section-artist-press-list__eyebrow,
+  .section-artist-press-list__description {
+    margin-top: 0;
+  }
+
+  .section-artist-press-list__eyebrow {
+    margin-bottom: 24px;
+  }
+
+  .section-artist-press-list__description {
+    margin-top: 24px;
+  }
+
+  .section-artist-press-list__description br {
+    display: none;
+  }
+
+  .section-artist-press-list__grid {
+    grid-template-columns: 1fr;
+  }
+}

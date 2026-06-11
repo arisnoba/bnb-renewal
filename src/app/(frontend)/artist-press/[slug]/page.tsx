@@ -52,7 +52,18 @@ export async function generateStaticParams() {
 export default async function ArtistPressDetail({ params: paramsPromise }: Args) {
   const { slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const artistPress = await queryArtistPressBySlug({ slug: decodedSlug }).catch(() => null)
+
+  return <ArtistPressDetailPage slug={decodedSlug} />
+}
+
+export async function ArtistPressDetailPage({
+  center,
+  slug,
+}: {
+  center?: string
+  slug: string
+}) {
+  const artistPress = await queryArtistPressBySlug({ slug }).catch(() => null)
 
   if (!artistPress) {
     notFound()
@@ -64,7 +75,7 @@ export default async function ArtistPressDetail({ params: paramsPromise }: Args)
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
 
   return (
-    <article className="page page-light page-detail page-top-offset pb-24">
+    <article className="page page-light page-detail page-top-offset pb-24" data-center={center}>
       <PageClient />
 
       <header className="container page-heading max-w-5xl">
@@ -105,7 +116,12 @@ export default async function ArtistPressDetail({ params: paramsPromise }: Args)
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  const artistPress = await queryArtistPressBySlug({ slug: decodedSlug }).catch(() => null)
+
+  return generateArtistPressDetailMetadata(decodedSlug)
+}
+
+export async function generateArtistPressDetailMetadata(slug: string): Promise<Metadata> {
+  const artistPress = await queryArtistPressBySlug({ slug }).catch(() => null)
 
   return generateArtistPressMeta(artistPress)
 }

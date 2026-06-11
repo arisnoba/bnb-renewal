@@ -40,6 +40,13 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.ok(labels.includes('NEWS&NOTICE'))
   assert.ok(!labels.includes('매니지먼트 시스템'))
   assert.ok(!labels.includes('온라인 상담신청'))
+  assert.ok(labelsForGroup('art', 'artist').includes('BNB출신 아티스트'))
+  assert.equal(
+    getHeaderMenu('art')
+      .find((group) => group.key === 'artist')
+      ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
+    '/art/artist-press',
+  )
 })
 
 test('exam mega menu swaps casting and artist columns for exam-specific content', () => {

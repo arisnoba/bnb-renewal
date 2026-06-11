@@ -222,7 +222,7 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
 
   if (center === 'art') {
     return [
-      { href: '/artist-press', label: 'BNB출신 아티스트' },
+      { href: `/${center}/artist-press`, label: 'BNB출신 아티스트' },
       { href: centerHref(center, 'rookies'), label: 'BNB 루키' },
     ]
   }
