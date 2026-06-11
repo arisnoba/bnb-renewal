@@ -214,7 +214,7 @@ export default async function ArtHowToUsePage({ params }: Args) {
                       {service.description}
                     </p>
                     <span
-                      className="section-how-to-use__more mt-7 inline-flex w-fit items-center gap-2.5 text-[14px] font-extrabold leading-[1.4] text-[#222]"
+                      className="section-how-to-use__more mt-7 inline-flex w-fit items-center gap-2.5 type-label-m font-extrabold leading-[1.4] text-[#222]"
                       aria-label={`${service.title} 자세히 보기`}
                     >
                       자세히 보기
