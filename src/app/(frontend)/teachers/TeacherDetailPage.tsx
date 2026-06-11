@@ -117,7 +117,7 @@ export async function TeacherDetailPage({
         icon={decoIcons[1]}
       />
 
-      <DetailBackLink href={`/${center}/profiles`} label="교육진 소개" width="wide" />
+      <DetailBackLink href={`/${center}/teachers`} label="교육진 소개" width="wide" />
 
       <DetailContainer width="wide">
         <div className="section-teacher-detail__profile grid gap-5 lg:grid-cols-2 lg:items-start">

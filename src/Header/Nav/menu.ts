@@ -76,9 +76,9 @@ function avenueMenu(): HeaderMenuGroup[] {
       label: '배우앤배움',
     },
     {
-      href: '/avenue#profiles',
+      href: teachersHref('avenue'),
       items: [
-        { href: '/avenue#profiles', label: '강사진 소개' },
+        { href: teachersHref('avenue'), label: '강사진 소개' },
         { href: '/avenue#curriculum', label: '커리큘럼' },
       ],
       key: 'education',
@@ -137,7 +137,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: centerHref(center, 'preparatory-curriculum'), label: '예비 입시반 커리큘럼' },
       { href: centerHref(center, 'arts-high-curriculum'), label: '예고 입시반 커리큘럼' },
       { href: centerHref(center, 'exam-management'), label: '입시 매니지먼트' },
-      { href: centerHref(center, 'profiles'), label: '교육진 소개' },
+      { href: teachersHref(center), label: '교육진 소개' },
     ]
   }
 
@@ -148,7 +148,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: centerHref(center, 'child-actor-course'), label: '아역배우 교육과정' },
       { href: centerHref(center, 'artist-course'), label: '아티스트 교육과정' },
       { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
-      { href: centerHref(center, 'profiles'), label: '교육진 소개' },
+      { href: teachersHref(center), label: '교육진 소개' },
     ]
   }
 
@@ -156,7 +156,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
       { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
-      { href: centerHref(center, 'profiles'), label: '교육진 소개' },
+      { href: teachersHref(center), label: '교육진 소개' },
       { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
     ]
   }
@@ -164,7 +164,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
   return [
     { href: centerHref(center, 'grade-system'), label: '등급제 교육관리시스템' },
     { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
-    { href: centerHref(center, 'profiles'), label: '교육진 소개' },
+    { href: teachersHref(center), label: '교육진 소개' },
     { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
     ...(center === 'highteen'
       ? [{ href: centerHref(center, 'special-lecture'), label: '하이틴센터 특강' }]
@@ -250,4 +250,8 @@ function supportItems(center: CenterSlug): HeaderMenuItem[] {
 
 function centerHref(center: CenterSlug, anchor: string) {
   return `/${center}#${anchor}`
+}
+
+function teachersHref(center: CenterSlug) {
+  return `/${center}/teachers`
 }

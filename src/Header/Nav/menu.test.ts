@@ -44,6 +44,12 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.ok(labelsForGroup('art', 'artist').includes('BNB 루키'))
   assert.equal(
     getHeaderMenu('art')
+      .find((group) => group.key === 'education')
+      ?.items.find((item) => item.label === '교육진 소개')?.href,
+    '/art/teachers',
+  )
+  assert.equal(
+    getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
     '/art/artist-press',
@@ -88,6 +94,12 @@ test('avenue mega menu uses the avenue one-page structure', () => {
   assert.ok(labels.includes('애비뉴센터 소개'))
   assert.ok(labels.includes('제휴업체'))
   assert.ok(labels.includes('캐스팅/모집 안내'))
+  assert.equal(
+    getHeaderMenu('avenue')
+      .find((group) => group.key === 'education')
+      ?.items.find((item) => item.label === '강사진 소개')?.href,
+    '/avenue/teachers',
+  )
   assert.ok(!labels.includes('온라인 상담신청'))
   assert.ok(labels.includes('NEWS&NOTICE'))
 })
