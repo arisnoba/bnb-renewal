@@ -17,20 +17,11 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { TeacherDetailGallery, type TeacherImageItem } from './TeacherDetailGallery.client'
 
 type TeacherRepresentativeWork = NonNullable<Teacher['representativeWorks']>[number] & {
   posterMedia?: number | PayloadMedia | null
 }
-
-type TeacherImageItem =
-  | {
-      resource: PayloadMedia
-      type: 'media'
-    }
-  | {
-      src: string
-      type: 'legacy'
-    }
 
 export async function generateTeacherStaticParams() {
   try {
@@ -94,7 +85,6 @@ export async function TeacherDetailPage({
       .filter((src): src is string => Boolean(src))
       .map((src) => ({ src, type: 'legacy' as const })),
   ].filter((item): item is TeacherImageItem => Boolean(item))
-  const [primaryImage, ...thumbnailImages] = teacherImages
   const careerItems = teacher.careerItems ?? []
   const representativeWorks = ((teacher.representativeWorks ?? []) as TeacherRepresentativeWork[])
     .filter((work) => work.title || work.description || work.posterMedia || work.posterPath)
@@ -121,39 +111,7 @@ export async function TeacherDetailPage({
 
       <DetailContainer width="wide">
         <div className="section-teacher-detail__profile grid gap-5 lg:grid-cols-2 lg:items-start">
-          <div className="section-teacher-detail__gallery">
-            <div className="overflow-hidden bg-black">
-              {primaryImage ? (
-                <TeacherImage
-                  alt={teacher.name}
-                  image={primaryImage}
-                  imgClassName="aspect-square h-auto w-full object-cover object-top"
-                  priority
-                  size="(max-width: 1023px) 100vw, 550px"
-                />
-              ) : (
-                <div className="aspect-square w-full bg-black" />
-              )}
-            </div>
-
-            {thumbnailImages.length > 0 && (
-              <div className="mt-3 grid grid-cols-5 gap-3">
-                {thumbnailImages.slice(0, 5).map((thumbnail, index) => (
-                  <div
-                    className="aspect-square overflow-hidden bg-black opacity-40 first:rounded-full first:opacity-100"
-                    key={`${thumbnail.type}-${index}`}
-                  >
-                    <TeacherImage
-                      alt={`${teacher.name} 이미지 ${index + 2}`}
-                      image={thumbnail}
-                      imgClassName="size-full object-cover object-top"
-                      size="100px"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <TeacherDetailGallery images={teacherImages} teacherName={teacher.name} />
 
           <section className="section-teacher-detail__info bg-black p-6 md:p-8">
             <header className="flex items-start justify-between gap-5 border-b border-white/10 pb-8">
@@ -379,43 +337,4 @@ function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
 
 function formatMultilineText(value: string) {
   return value.replace(/<br\s*\/?>/gi, '\n').trim()
-}
-
-function TeacherImage({
-  alt,
-  image,
-  imgClassName,
-  priority,
-  size,
-}: {
-  alt: string
-  image: TeacherImageItem
-  imgClassName: string
-  priority?: boolean
-  size: string
-}) {
-  if (image.type === 'media') {
-    return (
-      <Media
-        alt={alt}
-        htmlElement={null}
-        imgClassName={imgClassName}
-        pictureClassName="block w-full"
-        priority={priority}
-        resource={image.resource}
-        size={size}
-      />
-    )
-  }
-
-  return (
-    <Image
-      alt={alt}
-      className={imgClassName}
-      height={1200}
-      priority={priority}
-      src={image.src}
-      width={1200}
-    />
-  )
 }

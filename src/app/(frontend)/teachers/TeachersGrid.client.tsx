@@ -45,7 +45,10 @@ type TeachersGridProps = {
 }
 
 export function TeachersGrid({ center, initialVisible, teachers }: TeachersGridProps) {
-  const normalizedInitialVisible = Math.min(Math.max(initialVisible, INITIAL_VISIBLE_TEACHERS), teachers.length)
+  const normalizedInitialVisible = Math.min(
+    Math.max(initialVisible, INITIAL_VISIBLE_TEACHERS),
+    teachers.length,
+  )
   const [visibleCount, setVisibleCount] = useState(normalizedInitialVisible)
   const [isLoading, setIsLoading] = useState(false)
   const visibleTeachers = useMemo(
@@ -81,7 +84,7 @@ export function TeachersGrid({ center, initialVisible, teachers }: TeachersGridP
         ))}
         {isLoading &&
           Array.from({ length: skeletonCount }, (_, index) => (
-            <TeacherSkeletonCard key={`teacher-skeleton-${index}`} />
+            <TeacherSkeletonCard index={visibleCount + index} key={`teacher-skeleton-${index}`} />
           ))}
       </div>
 
@@ -117,7 +120,7 @@ function TeacherCard({
 }) {
   const media = teacher.profileImageMedia
   const hasMediaImage = media && typeof media === 'object'
-  const maskIcon = getTeacherMaskIcon(teacher.slug || teacher.name, index)
+  const maskIcon = getTeacherMaskIcon(index)
   const maskStyle = teacherMaskStyle(maskIcon)
   const label = [teacher.name, teacher.role || '배우'].filter(Boolean).join(' ')
 
@@ -155,18 +158,20 @@ function TeacherCard({
   )
 }
 
-function TeacherSkeletonCard() {
+function TeacherSkeletonCard({ index }: { index: number }) {
+  const maskIcon = teacherMaskIcons[index % teacherMaskIcons.length]
+
   return (
     <div
       aria-hidden="true"
       className="section-teachers-card__skeleton aspect-square animate-pulse bg-white/[0.06]"
-      style={teacherMaskStyle('iruda-d.svg')}
+      style={teacherMaskStyle(maskIcon)}
     />
   )
 }
 
-function getTeacherMaskIcon(seed: string, index: number): TeacherMaskIcon {
-  return teacherMaskIcons[hashSeed(`${seed}-${index}`) % teacherMaskIcons.length]
+function getTeacherMaskIcon(index: number): TeacherMaskIcon {
+  return teacherMaskIcons[index % teacherMaskIcons.length]
 }
 
 function teacherMaskStyle(icon: TeacherMaskIcon): TeacherMaskStyle {
@@ -182,14 +187,4 @@ function teacherMaskStyle(icon: TeacherMaskIcon): TeacherMaskStyle {
     maskRepeat: 'no-repeat',
     maskSize: '100% 100%',
   }
-}
-
-function hashSeed(seed: string) {
-  let hash = 0
-
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = Math.imul(hash ^ seed.charCodeAt(index), 2654435761)
-  }
-
-  return (hash ^ (hash >>> 16)) >>> 0
 }

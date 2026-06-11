@@ -8,8 +8,8 @@ import { cn } from '@/utilities/ui'
 type DetailWidth = 'narrow' | 'wide'
 
 const detailWidthClass: Record<DetailWidth, string> = {
-  narrow: 'max-w-[800px]',
-  wide: 'max-w-[1120px]',
+  narrow: 'container-sm',
+  wide: 'container',
 }
 
 type DetailPageProps = {
@@ -55,7 +55,7 @@ export function DetailContainer({
   width = 'narrow',
 }: DetailContainerProps) {
   return (
-    <div className={cn('container-sm', detailWidthClass[width], className)}>
+    <div className={cn(detailWidthClass[width], className)}>
       {children}
     </div>
   )
