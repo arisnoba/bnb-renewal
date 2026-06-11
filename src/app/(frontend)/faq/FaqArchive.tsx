@@ -7,7 +7,6 @@ import type { CenterSlug } from '@/lib/centers'
 import type { Faq } from '@/payload-types'
 
 import { FaqArchiveClient, type FaqCategoryTab } from './FaqArchive.client'
-import PageClient from '../news/page.client'
 
 const categoryOrder = [
   'admission',
@@ -58,8 +57,6 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
 
   return (
     <main className="page page-light page-faq page-top-offset" data-center={center}>
-      <PageClient />
-
       <section className="section-faq-list section-p-block-base" aria-labelledby="faq-list-title">
         <div className="container-sm">
           <div className="section-faq-list__head page-heading">

@@ -10,9 +10,9 @@
   --site-header-family-border-color: transparent;
   --site-header-strong-control-border-color: rgba(255, 255, 255, 0.86);
   --site-header-text-shadow: 0 1px 14px rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(0);
-  background: rgba(0, 0, 0, 0);
-  border-bottom: 1px solid transparent;
+  backdrop-filter: none;
+  background: #0c0c0c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   inset-inline: 0;
   height: var(--site-header-height);
@@ -23,6 +23,14 @@
     border-color 180ms ease,
     backdrop-filter 180ms ease;
   z-index: 50;
+
+  body:has(.page-dark, [data-page-tone='dark']) &:not([data-scrolled='true']):not(.is-hover):not(
+      :has(.site-header__mobile-panel[data-open='true'])
+    ) {
+    backdrop-filter: blur(0);
+    background: rgba(0, 0, 0, 0);
+    border-color: transparent;
+  }
 
   &::after {
     background: #0c0c0c;
@@ -65,18 +73,6 @@
     background: rgba(0, 0, 0, 0.62);
     border-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(16px);
-    color: #fff;
-  }
-
-  body[data-page-tone='light'] & {
-    --site-header-control-border-color: rgba(255, 255, 255, 0.7);
-    --site-header-control-hover-bg: rgba(255, 255, 255, 0.12);
-    --site-header-family-border-color: transparent;
-    --site-header-strong-control-border-color: rgba(255, 255, 255, 0.86);
-    --site-header-text-shadow: 0 1px 14px rgba(0, 0, 0, 0.36);
-    background: #0c0c0c;
-    border-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: none;
     color: #fff;
   }
 }

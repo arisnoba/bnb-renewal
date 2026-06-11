@@ -12,7 +12,6 @@ import type { Post } from '@/payload-types'
 
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
 export const dynamic = 'force-dynamic'
@@ -61,9 +60,7 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) notFound()
 
   return (
-    <article className="pt-16 pb-16">
-      <PageClient />
-
+    <article className="page page-light page-post-detail pt-16 pb-16">
       {draft && <LivePreviewListener />}
 
       <PostHero post={post} />

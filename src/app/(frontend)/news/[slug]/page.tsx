@@ -22,7 +22,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../../_components/DetailLayout'
-import PageClient from './page.client'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,8 +71,6 @@ export default async function NewsDetail({ params: paramsPromise }: Args) {
 
   return (
     <DetailPage>
-      <PageClient />
-
       <DetailBackLink href="/news" label="NEWS&NOTICE" />
 
       <DetailContainer>

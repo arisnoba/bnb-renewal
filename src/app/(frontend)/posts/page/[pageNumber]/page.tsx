@@ -6,7 +6,6 @@ import { Pagination } from '@/components/Pagination'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
-import PageClient from './page.client'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
@@ -35,8 +34,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   })
 
   return (
-    <div className="pt-24 pb-24">
-      <PageClient />
+    <main className="page page-light page-posts-archive page-top-offset pb-24">
       <div className="container mb-16">
         <div className="prose max-w-none">
           <h1>Posts</h1>
@@ -59,7 +57,7 @@ export default async function Page({ params: paramsPromise }: Args) {
           <Pagination page={posts.page} totalPages={posts.totalPages} />
         )}
       </div>
-    </div>
+    </main>
   )
 }
 

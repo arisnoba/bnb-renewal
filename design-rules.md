@@ -370,6 +370,8 @@ Tailwind로 작성해야 하는 것:
 
 표면 톤과 상단 offset은 페이지 식별 클래스에 묶지 않는다. `오시는 길`, `등급제 교육관리시스템`처럼 hero 비주얼이 있는 화면은 `page-dark`를 쓰되 hero 섹션이 자체 여백을 담당하므로 `page-top-offset`을 붙이지 않는다. `자주하는 질문`, `스타카드`, 상세 페이지처럼 첫 콘텐츠가 바로 시작되는 화면은 `page-light page-top-offset`을 붙인다.
 
+GNB 톤은 React Provider 없이 CSS가 페이지 마크업을 기준으로 결정한다. `.page-dark` 루트가 있거나 DOM 안에 `[data-page-tone='dark']` 마커가 있으면 고정 GNB를 어두운 히어로 위에 띄우는 상태로 본다. 밝은 표면이지만 첫 히어로가 어두운 화면은 페이지 루트나 히어로 섹션에 `data-page-tone="dark"`를 붙인다.
+
 `page-top-offset`의 상단 여백은 Tailwind `pt-*` 값에 의존하지 않고 아래 전역 변수로 관리한다.
 
 ```css
@@ -406,6 +408,10 @@ Tailwind로 작성해야 하는 것:
 
 .page-top-offset {
   padding-top: var(--page-top-offset-padding);
+}
+
+body:has(.page-dark, [data-page-tone='dark']) {
+  /* GNB 다크 트리거와 어두운 토큰 분기 */
 }
 ```
 

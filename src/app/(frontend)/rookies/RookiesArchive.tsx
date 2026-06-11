@@ -17,7 +17,6 @@ import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 
 import { FilterChips } from '../_components/FilterChips'
-import PageClient from './page.client'
 
 const ITEMS_PER_PAGE = 16
 
@@ -113,9 +112,11 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
   ]
 
   return (
-    <main className="page page-light page-rookies-archive" data-center={center}>
-      <PageClient pageTone="dark" />
-
+    <main
+      className="page page-light page-rookies-archive"
+      data-center={center}
+      data-page-tone="dark"
+    >
       <section className="section-rookies-hero" aria-labelledby="rookies-hero-title">
         <div className="section-rookies-hero__background" aria-hidden="true" />
         <PageDeco

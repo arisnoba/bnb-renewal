@@ -20,8 +20,6 @@ import {
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 
-import PageClient from './page.client'
-
 const ITEMS_PER_PAGE = 16
 
 type ArtistPressArchiveProps = {
@@ -86,9 +84,11 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
   const totalPages = Math.max(artistPress.totalPages || 1, 1)
 
   return (
-    <main className="page page-light page-artist-press-archive" data-center={center}>
-      <PageClient pageTone="dark" />
-
+    <main
+      className="page page-light page-artist-press-archive"
+      data-center={center}
+      data-page-tone="dark"
+    >
       <section
         className="section-artist-press-hero"
         aria-labelledby="artist-press-hero-title"

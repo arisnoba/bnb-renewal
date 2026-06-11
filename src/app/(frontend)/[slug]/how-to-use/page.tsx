@@ -7,8 +7,6 @@ import { notFound } from 'next/navigation'
 import { assertCenter } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
-import PageClient from '../page.client'
-
 type Args = {
   params: Promise<{
     slug: string
@@ -158,8 +156,6 @@ export default async function ArtHowToUsePage({ params }: Args) {
 
   return (
     <main className="page page-light page-how-to-use page-top-offset" data-center="art">
-      <PageClient pageTone="light" />
-
       <section
         className="section-how-to-use section-p-block-base bg-white text-[#222]"
         aria-labelledby="how-to-use-title"

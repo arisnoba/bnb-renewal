@@ -14,7 +14,6 @@ import Link from 'next/link'
 import React from 'react'
 
 import { FilterChips } from '../_components/FilterChips'
-import PageClient from './page.client'
 
 type NewsCategory = {
   key: string
@@ -158,8 +157,6 @@ export async function NewsArchive({
 
   return (
     <main className="page page-light page-news-archive page-top-offset" data-center={center}>
-      <PageClient />
-
       <section className="section-news-list section-p-block-base" aria-labelledby="news-list-title">
         <div className="section-news-list__container">
           <header className="section-news-list__head page-heading">

@@ -4,7 +4,6 @@ import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import { notFound } from 'next/navigation'
 
-import PageClient from '../page.client'
 import { GradeSystemTabs } from './GradeSystemTabs.client'
 
 type Args = {
@@ -44,7 +43,6 @@ export default async function ArtGradeSystemPage({ params }: Args) {
 
   return (
     <main className="page page-dark page-grade-system" data-center="art">
-      <PageClient pageTone="dark" />
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
         <div
           aria-hidden="true"

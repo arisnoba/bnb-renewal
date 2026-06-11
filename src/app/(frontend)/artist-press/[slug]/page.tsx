@@ -22,7 +22,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../../_components/DetailLayout'
-import PageClient from './page.client'
 
 export const dynamic = 'force-dynamic'
 
@@ -84,8 +83,6 @@ export async function ArtistPressDetailPage({
 
   return (
     <DetailPage center={center}>
-      <PageClient />
-
       <DetailBackLink href={center ? `/${center}/artist-press` : '/artist-press'} label="BNB출신 아티스트" />
 
       <DetailContainer>

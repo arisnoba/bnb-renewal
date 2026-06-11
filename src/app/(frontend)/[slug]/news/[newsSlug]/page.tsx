@@ -22,7 +22,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../../../_components/DetailLayout'
-import PageClient from '../../../news/page.client'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,8 +49,6 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
 
   return (
     <DetailPage center={center}>
-      <PageClient />
-
       <DetailBackLink href={`/${center}/news`} label="NEWS&NOTICE" />
 
       <DetailContainer>

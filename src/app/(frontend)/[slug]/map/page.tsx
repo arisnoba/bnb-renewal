@@ -5,7 +5,6 @@ import { assertCenter } from '@/lib/centers'
 import { centerLocationList, centerLocations } from '@/lib/centerLocations'
 
 import { MapContent } from './MapContent.client'
-import MapPageClient from './MapPage.client'
 
 type Args = {
   params: Promise<{
@@ -37,7 +36,6 @@ export default async function CenterMapPage({ params }: Args) {
 
   return (
     <main className="page page-dark map-page" data-center={center}>
-      <MapPageClient />
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
         <div
           aria-hidden="true"

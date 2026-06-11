@@ -16,7 +16,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { PageToneClient } from '../_components/PageToneClient'
 
 export type ProfileDetailParams = {
   center?: string
@@ -93,8 +92,6 @@ export async function ProfileDetailPage({
 
   return (
     <DetailPage center={center}>
-      <PageToneClient />
-
       <DetailBackLink href={backHref} label={center ? 'BNB 루키' : '프로필'} width="wide" />
 
       <DetailContainer width="wide">

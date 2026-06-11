@@ -5,7 +5,6 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import { Search } from '@/search/Component'
-import PageClient from './page.client'
 import { CardPostData } from '@/components/Card'
 
 type Args = {
@@ -66,8 +65,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     }))
 
   return (
-    <div className="pt-24 pb-24">
-      <PageClient />
+    <main className="page page-light page-search page-top-offset pb-24">
       <div className="container mb-16">
         <div className="prose max-w-none text-center">
           <h1 className="mb-8 lg:mb-16">Search</h1>
@@ -83,7 +81,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       ) : (
         <div className="container">No results found.</div>
       )}
-    </div>
+    </main>
   )
 }
 
