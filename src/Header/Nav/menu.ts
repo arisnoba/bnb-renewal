@@ -223,14 +223,14 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'art') {
     return [
       { href: `/${center}/artist-press`, label: 'BNB출신 아티스트' },
-      { href: centerHref(center, 'rookies'), label: 'BNB 루키' },
+      { href: `/${center}/rookies`, label: 'BNB 루키' },
     ]
   }
 
   return [
     { href: centerHref(center, 'management-system'), label: '매니지먼트 시스템' },
     { href: centerHref(center, 'schedule'), label: '촬영ㆍ오디션 스케줄' },
-    ...(center === 'highteen' ? [{ href: centerHref(center, 'rookies'), label: 'BNB 루키' }] : []),
+    ...(center === 'highteen' ? [{ href: `/${center}/rookies`, label: 'BNB 루키' }] : []),
     ...(center === 'kids' ? [{ href: centerHref(center, 'profiles'), label: '아역배우 프로필' }] : []),
     { href: centerHref(center, 'profile-production'), label: '프로필 촬영ㆍ제작' },
   ]

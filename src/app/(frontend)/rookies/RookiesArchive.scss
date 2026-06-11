@@ -1,0 +1,335 @@
+.section-rookies-hero {
+  background: #000;
+  color: #fff;
+  height: 800px;
+  overflow: hidden;
+  position: relative;
+}
+
+.section-rookies-hero__background {
+  background:
+    linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 60%)),
+    url('/assets/rookies/hero.png') center 36% / cover no-repeat;
+  inset: 0;
+  opacity: 0.6;
+  position: absolute;
+}
+
+.section-rookies-hero__deco {
+  height: 360px;
+  width: 360px;
+}
+
+.section-rookies-hero__deco--left {
+  left: -156px;
+  top: 345px;
+}
+
+.section-rookies-hero__deco--center {
+  border-radius: 9999px;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(40%);
+}
+
+.section-rookies-hero__deco--right {
+  right: -124px;
+  top: 158px;
+}
+
+.section-rookies-hero__content {
+  bottom: 120px;
+  left: max(20px, calc((100vw - 1120px) / 2));
+  position: absolute;
+  width: min(100% - 40px, 420px);
+  z-index: 1;
+}
+
+.section-rookies-hero__eyebrow {
+  color: var(--brand);
+  margin: 0 0 4px;
+}
+
+.section-rookies-hero__title {
+  color: #fff;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.section-rookies-list {
+  background: #fff;
+  color: #222;
+  padding-block: 120px;
+}
+
+.section-rookies-list__container {
+  margin-inline: auto;
+  width: min(100% - 40px, 1120px);
+}
+
+.section-rookies-list__head {
+  margin-bottom: 100px;
+}
+
+.section-rookies-list__eyebrow {
+  color: var(--brand);
+  margin: 0 0 40px;
+}
+
+.section-rookies-list__title {
+  color: #222;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.section-rookies-list__description {
+  color: #666;
+  margin: 40px 0 0;
+  word-break: keep-all;
+}
+
+.section-rookies-list__content {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.section-rookies-list__tabs {
+  align-self: flex-start;
+}
+
+.section-rookies-list__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.section-rookies-list__empty {
+  border-block: 1px solid rgb(34 34 34 / 10%);
+  color: rgb(34 34 34 / 55%);
+  margin: 0;
+  padding-block: 72px;
+  text-align: center;
+}
+
+.section-rookies-card {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
+.section-rookies-card__inner {
+  aspect-ratio: 1 / 1;
+  background: #b3b3b3;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  clip-path: inset(0 round 12px);
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+  transform: translateZ(0);
+  transition:
+    border-radius 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease,
+    clip-path 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms ease;
+  will-change: border-radius, clip-path, transform;
+  width: 100%;
+}
+
+.section-rookies-card:hover .section-rookies-card__inner,
+.section-rookies-card:focus-visible .section-rookies-card__inner {
+  border-radius: 50%;
+  box-shadow: 0 14px 32px rgb(0 0 0 / 12%);
+  clip-path: inset(0 round 50%);
+  transform: translateY(-2px);
+}
+
+.section-rookies-card__media,
+.section-rookies-card__picture,
+.section-rookies-card__image,
+.section-rookies-card__placeholder {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.section-rookies-card__media {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.section-rookies-card__picture {
+  position: relative;
+}
+
+.section-rookies-card__image {
+  filter: grayscale(1);
+  object-fit: cover;
+  object-position: center top;
+  transition:
+    filter 220ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section-rookies-card:hover .section-rookies-card__image,
+.section-rookies-card:focus-visible .section-rookies-card__image {
+  filter: grayscale(0.85);
+  transform: scale(1.08);
+}
+
+.section-rookies-card__placeholder {
+  background: linear-gradient(135deg, #d7d7d7, #9f9f9f);
+}
+
+.section-rookies-card__overlay {
+  background: rgb(0 0 0 / 50%);
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 220ms ease;
+  z-index: 1;
+}
+
+.section-rookies-card__info {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  inset: 50% auto auto 50%;
+  max-width: calc(100% - 48px);
+  opacity: 0;
+  padding: 8px 16px;
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%, -42%);
+  transition:
+    opacity 180ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.section-rookies-card:hover .section-rookies-card__overlay,
+.section-rookies-card:hover .section-rookies-card__info,
+.section-rookies-card:focus-visible .section-rookies-card__overlay,
+.section-rookies-card:focus-visible .section-rookies-card__info {
+  opacity: 1;
+}
+
+.section-rookies-card:hover .section-rookies-card__info,
+.section-rookies-card:focus-visible .section-rookies-card__info {
+  transform: translate(-50%, -50%);
+  transition-delay: 80ms;
+}
+
+.section-rookies-card__names,
+.section-rookies-card__name,
+.section-rookies-card__english,
+.section-rookies-card__meta {
+  margin: 0;
+}
+
+.section-rookies-pagination {
+  margin-top: 0;
+}
+
+.section-rookies-pagination__content {
+  gap: 4px;
+}
+
+.section-rookies-pagination__link,
+.section-rookies-pagination__ellipsis {
+  align-items: center;
+  border-radius: 8px;
+  color: #0a0a0a;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  min-width: 36px;
+  padding-inline: 12px;
+  text-decoration: none;
+}
+
+.section-rookies-pagination__link[data-active='true'] {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 10%);
+}
+
+.section-rookies-pagination__link[data-disabled='true'] {
+  color: rgb(34 34 34 / 35%);
+}
+
+@media (max-width: 1279px) {
+  .section-rookies-list__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  .section-rookies-list__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .section-rookies-hero {
+    height: 620px;
+  }
+
+  .section-rookies-hero__deco {
+    border-width: 64px;
+    height: 220px;
+    width: 220px;
+  }
+
+  .section-rookies-hero__deco--left {
+    left: -120px;
+    top: 300px;
+  }
+
+  .section-rookies-hero__deco--center {
+    bottom: -70px;
+    transform: translateX(8%);
+  }
+
+  .section-rookies-hero__deco--right {
+    right: -112px;
+    top: 110px;
+  }
+
+  .section-rookies-hero__content {
+    bottom: 72px;
+    width: min(100% - 32px, 360px);
+  }
+
+  .section-rookies-list {
+    padding-block: 72px 88px;
+  }
+
+  .section-rookies-list__container {
+    width: min(100% - 32px, 1120px);
+  }
+
+  .section-rookies-list__head {
+    margin-bottom: 48px;
+  }
+
+  .section-rookies-list__eyebrow {
+    margin-bottom: 24px;
+  }
+
+  .section-rookies-list__description {
+    margin-top: 24px;
+  }
+
+  .section-rookies-list__description br {
+    display: none;
+  }
+
+  .section-rookies-list__content {
+    gap: 36px;
+  }
+}

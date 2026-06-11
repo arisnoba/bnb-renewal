@@ -41,11 +41,18 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.ok(!labels.includes('매니지먼트 시스템'))
   assert.ok(!labels.includes('온라인 상담신청'))
   assert.ok(labelsForGroup('art', 'artist').includes('BNB출신 아티스트'))
+  assert.ok(labelsForGroup('art', 'artist').includes('BNB 루키'))
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
     '/art/artist-press',
+  )
+  assert.equal(
+    getHeaderMenu('art')
+      .find((group) => group.key === 'artist')
+      ?.items.find((item) => item.label === 'BNB 루키')?.href,
+    '/art/rookies',
   )
 })
 
