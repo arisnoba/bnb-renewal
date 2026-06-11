@@ -22,7 +22,7 @@ export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
     <section className="container section-p-block-base" data-center={selectedCenter}>
       <div className="mb-12 flex flex-col gap-10">
         <div>
-          <p className="mb-10 text-xl font-bold leading-[1.4] text-brand">오시는 길</p>
+          <p className="mb-10 type-title-l font-bold leading-[1.4] text-brand">오시는 길</p>
           <h2 className="font-['Pyeojin_Gothic','Pretendard',sans-serif] text-[36px] font-bold leading-[1.25] tracking-normal md:text-5xl md:leading-[1.35]">
             배우의 가능성이 완성되는 공간
             <br />
@@ -38,7 +38,7 @@ export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
               <button
                 aria-current={isSelected ? 'page' : undefined}
                 className={cn(
-                  'inline-flex h-11 items-center justify-center border px-5 text-sm font-bold leading-none transition-colors',
+                  'inline-flex h-11 items-center justify-center border px-5 type-label-m font-bold leading-none transition-colors',
                   isSelected
                     ? 'border-brand bg-brand text-white'
                     : 'border-white/10 bg-[#1f1f1f] text-white/60 hover:border-white/30 hover:text-white',
@@ -85,9 +85,9 @@ function InfoItem({
     <section className="flex min-h-[78px] min-w-0 flex-wrap items-center gap-x-7 gap-y-2 rounded-md bg-[#1f1f1f] p-6 md:p-7">
       <div className="flex shrink-0 items-center gap-3 text-white">
         <span className="text-[#4f4f4f]">{icon}</span>
-        <h3 className="text-base font-bold leading-[1.5]">{label}</h3>
+        <h3 className="type-title-s font-bold leading-[1.5]">{label}</h3>
       </div>
-      <p className="min-w-0 text-sm leading-[1.5] text-white/60">{children}</p>
+      <p className="min-w-0 type-body-s leading-[1.5] text-white/60">{children}</p>
     </section>
   )
 }
