@@ -115,7 +115,7 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
     return (
       <video
         autoPlay
-        className="section-main-banner__media"
+        className="section-main-banner__media absolute inset-0 h-full w-full object-cover"
         loop
         muted
         playsInline
@@ -132,7 +132,7 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
       {mobileImageUrl && <source media="(max-width: 767px)" srcSet={mobileImageUrl} />}
       <img
         alt={alt}
-        className="section-main-banner__media"
+        className="section-main-banner__media absolute inset-0 h-full w-full object-cover"
         loading="eager"
         src={desktopImageUrl || mobileImageUrl}
       />
@@ -146,22 +146,46 @@ function formatCount(value: number) {
 
 function BannerStatisticsPanel({ statistics }: { statistics: MainBannerStatistics }) {
   return (
-    <aside aria-label="센터 주요 통계" className="section-main-banner__stats">
-      <div className="section-main-banner__stat-total">
-        <span>누적작품수</span>
-        <strong>{formatCount(statistics.totalWorkCount)}</strong>
+    <aside
+      aria-label="센터 주요 통계"
+      className={cn(
+        'section-main-banner__stats relative z-10 self-end overflow-hidden rounded-2xl',
+        'border border-white/10 bg-black/60 shadow-[0_22px_44px_rgba(0,0,0,0.36)]',
+        'max-[980px]:hidden',
+      )}
+    >
+      <div className="section-main-banner__stat-total flex min-h-[74px] items-center justify-between border-b border-white/10 px-6 py-[18px]">
+        <span className="text-[16px] font-black">누적작품수</span>
+        <strong className="text-[26px] font-black leading-none">
+          {formatCount(statistics.totalWorkCount)}
+        </strong>
       </div>
       {statistics.groups.map((group) => (
-        <div className="section-main-banner__stat-group" key={group.title}>
-          <div className="section-main-banner__stat-group-head">
-            <span>{group.title}</span>
-            <Plus aria-hidden="true" size={18} strokeWidth={3} />
+        <div
+          className="section-main-banner__stat-group grid gap-3.5 border-b border-white/10 px-6 pb-6 pt-5 last:border-b-0"
+          key={group.title}
+        >
+          <div className="section-main-banner__stat-group-head flex items-center gap-2.5">
+            <span className="text-[16px] font-black">{group.title}</span>
+            <Plus
+              aria-hidden="true"
+              className="rounded-full bg-white p-[3px] text-[#111]"
+              size={18}
+              strokeWidth={3}
+            />
           </div>
-          <div className="section-main-banner__stat-items">
+          <div className="section-main-banner__stat-items grid grid-cols-2 gap-1">
             {group.items.map((item) => (
-              <div className="section-main-banner__stat-item" key={item.label}>
-                <span>{item.label}</span>
-                <strong>{formatCount(item.value)}명</strong>
+              <div
+                className="section-main-banner__stat-item grid min-h-16 items-center gap-[5px] rounded-md border border-white/10 px-2 py-2.5 text-center"
+                key={item.label}
+              >
+                <span className="text-[13px] font-bold leading-[1.35] text-white/60">
+                  {item.label}
+                </span>
+                <strong className="text-[15px] font-black leading-none">
+                  {formatCount(item.value)}명
+                </strong>
               </div>
             ))}
           </div>
@@ -191,19 +215,76 @@ function BannerSlide({
     <section
       data-center={center}
       className={cn(
-        'section-main-banner',
+        'section-main-banner relative isolate min-h-svh overflow-hidden bg-[#111] text-white',
         isSingle ? 'w-full' : 'h-full',
       )}
     >
       <BannerVisual banner={banner} />
-      <div className="section-main-banner__overlay" />
-      <div className="section-main-banner__brand-block" aria-hidden="true" />
-      <div className="section-main-banner__brand-ring" aria-hidden="true" />
-      <div className="container section-main-banner__content">
-        <div className="section-main-banner__copy">
-          {broadcaster && <p className="section-main-banner__badge">{broadcaster}</p>}
-          <h2 className="section-main-banner__title">{title}</h2>
-          {description && <p className="section-main-banner__description">{description}</p>}
+      <div className="section-main-banner__overlay absolute inset-0 z-[1]" />
+      <div
+        className={cn(
+          'section-main-banner__brand-block absolute left-0 top-0 z-[2]',
+          'h-[var(--section-main-banner-brand-block-height)]',
+          'w-[var(--section-main-banner-brand-block-width)] bg-brand',
+          'max-[980px]:opacity-[0.86]',
+        )}
+        aria-hidden="true"
+      />
+      <div
+        className={cn(
+          'section-main-banner__brand-ring absolute bottom-[-4%] right-[-3%] z-[2]',
+          'size-[var(--section-main-banner-brand-ring-size)] rounded-full',
+          'border-[length:var(--section-main-banner-brand-ring-border)] border-brand',
+          'max-[980px]:right-[-18%] max-[980px]:opacity-[0.72]',
+        )}
+        aria-hidden="true"
+      />
+      <div
+        className={cn(
+          'container section-main-banner__content relative z-10 grid min-h-svh items-end',
+          'grid-cols-[minmax(0,1fr)_minmax(240px,260px)]',
+          'gap-[var(--section-main-banner-content-gap)]',
+          'pb-[calc(var(--section-main-banner-marquee-height)+var(--section-main-banner-content-bottom-offset))]',
+          'pt-[calc(var(--admin-bar-height,0px)+120px)]',
+          'max-[980px]:content-end max-[980px]:grid-cols-1',
+          'max-[980px]:pb-[calc(var(--section-main-banner-marquee-height)+84px)]',
+          'max-[980px]:pt-[calc(var(--admin-bar-height,0px)+100px)]',
+          'max-[640px]:pb-[calc(var(--section-main-banner-marquee-height)+64px)]',
+        )}
+      >
+        <div className="section-main-banner__copy max-w-[520px] max-[980px]:max-w-[620px] min-[981px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
+          {broadcaster && (
+            <p
+              className={cn(
+                'section-main-banner__badge mb-[22px] inline-flex min-h-8 items-center',
+                'rounded-full bg-[#78a8ff] px-[13px] py-[5px]',
+                'text-[22px] font-black leading-none text-[#050505]',
+                'max-[640px]:min-h-7 max-[640px]:text-[16px]',
+              )}
+            >
+              {broadcaster}
+            </p>
+          )}
+          <h2
+            className={cn(
+              'section-main-banner__title m-0 text-balance font-black leading-[1.05]',
+              'text-[length:var(--section-main-banner-title-size)] tracking-normal text-white',
+              'max-[640px]:text-[length:var(--section-main-banner-title-size-mobile)]',
+            )}
+          >
+            {title}
+          </h2>
+          {description && (
+            <p
+              className={cn(
+                'section-main-banner__description mt-[22px] max-w-[480px] font-semibold',
+                'text-[length:var(--section-main-banner-description-size)] leading-[1.65] text-white/80',
+                'max-[640px]:text-[14px]',
+              )}
+            >
+              {description}
+            </p>
+          )}
         </div>
         {statistics && <BannerStatisticsPanel statistics={statistics} />}
       </div>
@@ -220,13 +301,18 @@ function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
   }
 
   return (
-    <div className="section-main-banner__link-marquee">
-      <div className="container">
-        <div className="section-main-banner__link-track">
+    <div className="section-main-banner__link-marquee absolute inset-x-0 bottom-0 z-20 overflow-hidden border-t border-white/10 bg-black/35 text-white backdrop-blur-md">
+      <div className="container overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="section-main-banner__link-track flex min-w-full w-max gap-2">
           {items.map((item, index) => (
             <Link
               aria-label={item.label}
-              className="section-main-banner__link-pill"
+              className={cn(
+                'section-main-banner__link-pill inline-flex h-10 max-w-[76vw] items-center',
+                'rounded-full border border-white/20 bg-white/10 px-4',
+                'text-[14px] font-bold text-white transition-colors',
+                'hover:border-white/45 hover:bg-white/20',
+              )}
               href={item.href}
               key={`${item.href}-${item.label}-${index}`}
             >
@@ -278,15 +364,21 @@ function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
 
   return (
     <div
-      className="section-main-banner__profile-marquee"
+      className={cn(
+        'section-main-banner__profile-marquee absolute inset-x-0 bottom-0 z-20',
+        'min-h-[var(--section-main-banner-marquee-height)] overflow-hidden',
+        'border-t border-white/10 bg-black/35 text-white backdrop-blur-md',
+        'data-[marquee=false]:overflow-x-auto data-[marquee=false]:[scrollbar-width:none]',
+        'data-[marquee=false]:[&::-webkit-scrollbar]:hidden',
+      )}
       data-marquee={shouldMarquee ? 'true' : 'false'}
       ref={containerRef}
     >
-      <div className="section-main-banner__profile-track">
+      <div className="section-main-banner__profile-track flex w-max gap-7 py-5 max-[640px]:gap-4">
         {cardSets.map((set, setIndex) => (
           <div
             aria-hidden={setIndex === 1 ? 'true' : undefined}
-            className="section-main-banner__profile-set gap-6"
+            className="section-main-banner__profile-set flex min-w-max gap-6 pl-5 max-[640px]:gap-4"
             key={setIndex}
             ref={setIndex === 0 ? setRef : undefined}
           >
@@ -320,8 +412,14 @@ function BannerProfileCard({
   const buttonLabel = String(item.buttonLabel || '자세히 보기').trim()
 
   return (
-    <article className="section-main-banner__profile-card">
-      <div className="section-main-banner__profile-image">
+    <article className="section-main-banner__profile-card grid h-[100px] w-60 grid-cols-[120px_108px] gap-3 max-[640px]:w-[190px] max-[640px]:grid-cols-[96px_82px]">
+      <div
+        className={cn(
+          'section-main-banner__profile-image h-[100px] w-[120px] overflow-hidden',
+          'rounded-xl bg-white/10 max-[640px]:w-24',
+          '[&_img]:block [&_img]:h-full [&_img]:w-full [&_img]:object-cover',
+        )}
+      >
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -330,17 +428,23 @@ function BannerProfileCard({
             src={imageUrl}
           />
         ) : (
-          <div className="section-main-banner__profile-placeholder" />
+          <div className="section-main-banner__profile-placeholder h-full w-full bg-white/10" />
         )}
       </div>
-      <div className="section-main-banner__profile-body items-start">
+      <div className="section-main-banner__profile-body flex min-w-0 flex-col items-start justify-between py-1">
         <div>
-          <h3>{name}</h3>
-          {roleLabel && <p>{roleLabel}</p>}
+          <h3 className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-[16px] font-black leading-[1.5]">
+            {name}
+          </h3>
+          {roleLabel && (
+            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-bold leading-[1.35] text-white/70">
+              {roleLabel}
+            </p>
+          )}
         </div>
         <Link
           aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
-          className="section-main-banner__profile-link "
+          className="section-main-banner__profile-link inline-flex h-[30px] items-center justify-center rounded-full border border-white/70 px-2.5 text-[12px] font-black leading-none text-white transition-colors hover:border-white hover:bg-white/10"
           href={item.href}
           tabIndex={duplicate ? -1 : undefined}
         >

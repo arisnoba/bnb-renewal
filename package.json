@@ -9,6 +9,7 @@
     "prebuild": "payload generate:types",
     "build": "next build",
     "start": "next start",
+    "check:design": "node scripts/check-fluid-styles.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "payload": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js",

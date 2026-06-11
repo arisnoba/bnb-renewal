@@ -1,7 +1,7 @@
 @use '../styles/mixins' as *;
 
 .site-header {
-  --site-header-nav-column-width: clamp(128px, 10vw, 164px);
+  --site-header-nav-column-width: #{fluid-clamp(128px, 164px, 1280px, 1640px)};
   --site-header-submenu-panel-height: 209px;
   --site-header-submenu-padding-bottom: 20px;
   --site-header-submenu-padding-top: 24px;
