@@ -13,7 +13,6 @@ import {
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
-  imagePathField,
   sidebarFields,
   slugField,
 } from "./shared";
@@ -138,7 +137,13 @@ export const Teachers: CollectionConfig = {
   defaultSort: "displayOrder",
   hooks: {
     afterChange: [
-      normalizeUploadedMediaPrefixes([{ path: "profileImageMedia", role: "teachers.profile-image" }]),
+      normalizeUploadedMediaPrefixes([
+        { path: "profileImageMedia", role: "teachers.profile-image" },
+        {
+          path: "representativeWorks.*.posterMedia",
+          role: "teachers.representative-work-poster",
+        },
+      ]),
     ],
     beforeChange: [normalizeTeacherSlugBeforeChange],
     beforeValidate: [centerScopedBeforeValidate, normalizeTeacherSlugBeforeValidate],
@@ -246,6 +251,7 @@ export const Teachers: CollectionConfig = {
               plural: "대표작",
               singular: "대표작",
             },
+            maxRows: 8,
             admin: {
               components: {
                 RowLabel:
@@ -259,7 +265,21 @@ export const Teachers: CollectionConfig = {
                 label: "제목",
               },
               {
-                ...imagePathField("posterPath", "포스터 이미지"),
+                name: "posterMedia",
+                type: "upload",
+                label: "포스터 이미지 업로드",
+                relationTo: "media",
+              },
+              {
+                name: "posterPath",
+                type: "text",
+                label: "포스터 이미지",
+                admin: {
+                  components: {
+                    Field: "@/components/payload/ImagePathField#ImagePathField",
+                  },
+                  description: "기존 레거시 경로입니다. 새 포스터는 위 업로드 필드를 사용해 주세요.",
+                },
               },
               {
                 name: "description",

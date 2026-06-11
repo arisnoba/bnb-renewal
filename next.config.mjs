@@ -51,6 +51,9 @@ const nextConfig = {
       {
         pathname: '/media/**',
       },
+      {
+        pathname: '/legacy/**',
+      },
     ],
     qualities: [100],
     remotePatterns,

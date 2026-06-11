@@ -28,6 +28,7 @@ export const R2_MEDIA_PREFIX_BY_ROLE = {
   'star-cards.image': 'media/star-cards/images',
   'teacher-files.image': 'media/teacher-files/images',
   'teachers.profile-image': 'media/teachers/profile-images',
+  'teachers.representative-work-poster': 'media/teachers/representative-work-posters',
 } as const
 
 export type R2MediaRole = keyof typeof R2_MEDIA_PREFIX_BY_ROLE
@@ -60,6 +61,7 @@ const R2_MEDIA_FILENAME_BASE_BY_ROLE: Record<R2MediaRole, string> = {
   'star-cards.image': 'star-card-image',
   'teacher-files.image': 'teacher-file-image',
   'teachers.profile-image': 'teacher-profile-image',
+  'teachers.representative-work-poster': 'teacher-representative-work-poster',
 }
 
 type BuildR2MediaObjectKeyInput = {

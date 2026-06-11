@@ -16,15 +16,27 @@ type DetailPageProps = {
   center?: CenterSlug | string
   children: React.ReactNode
   className?: string
+  sectionClassName?: string
+  tone?: 'dark' | 'light'
 }
 
-export function DetailPage({ center, children, className }: DetailPageProps) {
+export function DetailPage({
+  center,
+  children,
+  className,
+  sectionClassName,
+  tone = 'light',
+}: DetailPageProps) {
   return (
     <article
-      className={cn('page page-light page-detail page-top-offset', className)}
+      className={cn(
+        'page page-detail page-top-offset',
+        tone === 'dark' ? 'page-dark' : 'page-light',
+        className,
+      )}
       data-center={center}
     >
-      <section className="section-detail section-p-b-base">
+      <section className={cn('section-detail section-p-block-base', sectionClassName)}>
         {children}
       </section>
     </article>
@@ -43,7 +55,7 @@ export function DetailContainer({
   width = 'narrow',
 }: DetailContainerProps) {
   return (
-    <div className={cn('container', detailWidthClass[width], className)}>
+    <div className={cn('container-sm', detailWidthClass[width], className)}>
       {children}
     </div>
   )

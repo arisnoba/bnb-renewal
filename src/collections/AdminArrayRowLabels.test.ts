@@ -153,6 +153,21 @@ test("teachers require media profile images and omit legacy path", () => {
   assert.equal(hasFieldDeep(Teachers, "profileImagePath"), false);
 });
 
+test("teacher representative works support media posters and max eight items", () => {
+  const field = getTabField(Teachers, "대표작", "representativeWorks");
+  const posterMedia = getFieldDeep(Teachers, "posterMedia");
+
+  assert.equal(field.type, "array");
+  assert.equal(field.maxRows, 8);
+  assert.equal(
+    field.admin?.components?.RowLabel,
+    "@/components/payload/TeacherRepresentativeWorkRowLabel#TeacherRepresentativeWorkRowLabel",
+  );
+  assert.equal(posterMedia.type, "upload");
+  assert.equal(posterMedia.label, "포스터 이미지 업로드");
+  assert.equal((posterMedia as { relationTo?: unknown }).relationTo, "media");
+});
+
 test("teachers generate unique name slugs", async () => {
   const hook = Teachers.hooks?.beforeChange?.at(-1);
 

@@ -113,6 +113,7 @@ import * as migration_20260602_184000_drop_main_statistics_collection_lock_rel f
 import * as migration_20260602_185000_main_settings_collection_lock_rels from './20260602_185000_main_settings_collection_lock_rels'
 import * as migration_20260608_120000_star_card_category from './20260608_120000_star_card_category'
 import * as migration_20260609_163500_terms from './20260609_163500_terms'
+import * as migration_20260611_191500_teacher_representative_work_poster_media from './20260611_191500_teacher_representative_work_poster_media'
 
 export const migrations = [
   {
@@ -689,5 +690,10 @@ export const migrations = [
     up: migration_20260609_163500_terms.up,
     down: migration_20260609_163500_terms.down,
     name: '20260609_163500_terms',
+  },
+  {
+    up: migration_20260611_191500_teacher_representative_work_poster_media.up,
+    down: migration_20260611_191500_teacher_representative_work_poster_media.down,
+    name: '20260611_191500_teacher_representative_work_poster_media',
   },
 ]
