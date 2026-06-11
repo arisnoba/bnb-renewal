@@ -2,13 +2,21 @@ import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
 import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
-import type { Profile } from '@/payload-types'
+import type { Media as PayloadMedia, Profile } from '@/payload-types'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import React, { cache } from 'react'
+
+import {
+  DetailBackLink,
+  DetailContainer,
+  DetailPage,
+  DetailPager,
+} from '../_components/DetailLayout'
+import { PageToneClient } from '../_components/PageToneClient'
 
 export type ProfileDetailParams = {
   center?: string
@@ -65,88 +73,123 @@ export async function ProfileDetailPage({
   const legacyImagePath = profile.profileImagePath || undefined
   const hasMediaImage = image && typeof image === 'object'
   const careerItems = profile.careerItems ?? []
+  const profileImages = [
+    hasMediaImage ? { resource: image, type: 'media' as const } : null,
+    !hasMediaImage && legacyImagePath ? { src: legacyImagePath, type: 'legacy' as const } : null,
+    ...[
+      profile.photoImage1,
+      profile.photoImage2,
+      profile.photoImage3,
+      profile.photoImage4,
+      profile.photoImage5,
+      profile.photoImage6,
+    ]
+      .filter((src): src is string => Boolean(src))
+      .map((src) => ({ src, type: 'legacy' as const })),
+  ].filter((item): item is ProfileImageItem => Boolean(item))
+  const [primaryImage, ...thumbnailImages] = profileImages
+  const backHref = center ? `/${center}/rookies` : '/profiles'
+  const adjacent = await queryAdjacentProfiles({ center, slug: profile.slug })
 
   return (
-    <article className="page page-light page-detail page-top-offset pb-24">
-      <div className="container grid gap-12 lg:grid-cols-[minmax(280px,420px)_1fr] lg:items-start">
-        <div className="overflow-hidden rounded-lg bg-muted">
-          {hasMediaImage ? (
-            <Media
-              imgClassName="h-auto w-full object-cover"
-              pictureClassName="block w-full"
-              priority
-              resource={image}
-              size="(max-width: 1024px) 100vw, 420px"
-            />
-          ) : legacyImagePath ? (
-            <Image
-              alt={profile.name}
-              className="h-auto w-full object-cover"
-              height={1200}
-              priority
-              src={legacyImagePath}
-              unoptimized
-              width={900}
-            />
-          ) : (
-            <div className="aspect-[3/4] w-full bg-muted" />
-          )}
-        </div>
+    <DetailPage center={center}>
+      <PageToneClient />
 
-        <div>
-          <div className="mb-5 flex flex-wrap gap-2 type-label-m text-muted-foreground">
-            {profile.centers.map((profileCenter) => (
-              <span className="rounded-full border border-border px-3 py-1" key={profileCenter}>
-                {profileCenter === 'all' ? '전체' : getCenterLabel(profileCenter)}
-              </span>
-            ))}
-            {profile.filter && (
-              <span className="rounded-full border border-border px-3 py-1">{profile.filter}</span>
+      <DetailBackLink href={backHref} label={center ? 'BNB 루키' : '프로필'} width="wide" />
+
+      <DetailContainer width="wide">
+        <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+          <div>
+            <div className="overflow-hidden bg-muted">
+              {primaryImage ? (
+                <ProfileImage
+                  alt={profile.name}
+                  image={primaryImage}
+                  imgClassName="aspect-[55/64] h-auto w-full object-cover object-top"
+                  priority
+                  size="(max-width: 1023px) 100vw, 550px"
+                />
+              ) : (
+                <div className="aspect-[55/64] w-full bg-muted" />
+              )}
+            </div>
+
+            {thumbnailImages.length > 0 && (
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                {thumbnailImages.slice(0, 6).map((thumbnail, index) => (
+                  <div className="overflow-hidden bg-muted" key={`${thumbnail.type}-${index}`}>
+                    <ProfileImage
+                      alt={`${profile.name} 이미지 ${index + 2}`}
+                      image={thumbnail}
+                      imgClassName="aspect-square h-auto w-full object-cover object-top"
+                      size="104px"
+                    />
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
-          <h1 className="type-display-xl font-semibold leading-tight tracking-normal">
-            {profile.name}
-          </h1>
-          <p className="mt-3 type-title-l text-muted-foreground">{profile.englishName}</p>
+          <div className="border border-border p-8 md:p-10">
+            <header className="border-b border-border pb-8">
+              <h1 className="type-headline-xl font-extrabold leading-[1.35] text-foreground">
+                {profile.name}
+              </h1>
+              {profile.englishName && (
+                <p className="mt-2 type-label-l font-semibold leading-[1.35] text-muted-foreground">
+                  {profile.englishName}
+                </p>
+              )}
+            </header>
 
-          {(profile.height || profile.weight) && (
-            <dl className="mt-8 grid max-w-sm grid-cols-2 gap-4 type-body-s">
+            <dl className="mt-8 space-y-5 type-body-m leading-[1.55]">
               {profile.height && (
-                <div>
-                  <dt className="text-muted-foreground">키</dt>
-                  <dd className="mt-1 type-title-m font-medium">{profile.height}</dd>
+                <div className="grid grid-cols-[100px_1fr] gap-4">
+                  <dt className="font-extrabold text-foreground">키</dt>
+                  <dd className="text-muted-foreground">{profile.height}</dd>
                 </div>
               )}
               {profile.weight && (
-                <div>
-                  <dt className="text-muted-foreground">몸무게</dt>
-                  <dd className="mt-1 type-title-m font-medium">{profile.weight}</dd>
+                <div className="grid grid-cols-[100px_1fr] gap-4">
+                  <dt className="font-extrabold text-foreground">몸무게</dt>
+                  <dd className="text-muted-foreground">{profile.weight}</dd>
+                </div>
+              )}
+              {profile.filter && (
+                <div className="grid grid-cols-[100px_1fr] gap-4">
+                  <dt className="font-extrabold text-foreground">구분</dt>
+                  <dd className="text-muted-foreground">{profile.filter}</dd>
                 </div>
               )}
             </dl>
-          )}
 
-          {careerItems.length > 0 && (
-            <section className="mt-12">
-              <h2 className="type-headline-s font-semibold">경력</h2>
-              <div className="mt-6 divide-y divide-border border-y border-border">
+            {careerItems.length > 0 && (
+              <section className="mt-10 space-y-6">
                 {careerItems.map((item) => (
-                  <div className="grid gap-3 py-5 md:grid-cols-[140px_1fr]" key={item.id ?? item.title}>
-                    <h3 className="font-medium">{item.title}</h3>
+                  <div
+                    className="grid gap-4 type-body-m leading-[1.55] md:grid-cols-[100px_1fr]"
+                    key={item.id ?? item.title}
+                  >
+                    <h2 className="font-extrabold text-foreground">{item.title}</h2>
                     {item.content && (
-                      <p className="whitespace-pre-line leading-7 text-muted-foreground">
+                      <p className="whitespace-pre-line text-muted-foreground">
                         {item.content}
                       </p>
                     )}
                   </div>
                 ))}
-              </div>
-            </section>
-          )}
+              </section>
+            )}
+          </div>
         </div>
-      </div>
-    </article>
+      </DetailContainer>
+
+      <DetailPager
+        nextHref={adjacent.nextHref}
+        previousHref={adjacent.previousHref}
+        width="wide"
+      />
+    </DetailPage>
   )
 }
 
@@ -227,6 +270,62 @@ const queryProfileBySlug = cache(async ({ center, slug }: { center?: CenterSlug;
   return profile
 })
 
+const queryAdjacentProfiles = cache(
+  async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload
+      .find({
+        collection: 'profiles',
+        depth: 0,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        select: {
+          slug: true,
+        },
+        sort: '-publishedAt',
+        where: {
+          and: [
+            {
+              displayStatus: {
+                equals: 'published',
+              },
+            },
+            ...(center
+              ? [
+                  {
+                    or: [
+                      {
+                        centers: {
+                          contains: center,
+                        },
+                      },
+                      {
+                        centers: {
+                          contains: 'all',
+                        },
+                      },
+                    ],
+                  },
+                ]
+              : []),
+          ],
+        },
+      })
+      .catch(() => ({ docs: [] }))
+
+    const index = result.docs.findIndex((item) => item.slug === slug)
+    const previous = index >= 0 ? result.docs[index + 1] : undefined
+    const next = index > 0 ? result.docs[index - 1] : undefined
+    const pathPrefix = center ? `/${center}/profiles` : '/profiles'
+
+    return {
+      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+    }
+  },
+)
+
 function profileBelongsToCenter(profile: Profile, center: CenterSlug) {
   return profile.centers.includes('all') || profile.centers.includes(center)
 }
@@ -237,4 +336,53 @@ function profileCenterSlugs(profile: Profile) {
   }
 
   return profile.centers.filter((center): center is CenterSlug => center in centers)
+}
+
+type ProfileImageItem =
+  | {
+      resource: PayloadMedia
+      type: 'media'
+    }
+  | {
+      src: string
+      type: 'legacy'
+    }
+
+function ProfileImage({
+  alt,
+  image,
+  imgClassName,
+  priority,
+  size,
+}: {
+  alt: string
+  image: ProfileImageItem
+  imgClassName: string
+  priority?: boolean
+  size: string
+}) {
+  if (image.type === 'media') {
+    return (
+      <Media
+        htmlElement={null}
+        imgClassName={imgClassName}
+        pictureClassName="block w-full"
+        priority={priority}
+        resource={image.resource}
+        size={size}
+      />
+    )
+  }
+
+  return (
+    <Image
+      alt={alt}
+      className={imgClassName}
+      height={1200}
+      priority={priority}
+      src={image.src}
+      unoptimized
+      width={900}
+    />
+  )
 }

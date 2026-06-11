@@ -15,6 +15,13 @@ import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import React, { cache } from 'react'
 
+import {
+  DetailBackLink,
+  DetailContainer,
+  DetailHeader,
+  DetailPage,
+  DetailPager,
+} from '../../_components/DetailLayout'
 import PageClient from './page.client'
 
 export const dynamic = 'force-dynamic'
@@ -71,45 +78,47 @@ export async function ArtistPressDetailPage({
 
   const media = getArtistPressThumbnailMedia(artistPress)
   const description = getArtistPressDescription(artistPress)
-  const publishedAt = formatDateTime(artistPress.publishedAt)
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
+  const eyebrow = [artistPress.actorName, artistPress.generation].filter(Boolean).join(' ')
+  const adjacent = await queryAdjacentArtistPress({ center, slug: artistPress.slug })
 
   return (
-    <article className="page page-light page-detail page-top-offset pb-24" data-center={center}>
+    <DetailPage center={center}>
       <PageClient />
 
-      <header className="container page-heading max-w-5xl">
-        <div className="page-eyebrow flex flex-wrap gap-2 text-muted-foreground">
-          {artistPress.actorName && <span>{artistPress.actorName}</span>}
-          {artistPress.generation && <span>{artistPress.generation}</span>}
-          {publishedAt && <time dateTime={artistPress.publishedAt ?? undefined}>{publishedAt}</time>}
-        </div>
-        <h1 className="page-title max-w-4xl">
-          {artistPress.title}
-        </h1>
-        {description && <p className="page-desc max-w-3xl">{description}</p>}
-      </header>
+      <DetailBackLink href={center ? `/${center}/artist-press` : '/artist-press'} label="BNB출신 아티스트" />
 
-      {media && (
-        <div className="container mt-10 max-w-5xl">
-          <div className="overflow-hidden rounded-lg bg-muted">
+      <DetailContainer>
+        <DetailHeader
+          dateTime={artistPress.publishedAt}
+          description={description}
+          eyebrow={eyebrow}
+          title={artistPress.title}
+        />
+
+        {media && (
+          <div className="mx-auto mb-10 max-w-[600px] overflow-hidden bg-muted md:mb-16">
             <Media
               imgClassName="h-auto w-full object-cover"
               pictureClassName="block w-full"
               priority
               resource={media}
-              size="(max-width: 1024px) 100vw, 1024px"
+              size="(max-width: 767px) 100vw, 600px"
             />
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="container mt-12">
-        <div className="mx-auto max-w-3xl">
-          {body ? <RichText data={body} enableGutter={false} /> : null}
-        </div>
-      </div>
-    </article>
+        {body ? (
+          <RichText
+            className="[&_img]:mx-auto [&_picture]:mx-auto"
+            data={body}
+            enableGutter={false}
+          />
+        ) : null}
+      </DetailContainer>
+
+      <DetailPager nextHref={adjacent.nextHref} previousHref={adjacent.previousHref} />
+    </DetailPage>
   )
 }
 
@@ -158,22 +167,58 @@ const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
   return (result.docs?.[0] as ArtistPress | undefined) || null
 })
 
-function formatDateTime(value: string | null | undefined) {
-  if (!value) {
-    return undefined
-  }
+const queryAdjacentArtistPress = cache(
+  async ({ center, slug }: { center?: string; slug: string }) => {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload
+      .find({
+        collection: 'artist-press',
+        depth: 0,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        select: {
+          slug: true,
+        },
+        sort: '-publishedAt',
+        where: {
+          and: [
+            {
+              displayStatus: {
+                equals: 'published',
+              },
+            },
+            ...(center
+              ? [
+                  {
+                    or: [
+                      {
+                        centers: {
+                          contains: center,
+                        },
+                      },
+                      {
+                        centers: {
+                          contains: 'all',
+                        },
+                      },
+                    ],
+                  },
+                ]
+              : []),
+          ],
+        },
+      })
+      .catch(() => ({ docs: [] }))
 
-  const date = new Date(value)
+    const index = result.docs.findIndex((item) => item.slug === slug)
+    const previous = index >= 0 ? result.docs[index + 1] : undefined
+    const next = index > 0 ? result.docs[index - 1] : undefined
+    const pathPrefix = center ? `/${center}/artist-press` : '/artist-press'
 
-  if (Number.isNaN(date.getTime())) {
-    return undefined
-  }
-
-  return new Intl.DateTimeFormat('ko-KR', {
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(date)
-}
+    return {
+      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+    }
+  },
+)
