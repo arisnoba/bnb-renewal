@@ -42,14 +42,14 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
               </p>
               <div className="section-starcard-list__actions mt-10 flex flex-wrap gap-2">
                 <Link
-                  className="section-starcard-list__partnership-link inline-flex h-[43px] items-center justify-center rounded-full bg-foreground px-5 text-sm font-bold leading-none text-background transition-colors hover:bg-brand hover:text-white"
+                  className="section-starcard-list__partnership-link inline-flex h-[43px] items-center justify-center rounded-full bg-foreground px-5 type-label-m font-bold leading-none text-background transition-colors hover:bg-brand hover:text-white"
                   href={`/${center}/faq?category=starcard`}
                 >
                   스타카드 FAQ
                   <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
                 </Link>
                 <Link
-                  className="section-starcard-list__faq-link inline-flex h-[43px] items-center justify-center rounded-full border border-foreground/15 px-5 text-sm font-bold leading-none text-muted-foreground transition-colors hover:border-brand hover:text-brand"
+                  className="section-starcard-list__faq-link inline-flex h-[43px] items-center justify-center rounded-full border border-foreground/15 px-5 type-label-m font-bold leading-none text-muted-foreground transition-colors hover:border-brand hover:text-brand"
                   href="/consult?inquiryType=partnership#partnership"
                 >
                   제휴문의
@@ -76,7 +76,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
             <h2 className="m-0 text-[24px] font-extrabold leading-[1.4] tracking-normal text-foreground">
               스타카드 제휴업체
             </h2>
-            <p className="m-0 text-sm leading-[1.6] text-muted-foreground">
+            <p className="m-0 type-body-s leading-[1.6] text-muted-foreground">
               해당 제휴업체를 클릭하시면 할인율과 위치 등 상세한 정보를 보실 수 있습니다.
             </p>
           </div>

@@ -92,15 +92,15 @@ export function StarcardList({ items }: StarcardListProps) {
             </span>
             <span className="starcard-partner-card__meta mt-4 flex min-w-0 items-end justify-between gap-3">
               <span className="min-w-0">
-                <span className="starcard-partner-card__category block truncate text-sm font-bold leading-[1.45] text-muted-foreground">
+                <span className="starcard-partner-card__category block truncate type-label-m font-bold leading-[1.45] text-muted-foreground">
                   {categoryLabel(item.category)}
                 </span>
-                <span className="starcard-partner-card__title mt-1 block truncate text-base font-extrabold leading-[1.45] text-foreground">
+                <span className="starcard-partner-card__title mt-1 block truncate type-title-s font-extrabold leading-[1.45] text-foreground">
                   {item.title}
                 </span>
               </span>
               {item.discountRate ? (
-                <span className="starcard-partner-card__discount shrink-0 rounded-full bg-foreground px-3 py-2 text-sm font-extrabold leading-none text-background">
+                <span className="starcard-partner-card__discount shrink-0 rounded-full bg-foreground px-3 py-2 type-label-m font-extrabold leading-none text-background">
                   {item.discountRate}
                 </span>
               ) : null}
@@ -132,7 +132,7 @@ function StarcardModal({
       <DialogContent className="starcard-partner-modal__panel flex h-[min(820px,calc(100vh-80px))] max-w-[920px] flex-col overflow-hidden border-0 p-0">
         <DialogHeader className="starcard-partner-modal__header shrink-0 flex-row items-start justify-between gap-5 border-b border-foreground/10 bg-background px-8 py-6 text-left md:px-10">
           <div className="min-w-0">
-            <p className="mb-3 text-sm font-bold leading-[1.4] text-brand">
+            <p className="mb-3 type-label-m font-bold leading-[1.4] text-brand">
               {categoryLabel(item.category)}
             </p>
             <div className="starcard-partner-modal__title-row flex min-w-0 items-start gap-4">
@@ -140,7 +140,7 @@ function StarcardModal({
                 {item.title}
               </DialogTitle>
               {item.discountRate ? (
-                <span className="starcard-partner-modal__discount-badge shrink-0 rounded-full bg-foreground px-4 py-2 text-sm font-extrabold leading-none text-background">
+                <span className="starcard-partner-modal__discount-badge shrink-0 rounded-full bg-foreground px-4 py-2 type-label-m font-extrabold leading-none text-background">
                   ~ {item.discountRate} 할인
                 </span>
               ) : null}
@@ -170,7 +170,7 @@ function StarcardModal({
 
           {item.mapUrl ? (
             <a
-              className="starcard-partner-modal__map-link mt-5 inline-flex w-fit items-center justify-center rounded-full border border-foreground/20 bg-transparent px-5 text-sm font-extrabold leading-none text-muted-foreground transition-colors hover:border-foreground/45 hover:text-foreground"
+              className="starcard-partner-modal__map-link mt-5 inline-flex w-fit items-center justify-center rounded-full border border-foreground/20 bg-transparent px-5 type-label-m font-extrabold leading-none text-muted-foreground transition-colors hover:border-foreground/45 hover:text-foreground"
               href={item.mapUrl}
               rel="noreferrer"
               target="_blank"
