@@ -108,11 +108,11 @@ function ArtistPressCard({
             {artistPress.generation && <span>{artistPress.generation}</span>}
             {publishedAt && <span>{publishedAt}</span>}
           </div>
-          <h2 className="line-clamp-2 text-xl font-semibold leading-snug tracking-normal">
+          <h2 className="line-clamp-2 type-title-l font-semibold leading-snug tracking-normal">
             {artistPress.title}
           </h2>
           {description && (
-            <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{description}</p>
+            <p className="mt-3 line-clamp-3 type-body-s leading-6 text-muted-foreground">{description}</p>
           )}
         </div>
       </article>
