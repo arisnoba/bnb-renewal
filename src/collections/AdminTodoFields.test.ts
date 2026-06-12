@@ -6,6 +6,7 @@ import type { CollectionConfig, Field } from 'payload'
 import { ArtistPress } from './ArtistPress'
 import { ArtistPressAgencies } from './ArtistPressAgencies'
 import { AuditionSchedules } from './AuditionSchedules'
+import { BroadcastStations } from './BroadcastStations'
 import { DirectCastings } from './DirectCastings'
 import { ExamResults } from './ExamResults'
 import { Faqs } from './Faqs'
@@ -133,6 +134,7 @@ test('admin validation todo fields use field-level validation', async () => {
   const screenAppearanceCenters = getField(ScreenAppearances, 'centers')
   const artistPressAgency = getField(ArtistPress, 'agency')
   const agencyLogo = getField(ArtistPressAgencies, 'logoMedia')
+  const broadcastStationLogo = getField(BroadcastStations, 'logoMedia')
 
   assert.equal(await directCastingCenters.validate?.([], validationOptions()), '노출 센터를 선택해야 합니다.')
   assert.equal(directCastingCenters.admin?.className, 'bnb-admin-required-field')
@@ -142,6 +144,8 @@ test('admin validation todo fields use field-level validation', async () => {
   assert.equal(artistPressAgency.admin?.className, 'bnb-admin-required-field')
   assert.equal(await agencyLogo.validate?.(null, validationOptions()), '소속사 로고 이미지를 선택해야 합니다.')
   assert.equal(agencyLogo.admin?.className, 'bnb-admin-required-field')
+  assert.equal(await broadcastStationLogo.validate?.(null, validationOptions()), '방송사 로고 이미지를 선택해야 합니다.')
+  assert.equal(broadcastStationLogo.admin?.className, 'bnb-admin-required-field')
 })
 
 test('exam results use representative image label', () => {

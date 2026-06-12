@@ -197,11 +197,11 @@ export const ScreenAppearances: CollectionConfig = {
     beforeValidate: [screenAppearanceBeforeValidate, setScreenAppearanceSlug],
   },
   fields: [
-    { name: "title", type: "text", label: "제목", required: true },
     ...adminTabs([
       {
-        label: "출연장면",
+        label: "작품 정보",
         fields: [
+          { name: "title", type: "text", label: "제목", required: true },
           {
             ...centersField,
             hasMany: false,
@@ -214,6 +214,21 @@ export const ScreenAppearances: CollectionConfig = {
               placeholder: "선택해 주세요",
             },
           } as SelectField,
+          adminRow([
+            {
+              name: "broadcastStation",
+              type: "relationship",
+              label: "방송사 선택",
+              relationTo: "broadcast-stations",
+            },
+            {
+              name: "appearanceType",
+              type: "select",
+              label: "출연 유형",
+              options: screenAppearanceTypeOptions,
+              required: true,
+            },
+          ]),
           {
             name: "actorInputMode",
             type: "radio",
@@ -270,16 +285,9 @@ export const ScreenAppearances: CollectionConfig = {
             { name: "roleName", type: "text", label: "역할" },
           ]),
           {
-            name: "appearanceType",
-            type: "select",
-            label: "출연 유형",
-            options: screenAppearanceTypeOptions,
-            required: true,
-          },
-          {
             name: "airDateLabel",
             type: "date",
-            label: "방영일 표시",
+            label: "방영일",
             admin: adminDateConfig,
           },
           {

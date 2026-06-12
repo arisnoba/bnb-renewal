@@ -18,6 +18,8 @@ const expectedMainSettingCollections = [
 
 const expectedMainSettingGlobals = ['main', 'main-statistics']
 
+const expectedCastingLastCollection = 'broadcast-stations'
+
 test('payload admin collection groups keep the requested leading order', async () => {
   const config = await configPromise
   const groupOrder: string[] = []
@@ -46,4 +48,13 @@ test('main setting collections keep the requested relative order', async () => {
       .map((global) => global.slug),
     expectedMainSettingGlobals,
   )
+})
+
+test('casting admin group keeps broadcast station settings at the bottom', async () => {
+  const config = await configPromise
+  const castingCollections = config.collections
+    .filter((collection) => collection.admin?.group === '캐스팅/오디션')
+    .map((collection) => collection.slug)
+
+  assert.equal(castingCollections.at(-1), expectedCastingLastCollection)
 })

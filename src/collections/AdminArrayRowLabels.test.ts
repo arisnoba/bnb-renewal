@@ -7,6 +7,7 @@ import { Appearances } from "./Appearances";
 import { AppearancesExtra } from "./AppearancesExtra";
 import { ArtistPress } from "./ArtistPress";
 import { ArtistPressAgencies } from "./ArtistPressAgencies";
+import { BroadcastStations } from "./BroadcastStations";
 import { CastingAppearances } from "./CastingAppearances";
 import { Curriculums } from "./Curriculums";
 import { Directings } from "./Directings";
@@ -32,6 +33,7 @@ type FieldWithName = Field & {
   label?: unknown;
   name: string;
   labels?: unknown;
+  relationTo?: unknown;
   required?: boolean;
   defaultValue?: unknown;
   minRows?: number;
@@ -253,6 +255,44 @@ test("exam passed content collections expose slug fields", () => {
   }
 });
 
+test("screen appearances use requested work information field order", () => {
+  const tabs = getTabs(ScreenAppearances);
+  const workInfoTab = getTab(ScreenAppearances, "작품 정보");
+  const topLevelFieldNames = workInfoTab.fields.map((field) => {
+    if (field.type === "row") {
+      return field.fields.flatMap((rowField) => ("name" in rowField ? [rowField.name] : []));
+    }
+
+    return "name" in field ? [field.name] : [];
+  }).flat();
+
+  assert.deepEqual(
+    tabs.map((tab) => tab.label),
+    ["작품 정보", "미디어"],
+  );
+  assert.deepEqual(topLevelFieldNames.slice(0, 10), [
+    "title",
+    "centers",
+    "broadcastStation",
+    "appearanceType",
+    "actorInputMode",
+    "linkedProfiles",
+    "performerName",
+    "className",
+    "projectTitle",
+    "roleName",
+  ]);
+  assert.ok(topLevelFieldNames.indexOf("airDateLabel") < topLevelFieldNames.indexOf("introText"));
+});
+
+test("screen appearances can relate to a broadcast station", () => {
+  const broadcastStation = getFieldDeep(ScreenAppearances, "broadcastStation");
+
+  assert.equal(broadcastStation.type, "relationship");
+  assert.equal(broadcastStation.label, "방송사 선택");
+  assert.equal(broadcastStation.relationTo, "broadcast-stations");
+});
+
 test("highteen special class uses one content tab with thumbnail below YouTube URL", () => {
   const tabs = getTabs(HighteenSpecialClasses);
   const contentTab = getTab(HighteenSpecialClasses, "콘텐츠");
@@ -321,6 +361,20 @@ test("artist press agency settings use slug and omit legacy filenames", () => {
   assert.equal(slug.required, true);
   assert.equal(hasTopLevelField(ArtistPressAgencies, "normalizedKey"), false);
   assert.equal(hasTopLevelField(ArtistPressAgencies, "legacyAliases"), false);
+});
+
+test("broadcast station settings use slug and required logo media validation", async () => {
+  const slug = getTopLevelField(BroadcastStations, "slug");
+  const logoMedia = getTopLevelField(BroadcastStations, "logoMedia");
+
+  assert.equal(BroadcastStations.admin?.group, "캐스팅/오디션");
+  assert.equal(BroadcastStations.admin?.useAsTitle, "stationName");
+  assert.equal(slug.type, "text");
+  assert.equal(slug.label, "슬러그");
+  assert.equal(slug.required, true);
+  assert.equal(logoMedia.type, "upload");
+  assert.equal(logoMedia.label, "방송사 로고 이미지");
+  assert.equal(logoMedia.relationTo, "media");
 });
 
 test("shared slug field uses Korean admin label", () => {

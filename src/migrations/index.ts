@@ -114,6 +114,7 @@ import * as migration_20260602_185000_main_settings_collection_lock_rels from '.
 import * as migration_20260608_120000_star_card_category from './20260608_120000_star_card_category'
 import * as migration_20260609_163500_terms from './20260609_163500_terms'
 import * as migration_20260611_191500_teacher_representative_work_poster_media from './20260611_191500_teacher_representative_work_poster_media'
+import * as migration_20260612_123500_broadcast_stations from './20260612_123500_broadcast_stations'
 
 export const migrations = [
   {
@@ -695,5 +696,10 @@ export const migrations = [
     up: migration_20260611_191500_teacher_representative_work_poster_media.up,
     down: migration_20260611_191500_teacher_representative_work_poster_media.down,
     name: '20260611_191500_teacher_representative_work_poster_media',
+  },
+  {
+    up: migration_20260612_123500_broadcast_stations.up,
+    down: migration_20260612_123500_broadcast_stations.down,
+    name: '20260612_123500_broadcast_stations',
   },
 ]
