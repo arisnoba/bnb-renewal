@@ -186,7 +186,6 @@
     "@tootallnate/once": "3.0.1",
     "dompurify": "3.4.8",
     "minimatch": "10.2.5",
-    "path-to-regexp": "8.4.2",
     "postcss": "$postcss",
     "smol-toml": "1.6.1",
     "srvx": "0.11.16",
