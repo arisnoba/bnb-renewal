@@ -293,6 +293,22 @@ test("screen appearances can relate to a broadcast station", () => {
   assert.equal(broadcastStation.relationTo, "broadcast-stations");
 });
 
+test("screen appearances support movie appearance type", () => {
+  const appearanceType = getFieldDeep(ScreenAppearances, "appearanceType");
+
+  assert.equal(appearanceType.type, "select");
+  assert.deepEqual(
+    appearanceType.options?.map((option) =>
+      typeof option === "string" ? option : [option.label, option.value],
+    ),
+    [
+      ["드라마", "drama"],
+      ["영화", "movie"],
+      ["광고", "commercial"],
+    ],
+  );
+});
+
 test("highteen special class uses one content tab with thumbnail below YouTube URL", () => {
   const tabs = getTabs(HighteenSpecialClasses);
   const contentTab = getTab(HighteenSpecialClasses, "콘텐츠");

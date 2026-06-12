@@ -115,6 +115,7 @@ import * as migration_20260608_120000_star_card_category from './20260608_120000
 import * as migration_20260609_163500_terms from './20260609_163500_terms'
 import * as migration_20260611_191500_teacher_representative_work_poster_media from './20260611_191500_teacher_representative_work_poster_media'
 import * as migration_20260612_123500_broadcast_stations from './20260612_123500_broadcast_stations'
+import * as migration_20260612_153000_screen_appearance_movie_type_project_titles from './20260612_153000_screen_appearance_movie_type_project_titles'
 
 export const migrations = [
   {
@@ -701,5 +702,10 @@ export const migrations = [
     up: migration_20260612_123500_broadcast_stations.up,
     down: migration_20260612_123500_broadcast_stations.down,
     name: '20260612_123500_broadcast_stations',
+  },
+  {
+    up: migration_20260612_153000_screen_appearance_movie_type_project_titles.up,
+    down: migration_20260612_153000_screen_appearance_movie_type_project_titles.down,
+    name: '20260612_153000_screen_appearance_movie_type_project_titles',
   },
 ]

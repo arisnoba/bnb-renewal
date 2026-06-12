@@ -25,7 +25,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const center = assertCenter(slug)
 
   return {
-    title: `${getCenterLabel(center)} 드라마ㆍ광고 출연장면`,
+    title: `${getCenterLabel(center)} BNB 출연장면`,
   }
 }
 

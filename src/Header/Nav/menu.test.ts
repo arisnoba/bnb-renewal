@@ -33,7 +33,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
   assert.ok(labels.includes('센터 소개'))
   assert.ok(labels.includes('등급제 교육관리시스템'))
-  assert.ok(labels.includes('드라마ㆍ광고 출연장면'))
+  assert.ok(labels.includes('BNB 출연장면'))
   assert.ok(labels.includes('캐스팅 시스템'))
   assert.ok(labels.includes('이달의 촬영ㆍ오디션 스케줄'))
   assert.ok(labels.includes('BNB출신 아티스트'))
@@ -51,7 +51,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
-      ?.items.find((item) => item.label === '드라마ㆍ광고 출연장면')?.href,
+      ?.items.find((item) => item.label === 'BNB 출연장면')?.href,
     '/art/screen-appearances',
   )
   assert.equal(

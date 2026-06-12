@@ -63,6 +63,7 @@ const screenAppearanceBeforeValidate: CollectionBeforeValidateHook = ({
 
 const screenAppearanceTypeOptions = [
   { label: "드라마", value: "drama" },
+  { label: "영화", value: "movie" },
   { label: "광고", value: "commercial" },
 ];
 
@@ -170,8 +171,8 @@ const setScreenAppearanceSlug = createUniqueSlugBeforeValidate({
 export const ScreenAppearances: CollectionConfig = {
   slug: "screen-appearances",
   labels: {
-    plural: "드라마/광고 출연장면",
-    singular: "드라마/광고 출연장면",
+    plural: "드라마/영화/광고 출연장면",
+    singular: "드라마/영화/광고 출연장면",
   },
   access: centerScopedCollectionAccess,
   admin: {

@@ -112,7 +112,7 @@ export async function ScreenAppearancesArchive({
             className="section-screen-appearances-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
           >
             <span className="block text-brand">캐스팅</span>
-            <span className="block">드라마ㆍ광고 출연장면</span>
+            <span className="block">BNB 출연장면</span>
           </h1>
         </div>
       </section>
@@ -124,7 +124,7 @@ export async function ScreenAppearancesArchive({
         <div className="container">
           <header className="section-screen-appearances-list__head mb-14 md:mb-20">
             <p className="section-screen-appearances-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              이달의 드라마 · 광고 출연장면
+              BNB 출연장면
             </p>
             <h2
               id="screen-appearances-list-title"
@@ -132,7 +132,7 @@ export async function ScreenAppearancesArchive({
             >
               배우앤배움 수강생들의
               <br />
-              드라마 · 광고 촬영장면을 만나보세요.
+              드라마 · 영화 · 광고 촬영장면을 만나보세요.
             </h2>
             <p className="section-screen-appearances-list__description mt-6 type-body-m leading-[1.6] text-neutral-500 md:mt-8">
               배우들에 관한 개인정보는 해당 법률의 규정에 따라 보호받고 있습니다.
@@ -470,7 +470,7 @@ function BroadcastStationLogo({ station }: { station?: BroadcastStation | null }
 
   if (logoMedia) {
     return (
-      <span className="section-screen-appearances-card__broadcast-logo relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-300 bg-white p-2">
+      <span className="section-screen-appearances-card__broadcast-logo relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-300 bg-white">
         <Media
           fill
           htmlElement={null}
@@ -525,7 +525,15 @@ function getScreenImage(
 }
 
 function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
-  return value === 'commercial' ? '광고 출연장면' : '드라마 출연장면'
+  if (value === 'commercial') {
+    return '광고 출연장면'
+  }
+
+  if (value === 'movie') {
+    return '영화 출연장면'
+  }
+
+  return '드라마 출연장면'
 }
 
 function screenAppearancesHref({ center, page }: { center: CenterSlug; page?: number }) {
