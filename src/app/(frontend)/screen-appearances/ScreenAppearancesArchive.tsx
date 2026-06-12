@@ -7,7 +7,12 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
-import type { Media as PayloadMedia, Profile, ScreenAppearance } from '@/payload-types'
+import type {
+  BroadcastStation,
+  Media as PayloadMedia,
+  Profile,
+  ScreenAppearance,
+} from '@/payload-types'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -25,6 +30,7 @@ type ScreenAppearanceListItem = Pick<
   | 'appearanceType'
   | 'actorInputMode'
   | 'bodyImages'
+  | 'broadcastStation'
   | 'className'
   | 'createdAt'
   | 'id'
@@ -189,7 +195,10 @@ function HeroImageWall({ images }: { images: PayloadMedia[] }) {
 
 function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceListItem }) {
   const projectTitle = appearance.projectTitle?.trim() || appearance.title
-  const projectMeta = getAppearanceTypeLabel(appearance.appearanceType)
+  const broadcastStation = getBroadcastStation(appearance.broadcastStation)
+  const projectMeta = [broadcastStation?.stationName, getAppearanceTypeLabel(appearance.appearanceType)]
+    .filter(Boolean)
+    .join(' · ')
   const screenImage = getScreenImage(appearance)
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
@@ -201,9 +210,7 @@ function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceList
   return (
     <article className="section-screen-appearances-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
       <div className="section-screen-appearances-card__head flex min-h-[76px] items-center gap-3 px-5 py-4">
-        <span className="section-screen-appearances-card__mark flex size-10 shrink-0 items-center justify-center rounded-full border border-neutral-300 bg-white type-caption-s font-bold leading-none text-brand">
-          BNB
-        </span>
+        <BroadcastStationLogo station={broadcastStation} />
         <div className="section-screen-appearances-card__project min-w-0">
           <p className="line-clamp-1 type-body-s font-semibold leading-[1.2] text-neutral-500">
             {projectMeta}
@@ -440,6 +447,7 @@ const screenAppearancesArchiveSelect = {
   appearanceType: true,
   actorInputMode: true,
   bodyImages: true,
+  broadcastStation: true,
   className: true,
   createdAt: true,
   introText: true,
@@ -455,6 +463,35 @@ const screenAppearancesArchiveSelect = {
 type PerformerInfo = {
   name: string
   profileImageMedia?: PayloadMedia | null
+}
+
+function BroadcastStationLogo({ station }: { station?: BroadcastStation | null }) {
+  const logoMedia = station?.logoMedia && typeof station.logoMedia === 'object' ? station.logoMedia : null
+
+  if (logoMedia) {
+    return (
+      <span className="section-screen-appearances-card__broadcast-logo relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-300 bg-white p-2">
+        <Media
+          fill
+          htmlElement={null}
+          imgClassName="size-full object-contain"
+          pictureClassName="block size-full"
+          resource={logoMedia}
+          size="40px"
+        />
+      </span>
+    )
+  }
+
+  return (
+    <span className="section-screen-appearances-card__mark flex size-10 shrink-0 items-center justify-center rounded-full border border-neutral-300 bg-white type-caption-s font-bold leading-none text-brand">
+      BNB
+    </span>
+  )
+}
+
+function getBroadcastStation(value: ScreenAppearanceListItem['broadcastStation']) {
+  return value && typeof value === 'object' ? value : null
 }
 
 function getPerformer(appearance: ScreenAppearanceListItem): PerformerInfo {

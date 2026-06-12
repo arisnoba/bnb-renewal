@@ -13,7 +13,7 @@ import {
   writeJsonFile,
 } from './runtime'
 
-type MediaRole = 'news.body-image' | 'news.thumbnail' | 'star-cards.image'
+type MediaRole = 'broadcast-stations.logo' | 'news.body-image' | 'news.thumbnail' | 'star-cards.image'
 
 type Options = {
   compressionQuality: number
@@ -39,6 +39,7 @@ type MediaRow = {
   target_filename: string
   target_prefix: string
   title: string | null
+  url: string | null
 }
 
 type PreparedImage = {
@@ -65,6 +66,7 @@ type EntryResult = {
 
 const DEFAULT_COMPRESSION_QUALITY = 80
 const ROLE_PREFIX: Record<MediaRole, string> = {
+  'broadcast-stations.logo': 'media/broadcast-stations/logos',
   'news.body-image': 'media/news/body-images',
   'news.thumbnail': 'media/news/thumbnails',
   'star-cards.image': 'media/star-cards/images',
@@ -244,7 +246,9 @@ function parseArgs(args: string[]): Options {
   }
 
   if (!mediaRole) {
-    throw new Error('--media-role 값이 필요합니다. 허용 값: news.thumbnail, news.body-image, star-cards.image')
+    throw new Error(
+      '--media-role 값이 필요합니다. 허용 값: broadcast-stations.logo, news.thumbnail, news.body-image, star-cards.image',
+    )
   }
 
   return {
@@ -282,7 +286,12 @@ function parseBoundedInt(value: string, name: string, min: number, max: number) 
 }
 
 function toMediaRole(value: string): MediaRole {
-  if (value === 'news.thumbnail' || value === 'news.body-image' || value === 'star-cards.image') {
+  if (
+    value === 'broadcast-stations.logo' ||
+    value === 'news.thumbnail' ||
+    value === 'news.body-image' ||
+    value === 'star-cards.image'
+  ) {
     return value
   }
 
@@ -290,6 +299,10 @@ function toMediaRole(value: string): MediaRole {
 }
 
 async function readRows(pool: Pool, options: Options) {
+  if (options.mediaRole === 'broadcast-stations.logo') {
+    return readBroadcastStationLogoRows(pool, options)
+  }
+
   if (options.mediaRole === 'news.thumbnail') {
     return readNewsThumbnailRows(pool, options)
   }
@@ -299,6 +312,45 @@ async function readRows(pool: Pool, options: Options) {
   }
 
   return readStarCardImageRows(pool, options)
+}
+
+async function readBroadcastStationLogoRows(pool: Pool, options: Options) {
+  const params: unknown[] = []
+  const where = ['broadcast_stations.logo_media_id IS NOT NULL']
+
+  if (options.ids.length > 0) {
+    params.push(options.ids)
+    where.push(`broadcast_stations.id::text = ANY($${params.length}::text[])`)
+  }
+
+  if (!options.overwrite) {
+    where.push(`media.prefix IS DISTINCT FROM '${ROLE_PREFIX['broadcast-stations.logo']}'`)
+  }
+
+  const result = await pool.query<MediaRow>(
+    `
+      SELECT
+        broadcast_stations.id AS owner_id,
+        broadcast_stations.station_name AS title,
+        media.id AS media_id,
+        media.filename AS current_filename,
+        media.prefix AS current_prefix,
+        media.mime_type,
+        media.url,
+        NULL::int AS image_index,
+        1::int AS ref_count,
+        media.filename AS target_filename,
+        '${ROLE_PREFIX['broadcast-stations.logo']}' AS target_prefix
+      FROM broadcast_stations
+      JOIN media ON media.id = broadcast_stations.logo_media_id
+      WHERE ${where.join(' AND ')}
+      ORDER BY broadcast_stations.id ASC
+      ${limitSql(options)}
+    `,
+    params,
+  )
+
+  return result.rows
 }
 
 async function readNewsThumbnailRows(pool: Pool, options: Options) {
@@ -323,6 +375,7 @@ async function readNewsThumbnailRows(pool: Pool, options: Options) {
         media.filename AS current_filename,
         media.prefix AS current_prefix,
         media.mime_type,
+        media.url,
         NULL::int AS image_index,
         1::int AS ref_count,
         media.filename AS target_filename,
@@ -383,6 +436,7 @@ async function readNewsBodyRows(pool: Pool, options: Options) {
         media.filename AS current_filename,
         media.prefix AS current_prefix,
         media.mime_type,
+        media.url,
         canonical.image_index,
         canonical.ref_count,
         canonical.target_filename,
@@ -448,6 +502,7 @@ async function readStarCardImageRows(pool: Pool, options: Options) {
         media.filename AS current_filename,
         media.prefix AS current_prefix,
         media.mime_type,
+        media.url,
         canonical.image_index,
         canonical.ref_count,
         canonical.target_filename,
