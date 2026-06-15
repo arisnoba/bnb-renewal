@@ -19,6 +19,14 @@ const expectedMainSettingGlobals = ['main', 'main-statistics']
 
 const expectedCastingLastCollection = 'broadcast-stations'
 
+const expectedEducationCollectionOrder = [
+  'teachers',
+  'curriculums',
+  'classrooms',
+  'highteen-special-classes',
+  'agencies',
+]
+
 test('payload admin collection groups keep the requested leading order', async () => {
   const config = await configPromise
   const groupOrder: string[] = []
@@ -56,4 +64,13 @@ test('casting admin group keeps broadcast station settings at the bottom', async
     .map((collection) => collection.slug)
 
   assert.equal(castingCollections.at(-1), expectedCastingLastCollection)
+})
+
+test('education admin group keeps classroom settings next to curriculums', async () => {
+  const config = await configPromise
+  const educationCollections = config.collections
+    .filter((collection) => collection.admin?.group === '교육')
+    .map((collection) => collection.slug)
+
+  assert.deepEqual(educationCollections, expectedEducationCollectionOrder)
 })
