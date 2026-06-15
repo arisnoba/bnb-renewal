@@ -58,6 +58,8 @@
     "payload:legacy:seed-faqs": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/seed-center-faqs.ts",
     "payload:legacy:backfill-teacher-photos": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-teacher-photo-images.ts",
     "payload:legacy:backfill-profile-gallery": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-profile-gallery-images.ts",
+    "payload:legacy:backfill-profile-class-cohort": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-profile-class-cohort-from-screen-appearances.ts",
+    "payload:legacy:backfill-profile-class-cohort:write": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-profile-class-cohort-from-screen-appearances.ts --write",
     "payload:legacy:plan-news-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/plan-news-image-storage.ts",
     "payload:legacy:link-news-thumbnails": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-news-thumbnails-to-media.ts",
     "payload:legacy:backfill-news-body-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/backfill-news-body-images-to-media.ts",

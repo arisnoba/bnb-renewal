@@ -121,7 +121,7 @@ export const Profiles: CollectionConfig = {
 	},
 	access: centerScopedCollectionAccess,
 	admin: {
-		defaultColumns: ['name', 'centers', 'authorName', 'filter', 'publishedAt', 'updatedAt'],
+		defaultColumns: ['name', 'className', 'cohort', 'centers', 'authorName', 'filter', 'publishedAt', 'updatedAt'],
 		group: '아티스트',
 		useAsTitle: 'name',
 	},
@@ -225,6 +225,18 @@ export const Profiles: CollectionConfig = {
 							name: 'weight',
 							type: 'text',
 							label: '몸무게',
+						},
+					]),
+					adminRow([
+						{
+							name: 'className',
+							type: 'text',
+							label: '반/클래스',
+						},
+						{
+							name: 'cohort',
+							type: 'text',
+							label: '기수',
 						},
 					]),
 					{

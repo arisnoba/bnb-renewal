@@ -53,6 +53,7 @@ type ScreenAppearancesPageResult = {
 
 const pageSize = 12
 const heroImageLimit = 12
+const listAnchorId = 'screen-appearances-list'
 
 export async function ScreenAppearancesArchive({
   center,
@@ -118,8 +119,9 @@ export async function ScreenAppearancesArchive({
       </section>
 
       <section
-        className="section-screen-appearances-list section-p-block-base bg-white text-neutral-900"
+        className="section-screen-appearances-list section-p-block-base scroll-mt-[var(--page-top-offset)] bg-white text-neutral-900"
         aria-labelledby="screen-appearances-list-title"
+        id={listAnchorId}
       >
         <div className="container">
           <header className="section-screen-appearances-list__head mb-14 md:mb-20">
@@ -221,7 +223,7 @@ function ScreenAppearanceCard({
   return (
     <Link
       aria-label={`${projectTitle} 출연장면 상세 보기`}
-      className="group section-screen-appearances-card block overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm transition hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+      className="group section-screen-appearances-card flex h-full flex-col overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm transition hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       href={detailHref}
     >
       <div className="section-screen-appearances-card__head flex min-h-[76px] items-center gap-3 px-5 py-4">
@@ -253,8 +255,8 @@ function ScreenAppearanceCard({
         )}
       </div>
 
-      <div className="section-screen-appearances-card__body bg-neutral-100">
-        <div className="section-screen-appearances-card__performer flex gap-3 p-5">
+      <div className="section-screen-appearances-card__body flex flex-1 flex-col">
+        <div className="section-screen-appearances-card__performer flex flex-1 gap-3 p-5">
           <ProfileAvatar performer={performer} />
           <div className="min-w-0 flex-1 space-y-1 type-body-s font-medium leading-[1.6] text-neutral-500">
             <p className="line-clamp-1">이름 : {performer.name}</p>
@@ -267,7 +269,7 @@ function ScreenAppearanceCard({
             )}
           </div>
         </div>
-        <div className="section-screen-appearances-card__date flex items-center justify-between border-t border-neutral-200 px-5 py-3 type-caption-s font-medium leading-[1.35] text-neutral-400">
+        <div className="section-screen-appearances-card__date mt-auto flex items-center justify-between border-t border-neutral-200 px-5 py-3 type-caption-s font-medium leading-[1.35] text-neutral-400">
           <span>등록일</span>
           {registrationDate ? (
             <time dateTime={appearance.publishedAt ?? appearance.createdAt}>
@@ -553,10 +555,10 @@ function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
 
 function screenAppearancesHref({ center, page }: { center: CenterSlug; page?: number }) {
   if (!page || page <= 1) {
-    return `/${center}/screen-appearances`
+    return `/${center}/screen-appearances#${listAnchorId}`
   }
 
-  return `/${center}/screen-appearances?page=${page}`
+  return `/${center}/screen-appearances?page=${page}#${listAnchorId}`
 }
 
 function paginationWindow(page: number, totalPages: number) {
