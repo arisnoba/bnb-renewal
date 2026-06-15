@@ -120,7 +120,7 @@ export async function TeacherDetailPage({
                   {teacher.name}
                 </h1>
                 {teacher.summary && (
-                  <p className="mt-2 type-body-m leading-[1.5] text-white/60">
+                  <p className="mt-2 type-body-m leading-normal text-white/60">
                     {teacher.summary}
                   </p>
                 )}
@@ -128,7 +128,7 @@ export async function TeacherDetailPage({
             </header>
 
             {careerItems.length > 0 && (
-              <dl className="type-body-m leading-[1.5] text-white">
+              <dl className="type-body-m leading-normal text-white">
                 {careerItems.map((item) => (
                   <div
                     className="grid gap-4 border-b border-white/10 py-6 md:grid-cols-[100px_1fr]"
@@ -324,10 +324,10 @@ function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
         ) : null}
       </div>
       {work.title && (
-        <h3 className="mt-5 type-body-m font-bold leading-[1.5] text-white">{work.title}</h3>
+        <h3 className="mt-5 type-body-m font-bold leading-normal text-white">{work.title}</h3>
       )}
       {work.description && (
-        <p className="mt-2 whitespace-pre-line type-label-m leading-[1.5] text-white/70">
+        <p className="mt-2 whitespace-pre-line type-label-m leading-normal text-white/70">
           {formatMultilineText(work.description)}
         </p>
       )}

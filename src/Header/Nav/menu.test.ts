@@ -80,15 +80,23 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   const labels = labelsFor('exam')
 
   assert.deepEqual(labelsForGroup('exam', 'about'), labelsForGroup('art', 'about'))
-  assert.ok(groupLabels.includes('합격현황'))
-  assert.ok(groupLabels.includes('합격자 소개'))
-  assert.ok(labels.includes('입시반 커리큘럼'))
-  assert.ok(labels.includes('대학교 합격현황'))
-  assert.ok(labels.includes('수강생 합격후기'))
+  assert.deepEqual(groupLabels, ['배우앤배움', '교육', '합격현황', '합격자소개', '지원센터'])
+  assert.deepEqual(labelsForGroup('exam', 'education'), [
+    '입시 매니지먼트',
+    '특별한 시스템',
+    '교육진 소개',
+    '커리큘럼',
+  ])
+  assert.deepEqual(labelsForGroup('exam', 'casting'), ['대학교', '예술고등학교'])
+  assert.deepEqual(labelsForGroup('exam', 'artist'), ['합격 후기', '합격 영상'])
+  assert.ok(labels.includes('특별한 시스템'))
   assert.ok(!labels.includes('대표인사말'))
   assert.ok(!labels.includes('연혁'))
   assert.ok(!labels.includes('자회사 안내'))
   assert.ok(!labels.includes('장학제도'))
+  assert.ok(!labels.includes('입시반 커리큘럼'))
+  assert.ok(!labels.includes('수강생 합격후기'))
+  assert.ok(!labels.includes('프로필 촬영ㆍ제작'))
   assert.ok(!labels.includes('온라인 상담신청'))
 })
 

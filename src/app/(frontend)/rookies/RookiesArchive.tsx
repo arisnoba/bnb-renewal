@@ -148,7 +148,7 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
         <div className="section-rookies-list__container">
           <header className="section-rookies-list__head">
             <p className="section-rookies-list__eyebrow type-title-l font-bold leading-[1.4]">
-              BNB루키
+              BNB 루키
             </p>
             <h2
               id="rookies-list-title"
@@ -158,10 +158,8 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
               <br />
               결국은 더 좋은 기회를 만나는 순간 완성됩니다.
             </h2>
-            <p className="section-rookies-list__description type-body-m leading-[1.5]">
-              배우앤배움 EnM 매니지먼트팀은 수강생 한 명 한 명이 더 나은 작품과 소속사를
-              <br />
-              만날 수 있도록 체계적인 매니지먼트와 연결을 지원합니다.
+            <p className="section-rookies-list__description type-body-m leading-normal">
+              배우앤배움 EnM 매니지먼트팀은 수강생 한 명 한 명이 더 나은 작품과 소속사를 만날 수 있도록 체계적인 매니지먼트와 연결을 지원합니다.
             </p>
           </header>
 
@@ -258,7 +256,7 @@ function RookieCard({
             )}
           </div>
           {profileMeta && (
-            <p className="section-rookies-card__meta type-body-s leading-[1.5]">{profileMeta}</p>
+            <p className="section-rookies-card__meta type-body-s leading-normal">{profileMeta}</p>
           )}
         </div>
       </article>

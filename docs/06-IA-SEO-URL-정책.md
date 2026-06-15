@@ -1,7 +1,7 @@
 # IA SEO URL 정책
 
 > 목적: 센터별 URL, SEO, canonical, sitemap, redirect 기준을 한 문서로 관리한다.
-> 마지막 갱신: 2026-06-11
+> 마지막 갱신: 2026-06-15
 
 ## 기본 결론
 
@@ -254,6 +254,53 @@ redirects: [
 | # | 한글 메뉴명 | URL | 유형 | 비고 |
 |---|-------------|-----|------|------|
 | – | 온라인 상담신청 | `/consult` | dynamic | 전 센터 공통. 센터 지정 쿼리 `?center=art` 허용 |
+
+## 입시센터 IA 및 URL 구조표
+
+> 기준: 배우앤배움 입시센터 (`/exam`)
+> 현재 GNB 기준: 교육 / 합격현황 / 합격자소개는 입시센터 전용 메뉴 구조를 사용한다.
+
+### 배우앤배움
+
+| # | 한글 메뉴명 | URL | 유형 | 비고 |
+|---|-------------|-----|------|------|
+| 1-1 | 회사 소개 | `/art#company` | static | 공통 회사 소개 |
+| 1-2 | 센터 소개 | `/exam/about` | static | |
+| 1-3 | 시설 안내 | `/exam#facilities` | static | |
+| 1-4 | 오시는 길 | `/exam/map` | static | 지도 embed 포함 가능 |
+
+### 교육
+
+| # | 한글 메뉴명 | URL | 유형 | 비고 |
+|---|-------------|-----|------|------|
+| 2-1 | 입시 매니지먼트 | `/exam#exam-management` | static | |
+| 2-2 | 특별한 시스템 | `/exam#special-system` | static | 레거시 `new_sys02` 계열 |
+| 2-3 | 교육진 소개 | `/exam/teachers` | dynamic | 강사 목록·상세 |
+| 2-4 | 커리큘럼 | `/exam#curriculum` | static | 입시반/재입시반/편입반/예비 입시반/예고 입시반을 통합 노출 |
+
+### 합격현황
+
+| # | 한글 메뉴명 | URL | 유형 | 비고 |
+|---|-------------|-----|------|------|
+| 3-1 | 대학교 | `/exam#university-results` | dynamic | `exam-results` 중 대학교 합격현황 |
+| 3-2 | 예술고등학교 | `/exam#arts-high-results` | dynamic | `exam-results` 중 예고 합격현황 |
+
+### 합격자소개
+
+| # | 한글 메뉴명 | URL | 유형 | 비고 |
+|---|-------------|-----|------|------|
+| 4-1 | 합격 후기 | `/exam#exam-passed-reviews` | dynamic | `exam-passed-reviews` |
+| 4-2 | 합격 영상 | `/exam#exam-passed-videos` | dynamic | `exam-passed-videos` |
+
+### 지원센터
+
+| # | 한글 메뉴명 | URL | 유형 | 비고 |
+|---|-------------|-----|------|------|
+| 5-1 | NEWS&NOTICE | `/exam/news` | dynamic | 목록·상세 (`/[slug]`) |
+| 5-2 | 입학안내 | `/exam#admission` | static | |
+| 5-3 | 학원100%이용법 | `/exam#how-to-use` | static | |
+| 5-4 | 스타카드 멤버십서비스 | `/exam/starcard` | dynamic | |
+| 5-5 | 자주하는 질문 | `/exam/faq` | dynamic | 카테고리 필터 포함 가능 |
 
 ---
 

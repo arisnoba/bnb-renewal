@@ -308,7 +308,7 @@ function CastingStatusYearSection({
         spaceBetween={16}
       >
         {items.map((item) => (
-          <SwiperSlide className="!h-auto !w-[220px] sm:!w-[248px] lg:!w-[275px]" key={item.id}>
+          <SwiperSlide className="h-auto! w-55! sm:w-62! lg:w-68!" key={item.id}>
             <CastingStatusPosterCard item={item} />
           </SwiperSlide>
         ))}

@@ -243,7 +243,7 @@ function NewsCard({
               {news.title}
             </h2>
             {description && (
-              <p className="section-news-card__description type-body-s font-medium leading-[1.5]">
+              <p className="section-news-card__description type-body-s font-medium leading-normal">
                 {description}
               </p>
             )}

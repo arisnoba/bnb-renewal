@@ -52,7 +52,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       href: centerHref(center, 'management'),
       items: artistItems(center),
       key: 'artist',
-      label: center === 'exam' ? '합격자 소개' : '아티스트',
+      label: center === 'exam' ? '합격자소개' : '아티스트',
     },
     {
       href: `/${center}/news`,
@@ -132,13 +132,10 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
 function educationItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: centerHref(center, 'exam-curriculum'), label: '입시반 커리큘럼' },
-      { href: centerHref(center, 'repeat-curriculum'), label: '재입시반 커리큘럼' },
-      { href: centerHref(center, 'transfer-curriculum'), label: '편입반 커리큘럼' },
-      { href: centerHref(center, 'preparatory-curriculum'), label: '예비 입시반 커리큘럼' },
-      { href: centerHref(center, 'arts-high-curriculum'), label: '예고 입시반 커리큘럼' },
       { href: centerHref(center, 'exam-management'), label: '입시 매니지먼트' },
+      { href: centerHref(center, 'special-system'), label: '특별한 시스템' },
       { href: teachersHref(center), label: '교육진 소개' },
+      { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
     ]
   }
 
@@ -176,8 +173,8 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 function castingItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: centerHref(center, 'university-results'), label: '대학교 합격현황' },
-      { href: centerHref(center, 'arts-high-results'), label: '예술고등학교 합격현황' },
+      { href: centerHref(center, 'university-results'), label: '대학교' },
+      { href: centerHref(center, 'arts-high-results'), label: '예술고등학교' },
     ]
   }
 
@@ -215,9 +212,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
 function artistItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: centerHref(center, 'exam-passed-reviews'), label: '수강생 합격후기' },
-      { href: centerHref(center, 'exam-passed-videos'), label: '수강생 합격영상' },
-      { href: centerHref(center, 'profile-production'), label: '프로필 촬영ㆍ제작' },
+      { href: centerHref(center, 'exam-passed-reviews'), label: '합격 후기' },
+      { href: centerHref(center, 'exam-passed-videos'), label: '합격 영상' },
     ]
   }
 

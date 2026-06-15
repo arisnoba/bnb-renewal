@@ -828,7 +828,7 @@ function PromotionTable() {
                       {row.condition}
                     </p>
                     {row.note ? (
-                      <p className="type-caption-s leading-[1.5] text-white/70">
+                      <p className="type-caption-s leading-normal text-white/70">
                         <CriteriaText
                           highlightTerms={[
                             '이수 기간 상관없이',

@@ -73,7 +73,7 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
             </h1>
             <div className="section-faq-list__description page-desc">
               {/* <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p> */}
-              <p className="type-body-m leading-[1.5]">
+              <p className="type-body-m leading-normal">
                 더 궁금한 점이 있으시면 <Link href={'/consult'} className="text-brand hover:underline">
                   CS상담센터에 문의
                 </Link>

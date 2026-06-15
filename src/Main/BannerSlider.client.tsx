@@ -433,7 +433,7 @@ function BannerProfileCard({
       </div>
       <div className="section-main-banner__profile-body flex min-w-0 flex-col items-start justify-between py-1">
         <div>
-          <h3 className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-[16px] font-black leading-[1.5]">
+          <h3 className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-[16px] font-black leading-normal">
             {name}
           </h3>
           {roleLabel && (

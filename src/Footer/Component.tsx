@@ -136,7 +136,7 @@ export async function Footer() {
                       target="_blank"
                     >
                       <Image alt="" height={20} src={item.icon} width={20} />
-                      <span className="w-[142px] text-sm leading-[1.5]">{item.label}</span>
+                      <span className="w-[142px] text-sm leading-normal">{item.label}</span>
                     </a>
                   </li>
                 ))}
@@ -176,7 +176,7 @@ function FooterTextLinks({
   const className =
     size === 'large'
       ? 'text-xl font-medium leading-[1.2] text-[#666]'
-      : 'text-sm font-normal leading-[1.5] text-[#666]'
+      : 'text-sm font-normal leading-normal text-[#666]'
 
   return (
     <ul className="flex flex-col gap-2">

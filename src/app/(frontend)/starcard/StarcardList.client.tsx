@@ -78,7 +78,7 @@ export function StarcardList({ items }: StarcardListProps) {
             onClick={() => setSelectedItem(item)}
             type="button"
           >
-            <span className="starcard-partner-card__media block aspect-square overflow-hidden rounded-[8px] bg-muted">
+            <span className="starcard-partner-card__media block aspect-square overflow-hidden rounded-xl bg-muted">
               {item.image ? (
                 <Media
                   alt={item.title}

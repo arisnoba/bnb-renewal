@@ -23,7 +23,7 @@
 | `type-label-{l,m,s}` | 고정 16 / 14 / 12px, 500, lh 1.35 | |
 | `type-caption-{m,s}` | 고정 13 / 12px, 400, lh 1.4 | |
 
-토큰은 `@layer components`라 Tailwind 유틸리티가 항상 디폴트를 덮는다. 즉 `type-title-m font-medium leading-[1.5]`처럼 조합하면 크기만 토큰에서 오고 굵기·행간은 TW 값이 적용된다.
+토큰은 `@layer components`라 Tailwind 유틸리티가 항상 디폴트를 덮는다. 즉 `type-title-m font-medium leading-normal`처럼 조합하면 크기만 토큰에서 오고 굵기·행간은 TW 값이 적용된다.
 
 ## 작업 범위
 
@@ -47,7 +47,7 @@
 
 - 고정 크기(반응형 분기 없음)이고, px 값이 고정 슬롯(title/body/label/caption: 20/18/16/14/13/12px) 중 하나와 정확히 일치
 - role 판정이 명확: heading 태그·카드 제목 → `title`, 문단 → `body`, 버튼·폼·네비·태그 → `label`, 날짜·메타·보조설명 → `caption`
-- 치환 후에도 렌더링이 동일: 기존 굵기/행간이 토큰 디폴트와 같으면 해당 TW 클래스 제거, 다르면 `font-*`/`leading-*`을 남겨 덮어쓰기 (예: `text-[18px] font-medium leading-[1.5]` → `type-title-m font-medium leading-[1.5]`)
+- 치환 후에도 렌더링이 동일: 기존 굵기/행간이 토큰 디폴트와 같으면 해당 TW 클래스 제거, 다르면 `font-*`/`leading-*`을 남겨 덮어쓰기 (예: `text-[18px] font-medium leading-normal` → `type-title-m font-medium leading-normal`)
 
 **[질문 수집] 다음은 절대 자동 적용하지 말 것:**
 

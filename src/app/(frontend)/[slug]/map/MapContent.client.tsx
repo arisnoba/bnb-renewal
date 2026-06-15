@@ -85,9 +85,9 @@ function InfoItem({
     <section className="flex min-h-[78px] min-w-0 flex-wrap items-center gap-x-7 gap-y-2 rounded-md bg-[#1f1f1f] p-6 md:p-7">
       <div className="flex shrink-0 items-center gap-3 text-white">
         <span className="text-[#4f4f4f]">{icon}</span>
-        <h3 className="type-title-s font-bold leading-[1.5]">{label}</h3>
+        <h3 className="type-title-s font-bold leading-normal">{label}</h3>
       </div>
-      <p className="min-w-0 type-body-s leading-[1.5] text-white/60">{children}</p>
+      <p className="min-w-0 type-body-s leading-normal text-white/60">{children}</p>
     </section>
   )
 }
