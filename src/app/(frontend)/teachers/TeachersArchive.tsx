@@ -74,11 +74,11 @@ export async function TeachersArchive({ center, visible }: TeachersArchiveProps)
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[22%] h-56 w-56 md:-left-28 md:h-[360px] md:w-[360px]"
+          className="-left-20 top-[22%] md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="-right-16 bottom-[18%] h-56 w-56 md:-right-24 md:h-[360px] md:w-[360px]"
+          className="-right-16 bottom-[18%] md:-right-24"
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
@@ -97,7 +97,7 @@ export async function TeachersArchive({ center, visible }: TeachersArchiveProps)
         aria-labelledby="teachers-list-title"
       >
         <PageDeco
-          className="right-[-120px] top-20 hidden h-[320px] w-[320px] md:block"
+          className="right-[-120px] top-20 hidden md:block"
           icon={decoIcons[2]}
         />
 

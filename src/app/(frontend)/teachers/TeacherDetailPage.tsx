@@ -99,11 +99,11 @@ export async function TeacherDetailPage({
       tone="dark"
     >
       <PageDeco
-        className="right-[8%] top-[34rem] hidden size-[360px] lg:block"
+        className="right-[8%] top-[34rem] hidden lg:block"
         icon={decoIcons[0]}
       />
       <PageDeco
-        className="-left-24 top-[62rem] hidden size-[360px] lg:block"
+        className="-left-24 top-[62rem] hidden lg:block"
         icon={decoIcons[1]}
       />
 

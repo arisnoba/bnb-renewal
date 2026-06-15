@@ -51,11 +51,11 @@ export default async function ArtGradeSystemPage({ params }: Args) {
         />
         <div className="absolute inset-0 bg-black/55" />
         <PageDeco
-          className="-left-20 top-[22%] h-56 w-56 md:-left-28 md:h-[360px] md:w-[360px]"
+          className="-left-20 top-[22%] md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="-right-12 bottom-[10%] h-48 w-48 md:-right-20 md:h-[300px] md:w-[300px]"
+          className="-right-12 bottom-[10%] md:-right-20"
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">

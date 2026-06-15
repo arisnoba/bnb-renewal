@@ -43,15 +43,15 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
         <CastingStatusHeroVisual items={heroItems} />
         <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] h-56 w-56 max-md:!hidden md:block md:-left-28 md:h-[360px] md:w-[360px]"
+          className="-left-20 top-[36%] max-md:!hidden md:block md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[12%] h-56 w-56 max-md:!hidden md:block md:right-[-104px] md:h-[360px] md:w-[360px]"
+          className="right-[-72px] top-[12%] max-md:!hidden md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[18%] bottom-[8%] h-48 w-48 max-md:!hidden md:block md:h-[300px] md:w-[300px]"
+          className="right-[18%] bottom-[8%] max-md:!hidden md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">

@@ -44,11 +44,11 @@ export default async function CenterMapPage({ params }: Args) {
         />
         <div className="absolute inset-0 bg-black/45" />
         <PageDeco
-          className="-left-16 top-[15%] h-56 w-56 md:h-[360px] md:w-[360px]"
+          className="-left-16 top-[15%]"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="-right-20 bottom-[8%] h-56 w-56 md:h-[360px] md:w-[360px]"
+          className="-right-20 bottom-[8%]"
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">

@@ -148,9 +148,13 @@
 }
 
 .page-deco {
+  block-size: var(--page-deco-size);
+  border: 0;
+  border-radius: 0;
   background-color: currentColor;
   color: var(--brand);
   display: block;
+  inline-size: var(--page-deco-size);
   mask-image: var(--page-deco-image);
   mask-position: center;
   mask-repeat: no-repeat;

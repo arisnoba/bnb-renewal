@@ -440,11 +440,11 @@ export function GradeSystemTabs() {
       {activeTab === 'steps' ? (
         <>
           <PageDeco
-            className="left-0 top-[930px] hidden h-[360px] w-[360px] -translate-x-[42%] lg:block"
+            className="left-0 top-[930px] hidden -translate-x-[42%] lg:block"
             icon={gradeSystemDecoIcons[2]}
           />
           <PageDeco
-            className="right-0 top-[2900px] hidden h-[360px] w-[360px] translate-x-[46%] lg:block"
+            className="right-0 top-[2900px] hidden translate-x-[46%] lg:block"
             icon={gradeSystemDecoIcons[3]}
           />
         </>

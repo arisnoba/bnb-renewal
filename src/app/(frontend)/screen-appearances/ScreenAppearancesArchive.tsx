@@ -100,11 +100,11 @@ export async function ScreenAppearancesArchive({
         <HeroImageWall images={heroImages} />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] h-56 w-56 md:-left-28 md:h-[360px] md:w-[360px]"
+          className="-left-20 top-[36%] md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[12%] h-56 w-56 md:right-[-104px] md:h-[360px] md:w-[360px]"
+          className="right-[-72px] top-[12%] md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">

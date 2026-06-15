@@ -15,11 +15,6 @@
   position: absolute;
 }
 
-.section-artist-press-hero__deco {
-  height: 360px;
-  width: 360px;
-}
-
 .section-artist-press-hero__deco--left {
   left: -156px;
   top: 345px;
@@ -264,12 +259,6 @@
 @media (max-width: 767px) {
   .section-artist-press-hero {
     height: 620px;
-  }
-
-  .section-artist-press-hero__deco {
-    border-width: 64px;
-    height: 220px;
-    width: 220px;
   }
 
   .section-artist-press-hero__deco--left {

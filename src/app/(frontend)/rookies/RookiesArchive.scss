@@ -15,18 +15,12 @@
   position: absolute;
 }
 
-.section-rookies-hero__deco {
-  height: 360px;
-  width: 360px;
-}
-
 .section-rookies-hero__deco--left {
   left: -156px;
   top: 345px;
 }
 
 .section-rookies-hero__deco--center {
-  border-radius: 9999px;
   bottom: -100px;
   left: 50%;
   transform: translateX(40%);
@@ -277,12 +271,6 @@
 @media (max-width: 767px) {
   .section-rookies-hero {
     height: 620px;
-  }
-
-  .section-rookies-hero__deco {
-    border-width: 64px;
-    height: 220px;
-    width: 220px;
   }
 
   .section-rookies-hero__deco--left {
