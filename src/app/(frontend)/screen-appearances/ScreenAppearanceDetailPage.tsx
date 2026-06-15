@@ -1,0 +1,438 @@
+import type { Metadata } from 'next'
+
+import { Media } from '@/components/Media/Renderer'
+import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import type {
+  Media as PayloadMedia,
+  Profile,
+  ScreenAppearance,
+} from '@/payload-types'
+import configPromise from '@payload-config'
+import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
+import React, { cache } from 'react'
+
+import {
+  DetailBackLink,
+  DetailContainer,
+  DetailHeader,
+  DetailPage,
+  DetailPager,
+} from '../_components/DetailLayout'
+
+type PerformerInfo = {
+  name: string
+  profileImageMedia?: PayloadMedia | null
+}
+
+export async function generateScreenAppearanceStaticParams() {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'screen-appearances',
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        centers: true,
+        slug: true,
+      },
+      where: {
+        displayStatus: {
+          equals: 'published',
+        },
+      },
+    })
+
+    return result.docs.flatMap((appearance) => {
+      const center = appearance.centers
+      const slug = appearance.slug
+
+      if (!slug || !(center in centers)) {
+        return []
+      }
+
+      return [{ screenAppearanceSlug: slug, slug: center }]
+    })
+  } catch {
+    return []
+  }
+}
+
+export async function ScreenAppearanceDetailPage({
+  center,
+  slug,
+}: {
+  center: CenterSlug
+  slug: string
+}) {
+  const appearance = await queryScreenAppearanceBySlug({ center, slug }).catch(() => null)
+
+  if (!appearance) {
+    notFound()
+  }
+
+  const projectTitle = appearance.projectTitle?.trim() || appearance.title
+  const broadcastStation = getBroadcastStation(appearance.broadcastStation)
+  const meta = [broadcastStation?.stationName, getAppearanceTypeLabel(appearance.appearanceType)]
+    .filter(Boolean)
+    .join(' · ')
+  const performer = getPerformer(appearance)
+  const bodyImages = getBodyImages(appearance)
+  const mainImage = bodyImages[0]
+  const secondaryImages = bodyImages.slice(1)
+  const infoItems = [
+    // { label: '출연자', value: performer.name },
+    { label: '작품명', value: appearance.projectTitle },
+    { label: '역할', value: appearance.roleName },
+    { label: '반/클래스', value: appearance.className },
+    { label: '방영일', value: formatDate(appearance.airDateLabel) },
+  ].filter((item) => item.value)
+  const careerItems = appearance.careerItems?.filter((item) => item.title || item.content) ?? []
+  const adjacent = await queryAdjacentScreenAppearances({ center, slug: appearance.slug })
+
+  return (
+    <DetailPage center={center} className="page-screen-appearances-detail">
+      <DetailBackLink href={`/${center}/screen-appearances`} label="BNB 출연장면" width="wide" />
+
+      <DetailContainer width="wide">
+        <DetailHeader
+          dateTime={appearance.publishedAt ?? appearance.createdAt}
+          description={appearance.introText}
+          eyebrow={meta}
+          title={projectTitle}
+        />
+
+        <div className="section-screen-appearance-detail__content grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+          <div className="section-screen-appearance-detail__media space-y-5">
+            {mainImage ? (
+              <div className="relative aspect-video overflow-hidden rounded-xl bg-muted">
+                <Media
+                  alt={projectTitle}
+                  fill
+                  htmlElement={null}
+                  imgClassName="size-full object-cover"
+                  pictureClassName="block size-full"
+                  priority
+                  resource={mainImage}
+                  size="(max-width: 1023px) 100vw, 760px"
+                />
+              </div>
+            ) : (
+              <div className="flex aspect-video items-center justify-center rounded-xl bg-muted type-label-l font-semibold text-muted-foreground">
+                NO IMAGE
+              </div>
+            )}
+
+            {secondaryImages.length > 0 && (
+              <div className="grid gap-5 sm:grid-cols-2">
+                {secondaryImages.map((image, index) => (
+                  <div
+                    className="relative aspect-video overflow-hidden rounded-xl bg-muted"
+                    key={`${image.id}-${index}`}
+                  >
+                    <Media
+                      alt={`${projectTitle} 출연장면 ${index + 2}`}
+                      fill
+                      htmlElement={null}
+                      imgClassName="size-full object-cover"
+                      pictureClassName="block size-full"
+                      resource={image}
+                      size="(max-width: 639px) 100vw, 380px"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <aside className="section-screen-appearance-detail__aside rounded-xl border border-border bg-white p-6 md:p-8">
+            <div className="flex items-center gap-4 border-b border-border pb-6">
+              <ProfileAvatar performer={performer} />
+              <div className="min-w-0">
+                <p className="type-label-m font-bold leading-[1.35] text-brand">출연자</p>
+                <h2 className="line-clamp-2 type-title-m font-extrabold leading-[1.35] text-foreground">
+                  {performer.name}
+                </h2>
+              </div>
+            </div>
+
+            {infoItems.length > 0 && (
+              <dl className="type-body-s leading-[1.55]">
+                {infoItems.map((item) => (
+                  <div className="grid grid-cols-[84px_1fr] gap-4 border-b border-border py-4" key={item.label}>
+                    <dt className="font-bold text-foreground">{item.label}</dt>
+                    <dd className="text-muted-foreground">{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {careerItems.length > 0 && (
+              <section className="mt-8">
+                <h2 className="type-title-s font-extrabold leading-[1.35] text-foreground">
+                  필모그래피
+                </h2>
+                <dl className="mt-4 type-body-s leading-[1.55]">
+                  {careerItems.map((item) => (
+                    <div
+                      className="border-t border-border py-4 first:border-t-0 first:pt-0"
+                      key={item.id ?? item.title}
+                    >
+                      <dt className="font-bold text-foreground">{item.title}</dt>
+                      {item.content && (
+                        <dd className="mt-2 whitespace-pre-line text-muted-foreground">
+                          {formatMultilineText(item.content)}
+                        </dd>
+                      )}
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
+          </aside>
+        </div>
+      </DetailContainer>
+
+      <DetailPager
+        nextHref={adjacent.nextHref}
+        nextLabel={adjacent.nextLabel}
+        previousHref={adjacent.previousHref}
+        previousLabel={adjacent.previousLabel}
+        width="wide"
+      />
+    </DetailPage>
+  )
+}
+
+export async function generateScreenAppearanceMetadata({
+  center,
+  slug,
+}: {
+  center: CenterSlug
+  slug: string
+}): Promise<Metadata> {
+  const appearance = await queryScreenAppearanceBySlug({ center, slug }).catch(() => null)
+  const title = appearance?.projectTitle?.trim() || appearance?.title
+
+  return {
+    description: appearance?.introText || undefined,
+    title: title
+      ? `${title} | ${getCenterLabel(center)} BNB 출연장면`
+      : `${getCenterLabel(center)} BNB 출연장면`,
+  }
+}
+
+const queryScreenAppearanceBySlug = cache(
+  async ({ center, slug }: { center: CenterSlug; slug: string }) => {
+    const { isEnabled: draft } = await draftMode()
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'screen-appearances',
+      depth: 2,
+      limit: 1,
+      overrideAccess: draft,
+      pagination: false,
+      where: {
+        and: [
+          {
+            slug: {
+              equals: slug,
+            },
+          },
+          {
+            centers: {
+              equals: center,
+            },
+          },
+          ...(draft
+            ? []
+            : [
+                {
+                  displayStatus: {
+                    equals: 'published',
+                  },
+                },
+              ]),
+        ],
+      },
+    })
+
+    return (result.docs?.[0] as ScreenAppearance | undefined) || null
+  },
+)
+
+const queryAdjacentScreenAppearances = cache(
+  async ({ center, slug }: { center: CenterSlug; slug: string }) => {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload
+      .find({
+        collection: 'screen-appearances',
+        depth: 1,
+        limit: 1000,
+        overrideAccess: false,
+        pagination: false,
+        select: {
+          actorInputMode: true,
+          linkedProfiles: true,
+          performerName: true,
+          projectTitle: true,
+          slug: true,
+          title: true,
+        },
+        sort: '-publishedAt',
+        where: {
+          and: [
+            {
+              displayStatus: {
+                equals: 'published',
+              },
+            },
+            {
+              centers: {
+                equals: center,
+              },
+            },
+          ],
+        },
+      })
+      .catch(() => ({ docs: [] }))
+
+    const index = result.docs.findIndex((item) => item.slug === slug)
+    const previous = index >= 0 ? result.docs[index + 1] : undefined
+    const next = index > 0 ? result.docs[index - 1] : undefined
+    const pathPrefix = `/${center}/screen-appearances`
+
+    return {
+      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      nextLabel: next ? formatAdjacentLabel(next, '다음 출연장면') : '다음 출연장면',
+      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+      previousLabel: previous ? formatAdjacentLabel(previous, '이전 출연장면') : '이전 출연장면',
+    }
+  },
+)
+
+function ProfileAvatar({ performer }: { performer: PerformerInfo }) {
+  if (performer.profileImageMedia) {
+    return (
+      <div className="relative size-14 shrink-0 overflow-hidden rounded-full bg-muted">
+        <Media
+          fill
+          htmlElement={null}
+          imgClassName="size-full object-cover object-top"
+          pictureClassName="block size-full"
+          resource={performer.profileImageMedia}
+          size="56px"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted type-label-l font-bold text-brand"
+    >
+      {performer.name.slice(0, 1)}
+    </div>
+  )
+}
+
+function getPerformer(appearance: ScreenAppearance): PerformerInfo {
+  if (appearance.actorInputMode === 'manual') {
+    return {
+      name: appearance.performerName?.trim() || '배우앤배움 수강생',
+    }
+  }
+
+  const profiles = appearance.linkedProfiles
+    ?.filter((profile): profile is Profile => typeof profile === 'object' && profile !== null)
+    .filter((profile) => Boolean(profile.name))
+  const profile = profiles?.[0]
+  const names = profiles?.map((item) => item.name).join(', ')
+
+  return {
+    name: names || appearance.performerName?.trim() || '배우앤배움 수강생',
+    profileImageMedia:
+      profile?.profileImageMedia && typeof profile.profileImageMedia === 'object'
+        ? profile.profileImageMedia
+        : null,
+  }
+}
+
+function formatAdjacentLabel(
+  appearance: Pick<
+    ScreenAppearance,
+    'actorInputMode' | 'linkedProfiles' | 'performerName' | 'projectTitle' | 'title'
+  >,
+  fallback: string,
+) {
+  const projectTitle = appearance.projectTitle?.trim() || appearance.title?.trim()
+  const performerName = getPerformerName(appearance)
+  const label = [projectTitle, performerName].filter(Boolean).join('-')
+
+  return label || fallback
+}
+
+function getPerformerName(
+  appearance: Pick<ScreenAppearance, 'actorInputMode' | 'linkedProfiles' | 'performerName'>,
+) {
+  if (appearance.actorInputMode === 'manual') {
+    return appearance.performerName?.trim()
+  }
+
+  const names = appearance.linkedProfiles
+    ?.filter((profile): profile is Profile => typeof profile === 'object' && profile !== null)
+    .map((profile) => profile.name?.trim())
+    .filter(Boolean)
+    .join(', ')
+
+  return names || appearance.performerName?.trim()
+}
+
+function getBroadcastStation(value: ScreenAppearance['broadcastStation']) {
+  return value && typeof value === 'object' ? value : null
+}
+
+function getBodyImages(appearance: ScreenAppearance) {
+  return (
+    appearance.bodyImages
+      ?.map((item) => item.image)
+      .filter((image): image is PayloadMedia => typeof image === 'object' && image !== null) ?? []
+  )
+}
+
+function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
+  if (value === 'commercial') {
+    return '광고 출연장면'
+  }
+
+  if (value === 'movie') {
+    return '영화 출연장면'
+  }
+
+  return '드라마 출연장면'
+}
+
+function formatDate(value: string | null | undefined) {
+  if (!value) {
+    return undefined
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  const year = String(date.getFullYear())
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}. ${month}. ${day}`
+}
+
+function formatMultilineText(value: string) {
+  return value.replace(/<br\s*\/?>/gi, '\n').trim()
+}

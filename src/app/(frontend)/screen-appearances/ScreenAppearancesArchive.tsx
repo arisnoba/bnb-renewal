@@ -146,7 +146,11 @@ export async function ScreenAppearancesArchive({
           ) : (
             <div className="section-screen-appearances-list__grid grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {appearances.docs.map((appearance) => (
-                <ScreenAppearanceCard appearance={appearance} key={appearance.id} />
+                <ScreenAppearanceCard
+                  appearance={appearance}
+                  center={center}
+                  key={appearance.id}
+                />
               ))}
             </div>
           )}
@@ -193,7 +197,13 @@ function HeroImageWall({ images }: { images: PayloadMedia[] }) {
   )
 }
 
-function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceListItem }) {
+function ScreenAppearanceCard({
+  appearance,
+  center,
+}: {
+  appearance: ScreenAppearanceListItem
+  center: CenterSlug
+}) {
   const projectTitle = appearance.projectTitle?.trim() || appearance.title
   const broadcastStation = getBroadcastStation(appearance.broadcastStation)
   const projectMeta = [broadcastStation?.stationName, getAppearanceTypeLabel(appearance.appearanceType)]
@@ -206,16 +216,21 @@ function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceList
   const roleText = [appearance.roleName, airDate ? `방영일 ${airDate}` : null]
     .filter(Boolean)
     .join(' · ')
+  const detailHref = `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`
 
   return (
-    <article className="section-screen-appearances-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
+    <Link
+      aria-label={`${projectTitle} 출연장면 상세 보기`}
+      className="group section-screen-appearances-card block overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm transition hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+      href={detailHref}
+    >
       <div className="section-screen-appearances-card__head flex min-h-[76px] items-center gap-3 px-5 py-4">
         <BroadcastStationLogo station={broadcastStation} />
         <div className="section-screen-appearances-card__project min-w-0">
-          <p className="line-clamp-1 type-body-s font-semibold leading-[1.2] text-neutral-500">
+          <p className="line-clamp-1 type-body-s font-medium leading-[1.2] text-neutral-500">
             {projectMeta}
           </p>
-          <h3 className="line-clamp-1 type-title-s font-bold leading-[1.5] text-neutral-600">
+          <h3 className="line-clamp-1 type-title-s font-semibold leading-normal text-neutral-600">
             {projectTitle}
           </h3>
         </div>
@@ -226,7 +241,7 @@ function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceList
           <Media
             fill
             htmlElement={null}
-            imgClassName="size-full object-cover transition duration-300 hover:scale-[1.035]"
+            imgClassName="size-full object-cover transition duration-300 group-hover:scale-[1.035]"
             pictureClassName="block size-full"
             resource={screenImage}
             size="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 280px"
@@ -263,7 +278,7 @@ function ScreenAppearanceCard({ appearance }: { appearance: ScreenAppearanceList
           )}
         </div>
       </div>
-    </article>
+    </Link>
   )
 }
 

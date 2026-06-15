@@ -12,9 +12,9 @@ export function LegalDocumentPage({ document }: { document: LegalTermPageData })
   return (
     <main className="min-h-screen bg-neutral-950 pb-24 text-white page-top-offset">
       <section className="border-b border-white/10">
-        <div className="container-sm flex min-h-[300px] flex-col justify-end pb-12">
+        <div className="container-sm flex min-h-75 flex-col justify-end pb-12">
           <div className="max-w-3xl">
-            <h1 className="text-[34px] font-bold leading-tight tracking-normal md:text-[44px]">
+            <h1 className="type-display-m font-extrabold tracking-normal text-white md:type-display-l">
               {document.title}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/55">
