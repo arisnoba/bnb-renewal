@@ -4,7 +4,6 @@ import test from 'node:test'
 import configPromise from '../../payload.config'
 
 const expectedLeadingGroups = [
-  '컬렉션(삭제예정)',
   '메인설정',
   '회사정보',
   '교육',

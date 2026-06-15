@@ -117,6 +117,7 @@ import * as migration_20260611_191500_teacher_representative_work_poster_media f
 import * as migration_20260612_123500_broadcast_stations from './20260612_123500_broadcast_stations'
 import * as migration_20260612_153000_screen_appearance_movie_type_project_titles from './20260612_153000_screen_appearance_movie_type_project_titles'
 import * as migration_20260615_123800_profile_class_cohort from './20260615_123800_profile_class_cohort'
+import * as migration_20260615_150000_drop_pages_posts_collections from './20260615_150000_drop_pages_posts_collections'
 
 export const migrations = [
   {
@@ -713,5 +714,10 @@ export const migrations = [
     up: migration_20260615_123800_profile_class_cohort.up,
     down: migration_20260615_123800_profile_class_cohort.down,
     name: '20260615_123800_profile_class_cohort',
+  },
+  {
+    up: migration_20260615_150000_drop_pages_posts_collections.up,
+    down: migration_20260615_150000_drop_pages_posts_collections.down,
+    name: '20260615_150000_drop_pages_posts_collections',
   },
 ]

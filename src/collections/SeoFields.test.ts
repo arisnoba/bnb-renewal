@@ -5,8 +5,6 @@ import type { CollectionConfig, Field, Tab } from "payload";
 
 import { ArtistPress } from "./ArtistPress";
 import { News } from "./News";
-import { Pages } from "./Pages";
-import { Posts } from "./Posts";
 import { seoTitleLength } from "./seoFields";
 
 type FieldWithName = Field & {
@@ -42,7 +40,7 @@ function metaTitleField(collection: CollectionConfig) {
 }
 
 test("SEO title fields use the 30 to 50 character range", () => {
-  for (const collection of [ArtistPress, News, Pages, Posts]) {
+  for (const collection of [ArtistPress, News]) {
     const titleField = metaTitleField(collection);
 
     assert.equal(titleField.minLength, seoTitleLength.minLength);

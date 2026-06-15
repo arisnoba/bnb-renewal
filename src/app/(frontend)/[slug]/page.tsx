@@ -1,47 +1,19 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
-import { draftMode } from 'next/headers'
+import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
 import React, { cache } from 'react'
-import { centerStaticPage, homeStatic } from '@/endpoints/seed/home-static'
 
-import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { RenderHero } from '@/heros/RenderHero'
-import { generateMeta } from '@/utilities/generateMeta'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { MainBannerSection } from '@/Main/BannerSection'
 import { SocialLinksSection } from '@/Main/SocialLinksSection'
-import type { CenterSlug } from '@/lib/centers'
+import { centers, type CenterSlug } from '@/lib/centers'
 import type { Main, MainStatistic } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const pages = await payload.find({
-      collection: 'pages',
-      draft: false,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-    })
-
-    return pages.docs
-      ?.filter((doc) => {
-        return doc.slug !== 'home'
-      })
-      .map(({ slug }) => {
-        return { slug }
-      })
-  } catch {
-    return []
-  }
+  return Object.keys(centers).map((slug) => ({ slug }))
 }
 
 function fallbackMetadata(): Metadata {
@@ -52,16 +24,18 @@ function fallbackMetadata(): Metadata {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  try {
-    const { slug = 'home' } = await paramsPromise
-    const decodedSlug = decodeURIComponent(slug)
-    const page = await queryPageBySlug({
-      slug: decodedSlug,
-    })
+  const { slug = '' } = await paramsPromise
+  const center = centerFromSlug(decodeURIComponent(slug))
 
-    return generateMeta({ doc: page })
-  } catch {
+  if (!center) {
     return fallbackMetadata()
+  }
+
+  const title = centers[center]
+
+  return {
+    title,
+    description: `${title} 메인 페이지`,
   }
 }
 
@@ -71,7 +45,7 @@ type Args = {
   }>
 }
 
-const centerSlugs = ['art', 'exam', 'kids', 'highteen', 'avenue'] as const
+const centerSlugs = Object.keys(centers) as CenterSlug[]
 
 function centerFromSlug(slug: string): CenterSlug | null {
   return centerSlugs.includes(slug as CenterSlug) ? (slug as CenterSlug) : null
@@ -82,56 +56,22 @@ function centerContentAnchor(center: CenterSlug) {
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
+  const { slug = '' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
-  let page: RequiredDataFromCollectionSlug<'pages'> | null
-
-  try {
-    page = await queryPageBySlug({
-      slug: decodedSlug,
-    })
-  } catch {
-    page = null
-  }
-
-  // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
-    page = homeStatic
-  }
-
   const center = centerFromSlug(decodedSlug)
 
-  if (!page && center) {
-    page = centerStaticPage(center)
-  }
-
-  if (!page) {
+  if (!center) {
     notFound()
   }
 
-  const { hero, layout } = page
-  const main = center ? await queryMainGlobal() : null
-  const statistics = center ? await queryMainStatisticsGlobal() : null
+  const main = await queryMainGlobal()
+  const statistics = await queryMainStatisticsGlobal()
 
   return (
-    <main
-      className={
-        center
-          ? 'page page-dark page-landing page-landing--center'
-          : 'page page-light page-landing'
-      }
-    >
-      {draft && <LivePreviewListener />}
-
-      {center && <MainBannerSection center={center} main={main} statistics={statistics} />}
-      <RenderHero {...hero} />
-      {center && (
-        <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
-      )}
-      <RenderBlocks blocks={layout} />
-      {center && <SocialLinksSection center={center} />}
+    <main className="page page-dark page-landing page-landing--center">
+      <MainBannerSection center={center} main={main} statistics={statistics} />
+      <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
+      <SocialLinksSection center={center} />
     </main>
   )
 }
@@ -160,25 +100,4 @@ const queryMainStatisticsGlobal = cache(async () => {
   } catch {
     return null
   }
-})
-
-const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
-
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'pages',
-    draft,
-    limit: 1,
-    pagination: false,
-    overrideAccess: draft,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return result.docs?.[0] || null
 })

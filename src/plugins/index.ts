@@ -7,17 +7,21 @@ import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { Page, Post } from '@/payload-types'
 import { deleteR2Object, getR2PublicUrl, hasR2Config, uploadR2Object } from '@/lib/r2'
 import { R2_MEDIA_PREFIX_BY_ROLE } from '@/lib/r2ObjectKeys'
 import { getServerSideURL } from '@/utilities/getURL'
 import { withSiteTitle } from '@/utilities/siteMetadata'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
+type SeoDocument = {
+  slug?: string | null
+  title?: string | null
+}
+
+const generateTitle: GenerateTitle<SeoDocument> = ({ doc }) => {
   return withSiteTitle(doc?.title)
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
+const generateURL: GenerateURL<SeoDocument> = ({ doc }) => {
   const url = getServerSideURL()
 
   return doc?.slug ? `${url}/${doc.slug}` : url

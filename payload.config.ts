@@ -24,8 +24,6 @@ import { Histories } from './src/collections/Histories'
 import { MainBanners } from './src/collections/MainBanners'
 import { Media } from './src/collections/Media'
 import { News } from './src/collections/News'
-import { Pages } from './src/collections/Pages'
-import { Posts } from './src/collections/Posts'
 import { Profiles } from './src/collections/Profiles'
 import { ScreenAppearances } from './src/collections/ScreenAppearances'
 import { SocialLinks } from './src/collections/SocialLinks'
@@ -84,8 +82,6 @@ export default buildConfig({
   },
   collections: applyReliableBulkEndpoints(
     applyAdminTimestampFields([
-      Pages,
-      Posts,
       MainBanners,
       SocialLinks,
       Histories,

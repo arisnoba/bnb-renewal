@@ -27,16 +27,6 @@ const publicTestPages = [
     label: '출신 아티스트',
   },
   {
-    description: '게시글 템플릿 목록',
-    href: '/posts',
-    label: '게시글',
-  },
-  {
-    description: '프론트 검색 화면',
-    href: '/search',
-    label: '검색',
-  },
-  {
     description: '저장 연결 전 상담 신청 MVP 폼',
     href: '/consult',
     label: '상담하기',
