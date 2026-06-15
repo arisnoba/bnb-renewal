@@ -960,7 +960,7 @@ function CriteriaPanel({ data }: { data: GradeSystemContent }) {
   return (
     <div className="flex flex-col gap-16 md:gap-20">
       <section className="">
-        <h2 className="type-headline-xl font-extrabold leading-[1.35]">
+        <h2 className="type-headline-xl font-bold leading-[1.35]">
           {data.criteriaTitle}
         </h2>
         <p className="mt-8 whitespace-pre-line type-body-m leading-[1.85] text-white/50">

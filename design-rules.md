@@ -96,7 +96,7 @@ npm install pretendard
   --color-brand: var(--brand);
   --color-brand-art: #C80000;
   --color-brand-exam: #1E5FCC;
-  --color-brand-highteen: #E0529B;
+  --color-brand-highteen: #8A4FFF;
   --color-brand-kids: #F5A623;
   --color-brand-avenue: #2BB673;
 }

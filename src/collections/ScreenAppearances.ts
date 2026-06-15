@@ -210,7 +210,6 @@ export const ScreenAppearances: CollectionConfig = {
             options: centerOptions,
             validate: validateScreenAppearanceCenter,
             admin: {
-              className: "bnb-admin-required-field",
               isClearable: true,
               placeholder: "선택해 주세요",
             },

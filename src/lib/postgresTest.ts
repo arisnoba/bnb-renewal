@@ -308,7 +308,7 @@ function mapDocToRow(
         ...baseRow(doc, {
         imagePath: '',
         meta1: stringify(doc.className),
-        meta2: stringify(doc.educationStartDate),
+        meta2: stringify(doc.tuitionFee),
         meta3: stringify(doc.capacity),
         title: stringify(doc.title),
         }),

@@ -54,6 +54,7 @@ type TableConfig = {
 }
 
 type SeedContext = {
+  classroomIds: (number | string)[]
   examSchoolLogoIdsBySlug: Map<string, number | string>
   teacherCentersBySlug: Map<string, string[]>
   teacherFilesByTeacherSlug: Map<string, WorkRow[]>
@@ -600,10 +601,12 @@ const configs: TableConfig[] = [
     ],
     transform: (row, context) => ({
       centers: teacherCentersFromSlug(row.resolved_teacher_slug, row.source_db, context),
+      classroom: curriculumClassroomId(row, context),
       className: curriculumClassName(row.category),
       curriculumLessons: buildCurriculumLessons(row.title_raw, row.content_raw),
       teacher: teacherIdFromSlug(row.resolved_teacher_slug, context),
       title: text(row.subject) ?? text(row.category) ?? '커리큘럼',
+      tuitionFee: curriculumTuitionFee(row),
     }),
   },
   {
@@ -649,6 +652,7 @@ async function main() {
 
     for (const config of selected) {
       if (config.collection === 'curriculums' && payload) {
+        context.classroomIds = await readPayloadClassroomIds(payload)
         context.teacherIdsBySlug = await readPayloadTeacherIdsBySlug(payload)
       }
 
@@ -1495,11 +1499,34 @@ async function buildSeedContext(): Promise<SeedContext> {
   }
 
   return {
+    classroomIds: [],
     examSchoolLogoIdsBySlug: new Map(),
     teacherCentersBySlug,
     teacherFilesByTeacherSlug,
     teacherIdsBySlug: new Map(),
   }
+}
+
+async function readPayloadClassroomIds(payload: Payload) {
+  const result = await (payload as unknown as {
+    find: (args: {
+      collection: string
+      depth: number
+      limit: number
+      overrideAccess: boolean
+      pagination: boolean
+      sort: string
+    }) => Promise<{ docs: { id: number | string }[] }>
+  }).find({
+    collection: 'classrooms',
+    depth: 0,
+    limit: 10000,
+    overrideAccess: true,
+    pagination: false,
+    sort: 'id',
+  })
+
+  return result.docs.map((doc) => doc.id)
 }
 
 async function readPayloadExamSchoolLogoIdsBySlug(payload: Payload) {
@@ -1837,6 +1864,24 @@ function curriculumClassName(value: unknown) {
     default:
       return className
   }
+}
+
+const curriculumTuitionFees = [380000, 420000, 480000, 550000, 620000, 700000]
+
+function curriculumClassroomId(row: WorkRow, context: SeedContext) {
+  if (context.classroomIds.length === 0) {
+    return undefined
+  }
+
+  const index = Math.abs(number(row.source_id, 0)) % context.classroomIds.length
+
+  return context.classroomIds[index]
+}
+
+function curriculumTuitionFee(row: WorkRow) {
+  const index = Math.abs(number(row.source_id, 0)) % curriculumTuitionFees.length
+
+  return curriculumTuitionFees[index]
 }
 
 function teacherIdFromSlug(value: unknown, context: SeedContext) {

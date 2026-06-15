@@ -258,6 +258,8 @@ export const Curriculums: CollectionConfig = {
       "centers",
       "className",
       "teacher",
+      "classroom",
+      "tuitionFee",
       "educationDays",
       "educationStartDate",
       "capacity",
@@ -327,6 +329,36 @@ export const Curriculums: CollectionConfig = {
               validate: validateRequired,
               admin: {
                 className: "bnb-admin-required-field",
+                width: "50%",
+              },
+            },
+          ]),
+          adminRow([
+            {
+              name: "classroom",
+              type: "relationship",
+              label: "강의실",
+              relationTo: "classrooms",
+              validate: validateRequired,
+              admin: {
+                className: "bnb-admin-required-field",
+                placeholder: "선택해 주세요",
+                width: "50%",
+              },
+            },
+            {
+              name: "tuitionFee",
+              type: "number",
+              label: "수강료",
+              min: 0,
+              validate: validateRequired,
+              admin: {
+                className: "bnb-admin-required-field",
+                components: {
+                  Field:
+                    "@/components/payload/CurriculumTuitionFeeField#CurriculumTuitionFeeField",
+                },
+                placeholder: "예: 450000",
                 width: "50%",
               },
             },

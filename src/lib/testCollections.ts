@@ -99,7 +99,7 @@ export const testCollections = [
     href: '/test/curriculums',
     imageFields: [],
     label: 'Curriculums',
-    metaFields: ['centers', 'className', 'educationStartDate', 'capacity'],
+    metaFields: ['centers', 'className', 'classroom', 'tuitionFee', 'educationStartDate', 'capacity'],
     slug: 'curriculums',
     sort: 'title',
     titleFields: ['title'],

@@ -119,6 +119,7 @@ import * as migration_20260612_153000_screen_appearance_movie_type_project_title
 import * as migration_20260615_123800_profile_class_cohort from './20260615_123800_profile_class_cohort'
 import * as migration_20260615_150000_drop_pages_posts_collections from './20260615_150000_drop_pages_posts_collections'
 import * as migration_20260615_200800_classrooms from './20260615_200800_classrooms'
+import * as migration_20260615_211000_curriculum_classroom_tuition from './20260615_211000_curriculum_classroom_tuition'
 
 export const migrations = [
   {
@@ -725,5 +726,10 @@ export const migrations = [
     up: migration_20260615_200800_classrooms.up,
     down: migration_20260615_200800_classrooms.down,
     name: '20260615_200800_classrooms',
+  },
+  {
+    up: migration_20260615_211000_curriculum_classroom_tuition.up,
+    down: migration_20260615_211000_curriculum_classroom_tuition.down,
+    name: '20260615_211000_curriculum_classroom_tuition',
   },
 ]
