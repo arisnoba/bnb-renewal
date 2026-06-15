@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>입시센터 커리큘럼 — 배우앤배움</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fg:      #1a1512;
+      --fg-dim:  #6b6159;
+      --bg:      #faf8f5;
+      --line:    #d4cdc6;
+      --accent:  #8b3a1e;
+      --tag-bg:  #f0ebe5;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 64px 32px 120px; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      border-bottom: 2px solid var(--fg);
+      padding-bottom: 20px;
+      margin-bottom: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .page-header-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+    .page-header-sub {
+      font-size: 12px;
+      color: var(--fg-dim);
+      letter-spacing: .05em;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 80px; }
+    .section + .section { border-top: 1px solid var(--line); padding-top: 64px; }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: .2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: var(--fg-dim);
+      margin-bottom: 32px;
+    }
+
+    /* ── CLASS CARDS ── */
+    .class-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .class-card {
+      border: 1px solid var(--line);
+      padding: 24px 28px;
+      background: #fff;
+    }
+    .class-card-tag {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: .08em;
+      color: var(--accent);
+      background: var(--tag-bg);
+      padding: 3px 10px;
+      margin-bottom: 14px;
+    }
+    .class-card-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .class-card-meta {
+      font-size: 12px;
+      color: var(--fg-dim);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .class-card-notes {
+      font-size: 13px;
+      color: var(--fg-dim);
+      line-height: 1.8;
+    }
+    .class-card-notes li { list-style: none; padding-left: 12px; position: relative; }
+    .class-card-notes li::before { content: '—'; position: absolute; left: 0; color: var(--line); }
+    .class-price {
+      margin-top: 20px;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .class-price span { font-size: 13px; font-family: 'Noto Sans KR', sans-serif; font-weight: 300; color: var(--fg-dim); }
+
+    /* ── SCHEDULE TABLE ── */
+    .block-label {
+      font-size: 11px;
+      letter-spacing: .15em;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .schedule-stats {
+      display: flex;
+      border: 1px solid var(--line);
+      margin-bottom: 2px;
+    }
+    .stat {
+      flex: 1;
+      padding: 16px 20px;
+      border-right: 1px solid var(--line);
+      text-align: center;
+      background: #fff;
+    }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .stat-lbl { font-size: 11px; color: var(--fg-dim); margin-top: 2px; }
+
+    .subject-grid {
+      display: grid;
+      gap: 2px;
+      margin-bottom: 32px;
+    }
+    .subject-grid.c5 { grid-template-columns: repeat(5, 1fr); }
+    .subject-grid.c4 { grid-template-columns: repeat(4, 1fr); }
+    .subject-grid.c3 { grid-template-columns: repeat(3, 1fr); }
+
+    .subject-cell {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 14px 8px;
+      text-align: center;
+    }
+    .subject-cell.accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .subject-cell.accent .subject-nth { color: rgba(255,255,255,.6); }
+    .subject-nth { font-size: 10px; color: var(--fg-dim); letter-spacing: .05em; margin-bottom: 4px; }
+    .subject-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .subject-time { font-size: 11px; color: var(--fg-dim); }
+    .subject-cell.accent .subject-time { color: rgba(255,255,255,.7); }
+
+    /* ── ROADMAP ── */
+    .roadmap {
+      margin-bottom: 40px;
+    }
+    .roadmap-steps {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--line);
+    }
+    .roadmap-step {
+      flex: 1;
+      padding: 18px 16px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      position: relative;
+      text-align: center;
+    }
+    .roadmap-step:last-child { border-right: none; }
+    .roadmap-step.final { background: var(--tag-bg); }
+    .step-num {
+      font-size: 10px;
+      letter-spacing: .1em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .step-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .step-period { font-size: 11px; color: var(--fg-dim); }
+
+    /* arrow between steps */
+    .roadmap-step:not(:last-child)::after {
+      content: '›';
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--fg-dim);
+      font-size: 16px;
+      z-index: 1;
+      background: transparent;
+    }
+
+    /* ── CURRICULUM DETAIL ── */
+    .curriculum-list {
+      border-top: 1px solid var(--line);
+    }
+    .curriculum-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 24px 0;
+    }
+    .curriculum-item-name {
+      font-weight: 500;
+      font-size: 14px;
+      padding-top: 2px;
+      color: var(--fg);
+    }
+    .curriculum-item-body { font-size: 13px; color: var(--fg-dim); line-height: 1.85; }
+    .curriculum-item-body li { list-style: none; padding-left: 12px; position: relative; margin-bottom: 2px; }
+    .curriculum-item-body li::before { content: '·'; position: absolute; left: 0; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <div class="page-header-title">입시센터 커리큘럼</div>
+    <div class="page-header-sub">배우앤배움 입시센터</div>
+  </header>
+
+
+  <!-- ══════════════════════════
+       01. 입시반
+  ══════════════════════════ -->
+  <section class="section">
+    <p class="section-label">01 — Admission Class</p>
+    <h2 class="section-title">입시반</h2>
+    <p class="section-desc">고등학교 3학년 및 재수생 대상 · 최대 정원 8명</p>
+
+    <!-- 카드 -->
+    <div class="class-row">
+      <div class="class-card">
+        <div class="class-card-tag">평일 입시반</div>
+        <div class="class-card-name">Weekday</div>
+        <div class="class-card-meta">주 5회 · 월 60시간 · 매월 모의고사</div>
+        <ul class="class-card-notes">
+          <li>저녁 6시 이후 진행</li>
+          <li>평일 특화 집중 커리큘럼</li>
+          <li>매월 평가회 실시</li>
+        </ul>
+        <div class="class-price">850,000 <span>원 / 월</span></div>
+      </div>
+      <div class="class-card">
+        <div class="class-card-tag">주말 입시반</div>
+        <div class="class-card-name">Weekend</div>
+        <div class="class-card-meta">주 4회 · 월 48시간 · 매월 모의고사</div>
+        <ul class="class-card-notes">
+          <li>오후 12시 이후 진행</li>
+          <li>평일 내신관리 병행 학생 대상</li>
+          <li>지방 거주 / 고3 / 20세 이상</li>
+          <li>수도권도 신청 가능</li>
+        </ul>
+        <div class="class-price">700,000 <span>원 / 월</span></div>
+      </div>
+    </div>
+
+    <!-- 평일 수업 구성 -->
+    <p class="block-label">평일 입시반 — 수업 구성</p>
+    <div class="schedule-stats">
+      <div class="stat"><div class="stat-val">주 5회</div><div class="stat-lbl">수업 횟수</div></div>
+      <div class="stat"><div class="stat-val">60h</div><div class="stat-lbl">월 수업시간</div></div>
+      <div class="stat"><div class="stat-val">3h</div><div class="stat-lbl">회당 수업</div></div>
+    </div>
+    <div class="subject-grid c5">
+      <div class="subject-cell">
+        <div class="subject-nth">1회</div>
+        <div class="subject-name">연기 Ⅰ</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell">
+        <div class="subject-nth">2회</div>
+        <div class="subject-name">연기 Ⅱ</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell accent">
+        <div class="subject-nth">3회</div>
+        <div class="subject-name">연기 Ⅲ</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell">
+        <div class="subject-nth">4회</div>
+        <div class="subject-name">뮤지컬연기</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell">
+        <div class="subject-nth">5회</div>
+        <div class="subject-name">무용연기</div>
+        <div class="subject-time">3시간</div>
+      </div>
+    </div>
+
+    <!-- 주말 수업 구성 -->
+    <p class="block-label">주말 입시반 — 수업 구성</p>
+    <div class="schedule-stats">
+      <div class="stat"><div class="stat-val">주 4회</div><div class="stat-lbl">수업 횟수</div></div>
+      <div class="stat"><div class="stat-val">48h</div><div class="stat-lbl">월 수업시간</div></div>
+      <div class="stat"><div class="stat-val">3h</div><div class="stat-lbl">회당 수업</div></div>
+    </div>
+    <div class="subject-grid c4">
+      <div class="subject-cell">
+        <div class="subject-nth">1회</div>
+        <div class="subject-name">연기 Ⅰ</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell accent">
+        <div class="subject-nth">2회</div>
+        <div class="subject-name">연기 Ⅱ</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell">
+        <div class="subject-nth">3회</div>
+        <div class="subject-name">뮤지컬연기</div>
+        <div class="subject-time">3시간</div>
+      </div>
+      <div class="subject-cell">
+        <div class="subject-nth">4회</div>
+        <div class="subject-name">무용연기</div>
+        <div class="subject-time">3시간</div>
+      </div>
+    </div>
+
+    <!-- 로드맵 -->
+    <p class="block-label">단계별 로드맵</p>
+    <div class="roadmap">
+      <div class="roadmap-steps">
+        <div class="roadmap-step">
+          <div class="step-num">1단계</div>
+          <div class="step-name">스파르타 훈련</div>
+          <div class="step-period">2월 — 4월</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="step-num">2단계</div>
+          <div class="step-name">수시 준비</div>
+          <div class="step-period">5월 — 10월</div>
+        </div>
+        <div class="roadmap-step final">
+          <div class="step-num">3단계</div>
+          <div class="step-name">정시 준비</div>
+          <div class="step-period">11월 — 다음해 1월</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 교육과정 -->
+    <p class="block-label">교육과정</p>
+    <div class="curriculum-list">
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">연기</div>
+        <div class="curriculum-item-body">담임선생님 수업으로 입시 전반(메인작품·지정작품·서브작품·영화·드라마)을 책임지며 학생의 장점을 극대화하여 연기 작품을 완성합니다. 즉흥연기, 제시대사, 구술연기 등 대학에서 요구하는 모든 것을 준비하며, 매월 평가회를 통해 현장 경험을 미리 대비합니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">뮤지컬연기</div>
+        <div class="curriculum-item-body">학생의 음역대를 체크한 후 파트를 정확하게 결정합니다. 개인별 자세교정 및 호흡교정을 통해 1:1 VOICE MASTER 수업을 진행하며, 기본(호흡·발성·음정·박자)을 극대화하고 뮤지컬 노래에 '말'을 할 수 있도록 스토리텔링을 공부하여 하나의 뮤지컬 장면을 구성합니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">무용연기</div>
+        <div class="curriculum-item-body">배우로서 필요한 몸의 기능 및 밸런스 강화 수업을 진행합니다. 작품비가 없는 차별화된 1인 맞춤 작품으로 구성하며, 다양한 전공(현대무용·한국무용·발레·재즈댄스·스트릿댄스·마임)의 움직임 수업으로 개개인의 다양한 모습을 완성합니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">특강</div>
+        <div class="curriculum-item-body">수업 시간 이외에 입시를 위해 필요한 특강을 진행합니다. 한예종 지정희곡을 포함한 희곡분석 특강이 예정되어 있습니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">월말평가</div>
+        <div class="curriculum-item-body">매월 중간점검을 위한 평가회를 실시합니다. 학교별 특성을 기반으로 대응력 강화훈련을 하며 자신의 장·단점을 파악하고 개선합니다. 멘토들과 지원대학 선정 및 집중 개인상담도 진행됩니다.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════
+       02. 예비입시반
+  ══════════════════════════ -->
+  <section class="section">
+    <p class="section-label">02 — Preparatory Class</p>
+    <h2 class="section-title">예비입시반</h2>
+    <p class="section-desc">고등학교 1·2학년 연영과 진학 희망자 대상 · 최대 정원 8–10명</p>
+
+    <!-- 카드 -->
+    <div class="class-row" style="grid-template-columns: 1fr;">
+      <div class="class-card">
+        <div class="class-card-tag">예비입시반</div>
+        <div class="class-card-name">Preparatory</div>
+        <div class="class-card-meta">주 3회 · 월 24시간 · 매월 모의고사 · 주말반 운영</div>
+        <ul class="class-card-notes">
+          <li>오후 12시 ~ 저녁 6시 진행</li>
+          <li>미래를 구체적으로 설계하여 조기에 선행 준비하는 커리큘럼</li>
+          <li>1~2월: 고3 입시반 승급 평가 진행</li>
+        </ul>
+        <div class="class-price">450,000 <span>원 / 월</span></div>
+      </div>
+    </div>
+
+    <!-- 수업 구성 -->
+    <p class="block-label">수업 구성</p>
+    <div class="schedule-stats">
+      <div class="stat"><div class="stat-val">주 3회</div><div class="stat-lbl">수업 횟수</div></div>
+      <div class="stat"><div class="stat-val">24h</div><div class="stat-lbl">월 수업시간</div></div>
+      <div class="stat"><div class="stat-val">2h</div><div class="stat-lbl">회당 수업</div></div>
+    </div>
+    <div class="subject-grid c3">
+      <div class="subject-cell">
+        <div class="subject-nth">1회</div>
+        <div class="subject-name">연기 Ⅰ</div>
+        <div class="subject-time">2시간</div>
+      </div>
+      <div class="subject-cell accent">
+        <div class="subject-nth">2회</div>
+        <div class="subject-name">뮤지컬연기</div>
+        <div class="subject-time">2시간</div>
+      </div>
+      <div class="subject-cell">
+        <div class="subject-nth">3회</div>
+        <div class="subject-name">무용연기</div>
+        <div class="subject-time">2시간</div>
+      </div>
+    </div>
+
+    <!-- 로드맵 -->
+    <p class="block-label">단계별 로드맵</p>
+    <div class="roadmap">
+      <div class="roadmap-steps">
+        <div class="roadmap-step">
+          <div class="step-num">1단계</div>
+          <div class="step-name">기초연기 훈련</div>
+          <div class="step-period">2월 — 4월</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="step-num">2단계</div>
+          <div class="step-name">중급연기 훈련</div>
+          <div class="step-period">5월 — 10월</div>
+        </div>
+        <div class="roadmap-step">
+          <div class="step-num">3단계</div>
+          <div class="step-name">고급연기 (입시체험)</div>
+          <div class="step-period">11월 — 12월</div>
+        </div>
+        <div class="roadmap-step final">
+          <div class="step-num">최종</div>
+          <div class="step-name">입시반 승급<br>모의테스트</div>
+          <div class="step-period">다음해 1 — 2월</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 교육과정 -->
+    <p class="block-label">교육과정</p>
+    <div class="curriculum-list">
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">연기</div>
+        <div class="curriculum-item-body">입시에 필요한 기본 테크닉훈련(목적·대상·서브텍스트·리액션·독백)과 연극놀이로 진행됩니다. 무대에서의 기본적인 자세와 태도, 호흡과 발성 등을 배우고, 즉흥상황 및 상상훈련을 지도합니다. 작품·인물 분석을 통해 장면을 구성하여 발표하고 개인별 코멘트로 실전에 다가갑니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">뮤지컬연기</div>
+        <div class="curriculum-item-body">학생 개별로 신체트레이닝 및 발성훈련을 기본으로 합니다. 본인 이미지에 맞는 노래를 선정하여 표현·호흡·동작을 통해 리듬감을 극대화하고 음악적으로 표현할 수 있도록 지도합니다. 역할과 넘버 분위기에 맞는 표현 확장 및 나의 개성·장점 살리기를 통해 뮤지컬에 흥미를 유도합니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">무용연기</div>
+        <div class="curriculum-item-body">움직임에 관련된 기본적인 이해와 BAR를 통한 기본기훈련 및 COMBINATION 수업을 진행합니다. 즉흥으로 주제를 선정하여 본인의 장점을 찾고 창작움직임을 만들어 신체표현에 두려움을 없애도록 합니다. 유연성과 근력을 키우며 나쁜 자세를 교정합니다.</div>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">훈련</div>
+        <ul class="curriculum-item-body">
+          <li>호흡과 발성 — 링클레이터 시스템·알렉산더 테크닉</li>
+          <li>마이즈너 테크닉 — 충동적 연기·심리신체 탐구→실현→심화과정</li>
+          <li>1인/2인 텍스트 창작하기 및 실현 (나-인물에 대한 이해와 확장)</li>
+          <li>1인/2인 에뚜드 (상상력·창의력 훈련) / 째째대 (물체없이 행동하기·주의집중)</li>
+        </ul>
+      </div>
+      <div class="curriculum-item">
+        <div class="curriculum-item-name">월말평가</div>
+        <div class="curriculum-item-body">매월 중간점검을 위한 평가회를 실시합니다. 학교별 특성을 기반으로 대응력 강화훈련을 하며 자신의 장·단점을 파악하고 개선합니다. 멘토들과 지원대학 선정 및 집중 개인상담도 진행됩니다.</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
