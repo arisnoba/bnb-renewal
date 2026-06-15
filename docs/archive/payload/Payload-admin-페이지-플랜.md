@@ -111,7 +111,7 @@ Payload Admin 사이드바는 아래처럼 운영자 작업 단위로 묶는다.
 | `artist_press` | 신규 필요 | 출신 아티스트 | BNB출신 아티스트 | 아트 |
 | `audition_schedules` | 신규 필요 | 오디션 일정 | 이달의 오디션 일정 | 아트, 하이틴, 키즈 |
 | `castings` | `castings` | 캐스팅 디렉터 | 캐스팅 회사 소개, 매니저/디렉터 안내 | 아트, 하이틴, 키즈 |
-| `casting_appearances` | 신규 필요 | 캐스팅 출연현황 | 진행중인 캐스팅 출연현황 | 아트, 하이틴, 키즈 |
+| `casting_appearances` | 신규 필요 | 캐스팅 출연현황 | 캐스팅 출연현황 | 아트, 하이틴, 키즈 |
 | `exam_passed_reviews` | 신규 필요 | 합격후기 | 수강생 합격후기 | 입시 |
 | `exam_passed_videos` | 신규 필요 | 합격영상 | 수강생 합격영상 | 입시 |
 | `exam_results` | 신규 필요 | 합격결과 | 대학교/예고 합격현황 | 입시 |
@@ -133,7 +133,7 @@ Payload Admin 사이드바는 아래처럼 운영자 작업 단위로 묶는다.
 | `teacher-files` | `teacher-filmographies` | 실제 데이터가 첨부파일이 아니라 강사의 대표작 포스터와 작품명이다. 운영자 메뉴명은 "강사 대표작"으로 둔다. |
 | `teacher_lessons` | `curriculums` | 실제 의미가 강사별 커리큘럼/수업 내용이다. |
 | `artist_press` | `artist-press` 또는 `alumni-artists` | 출신 아티스트 메뉴의 정보다. 공개 메뉴명 기준으로는 "출신 아티스트"가 더 명확하다. |
-| `casting_appearances` | `casting-appearances` | 진행중인 캐스팅 출연현황. `screen_appearances`와 분리 유지. |
+| `casting_appearances` | `casting-appearances` | 캐스팅 출연현황. `screen_appearances`와 분리 유지. |
 | `screen_appearances` | `screen-appearances` | 드라마/광고 출연장면. `casting_appearances`와 분리 유지. |
 
 MariaDB work table명은 당장 바꾸지 않는다.
@@ -186,7 +186,7 @@ MariaDB work table명은 당장 바꾸지 않는다.
 |---|---|---|---|---|
 | 이달의 드라마·광고 출연장면 | 아트, 하이틴, 키즈 | 캐스팅/오디션 | `screen-appearances` | 드라마/광고 출연장면 통합 |
 | 캐스팅 포트폴리오 | 아트, 하이틴, 키즈 | 캐스팅/오디션 | `video-castings` | 기존 `g5_casting` 기반. 작품명, 방송사, YouTube URL이 있는 캐스팅/출연작 포트폴리오 |
-| 진행중인 캐스팅 출연현황 | 아트, 하이틴, 키즈 | 캐스팅/오디션 | `casting-appearances` | 입시에서는 사용하지 않음 |
+| 캐스팅 출연현황 | 아트, 하이틴, 키즈 | 캐스팅/오디션 | `casting-appearances` | 입시에서는 사용하지 않음 |
 | 드라마캐스팅 유캐스팅 | 아트, 하이틴, 키즈 | 캐스팅/오디션 | `casting-directors` | 캐스팅 디렉터 이력 노출 |
 | 드라마캐스팅 BNB캐스팅 | 하이틴, 키즈 | 캐스팅/오디션 | `casting-directors` | 센터 제한 필요 |
 | 드라마캐스팅 IMGround | 하이틴, 키즈 | 캐스팅/오디션 | `casting-directors` | 센터 제한 필요 |
@@ -246,8 +246,8 @@ MariaDB work table명은 당장 바꾸지 않는다.
 - 등급제 교육관리시스템
 - 커리큘럼
 - 캐스팅 시스템
-- 진행중인 캐스팅 출연현황
-- 이달의 촬영·오디션 스케줄
+- 캐스팅 출연현황
+- 촬영·오디션 스케줄
 - BNB출신 아티스트
 - BNB 루키
 - NEWS & NOTICE
@@ -302,7 +302,7 @@ MariaDB work table명은 당장 바꾸지 않는다.
 - 등급제 교육관리시스템
 - 커리큘럼
 - 하이틴센터 특강
-- 진행중인 캐스팅 출연현황
+- 캐스팅 출연현황
 - 다이렉트 캐스팅
 - BNB 캐스팅 섭외뉴스
 - BNB 루키
@@ -326,7 +326,7 @@ MariaDB work table명은 당장 바꾸지 않는다.
 - 교육진 소개
 - 등급제 교육관리시스템
 - 영재/아역/아티스트 교육과정
-- 진행중인 캐스팅 출연현황
+- 캐스팅 출연현황
 - BNB캐스팅
 - IMGround
 - 아역배우 프로필
@@ -398,7 +398,7 @@ MariaDB work table명은 당장 바꾸지 않는다.
 | `audition-applications` | 오디션 지원하기 | 중간 |
 | `artist-press` 또는 `alumni-artists` | 출신 아티스트 | 높음 |
 | `audition-schedules` | 이달의 오디션 일정 | 높음 |
-| `casting-appearances` | 진행중인 캐스팅 출연현황 | 높음 |
+| `casting-appearances` | 캐스팅 출연현황 | 높음 |
 | `screen-appearances` | 드라마/광고 출연장면 | 높음 |
 | `exam-passed-reviews` | 입시 합격후기 | 높음 |
 | `exam-passed-videos` | 입시 합격영상 | 높음 |

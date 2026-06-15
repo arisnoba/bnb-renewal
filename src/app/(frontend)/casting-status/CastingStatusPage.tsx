@@ -61,8 +61,6 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">
-              진행중인
-              <br />
               출연현황
             </span>
           </h1>
@@ -76,7 +74,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
         <div className="container">
           <header className="section-casting-status-list__head mb-16 md:mb-20">
             <p className="section-casting-status-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              진행중인 캐스팅 출연현황
+              캐스팅 출연현황
             </p>
             <h2
               className="section-casting-status-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"

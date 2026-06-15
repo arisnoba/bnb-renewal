@@ -183,16 +183,16 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'art') {
     return [
       { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
-      { href: castingStatusHref(center), label: '진행중인 캐스팅 출연현황' },
+      { href: castingStatusHref(center), label: '캐스팅 출연현황' },
       { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
       { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
-      { href: centerHref(center, 'monthly-schedule'), label: '이달의 촬영ㆍ오디션 스케줄' },
+      { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
     ]
   }
 
   return [
     { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
-    { href: castingStatusHref(center), label: '진행중인 캐스팅 출연현황' },
+    { href: castingStatusHref(center), label: '캐스팅 출연현황' },
     { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
     ...(center === 'kids' || center === 'highteen'
       ? [

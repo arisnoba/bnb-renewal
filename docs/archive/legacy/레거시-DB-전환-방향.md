@@ -173,9 +173,9 @@ npm run legacy:db:verify
 - 검증 결과: 통합 `exam_results` 177건, `university=152`, `arts_high_school=25`, 썸네일 URL 누락 0건, slug 중복 0건
 - 날짜 범위: 대학교 `2019-01-10 14:24:00` ~ `2026-01-09 11:22:17`, 예술고등학교 `2022-03-17 09:35:41` ~ `2026-01-09 11:36:51`
 
-### 진행중인 캐스팅 출연현황 통합
+### 캐스팅 출연현황 통합
 
-`g5_write_new_appear`는 진행중인 캐스팅 출연현황 콘텐츠이므로 `casting_appearances`로 통합한다. `screen_appearances`는 드라마/광고 출연장면용으로 이미 쓰고 있으므로, 캐스팅 진행 현황과 실제 출연장면은 분리한다.
+`g5_write_new_appear`는 캐스팅 출연현황 콘텐츠이므로 `casting_appearances`로 통합한다. `screen_appearances`는 드라마/광고 출연장면용으로 이미 쓰고 있으므로, 캐스팅 진행 현황과 실제 출연장면은 분리한다.
 
 - 결과 테이블: `bnb_legacy_work.casting_appearances`
 - 재생성 명령: `npm run legacy:work:casting-appearances`

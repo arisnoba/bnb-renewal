@@ -105,7 +105,7 @@ export const testCollections = [
     titleFields: ['title'],
   },
   {
-    description: '진행중인 캐스팅 출연현황',
+    description: '캐스팅 출연현황',
     href: '/test/casting-appearances',
     imageFields: [],
     label: 'Casting Appearances',

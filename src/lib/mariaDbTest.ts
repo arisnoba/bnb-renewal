@@ -286,7 +286,7 @@ export const mariaDbTestCollections = [
     `,
 	},
 	{
-		description: '진행중인 캐스팅 출연현황 통합 결과',
+		description: '캐스팅 출연현황 통합 결과',
 		href: '/test/mariadb/casting-appearances',
 		label: 'Casting Appearances',
 		slug: 'casting-appearances',

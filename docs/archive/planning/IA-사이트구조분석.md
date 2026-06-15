@@ -44,7 +44,7 @@
 
 - **캐스팅**
   - 이달의 드라마·광고 출연장면 `bo_table=new_drama` [gallery]
-  - 진행중인 캐스팅 출연현황 `bo_table=new_appear` [gallery]
+  - 캐스팅 출연현황 `bo_table=new_appear` [gallery]
   - 드라마캐스팅(유캐스팅) `bo_table=new_casting2` [board]
   - 광고캐스팅(BX모델에이전시) `bo_table=new_casting_bx` [board]
   - 오디션 지원하기 `write.php?bo_table=new_audition` **[form]**
@@ -52,7 +52,7 @@
 - **매니지먼트**
   - 매니지먼트 시스템 `?co_id=systemintro` [static]
   - 매니저 소개 `/web/management.php#sec1` [static]
-  - 이달의 촬영·오디션 스케줄 `bo_table=new_calendar02` [기타 - 캘린더]
+  - 촬영·오디션 스케줄 `bo_table=new_calendar02` [기타 - 캘린더]
   - BNB출신 아티스트 `bo_table=new_shoot` [gallery]
   - BNB루키 `bo_table=new_profile` [gallery]
   - 촬영후기 `bo_table=new_hoogi` [gallery]
@@ -194,7 +194,7 @@
 
 - **캐스팅**
   - 이달의 드라마·광고 출연장면 `bo_table=new_drama` [gallery]
-  - 진행중인 캐스팅 출연현황 `bo_table=new_appear` [board]
+  - 캐스팅 출연현황 `bo_table=new_appear` [board]
   - 드라마캐스팅(BNB캐스팅) `bo_table=new_casting_enm` [board]
   - 드라마캐스팅(유캐스팅) `bo_table=new_casting2` [board]
   - 드라마캐스팅(IMGround) `bo_table=new_casting_img` [board]
@@ -254,7 +254,7 @@
 
 - **캐스팅**
   - 이달의 드라마·광고 출연장면 `bo_table=new_drama` [gallery]
-  - 진행중인 캐스팅출연현황 `bo_table=new_appear` [gallery]
+  - 캐스팅 출연현황 `bo_table=new_appear` [gallery]
   - 드라마캐스팅(BNB캐스팅) `bo_table=new_casting_enm` [board]
   - 드라마캐스팅(유캐스팅) `bo_table=new_casting2` [board]
   - 드라마캐스팅(IMGround) `bo_table=new_casting_img` [board]

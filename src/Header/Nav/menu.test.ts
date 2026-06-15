@@ -35,7 +35,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.ok(labels.includes('등급제 교육관리시스템'))
   assert.ok(labels.includes('BNB 출연장면'))
   assert.ok(labels.includes('캐스팅 시스템'))
-  assert.ok(labels.includes('이달의 촬영ㆍ오디션 스케줄'))
+  assert.ok(labels.includes('촬영ㆍ오디션 스케줄'))
   assert.ok(labels.includes('BNB출신 아티스트'))
   assert.ok(labels.includes('NEWS&NOTICE'))
   assert.ok(!labels.includes('매니지먼트 시스템'))
@@ -57,7 +57,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
-      ?.items.find((item) => item.label === '진행중인 캐스팅 출연현황')?.href,
+      ?.items.find((item) => item.label === '캐스팅 출연현황')?.href,
     '/art/casting-status',
   )
   assert.equal(
@@ -121,7 +121,7 @@ test('center casting status menu items link to the casting status page', () => {
     assert.equal(
       getHeaderMenu(center)
         .find((group) => group.key === 'casting')
-        ?.items.find((item) => item.label === '진행중인 캐스팅 출연현황')?.href,
+        ?.items.find((item) => item.label === '캐스팅 출연현황')?.href,
       `/${center}/casting-status`,
     )
   }
