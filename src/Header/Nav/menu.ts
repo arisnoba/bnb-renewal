@@ -37,19 +37,19 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       label: '배우앤배움',
     },
     {
-      href: centerHref(center, 'education'),
+      href: center === 'exam' ? centerHref(center, 'exam-management') : centerHref(center, 'education'),
       items: educationItems(center),
       key: 'education',
       label: '교육',
     },
     {
-      href: centerHref(center, 'casting'),
+      href: center === 'exam' ? centerHref(center, 'university-results') : centerHref(center, 'casting'),
       items: castingItems(center),
       key: 'casting',
       label: center === 'exam' ? '합격현황' : '캐스팅',
     },
     {
-      href: centerHref(center, 'management'),
+      href: center === 'exam' ? centerHref(center, 'exam-passed-reviews') : centerHref(center, 'management'),
       items: artistItems(center),
       key: 'artist',
       label: center === 'exam' ? '합격자소개' : '아티스트',

@@ -17,6 +17,10 @@ function labelsForGroup(center: Parameters<typeof getHeaderMenu>[0], key: string
   return getHeaderMenu(center).find((group) => group.key === key)?.items.map((item) => item.label) ?? []
 }
 
+function itemsForGroup(center: Parameters<typeof getHeaderMenu>[0], key: string) {
+  return getHeaderMenu(center).find((group) => group.key === key)?.items ?? []
+}
+
 test('headerCenterFromPathname reads the first center segment with art fallback', () => {
   assert.equal(headerCenterFromPathname('/exam/news'), 'exam')
   assert.equal(headerCenterFromPathname('/kids/profiles/kim-seoha'), 'kids')
@@ -81,14 +85,30 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
 
   assert.deepEqual(labelsForGroup('exam', 'about'), labelsForGroup('art', 'about'))
   assert.deepEqual(groupLabels, ['배우앤배움', '교육', '합격현황', '합격자소개', '지원센터'])
-  assert.deepEqual(labelsForGroup('exam', 'education'), [
-    '입시 매니지먼트',
-    '특별한 시스템',
-    '교육진 소개',
-    '커리큘럼',
+  assert.deepEqual(
+    menu.map((group) => [group.key, group.href]),
+    [
+      ['about', '/exam/about'],
+      ['education', '/exam#exam-management'],
+      ['casting', '/exam#university-results'],
+      ['artist', '/exam#exam-passed-reviews'],
+      ['support', '/exam/news'],
+    ],
+  )
+  assert.deepEqual(itemsForGroup('exam', 'education'), [
+    { href: '/exam#exam-management', label: '입시 매니지먼트' },
+    { href: '/exam#special-system', label: '특별한 시스템' },
+    { href: '/exam/teachers', label: '교육진 소개' },
+    { href: '/exam#curriculum', label: '커리큘럼' },
   ])
-  assert.deepEqual(labelsForGroup('exam', 'casting'), ['대학교', '예술고등학교'])
-  assert.deepEqual(labelsForGroup('exam', 'artist'), ['합격 후기', '합격 영상'])
+  assert.deepEqual(itemsForGroup('exam', 'casting'), [
+    { href: '/exam#university-results', label: '대학교' },
+    { href: '/exam#arts-high-results', label: '예술고등학교' },
+  ])
+  assert.deepEqual(itemsForGroup('exam', 'artist'), [
+    { href: '/exam#exam-passed-reviews', label: '합격 후기' },
+    { href: '/exam#exam-passed-videos', label: '합격 영상' },
+  ])
   assert.ok(labels.includes('특별한 시스템'))
   assert.ok(!labels.includes('대표인사말'))
   assert.ok(!labels.includes('연혁'))
