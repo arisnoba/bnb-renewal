@@ -33,6 +33,7 @@ type CurriculumCardItem = {
   className: string
   days: string[]
   id: number
+  slug: string
   startTime: string | null
   teacherName: string
   topic: string
@@ -225,6 +226,8 @@ function CurriculumCard({
   center: SearchableCurriculumCenter
   item: CurriculumCardItem
 }) {
+  const detailHref = `/${center}/curriculum/${encodeURIComponent(item.slug)}`
+
   return (
     <article className="section-curriculum-card group/card flex min-h-[429px] flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-8">
       <header className="section-curriculum-card__head flex items-center gap-4">
@@ -242,7 +245,12 @@ function CurriculumCard({
       <div className="section-curriculum-card__body flex flex-1 flex-col justify-between pt-9">
         <div>
           <h3 className="type-headline-l font-bold leading-[1.35] text-neutral-900 line-clamp-3">
-            {item.topic}
+            <Link
+              className="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              href={detailHref}
+            >
+              {item.topic}
+            </Link>
           </h3>
           <p className="mt-3 type-body-m font-medium text-neutral-500">
             {item.teacherName}
@@ -252,7 +260,7 @@ function CurriculumCard({
         <div className="section-curriculum-card__meta mt-8 flex flex-wrap items-center justify-between gap-3">
           <Link
             className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-300 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand group-hover/card:bg-brand"
-            href={`/consult?center=${center}`}
+            href={detailHref}
           >
             수강 신청
           </Link>
@@ -364,6 +372,7 @@ function toCurriculumCardItem(curriculum: Curriculum): CurriculumCardItem {
     className: curriculum.className ?? '클래스 미정',
     days: getEducationDays(curriculum),
     id: curriculum.id,
+    slug: curriculum.slug,
     startTime: normalizeTime(curriculum.educationStartTime),
     teacherName: teacher?.name ? `배우 ${teacher.name}` : '교육진 미정',
     topic: firstLesson?.topic ?? curriculum.title ?? '강의 주제 미정',
