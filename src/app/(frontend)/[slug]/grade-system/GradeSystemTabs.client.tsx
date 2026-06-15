@@ -20,13 +20,84 @@ import {
   Users,
   Video,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import NextImage from 'next/image'
 import { useEffect, useState } from 'react'
 
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
 type TabKey = 'steps' | 'criteria' | 'cohorts'
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen'>
+type CriteriaEntryKey = 'experience' | 'inHouse' | 'major' | 'transfer'
+
+type StepCard = {
+  icon: LucideIcon
+  items: string[]
+  title: string
+}
+
+type StepClass = {
+  cards: StepCard[]
+  className: string
+  description: string
+  details?: Array<{ label: string; value: string }>
+  headline: string
+  label: string
+  letter: string
+}
+
+type GradeRow = {
+  classCode: string
+  className: string
+  department: string
+  experience: string
+  inHouse: string
+  level: string
+  major: string
+  process: string
+  transfer: string
+}
+
+type PromotionGroup = {
+  from: PromotionClass
+  rows: PromotionRow[]
+  to: PromotionClass
+}
+
+type PromotionClass = {
+  classCode: string
+  label: string
+}
+
+type PromotionRow = {
+  condition: string
+  method: '기간' | '오디션' | '추천' | '활동경력'
+  note: string
+}
+
+type IrudaLetter = {
+  className: string
+  fileNames: string[]
+}
+
+type GradeSystemContent = {
+  centerName: string
+  cohortStartYear: number
+  criteriaDescription: string
+  criteriaEntryLabels: Array<{ key: CriteriaEntryKey; label: string }>
+  criteriaTitle: string
+  extraPromotionCriteria?: string[]
+  gradeRows: GradeRow[]
+  gradeTableDescription: string
+  gradeTableTitle: string
+  promotionGroups: PromotionGroup[]
+  promotionTitle: string
+  stepClasses: StepClass[]
+  stepsCenterName: string
+  wordmarkLetters: IrudaLetter[]
+}
 
 const tabs = [
   { key: 'steps', label: '단계별 교육' },
@@ -37,7 +108,7 @@ const tabs = [
 const gradeAssetBase = '/assets/art/grade-system'
 const gradeSystemDecoIcons = getPageDecoIcons(4, 'grade-system')
 
-const stepClasses = [
+const artStepClasses = [
   {
     className: 'I Class',
     cards: [
@@ -165,7 +236,126 @@ const stepClasses = [
   },
 ]
 
-const adultGradeRows = [
+const highteenStepClasses = [
+  {
+    className: 'I Class',
+    cards: [
+      {
+        icon: Speech,
+        items: ['호흡/발성/딕션/템포&리듬/억양/성량 훈련', '글에 감정을 넣는 훈련', '대본을 분석하고 단락을 나눠 띄어읽기 훈련'],
+        title: '화술 훈련',
+      },
+      {
+        icon: Heart,
+        items: ['정서적 경험과 체험을 표현하기', '대본에서 감정의 디테일 찾기', '대본을 분석하고 단락을 나눠 띄어읽기 훈련'],
+        title: '감정 훈련',
+      },
+      {
+        icon: ScanFace,
+        items: ['자세와 몸 컨트롤 훈련', '올바른 자세에서 카메라 앞에 서는 훈련', '액션/리액션 및 제스처 훈련'],
+        title: '신체 훈련',
+      },
+    ],
+    description: '관찰력, 상상력, 집중력, 표현력의 기초를 다지며 배우로 성장하기 위한 출발점을 만듭니다.',
+    details: [
+      { label: '인원', value: '정원 8명' },
+      { label: '수업시간', value: '주 1회 3시간, 주 2회 총 4시간' },
+      { label: '과정', value: '관찰력/상상력/집중력/표현력 훈련' },
+    ],
+    headline: '배우를 꿈꾸다 Dream Of Actor',
+    label: '입문 I Class',
+    letter: 'I',
+  },
+  {
+    className: 'R Class',
+    cards: [
+      {
+        icon: Brain,
+        items: ['정서에 연관된 텍스트를 가지고 독백연기 진행', '상황극을 통해 경험하지 못한 새로운 감정과 표현 도출', '2인극 및 상황극을 통해 서로 부딪치는 감정훈련'],
+        title: '심화 감정 훈련',
+      },
+      {
+        icon: FileText,
+        items: ['대본 전체 파악 방법 및 분석 방법 배우기', '대본에서의 상황 및 인물 분석 방법 알아보기'],
+        title: '대본 이해와 분석',
+      },
+      {
+        icon: Drama,
+        items: ['자신의 이미지에 맞는 상황별 독백 준비', '모의 오디션 및 오디션 과정 시뮬레이션 훈련', '지정 대본 훈련'],
+        title: '오디션 독백',
+      },
+    ],
+    description: '장면을 이해하고 에쭈드와 이미지 트레이닝을 통해 자기 표현의 폭을 넓히는 중급 과정입니다.',
+    details: [
+      { label: '인원', value: '정원 8명' },
+      { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
+      { label: '과정', value: '장면 이해/에쭈드/이미지 트레이닝' },
+    ],
+    headline: '배우를 그리다 Sketch The Actor',
+    label: '중급 R Class',
+    letter: 'R',
+  },
+  {
+    className: 'U Class',
+    cards: [
+      {
+        icon: FileText,
+        items: ['대사의 감정선 파악과 연기의 기승전결 구성하기', '캐릭터의 이해와 성격구축'],
+        title: '대본 & 대사 집중 훈련',
+      },
+      {
+        icon: Monitor,
+        items: ['카메라, 대본, 현장 용어 이해하기', '모니터링을 통해 연기의 디테일을 잡는 방법과 표현 구체화하기', '시선, 제스처, 더블액션 훈련'],
+        title: '카메라 연기',
+      },
+      {
+        icon: Sparkles,
+        items: ['자신만의 매력을 찾아서 캐릭터 구축하기', '대본 안에 캐릭터를 매력있게 표현하기'],
+        title: '매력 개발',
+      },
+    ],
+    description: '카메라와 현장을 이해하고, 이미지 메이킹을 통해 캐릭터 표현의 완성도를 높이는 심화 과정입니다.',
+    details: [
+      { label: '인원', value: '정원 8명' },
+      { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
+      { label: '과정', value: '카메라 이해/현장 이해/이미지 메이킹' },
+    ],
+    headline: '배우를 만들다 Make An Actor',
+    label: '심화 U Class',
+    letter: 'U',
+  },
+  {
+    className: 'DA Class',
+    cards: [
+      {
+        icon: ClipboardCheck,
+        items: ['상황별(드라마/영화/광고) 테크닉 훈련', '오디션을 통한 개인별 연기스타일 특징 분석', '현재 연기 트렌드 분석 및 적용'],
+        title: '오디션 훈련',
+      },
+      {
+        icon: Drama,
+        items: ['완성된 연기에 캐릭터 및 테크닉 교정', '단일감정이 아닌 복합적 감정 테크닉 훈련'],
+        title: '심화 연기 교정',
+      },
+      {
+        icon: Clapperboard,
+        items: ['자유연기 및 출연 장면 모니터링 후 연기의 디테일 교정', '시선, 제스처, 디테일 표정 분석 및 호흡 교정', '배역들에 맞게 디테일한 이미지 메이킹'],
+        title: '심화 카메라 & 모니터링 훈련',
+      },
+    ],
+    description: '오디션 테크닉, 다양한 감정 표현, 카메라 심화 훈련을 통해 배우의 이미지를 디자인하는 전문 과정입니다.',
+    details: [
+      { label: '인원', value: '정원 8명' },
+      { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
+      { label: '과정', value: '오디션 테크닉/다양한 감정 표현/카메라 심화 훈련' },
+    ],
+    headline: '배우를 디자인하다 Design An Actor',
+    label: '전문 DA Class',
+    letter: 'DA',
+  },
+] satisfies StepClass[]
+
+const artGradeRows = [
   {
     classCode: 'I',
     className: 'I Class',
@@ -222,30 +412,69 @@ const adultGradeRows = [
     process: '배우',
     transfer: '- 24개월 이상 이수자 중 경력인정자\n- 레벨 테스트\n- 드라마캐스팅본부 추천',
   },
-] satisfies AdultGradeRow[]
+] satisfies GradeRow[]
 
-type AdultGradeCard = {
-  classCode: string
-  className: string
-  department: string
-  experience: string
-  inHouse: string
-  level: string
-  major: string
-  process: string
-  transfer: string
-}
-
-type AdultGradeRow = AdultGradeCard
-
-const criteriaEntryLabels = [
+const artCriteriaEntryLabels = [
   { key: 'inHouse', label: '본학원' },
   { key: 'transfer', label: '타학원' },
   { key: 'major', label: '전공자' },
   { key: 'experience', label: '경력 인정자' },
-] satisfies Array<{ key: 'experience' | 'inHouse' | 'major' | 'transfer'; label: string }>
+] satisfies GradeSystemContent['criteriaEntryLabels']
 
-const promotionGroups = [
+const highteenCriteriaEntryLabels = [
+  { key: 'inHouse', label: '지원 기준' },
+  { key: 'transfer', label: '추가 기준' },
+  { key: 'major', label: '레벨 테스트' },
+] satisfies GradeSystemContent['criteriaEntryLabels']
+
+const highteenGradeRows = [
+  {
+    classCode: 'I',
+    className: 'I Class',
+    department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
+    experience: '',
+    inHouse: '연기 처음인 자',
+    level: '입문',
+    major: '',
+    process: '배우 과정',
+    transfer: '',
+  },
+  {
+    classCode: 'R',
+    className: 'R Class',
+    department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
+    experience: '',
+    inHouse: 'I Class 승급자\n* 외부작품 오디션은 R Class부터 응시 가능합니다.',
+    level: '중급',
+    major: '레벨 테스트',
+    process: '심화 과정',
+    transfer: '타학원 8개월 이상 이수자',
+  },
+  {
+    classCode: 'U',
+    className: 'U Class',
+    department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
+    experience: '',
+    inHouse: 'R Class 승급자',
+    level: '심화',
+    major: '레벨 테스트',
+    process: '심화 과정',
+    transfer: '- 매니지먼트 위탁 아역배우\n- 드라마/영화/연극 경력자',
+  },
+  {
+    classCode: 'DA',
+    className: 'DA Class',
+    department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
+    experience: '',
+    inHouse: 'U Class 승급자',
+    level: '전문',
+    major: '레벨 테스트',
+    process: '전문 과정',
+    transfer: '- 매니지먼트 위탁 아역배우\n- 드라마/영화/연극 경력자',
+  },
+] satisfies GradeRow[]
+
+const artPromotionGroups = [
   {
     from: { classCode: 'I', label: 'I 초급' },
     rows: [
@@ -337,24 +566,121 @@ const promotionGroups = [
   },
 ] satisfies PromotionGroup[]
 
-type PromotionGroup = {
-  from: PromotionClass
-  rows: PromotionRow[]
-  to: PromotionClass
-}
+const highteenPromotionGroups = [
+  {
+    from: { classCode: 'I', label: 'I 입문' },
+    rows: [
+      {
+        condition: '입문반 8개월 이상 이수',
+        method: '기간',
+        note: '입문반 8개월 이수 시 승급 대상',
+      },
+      {
+        condition: '교육본부 추천',
+        method: '추천',
+        note: '이수 기간 상관없이 승급 가능',
+      },
+    ],
+    to: { classCode: 'R', label: 'R 중급' },
+  },
+  {
+    from: { classCode: 'R', label: 'R 중급' },
+    rows: [
+      {
+        condition: '중급반 8개월 이상 이수',
+        method: '기간',
+        note: '중급반 8개월 이상 이수 시 승급 대상',
+      },
+      {
+        condition: '교육 본부/매니지먼트 본부 추천',
+        method: '추천',
+        note: '이수 기간 상관없이 승급 가능',
+      },
+      {
+        condition: '교육/매니지먼트/드라마캐스팅 본부 심사결과',
+        method: '오디션',
+        note: '',
+      },
+    ],
+    to: { classCode: 'U', label: 'U 심화' },
+  },
+  {
+    from: { classCode: 'U', label: 'U 심화' },
+    rows: [
+      {
+        condition: '심화반 8개월 이상 이수',
+        method: '기간',
+        note: '심화반 8개월 이상 이수 시 승급 대상',
+      },
+      {
+        condition: '교육 본부/매니지먼트 본부 추천',
+        method: '추천',
+        note: '이수 기간 상관없이 승급 가능',
+      },
+      {
+        condition: '교육/매니지먼트/드라마캐스팅 본부 심사결과',
+        method: '오디션',
+        note: '',
+      },
+    ],
+    to: { classCode: 'DA', label: 'DA 전문' },
+  },
+] satisfies PromotionGroup[]
 
-type PromotionClass = {
-  classCode: string
-  label: string
-}
-
-type PromotionRow = {
-  condition: string
-  method: '기간' | '오디션' | '추천' | '활동경력'
-  note: string
-}
-
-const cohortStartYear = 2010
+const gradeSystemContent = {
+  art: {
+    centerName: '아트센터',
+    cohortStartYear: 2010,
+    criteriaDescription:
+      '전체 수강생은 전공생 30%, 비전공생 40%, 엔터테인먼트교육생 30%로 이루어져 있으며, 각 클래스에 따라 수강생의 담당 관리부서가 교체됩니다.\n배우앤배움 교육팀에서는 기존 단일 오디션 형태의 승급 평가 방식에서 탈피하여 두 달 과정의 커리큘럼에 대한 전반적인 이수 평가를 도입하였습니다.\n커리큘럼이 끝나는 마지막 주에는 각 클래스의 강사진들이 연기자 평가서를 교육팀에 제출하게 되며, 이를 통해 학생들은 본인의 승급 여부와 함께 개인의 연기성장에 대한 정확한 피드백을 전달받게 됩니다.',
+    criteriaEntryLabels: artCriteriaEntryLabels,
+    criteriaTitle:
+      '정기적인 오디션을 통해 단계별로 초급 I반, 중급 R반, 고급 U반, 전문 D반, 배우 A반으로 클래스가 편성됩니다.',
+    gradeRows: artGradeRows,
+    gradeTableDescription:
+      '배정 Class는 아래 항목 중 충족되는 조건을 기준으로 진행되며, R Class부터 레벨테스트가 진행됩니다.',
+    gradeTableTitle: '성인 등급 기준',
+    promotionGroups: artPromotionGroups,
+    promotionTitle: '성인 승급 기준',
+    stepClasses: artStepClasses,
+    stepsCenterName: '아트센터',
+    wordmarkLetters: [
+      { className: 'I Class', fileNames: ['iruda-i.svg'] },
+      { className: 'R Class', fileNames: ['iruda-r.svg'] },
+      { className: 'U Class', fileNames: ['iruda-u.svg'] },
+      { className: 'D Class', fileNames: ['iruda-d.svg'] },
+      { className: 'A Class', fileNames: ['iruda-a.svg'] },
+    ],
+  },
+  highteen: {
+    centerName: '하이틴센터',
+    cohortStartYear: 2020,
+    criteriaDescription:
+      '클래스 편성 기준은 연기교육 경력과 촬영 현장 경험, 오디션 및 테스트의 전반적인 평가를 통해 정해집니다.\n승급 기준은 담당 선생님과 캐스팅 디렉터의 실시간 피드백을 종합평가하여 결정됩니다.',
+    criteriaEntryLabels: highteenCriteriaEntryLabels,
+    criteriaTitle:
+      '청소년 과정은 입문 I반, 중급 R반, 심화 U반, 전문 DA반으로 클래스가 편성됩니다.',
+    extraPromotionCriteria: [
+      '담당 선생님과 하이틴 캐스팅팀의 실시간 레벨 체크',
+      '상, 하반기에 진행되는 레벨 테스트 우수자',
+      '자체적으로 진행되는 캐스팅 오디션 우수자',
+    ],
+    gradeRows: highteenGradeRows,
+    gradeTableDescription:
+      '연기자들의 배정 Class는 아래 항목 중 충족되는 조건으로 진행되며, R Class부터 레벨 테스트가 진행됩니다.',
+    gradeTableTitle: '청소년 등급 기준',
+    promotionGroups: highteenPromotionGroups,
+    promotionTitle: '청소년 승급 기준',
+    stepClasses: highteenStepClasses,
+    stepsCenterName: '하이틴센터',
+    wordmarkLetters: [
+      { className: 'I Class', fileNames: ['iruda-i.svg'] },
+      { className: 'R Class', fileNames: ['iruda-r.svg'] },
+      { className: 'U Class', fileNames: ['iruda-u.svg'] },
+      { className: 'DA Class', fileNames: ['iruda-d.svg', 'iruda-a.svg'] },
+    ],
+  },
+} satisfies Record<GradeSystemCenter, GradeSystemContent>
 
 type CohortHalf = '상반기' | '하반기'
 
@@ -365,8 +691,8 @@ type CohortRow = {
   year: number
 }
 
-function cohortNumber(year: number, half: CohortHalf) {
-  return (year - cohortStartYear) * 2 + (half === '상반기' ? 1 : 2)
+function cohortNumber(year: number, half: CohortHalf, startYear: number) {
+  return (year - startYear) * 2 + (half === '상반기' ? 1 : 2)
 }
 
 function currentKoreaYearMonth(date = new Date()) {
@@ -388,12 +714,12 @@ function cohortPeriod(year: number, half: CohortHalf) {
     : `${year}-07-01 ~ ${year}-12-31`
 }
 
-function buildCohorts(date = new Date()): CohortRow[] {
+function buildCohorts(startYear: number, date = new Date()): CohortRow[] {
   const { month, year } = currentKoreaYearMonth(date)
   const currentHalf: CohortHalf = month <= 6 ? '상반기' : '하반기'
   const rows: CohortRow[] = []
 
-  for (let currentYear = year; currentYear >= cohortStartYear; currentYear -= 1) {
+  for (let currentYear = year; currentYear >= startYear; currentYear -= 1) {
     const halves: CohortHalf[] =
       currentYear === year && currentHalf === '상반기'
         ? ['상반기']
@@ -402,7 +728,7 @@ function buildCohorts(date = new Date()): CohortRow[] {
     for (const half of halves) {
       rows.push({
         half,
-        number: cohortNumber(currentYear, half),
+        number: cohortNumber(currentYear, half, startYear),
         period: cohortPeriod(currentYear, half),
         year: currentYear,
       })
@@ -412,7 +738,8 @@ function buildCohorts(date = new Date()): CohortRow[] {
   return rows
 }
 
-export function GradeSystemTabs() {
+export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
+  const data = gradeSystemContent[center]
   const [activeTab, setActiveTab] = useState<TabKey>('steps')
 
   useEffect(() => {
@@ -477,22 +804,22 @@ export function GradeSystemTabs() {
           </div>
         </nav>
 
-        {activeTab === 'steps' ? <StepsPanel /> : null}
-        {activeTab === 'criteria' ? <CriteriaPanel /> : null}
-        {activeTab === 'cohorts' ? <CohortsPanel /> : null}
+        {activeTab === 'steps' ? <StepsPanel data={data} /> : null}
+        {activeTab === 'criteria' ? <CriteriaPanel data={data} /> : null}
+        {activeTab === 'cohorts' ? <CohortsPanel data={data} /> : null}
       </div>
     </section>
   )
 }
 
-function StepsPanel() {
+function StepsPanel({ data }: { data: GradeSystemContent }) {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <section>
         <h2 className="max-w-[900px] type-display-l font-bold leading-[1.25] tracking-normal">
           IRUDA 연기트레이닝 시스템입니다.
           <br />
-          아트센터의 모든 교육은 ‘나’로부터 시작됩니다.
+          {data.stepsCenterName}의 모든 교육은 ‘나’로부터 시작됩니다.
         </h2>
         <p className="mt-12 max-w-[720px] type-body-m leading-[1.8] text-white/55">
           <AcronymSentence />
@@ -501,10 +828,10 @@ function StepsPanel() {
         </p>
       </section>
 
-      <IrudaWordmark />
+      <IrudaWordmark letters={data.wordmarkLetters} />
 
       <div className="flex flex-col gap-20 md:gap-24">
-        {stepClasses.map((item) => (
+        {data.stepClasses.map((item) => (
           <ClassSection item={item} key={item.className} />
         ))}
       </div>
@@ -515,19 +842,29 @@ function StepsPanel() {
 function ClassSection({
   item,
 }: {
-  item: (typeof stepClasses)[number]
+  item: StepClass
 }) {
   return (
     <section className="border-t border-white/10 pt-16">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="flex items-start gap-3 lg:col-span-1">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand type-label-m font-black text-white">
+          <span className="grid h-9 min-w-9 shrink-0 place-items-center rounded-full bg-brand px-2 type-label-m font-black text-white">
             {item.letter}
           </span>
           <h3 className="pt-1 type-headline-s font-extrabold leading-[1.3]">{item.label}</h3>
         </div>
         <div className="lg:col-span-2">
           <h4 className="type-headline-s font-extrabold leading-[1.45]">{item.headline}</h4>
+          {item.details ? (
+            <dl className="mt-7 grid gap-3 type-body-s leading-[1.65] text-white/60 sm:grid-cols-3">
+              {item.details.map((detail) => (
+                <div className="rounded-[8px] border border-white/10 bg-white/[0.03] px-4 py-3" key={detail.label}>
+                  <dt className="type-caption-s font-bold text-white/35">{detail.label}</dt>
+                  <dd className="mt-1 text-white/70">{detail.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
           <p className="mt-9 max-w-[760px] type-body-m leading-[1.95] text-white/50">
             {item.description}
           </p>
@@ -581,28 +918,34 @@ function AcronymSentence() {
   )
 }
 
-function IrudaWordmark() {
-  const letters = [
-    { className: 'I Class', fileName: 'iruda-i.svg' },
-    { className: 'R Class', fileName: 'iruda-r.svg' },
-    { className: 'U Class', fileName: 'iruda-u.svg' },
-    { className: 'D Class', fileName: 'iruda-d.svg' },
-    { className: 'A Class', fileName: 'iruda-a.svg' },
-  ]
+function IrudaWordmark({ letters }: { letters: IrudaLetter[] }) {
+  const columnCount = letters.reduce((total, letter) => total + letter.fileNames.length, 0)
 
   return (
     <figure aria-label="IRUDA 클래스 구성" className="mt-4">
-      <div className="grid grid-cols-5 gap-3">
+      <div
+        className="grid gap-3"
+        style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+      >
         {letters.map((letter) => (
-          <div className="flex min-w-0 flex-col items-center gap-4" key={letter.className}>
-            <NextImage
-              alt=""
-              aria-hidden="true"
-              className="h-auto w-full opacity-10"
-              height={216}
-              src={`${gradeAssetBase}/${letter.fileName}`}
-              width={216}
-            />
+          <div
+            className="flex min-w-0 flex-col items-center gap-4"
+            key={letter.className}
+            style={{ gridColumn: `span ${letter.fileNames.length}` }}
+          >
+            <div className="grid w-full grid-flow-col gap-3">
+              {letter.fileNames.map((fileName) => (
+                <NextImage
+                  alt=""
+                  aria-hidden="true"
+                  className="h-auto w-full opacity-10"
+                  height={216}
+                  key={fileName}
+                  src={`${gradeAssetBase}/${fileName}`}
+                  width={216}
+                />
+              ))}
+            </div>
             <span className="text-center type-label-m font-extrabold uppercase leading-none text-white">
               {letter.className}
             </span>
@@ -613,32 +956,43 @@ function IrudaWordmark() {
   )
 }
 
-function CriteriaPanel() {
+function CriteriaPanel({ data }: { data: GradeSystemContent }) {
   return (
     <div className="flex flex-col gap-16 md:gap-20">
       <section className="">
         <h2 className="type-headline-xl font-extrabold leading-[1.35]">
-          정기적인 오디션을 통해 단계별로 초급 I반, 중급 R반,
-          <br />
-          고급 U반, 전문 D반, 배우 A반으로 클래스가 편성됩니다.
+          {data.criteriaTitle}
         </h2>
-        <p className="mt-8 type-body-m leading-[1.85] text-white/50">
-          전체 수강생은 전공생 30%, 비전공생 40%, 엔터테인먼트교육생 30%로 이루어져 있으며, 각 클래스에 따라 수강생의 담당 관리부서가 교체됩니다.<br/> 배우앤배움 교육팀에서는 기존 단일 오디션 형태의 승급 평가 방식에서 탈피하여 두 달 과정의 커리큘럼에 대한 전반적인 이수 평가를 도입하였습니다. <br/>커리큘럼이 끝나는 마지막 주에는 각 클래스의 강사진들이 연기자 평가서를 교육팀에 제출하게 되며, 이를 통해 학생들은 본인의 승급 여부와 함께 개인의 연기성장에 대한 정확한 피드백을 전달받게 됩니다.
+        <p className="mt-8 whitespace-pre-line type-body-m leading-[1.85] text-white/50">
+          {data.criteriaDescription}
         </p>
       </section>
 
-      <AdultGradeTable />
-      <PromotionTable />
+      <GradeCriteriaTable data={data} />
+      <PromotionTable data={data} />
+      {data.extraPromotionCriteria ? (
+        <section className="rounded-[8px] border border-white/10 bg-white/[0.03] p-6">
+          <h3 className="type-title-s font-extrabold leading-none">그 외 승급 기준</h3>
+          <ul className="mt-5 space-y-2 type-body-s leading-[1.7] text-white/60">
+            {data.extraPromotionCriteria.map((item) => (
+              <li className="grid grid-cols-[4px_minmax(0,1fr)] gap-2" key={item}>
+                <span aria-hidden="true" className="mt-[0.78em] h-0.5 w-0.5 rounded-full bg-white/48" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </div>
   )
 }
 
-function AdultGradeTable() {
+function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
   return (
     <section>
-      <h3 className="mb-5 type-title-s font-extrabold leading-none">성인 등급 기준</h3>
+      <h3 className="mb-5 type-title-s font-extrabold leading-none">{data.gradeTableTitle}</h3>
       <p className="mb-4 type-caption-s leading-[1.65] text-white/45">
-        배정 Class는 아래 항목 중 충족되는 조건을 기준으로 진행되며, R Class부터 레벨테스트가 진행됩니다.
+        {data.gradeTableDescription}
       </p>
 
       {/* 데스크탑: 표 형태 (가독성 개선) */}
@@ -655,14 +1009,13 @@ function AdultGradeTable() {
               <CriteriaHeader width="w-[18%]">
                 관리부서
               </CriteriaHeader>
-              <CriteriaHeader>본학원</CriteriaHeader>
-              <CriteriaHeader>타학원</CriteriaHeader>
-              <CriteriaHeader>전공자</CriteriaHeader>
-              <CriteriaHeader>경력 인정자</CriteriaHeader>
+              {data.criteriaEntryLabels.map((entry) => (
+                <CriteriaHeader key={entry.key}>{entry.label}</CriteriaHeader>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {adultGradeRows.map((row, index) => (
+            {data.gradeRows.map((row, index) => (
               <tr
                 className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
                 key={`${index}-${row.className}`}
@@ -677,24 +1030,22 @@ function AdultGradeTable() {
                   <ProcessBadge process={row.process} />
                 </CriteriaCell>
                 <CriteriaCell className="align-top text-white/55">{row.department}</CriteriaCell>
-                <CriteriaCell className="text-left align-top">
-                  <CriteriaText
-                    highlightTerms={['매니지먼트 위탁배우']}
-                    value={row.inHouse}
-                  />
-                </CriteriaCell>
-                <CriteriaCell className="text-left align-top">
-                  <CriteriaText value={row.transfer} />
-                </CriteriaCell>
-                <CriteriaCell className="text-left align-top">
-                  <CriteriaText value={row.major} />
-                </CriteriaCell>
-                <CriteriaCell className="text-left align-top">
-                  <CriteriaText
-                    // highlightTerms={['조/단역', '다수 출연', '연기상']}
-                    value={row.experience}
-                  />
-                </CriteriaCell>
+                {data.criteriaEntryLabels.map((entry) => (
+                  <CriteriaCell className="text-left align-top" key={entry.key}>
+                    <CriteriaText
+                      highlightTerms={[
+                        '외부작품',
+                        '매니지먼트',
+                        '경력 인정자',
+                        '경력인정자',
+                        '조/단역',
+                        '다수 출연',
+                        '연기상',
+                      ]}
+                      value={row[entry.key]}
+                    />
+                  </CriteriaCell>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -703,7 +1054,7 @@ function AdultGradeTable() {
 
       {/* 모바일/태블릿: 클래스별 카드 */}
       <div className="flex flex-col gap-4 lg:hidden">
-        {adultGradeRows.map((card, index) => (
+        {data.gradeRows.map((card, index) => (
           <article
             className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
             key={`${index}-${card.className}`}
@@ -720,7 +1071,7 @@ function AdultGradeTable() {
                   {card.department || '-'}
                 </dd>
               </div>
-              {criteriaEntryLabels.map((entry) => {
+              {data.criteriaEntryLabels.map((entry) => {
                 const value = card[entry.key]
 
                 return (
@@ -751,10 +1102,10 @@ function AdultGradeTable() {
   )
 }
 
-function PromotionTable() {
+function PromotionTable({ data }: { data: GradeSystemContent }) {
   return (
     <section>
-      <h3 className="mb-5 type-title-s font-extrabold leading-none">성인 승급 기준</h3>
+      <h3 className="mb-5 type-title-s font-extrabold leading-none">{data.promotionTitle}</h3>
 
       {/* 데스크탑: 표 형태 */}
       <div className="hidden overflow-x-auto md:block">
@@ -768,7 +1119,7 @@ function PromotionTable() {
             </tr>
           </thead>
           <tbody>
-            {promotionGroups.map((group) =>
+            {data.promotionGroups.map((group) =>
               group.rows.map((row, index) => {
                 return (
                   <tr
@@ -809,7 +1160,7 @@ function PromotionTable() {
 
       {/* 모바일: 승급 단계별 카드 */}
       <div className="flex flex-col gap-8 md:hidden">
-        {promotionGroups.map((group) => {
+        {data.promotionGroups.map((group) => {
           return (
             <article
               className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
@@ -960,6 +1311,7 @@ function CriteriaText({
 const gradeBadgeClassNames: Record<string, string> = {
   A: 'bg-[#eeedfe] text-[#534ab7]',
   D: 'bg-[#faeeda] text-[#854f0b]',
+  DA: 'bg-[#faeeda] text-[#854f0b]',
   I: 'bg-[#f1efe8] text-[#5f5e5a]',
   R: 'bg-[#e1f5ee] text-[#0f6e56]',
   U: 'bg-[#e6f1fb] text-[#185fa5]',
@@ -1011,8 +1363,8 @@ function CriteriaTypeBadge({ type }: { type: string }) {
   )
 }
 
-function CohortsPanel() {
-  const cohorts = buildCohorts()
+function CohortsPanel({ data }: { data: GradeSystemContent }) {
+  const cohorts = buildCohorts(data.cohortStartYear)
   const latestCohort = cohorts[0]
 
   return (
@@ -1020,8 +1372,8 @@ function CohortsPanel() {
       <section className="max-w-[760px]">
         <h2 className="type-headline-xl font-extrabold leading-[1.3]">기수 안내</h2>
         <p className="mt-7 type-body-s leading-[1.85] text-white/50">
-          배우앤배움 아트센터에서는 매해 상반기, 하반기로 나누어 배우앤배움
-          기수를 부여하고 있습니다. 최초 2010년 상반기 1기가 시작되었으며,
+          배우앤배움 {data.centerName}에서는 매해 상반기, 하반기로 나누어 배우앤배움
+          기수를 부여하고 있습니다. 최초 {data.cohortStartYear}년 상반기 1기가 시작되었으며,
           현재 {latestCohort?.year}년 {latestCohort?.half} 기준 {latestCohort?.number}기까지
           진행중입니다.
         </p>

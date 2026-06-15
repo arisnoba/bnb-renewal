@@ -152,7 +152,10 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
   }
 
   return [
-    { href: centerHref(center, 'grade-system'), label: '등급제 교육관리시스템' },
+    {
+      href: center === 'highteen' ? `/${center}/grade-system` : centerHref(center, 'grade-system'),
+      label: '등급제 교육관리시스템',
+    },
     { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
     { href: teachersHref(center), label: '교육진 소개' },
     { href: curriculumHref(center), label: '커리큘럼' },

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
+import type { CenterSlug } from '@/lib/centers'
 import { notFound } from 'next/navigation'
 
 import { GradeSystemTabs } from './GradeSystemTabs.client'
@@ -12,37 +13,51 @@ type Args = {
   }>
 }
 
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen'>
+
+const gradeSystemMetadata = {
+  art: {
+    description: '배우앤배움 아트센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
+    title: '등급제 교육관리시스템 | 배우앤배움 아트센터',
+  },
+  highteen: {
+    description: '배우앤배움 하이틴센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
+    title: '등급제 교육관리시스템 | 배우앤배움 하이틴센터',
+  },
+} satisfies Record<GradeSystemCenter, Metadata>
+
+function isGradeSystemCenter(center: CenterSlug): center is GradeSystemCenter {
+  return center === 'art' || center === 'highteen'
+}
+
 export function generateStaticParams() {
-  return [{ slug: 'art' }]
+  return [{ slug: 'art' }, { slug: 'highteen' }]
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   const center = assertCenter(slug)
 
-  if (center !== 'art') {
+  if (!isGradeSystemCenter(center)) {
     return {
       title: '페이지를 찾을 수 없습니다',
     }
   }
 
-  return {
-    description: '배우앤배움 아트센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
-    title: '등급제 교육관리시스템 | 배우앤배움 아트센터',
-  }
+  return gradeSystemMetadata[center]
 }
 
 export default async function ArtGradeSystemPage({ params }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
-  const decoIcons = getPageDecoIcons(4, 'grade-system')
+  const decoIcons = getPageDecoIcons(4, `grade-system-${center}`)
 
-  if (center !== 'art') {
+  if (!isGradeSystemCenter(center)) {
     notFound()
   }
 
   return (
-    <main className="page page-dark page-grade-system" data-center="art">
+    <main className="page page-dark page-grade-system" data-center={center}>
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
         <div
           aria-hidden="true"
@@ -66,7 +81,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
           </h1>
         </div>
       </section>
-      <GradeSystemTabs />
+      <GradeSystemTabs center={center} />
     </main>
   )
 }

@@ -140,7 +140,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: '/highteen/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'education'), [
-    { href: '/highteen#grade-system', label: '등급제 교육관리시스템' },
+    { href: '/highteen/grade-system', label: '등급제 교육관리시스템' },
     { href: '/highteen#entertainment', label: '엔터테인먼트 위탁교육' },
     { href: '/highteen/teachers', label: '교육진 소개' },
     { href: '/highteen/curriculum', label: '커리큘럼' },
