@@ -1,0 +1,17 @@
+@use '../../../styles/mixins' as *;
+
+.section-casting-status-year__label {
+  @include fluid-type(72px, 220px);
+
+  letter-spacing: -0.04em;
+  line-height: 1;
+  opacity: 0.08;
+}
+
+.casting-status-swiper {
+  overflow: visible;
+}
+
+.casting-status-swiper .swiper-wrapper {
+  align-items: stretch;
+}

@@ -56,6 +56,12 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
   assert.equal(
     getHeaderMenu('art')
+      .find((group) => group.key === 'casting')
+      ?.items.find((item) => item.label === '진행중인 캐스팅 출연현황')?.href,
+    '/art/casting-status',
+  )
+  assert.equal(
+    getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
     '/art/artist-press',
@@ -108,4 +114,15 @@ test('avenue mega menu uses the avenue one-page structure', () => {
   )
   assert.ok(!labels.includes('온라인 상담신청'))
   assert.ok(labels.includes('NEWS&NOTICE'))
+})
+
+test('center casting status menu items link to the casting status page', () => {
+  for (const center of ['kids', 'highteen'] as const) {
+    assert.equal(
+      getHeaderMenu(center)
+        .find((group) => group.key === 'casting')
+        ?.items.find((item) => item.label === '진행중인 캐스팅 출연현황')?.href,
+      `/${center}/casting-status`,
+    )
+  }
 })
