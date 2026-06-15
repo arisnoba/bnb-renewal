@@ -6,6 +6,8 @@ import { useForm, useFormFields } from '@payloadcms/ui'
 import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
+import { getAdminMediaPreviewSrc } from './adminMediaPreview'
+
 type BodyImage = {
   id?: string
   image?: MediaSummary | number | string | null
@@ -96,17 +98,7 @@ function mediaFromValue(value: unknown): MediaSummary | null {
 }
 
 function getImageSrc(media?: MediaSummary | null) {
-  const src = stringValue(media?.thumbnailURL) || stringValue(media?.url)
-
-  if (!src) {
-    return ''
-  }
-
-  if (/^(https?:)?\/\//.test(src) || src.startsWith('/')) {
-    return src
-  }
-
-  return `/${src.replace(/^\/+/, '')}`
+  return getAdminMediaPreviewSrc(media)
 }
 
 function getFileName(src: string) {
