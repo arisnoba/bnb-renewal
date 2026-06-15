@@ -2,7 +2,7 @@
   background: #000;
   color: #fff;
   height: 800px;
-  overflow: hidden;
+  // overflow: hidden;
   position: relative;
 }
 
@@ -26,7 +26,6 @@
 }
 
 .section-artist-press-hero__deco--center {
-  border-radius: 9999px;
   bottom: -100px;
   left: 50%;
   transform: translateX(40%);
