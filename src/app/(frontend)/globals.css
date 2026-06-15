@@ -171,22 +171,27 @@
 
 [data-center='art'] {
   --brand: var(--color-brand-art);
+  --color-brand: var(--color-brand-art);
 }
 
 [data-center='exam'] {
   --brand: var(--color-brand-exam);
+  --color-brand: var(--color-brand-exam);
 }
 
 [data-center='highteen'] {
   --brand: var(--color-brand-highteen);
+  --color-brand: var(--color-brand-highteen);
 }
 
 [data-center='kids'] {
   --brand: var(--color-brand-kids);
+  --color-brand: var(--color-brand-kids);
 }
 
 [data-center='avenue'] {
   --brand: var(--color-brand-avenue);
+  --color-brand: var(--color-brand-avenue);
 }
 
 body:has(.page-dark, [data-page-tone='dark']) {

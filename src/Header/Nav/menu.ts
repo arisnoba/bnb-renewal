@@ -31,7 +31,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
 
   return [
     {
-      href: centerHref(center, 'about'),
+      href: centerAboutHref(center),
       items: aboutItems(center),
       key: 'about',
       label: '배우앤배움',
@@ -66,9 +66,9 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
 function avenueMenu(): HeaderMenuGroup[] {
   return [
     {
-      href: '/avenue#about',
+      href: centerAboutHref('avenue'),
       items: [
-        { href: '/avenue#about', label: '애비뉴센터 소개' },
+        { href: centerAboutHref('avenue'), label: '애비뉴센터 소개' },
         { href: '/avenue#partners', label: '제휴업체' },
         { href: '/avenue#facilities', label: '시설 안내' },
       ],
@@ -112,7 +112,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'art' || center === 'exam') {
     return [
       { href: '/art#company', label: '회사 소개' },
-      { href: centerHref(center, 'about'), label: '센터 소개' },
+      { href: centerAboutHref(center), label: '센터 소개' },
       { href: centerHref(center, 'facilities'), label: '시설 안내' },
       { href: `/${center}/map`, label: '오시는 길' },
     ]
@@ -123,6 +123,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
     ...(center === 'highteen' || center === 'kids'
       ? [{ href: centerHref(center, 'greeting'), label: '대표인사말' }]
       : []),
+    { href: centerAboutHref(center), label: '센터 소개' },
     { href: centerHref(center, 'facilities'), label: '시설 안내' },
     { href: `/${center}/map`, label: '오시는 길' },
   ]
@@ -250,6 +251,10 @@ function supportItems(center: CenterSlug): HeaderMenuItem[] {
 
 function centerHref(center: CenterSlug, anchor: string) {
   return `/${center}#${anchor}`
+}
+
+function centerAboutHref(center: CenterSlug) {
+  return `/${center}/about`
 }
 
 function screenAppearancesHref(center: CenterSlug) {
