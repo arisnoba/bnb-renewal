@@ -54,6 +54,12 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
   assert.equal(
     getHeaderMenu('art')
+      .find((group) => group.key === 'education')
+      ?.items.find((item) => item.label === '커리큘럼')?.href,
+    '/art/curriculum',
+  )
+  assert.equal(
+    getHeaderMenu('art')
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === 'BNB 출연장면')?.href,
     '/art/screen-appearances',
@@ -99,7 +105,6 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam#exam-management', label: '입시 매니지먼트' },
     { href: '/exam#special-system', label: '특별한 시스템' },
     { href: '/exam/teachers', label: '교육진 소개' },
-    { href: '/exam#curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'casting'), [
     { href: '/exam#university-results', label: '대학교' },
@@ -110,6 +115,7 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam#exam-passed-videos', label: '합격 영상' },
   ])
   assert.ok(labels.includes('특별한 시스템'))
+  assert.ok(!labels.includes('커리큘럼'))
   assert.ok(!labels.includes('대표인사말'))
   assert.ok(!labels.includes('연혁'))
   assert.ok(!labels.includes('자회사 안내'))
@@ -118,6 +124,87 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   assert.ok(!labels.includes('수강생 합격후기'))
   assert.ok(!labels.includes('프로필 촬영ㆍ제작'))
   assert.ok(!labels.includes('온라인 상담신청'))
+})
+
+test('highteen mega menu matches the approved highteen structure', () => {
+  const menu = getHeaderMenu('highteen')
+
+  assert.deepEqual(
+    menu.map((group) => group.label),
+    ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
+  )
+  assert.deepEqual(itemsForGroup('highteen', 'about'), [
+    { href: '/art#company', label: '회사 소개' },
+    { href: '/highteen/about', label: '센터 소개' },
+    { href: '/highteen#facilities', label: '시설 안내' },
+    { href: '/highteen/map', label: '오시는 길' },
+  ])
+  assert.deepEqual(itemsForGroup('highteen', 'education'), [
+    { href: '/highteen#grade-system', label: '등급제 교육관리시스템' },
+    { href: '/highteen#entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: '/highteen/teachers', label: '교육진 소개' },
+    { href: '/highteen/curriculum', label: '커리큘럼' },
+    { href: '/highteen#special-lecture', label: '하이틴센터 특강' },
+  ])
+  assert.deepEqual(itemsForGroup('highteen', 'casting'), [
+    { href: '/highteen/screen-appearances', label: '드라마ㆍ광고 출연장면' },
+    { href: '/highteen/casting-status', label: '진행중인 캐스팅 출연현황' },
+    { href: '/highteen#u-casting', label: '드라마 광고 캐스팅' },
+    { href: '/highteen#casting-system', label: '캐스팅 시스템' },
+    { href: '/highteen#monthly-schedule', label: '이달의 촬영ㆍ오디션 스케줄' },
+  ])
+  assert.deepEqual(itemsForGroup('highteen', 'artist'), [
+    { href: '/highteen/artist-press', label: 'BNB 출신 아티스트' },
+    { href: '/highteen/rookies', label: 'BNB 루키' },
+  ])
+  assert.ok(!labelsFor('highteen').includes('대표인사말'))
+  assert.ok(!labelsFor('highteen').includes('BNB 캐스팅'))
+  assert.ok(!labelsFor('highteen').includes('IMGround 캐스팅'))
+  assert.ok(!labelsFor('highteen').includes('BX모델에이전시'))
+  assert.ok(!labelsFor('highteen').includes('다이렉트 캐스팅'))
+  assert.ok(!labelsFor('highteen').includes('BNB 캐스팅 섭외뉴스'))
+  assert.ok(!labelsFor('highteen').includes('매니지먼트 시스템'))
+  assert.ok(!labelsFor('highteen').includes('프로필 촬영ㆍ제작'))
+  assert.ok(!labelsFor('highteen').includes('오디션 지원하기'))
+})
+
+test('kids mega menu matches the approved kids structure', () => {
+  assert.deepEqual(
+    getHeaderMenu('kids').map((group) => group.label),
+    ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
+  )
+  assert.deepEqual(itemsForGroup('kids', 'about'), [
+    { href: '/art#company', label: '회사 소개' },
+    { href: '/kids/about', label: '센터 소개' },
+    { href: '/kids#facilities', label: '시설 안내' },
+    { href: '/kids/map', label: '오시는 길' },
+  ])
+  assert.deepEqual(itemsForGroup('kids', 'education'), [
+    { href: '/kids#grade-system', label: '등급제 교육관리시스템' },
+    { href: '/kids#entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: '/kids/teachers', label: '교육진 소개' },
+  ])
+  assert.deepEqual(itemsForGroup('kids', 'casting'), [
+    { href: '/kids/screen-appearances', label: 'BNB 출연장면' },
+    { href: '/kids/casting-status', label: '캐스팅 출연현황' },
+    { href: '/kids#u-casting', label: '드라마 광고 캐스팅' },
+    { href: '/kids#casting-system', label: '캐스팅 시스템' },
+    { href: '/kids#monthly-schedule', label: '촬영ㆍ오디션 스케줄' },
+  ])
+  assert.deepEqual(itemsForGroup('kids', 'artist'), [
+    { href: '/kids/artist-press', label: 'BNB 출신 아티스트' },
+    { href: '/kids/rookies', label: 'BNB 루키' },
+  ])
+  assert.ok(!labelsFor('kids').includes('대표인사말'))
+  assert.ok(!labelsFor('kids').includes('영재 교육과정'))
+  assert.ok(!labelsFor('kids').includes('아역배우 교육과정'))
+  assert.ok(!labelsFor('kids').includes('아티스트 교육과정'))
+  assert.ok(!labelsFor('kids').includes('커리큘럼'))
+  assert.ok(!labelsFor('kids').includes('BNB 캐스팅'))
+  assert.ok(!labelsFor('kids').includes('IMGround 캐스팅'))
+  assert.ok(!labelsFor('kids').includes('매니지먼트 시스템'))
+  assert.ok(!labelsFor('kids').includes('아역배우 프로필'))
+  assert.ok(!labelsFor('kids').includes('프로필 촬영ㆍ제작'))
 })
 
 test('all center support menus match art support labels', () => {
@@ -140,6 +227,7 @@ test('avenue mega menu uses the avenue one-page structure', () => {
       ?.items.find((item) => item.label === '강사진 소개')?.href,
     '/avenue/teachers',
   )
+  assert.ok(!labels.includes('커리큘럼'))
   assert.ok(!labels.includes('온라인 상담신청'))
   assert.ok(labels.includes('NEWS&NOTICE'))
 })
@@ -149,7 +237,7 @@ test('center casting status menu items link to the casting status page', () => {
     assert.equal(
       getHeaderMenu(center)
         .find((group) => group.key === 'casting')
-        ?.items.find((item) => item.label === '캐스팅 출연현황')?.href,
+        ?.items.find((item) => item.href === `/${center}/casting-status`)?.href,
       `/${center}/casting-status`,
     )
   }

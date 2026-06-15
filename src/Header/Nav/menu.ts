@@ -77,10 +77,7 @@ function avenueMenu(): HeaderMenuGroup[] {
     },
     {
       href: teachersHref('avenue'),
-      items: [
-        { href: teachersHref('avenue'), label: '강사진 소개' },
-        { href: '/avenue#curriculum', label: '커리큘럼' },
-      ],
+      items: [{ href: teachersHref('avenue'), label: '강사진 소개' }],
       key: 'education',
       label: '교육',
     },
@@ -109,7 +106,7 @@ function avenueMenu(): HeaderMenuGroup[] {
 }
 
 function aboutItems(center: CenterSlug): HeaderMenuItem[] {
-  if (center === 'art' || center === 'exam') {
+  if (center === 'art' || center === 'exam' || center === 'highteen' || center === 'kids') {
     return [
       { href: '/art#company', label: '회사 소개' },
       { href: centerAboutHref(center), label: '센터 소개' },
@@ -120,9 +117,6 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
 
   return [
     { href: '/art#company', label: '회사 소개' },
-    ...(center === 'highteen' || center === 'kids'
-      ? [{ href: centerHref(center, 'greeting'), label: '대표인사말' }]
-      : []),
     { href: centerAboutHref(center), label: '센터 소개' },
     { href: centerHref(center, 'facilities'), label: '시설 안내' },
     { href: `/${center}/map`, label: '오시는 길' },
@@ -135,16 +129,12 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: centerHref(center, 'exam-management'), label: '입시 매니지먼트' },
       { href: centerHref(center, 'special-system'), label: '특별한 시스템' },
       { href: teachersHref(center), label: '교육진 소개' },
-      { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
     ]
   }
 
   if (center === 'kids') {
     return [
       { href: centerHref(center, 'grade-system'), label: '등급제 교육관리시스템' },
-      { href: centerHref(center, 'gifted-course'), label: '영재 교육과정' },
-      { href: centerHref(center, 'child-actor-course'), label: '아역배우 교육과정' },
-      { href: centerHref(center, 'artist-course'), label: '아티스트 교육과정' },
       { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
       { href: teachersHref(center), label: '교육진 소개' },
     ]
@@ -155,7 +145,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
       { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
       { href: teachersHref(center), label: '교육진 소개' },
-      { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
+      { href: curriculumHref(center), label: '커리큘럼' },
     ]
   }
 
@@ -163,7 +153,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     { href: centerHref(center, 'grade-system'), label: '등급제 교육관리시스템' },
     { href: centerHref(center, 'entertainment'), label: '엔터테인먼트 위탁교육' },
     { href: teachersHref(center), label: '교육진 소개' },
-    { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
+    { href: curriculumHref(center), label: '커리큘럼' },
     ...(center === 'highteen'
       ? [{ href: centerHref(center, 'special-lecture'), label: '하이틴센터 특강' }]
       : []),
@@ -188,25 +178,27 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
-  return [
-    { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
-    { href: castingStatusHref(center), label: '캐스팅 출연현황' },
-    { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
-    ...(center === 'kids' || center === 'highteen'
-      ? [
-          { href: centerHref(center, 'bnb-casting'), label: 'BNB 캐스팅' },
-          { href: centerHref(center, 'imground-casting'), label: 'IMGround 캐스팅' },
-        ]
-      : []),
-    ...(center === 'highteen' ? [{ href: centerHref(center, 'bx-model'), label: 'BX모델에이전시' }] : []),
-    ...(center === 'highteen'
-      ? [
-          { href: centerHref(center, 'direct-casting'), label: '다이렉트 캐스팅' },
-          { href: centerHref(center, 'casting-news'), label: 'BNB 캐스팅 섭외뉴스' },
-        ]
-      : []),
-    ...(center === 'highteen' ? [{ href: '/audition', label: '오디션 지원하기' }] : []),
-  ]
+  if (center === 'highteen') {
+    return [
+      { href: screenAppearancesHref(center), label: '드라마ㆍ광고 출연장면' },
+      { href: castingStatusHref(center), label: '진행중인 캐스팅 출연현황' },
+      { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
+      { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
+      { href: centerHref(center, 'monthly-schedule'), label: '이달의 촬영ㆍ오디션 스케줄' },
+    ]
+  }
+
+  if (center === 'kids') {
+    return [
+      { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
+      { href: castingStatusHref(center), label: '캐스팅 출연현황' },
+      { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
+      { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
+      { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
+    ]
+  }
+
+  return []
 }
 
 function artistItems(center: CenterSlug): HeaderMenuItem[] {
@@ -224,13 +216,21 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
-  return [
-    { href: centerHref(center, 'management-system'), label: '매니지먼트 시스템' },
-    { href: centerHref(center, 'schedule'), label: '촬영ㆍ오디션 스케줄' },
-    ...(center === 'highteen' ? [{ href: `/${center}/rookies`, label: 'BNB 루키' }] : []),
-    ...(center === 'kids' ? [{ href: centerHref(center, 'profiles'), label: '아역배우 프로필' }] : []),
-    { href: centerHref(center, 'profile-production'), label: '프로필 촬영ㆍ제작' },
-  ]
+  if (center === 'highteen') {
+    return [
+      { href: `/${center}/artist-press`, label: 'BNB 출신 아티스트' },
+      { href: `/${center}/rookies`, label: 'BNB 루키' },
+    ]
+  }
+
+  if (center === 'kids') {
+    return [
+      { href: `/${center}/artist-press`, label: 'BNB 출신 아티스트' },
+      { href: `/${center}/rookies`, label: 'BNB 루키' },
+    ]
+  }
+
+  return []
 }
 
 function supportItems(center: CenterSlug): HeaderMenuItem[] {
@@ -251,6 +251,10 @@ function centerHref(center: CenterSlug, anchor: string) {
 
 function centerAboutHref(center: CenterSlug) {
   return `/${center}/about`
+}
+
+function curriculumHref(center: CenterSlug) {
+  return `/${center}/curriculum`
 }
 
 function screenAppearancesHref(center: CenterSlug) {
