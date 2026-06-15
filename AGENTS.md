@@ -106,3 +106,12 @@ npm run lint        # ESLint 검사
 - `prefix`만 넣고 파일명을 `direct-castings-body-11-874bfd79b6-...jpg`처럼 평탄하게 만드는 방식은 불완전한 처리로 본다. 최종 key 샘플이 `media/direct-castings/body-images/{sourceDb}/{sourceTable}/{sourceId}/{role-or-index}/{filename}`처럼 보이는지 확인한다.
 - media 생성 스크립트를 작성하거나 수정할 때는 dry-run/write 결과에 `prefix`, `filename`, 최종 `objectKey` 또는 `prefix + filename` 샘플을 출력하고, 샘플 key에 `/` 구분이 남아 있는지 검증한다.
 - 원본 추적을 위해 원본 파일명은 보존하되, R2에서 관리하기 쉬운 폴더 구분은 object key에 반영한다. 같은 컬렉션 안에서도 대표 이미지, 본문 이미지, 갤러리, 로고는 서로 다른 경로 세그먼트를 사용한다.
+
+---
+
+## 커밋 메시지 작성 규칙 (필수)
+
+- **언어**: 에이전트가 생성하는 모든 Git 커밋 메시지는 **반드시 한국어로만 작성**한다. (절대 영어로 작성 금지)
+- **포맷**: Conventional Commits 규격을 엄격히 준수한다.
+  - `<type>: <description>` 형식으로 작성 (예: `feat: 회원가입 기능 추가`, `fix: DB 커넥션 오류 수정`)
+  - 주요 타입: `feat`, `fix`, `chore`, `refactor`, `style`, `docs`, `test` 등
