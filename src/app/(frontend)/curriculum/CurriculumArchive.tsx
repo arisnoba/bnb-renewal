@@ -1,5 +1,5 @@
 import configPromise from '@payload-config'
-import { ChevronDown, ChevronRight, Info, Search } from 'lucide-react'
+import { ChevronRight, Info, Search } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 
@@ -11,13 +11,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import type { CenterSlug } from '@/lib/centers'
-import { getCenterLabel } from '@/lib/centers'
 import {
   curriculumClassOptionsByCenter,
-  type CurriculumClassOption,
   type CurriculumCenter,
 } from '@/lib/curriculumOptions'
 import type { Curriculum, Teacher } from '@/payload-types'
+import { FilterSelect } from './FilterSelect.client'
 
 type CurriculumArchiveProps = {
   center: SearchableCurriculumCenter
@@ -68,6 +67,8 @@ export function isCurriculumCenter(center: CenterSlug): center is SearchableCurr
 export async function CurriculumArchive({ center, filters }: CurriculumArchiveProps) {
   const [curriculums, queryFailed] = await queryCurriculums(center)
   const classOptions = curriculumClassOptionsByCenter[center]
+  const lessonCountOptions = buildLessonCountOptions(curriculums)
+  const timeOptions = buildTimeOptions(curriculums)
   const visibleItems = curriculums
     .filter((curriculum) => matchesFilters(curriculum, filters))
     .sort((left, right) => curriculumSort(left, right, center))
@@ -75,7 +76,6 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
   const period = resolveCurrentCurriculumPeriod(center)
   const periodMonths = curriculumPeriodMonthsByCenter[center]
   const decoIcons = getPageDecoIcons(4, `curriculum-${center}`)
-  const centerLabel = getCenterLabel(center)
   const hasActiveFilters = Boolean(filters.className || filters.lessonCount || filters.time)
 
   return (
@@ -149,6 +149,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
           >
             <FilterSelect
               defaultValue={filters.className}
+              key={`className-${filters.className ?? ''}`}
               label="클래스(등급)"
               name="className"
               options={classOptions.map((option) => ({
@@ -158,26 +159,20 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
             />
             <FilterSelect
               defaultValue={filters.lessonCount}
+              key={`lessonCount-${filters.lessonCount ?? ''}`}
               label="교육횟수"
               name="lessonCount"
-              options={[
-                { label: '주 1회', value: '1' },
-                { label: '주 2회', value: '2' },
-                { label: '주 3회 이상', value: '3plus' },
-              ]}
+              options={lessonCountOptions}
             />
             <FilterSelect
               defaultValue={filters.time}
+              key={`time-${filters.time ?? ''}`}
               label="시간대별 Class"
               name="time"
-              options={[
-                { label: '오전', value: 'morning' },
-                { label: '오후', value: 'afternoon' },
-                { label: '저녁', value: 'evening' },
-              ]}
+              options={timeOptions}
             />
             <button
-              className="section-curriculum-search__submit inline-flex min-h-[74px] items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 md:min-h-[90px]"
+              className="section-curriculum-search__submit inline-flex items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 cursor-pointer"
               type="submit"
             >
               강의검색
@@ -187,27 +182,14 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
         </div>
       </section>
 
-      <section
-        aria-labelledby="curriculum-list-title"
-        className="section-curriculum-list section-p-b-base bg-white pt-14 text-neutral-900 md:pt-20"
-      >
+      <section className="section-curriculum-list section-p-b-base bg-white pt-14 text-neutral-900 md:pt-20">
         <div className="container">
-          <ClassSummary
-            activeClassName={filters.className}
-            center={center}
-            classOptions={classOptions}
-          />
-
-          <header className="section-curriculum-list__head sr-only">
-            <h2 id="curriculum-list-title">{centerLabel} 커리큘럼 목록</h2>
-          </header>
-
           {queryFailed ? (
             <p className="section-curriculum-list__empty border-y border-neutral-200 py-18 text-center type-title-s font-semibold text-neutral-500">
               커리큘럼을 불러오지 못했습니다.
             </p>
           ) : visibleItems.length > 0 ? (
-            <div className="section-curriculum-list__grid mt-16 grid gap-4 md:grid-cols-2 lg:mt-20 lg:grid-cols-3">
+            <div className="section-curriculum-list__grid grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {visibleItems.map((item) => (
                 <CurriculumCard center={center} item={item} key={item.id} />
               ))}
@@ -236,86 +218,6 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
   )
 }
 
-function FilterSelect({
-  defaultValue,
-  label,
-  name,
-  options,
-}: {
-  defaultValue?: string
-  label: string
-  name: string
-  options: { label: string; value: string }[]
-}) {
-  return (
-    <label className="section-curriculum-search__field relative block min-h-[74px] bg-neutral-900 px-5 py-4 md:min-h-[90px] md:py-5">
-      <span className="block type-caption-m font-semibold leading-[1.45] text-white/45">
-        {label}
-      </span>
-      <select
-        className="mt-1 block w-full appearance-none bg-transparent pr-8 type-label-l font-extrabold text-white outline-none"
-        defaultValue={defaultValue ?? ''}
-        name={name}
-      >
-        <option value="">선택하세요</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown
-        aria-hidden="true"
-        className="pointer-events-none absolute right-5 top-1/2 size-5 -translate-y-1/2 text-white"
-        strokeWidth={2.2}
-      />
-    </label>
-  )
-}
-
-function ClassSummary({
-  activeClassName,
-  center,
-  classOptions,
-}: {
-  activeClassName?: string
-  center: SearchableCurriculumCenter
-  classOptions: CurriculumClassOption[]
-}) {
-  return (
-    <nav
-      aria-label="센터별 클래스"
-      className="section-curriculum-list__classes grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5"
-    >
-      {classOptions.map((option) => {
-        const isActive = activeClassName === option.value
-
-        return (
-          <Link
-            aria-current={isActive ? 'page' : undefined}
-            className={`group grid min-h-[104px] place-items-center border px-4 py-5 text-center transition-colors hover:border-brand hover:bg-white md:min-h-[128px] ${
-              isActive ? 'border-brand bg-white' : 'border-neutral-100 bg-neutral-50'
-            }`}
-            href={`/${center}/curriculum?className=${encodeURIComponent(option.value)}`}
-            key={option.value}
-          >
-            <span
-              className={`block type-display-m font-black leading-none transition-colors group-hover:text-brand md:type-display-l ${
-                isActive ? 'text-brand' : 'text-neutral-200'
-              }`}
-            >
-              {classMark(option.label)}
-            </span>
-            <span className="mt-3 block type-caption-m font-bold uppercase tracking-normal text-neutral-500">
-              {option.label}
-            </span>
-          </Link>
-        )
-      })}
-    </nav>
-  )
-}
-
 function CurriculumCard({
   center,
   item,
@@ -324,7 +226,7 @@ function CurriculumCard({
   item: CurriculumCardItem
 }) {
   return (
-    <article className="section-curriculum-card flex min-h-[429px] flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-8">
+    <article className="section-curriculum-card group/card flex min-h-[429px] flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-8">
       <header className="section-curriculum-card__head flex items-center gap-4">
         <span
           aria-hidden="true"
@@ -339,17 +241,17 @@ function CurriculumCard({
 
       <div className="section-curriculum-card__body flex flex-1 flex-col justify-between pt-9">
         <div>
-          <h3 className="type-headline-s font-extrabold leading-[1.35] text-neutral-900">
+          <h3 className="type-headline-l font-bold leading-[1.35] text-neutral-900 line-clamp-3">
             {item.topic}
           </h3>
-          <p className="mt-3 type-label-m font-bold text-neutral-500">
+          <p className="mt-3 type-body-m font-medium text-neutral-500">
             {item.teacherName}
           </p>
         </div>
 
         <div className="section-curriculum-card__meta mt-8 flex flex-wrap items-center justify-between gap-3">
           <Link
-            className="inline-flex h-[43px] items-center justify-center rounded-full bg-neutral-900 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand"
+            className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-300 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand group-hover/card:bg-brand"
             href={`/consult?center=${center}`}
           >
             수강 신청
@@ -357,14 +259,14 @@ function CurriculumCard({
           <div className="flex flex-wrap justify-end gap-1">
             {item.days.map((day) => (
               <span
-                className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-200 px-3 type-label-m font-medium text-neutral-900"
+                className="inline-flex min-h-10 items-center justify-center rounded-full bg-black/5 px-3 type-label-m font-medium text-neutral-900"
                 key={day}
               >
                 {day}
               </span>
             ))}
             {item.startTime ? (
-              <span className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-200 px-3 type-label-m font-medium text-neutral-900">
+              <span className="inline-flex min-h-10 items-center justify-center rounded-full bg-black/5 px-3 type-label-m font-medium text-neutral-900">
                 {item.startTime}
               </span>
             ) : null}
@@ -429,7 +331,7 @@ function matchesFilters(curriculum: Curriculum, filters: CurriculumFilters) {
     return false
   }
 
-  if (filters.time && getTimeGroup(curriculum.educationStartTime) !== filters.time) {
+  if (filters.time && !matchesTimeFilter(curriculum.educationStartTime, filters.time)) {
     return false
   }
 
@@ -442,6 +344,16 @@ function matchesLessonCount(count: number, filter: string) {
   }
 
   return String(count) === filter
+}
+
+function matchesTimeFilter(value: string | null | undefined, filter: string) {
+  const startTime = normalizeTime(value)
+
+  if (!startTime) {
+    return false
+  }
+
+  return startTime === filter || getTimeGroup(startTime) === filter
 }
 
 function toCurriculumCardItem(curriculum: Curriculum): CurriculumCardItem {
@@ -462,6 +374,36 @@ function getEducationDays(curriculum: Curriculum) {
   return educationDayFields
     .filter(([field]) => curriculum[field] === true)
     .map(([, label]) => label)
+}
+
+function buildLessonCountOptions(curriculums: Curriculum[]) {
+  const counts = Array.from(
+    new Set(
+      curriculums
+        .map((curriculum) => getEducationDays(curriculum).length)
+        .filter((count) => count > 0),
+    ),
+  ).sort((left, right) => left - right)
+
+  return counts.map((count) => ({
+    label: `주 ${count}회`,
+    value: String(count),
+  }))
+}
+
+function buildTimeOptions(curriculums: Curriculum[]) {
+  const startTimes = Array.from(
+    new Set(
+      curriculums
+        .map((curriculum) => normalizeTime(curriculum.educationStartTime))
+        .filter((time): time is string => Boolean(time)),
+    ),
+  ).sort((left, right) => left.localeCompare(right))
+
+  return startTimes.map((time) => ({
+    label: `${time} 시작`,
+    value: time,
+  }))
 }
 
 function normalizeTime(value: string | null | undefined) {
