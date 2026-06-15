@@ -105,6 +105,7 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam#exam-management', label: '입시 매니지먼트' },
     { href: '/exam#special-system', label: '특별한 시스템' },
     { href: '/exam/teachers', label: '교육진 소개' },
+    { href: '/exam#curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'casting'), [
     { href: '/exam#university-results', label: '대학교' },
@@ -115,7 +116,6 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam#exam-passed-videos', label: '합격 영상' },
   ])
   assert.ok(labels.includes('특별한 시스템'))
-  assert.ok(!labels.includes('커리큘럼'))
   assert.ok(!labels.includes('대표인사말'))
   assert.ok(!labels.includes('연혁'))
   assert.ok(!labels.includes('자회사 안내'))
@@ -182,6 +182,7 @@ test('kids mega menu matches the approved kids structure', () => {
   assert.deepEqual(itemsForGroup('kids', 'education'), [
     { href: '/kids#grade-system', label: '등급제 교육관리시스템' },
     { href: '/kids#entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: '/kids/curriculum', label: '커리큘럼' },
     { href: '/kids/teachers', label: '교육진 소개' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'casting'), [
@@ -199,7 +200,6 @@ test('kids mega menu matches the approved kids structure', () => {
   assert.ok(!labelsFor('kids').includes('영재 교육과정'))
   assert.ok(!labelsFor('kids').includes('아역배우 교육과정'))
   assert.ok(!labelsFor('kids').includes('아티스트 교육과정'))
-  assert.ok(!labelsFor('kids').includes('커리큘럼'))
   assert.ok(!labelsFor('kids').includes('BNB 캐스팅'))
   assert.ok(!labelsFor('kids').includes('IMGround 캐스팅'))
   assert.ok(!labelsFor('kids').includes('매니지먼트 시스템'))
