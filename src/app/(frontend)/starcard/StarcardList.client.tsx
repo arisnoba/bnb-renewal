@@ -130,12 +130,12 @@ function StarcardModal({
       }
     }}>
       <DialogContent className="starcard-partner-modal__panel flex h-[min(820px,calc(100vh-80px))] max-w-[920px] flex-col overflow-hidden border-0 p-0">
-        <DialogHeader className="starcard-partner-modal__header shrink-0 flex-row items-start justify-between gap-5 border-b border-foreground/10 bg-background px-8 py-6 text-left md:px-10">
+        <DialogHeader className="starcard-partner-modal__header shrink-0 flex-row items-start justify-between gap-5 border-b border-foreground/10 bg-background px-6 py-6 text-left md:px-10">
           <div className="min-w-0">
             <p className="mb-3 type-label-m font-bold leading-[1.4] text-brand">
               {categoryLabel(item.category)}
             </p>
-            <div className="starcard-partner-modal__title-row flex min-w-0 items-start gap-4">
+            <div className="starcard-partner-modal__title-row flex min-w-0 items-start md:items-center gap-4">
               <DialogTitle className="min-w-0 flex-1 type-headline-l font-extrabold leading-[1.3] tracking-normal">
                 {item.title}
               </DialogTitle>
@@ -158,7 +158,7 @@ function StarcardModal({
           스타카드 제휴업체 혜택, 이용방법, 위치, 이미지 상세 정보
         </DialogDescription>
 
-        <div className="starcard-partner-modal__content flex min-h-0 flex-1 flex-col overflow-y-auto px-8 pb-8 pt-6 md:px-10 md:pb-10">
+        <div className="starcard-partner-modal__content flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-8 pt-6 md:px-10 md:pb-10">
           {item.body ? (
             <RichText
               className="starcard-partner-modal__body type-body-m font-medium leading-[1.8] text-muted-foreground"
