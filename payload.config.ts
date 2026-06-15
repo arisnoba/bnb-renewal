@@ -13,6 +13,7 @@ import { AuditionSchedules } from './src/collections/AuditionSchedules'
 import { BroadcastStations } from './src/collections/BroadcastStations'
 import { CastingAppearances } from './src/collections/CastingAppearances'
 import { CastingDirectors } from './src/collections/CastingDirectors'
+import { Classrooms } from './src/collections/Classrooms'
 import { Curriculums } from './src/collections/Curriculums'
 import { DirectCastings } from './src/collections/DirectCastings'
 import { ExamPassedReviews } from './src/collections/ExamPassedReviews'
@@ -88,6 +89,7 @@ export default buildConfig({
       Terms,
       Teachers,
       Curriculums,
+      Classrooms,
       HighteenSpecialClasses,
       Agencies,
       AuditionSchedules,
