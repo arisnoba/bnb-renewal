@@ -26,7 +26,7 @@ export function FilterSelect({
     options.find((option) => option.value === selectedValue)?.label ?? '전체'
 
   return (
-    <label className="section-curriculum-search__field relative block cursor-pointer bg-neutral-900 px-5 py-4 transition-colors hover:bg-neutral-800 focus-within:ring-2 focus-within:ring-white/70 md:py-5">
+    <label className="section-curriculum-search__field relative block cursor-pointer bg-neutral-900 px-5 py-4 transition-colors hover:bg-neutral-800 focus-within:ring-2 focus-within:ring-white/10 md:py-5">
       <span className="pointer-events-none block type-caption-m font-medium leading-[1.45] text-white/45">
         {label}
       </span>
