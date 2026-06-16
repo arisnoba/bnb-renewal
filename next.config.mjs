@@ -46,6 +46,9 @@ const nextConfig = {
         pathname: '/assets/common/**',
       },
       {
+        pathname: '/assets/map/**',
+      },
+      {
         pathname: '/assets/casting-system/**',
       },
       {

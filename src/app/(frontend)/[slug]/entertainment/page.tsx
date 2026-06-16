@@ -174,7 +174,7 @@ function AgencyLogoGrid({ agencies }: { agencies: Agency[] }) {
   }
 
   return (
-    <div className="section-entertainment__partners mt-14 grid grid-cols-4 overflow-hidden sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-14">
+    <div className="section-entertainment__partners mt-14 grid grid-cols-4 overflow-hidden sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
       {agencies.map((agency) => (
         <AgencyLogoCard agency={agency} key={agency.id} />
       ))}

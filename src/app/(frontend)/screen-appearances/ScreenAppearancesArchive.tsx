@@ -223,22 +223,22 @@ function ScreenAppearanceCard({
   return (
     <Link
       aria-label={`${projectTitle} 출연장면 상세 보기`}
-      className="group section-screen-appearances-card flex h-full flex-col overflow-hidden rounded-xl border border-neutral-300 bg-white shadow-sm transition hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+      className="group section-screen-appearances-card flex h-full flex-col overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-sm transition hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       href={detailHref}
     >
       <div className="section-screen-appearances-card__head flex min-h-[76px] items-center gap-3 px-5 py-4">
         <BroadcastStationLogo station={broadcastStation} />
         <div className="section-screen-appearances-card__project min-w-0">
-          <p className="line-clamp-1 type-body-s font-medium leading-[1.2] text-neutral-500">
+          <p className="line-clamp-1 type-caption-s font-medium leading-[1.2] text-neutral-400">
             {projectMeta}
           </p>
-          <h3 className="line-clamp-1 type-title-s font-semibold leading-normal text-neutral-600">
+          <h3 className="line-clamp-1 type-title-s font-semibold leading-normal text-neutral-500">
             {projectTitle}
           </h3>
         </div>
       </div>
 
-      <div className="section-screen-appearances-card__media relative aspect-[302/200] overflow-hidden bg-neutral-100">
+      <div className="section-screen-appearances-card__media relative aspect-205/116 overflow-hidden bg-neutral-100">
         {screenImage ? (
           <Media
             fill
@@ -487,7 +487,7 @@ function BroadcastStationLogo({ station }: { station?: BroadcastStation | null }
 
   if (logoMedia) {
     return (
-      <span className="section-screen-appearances-card__broadcast-logo relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-300 bg-white">
+      <span className="section-screen-appearances-card__broadcast-logo relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-white">
         <Media
           fill
           htmlElement={null}
