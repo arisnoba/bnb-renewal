@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[스토리보드] 프로필 촬영 및 제작</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 눈누 프리텐다드 폰트 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <style>
+    body {
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-20">
+
+  <!-- SCR-PROF-001 Container -->
+  <div class="max-w-5xl mx-auto px-4 py-8 md:py-16">
+    
+    <!-- 1. Screen Metadata Header (기획용 메타 정보) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-10 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+        <div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700">화면 ID: SCR-PROF-001</span>
+          <h2 class="text-xl font-bold text-slate-900 mt-2">프로필 촬영 및 제작 (as-is: 프로필 촬영ㆍ제작)</h2>
+        </div>
+        <div class="text-right text-sm text-slate-500">
+          <p><strong>접근 경로</strong>: <code class="bg-slate-100 px-1 py-0.5 rounded">/[slug]/profile</code></p>
+          <p class="mt-1"><strong>정적 페이지(Static Page)</strong> 흐름 정의서</p>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm text-slate-600 leading-relaxed">
+          <strong>기획 의도</strong>: 배우앤배움의 프로필 촬영 및 제작 절차(5~6단계)를 탭 전환 없이 한 화면에서 스크롤하여 직관적으로 확인하고, 센터별 가변 값들을 명확히 구분할 수 있도록 설계했습니다. 텍스트 내부의 가변 요소는 <code>{변수}</code> 형태로 마크업했습니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 2. UI Layout Wrapper -->
+    <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden p-6 md:p-12 lg:p-16">
+      
+      <!-- 2.1 Page Title Area -->
+      <header class="text-center pb-12 border-b border-slate-100">
+        <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase block mb-1">PAGE TITLE (H1)</span>
+        <h1 class="text-3xl font-extrabold text-slate-900">프로필 촬영ㆍ제작</h1>
+      </header>
+
+      <!-- 2.2 Introduction Box -->
+      <div class="my-10 bg-indigo-50/30 border border-indigo-100/50 rounded-2xl p-6 md:p-8">
+        <span class="text-xs font-semibold text-slate-400 block mb-2 font-mono">INTRO TEXT</span>
+        <p class="text-slate-700 text-sm md:text-base leading-relaxed">
+          배우앤배움 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{센터명}</code>는 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{소개글}</code>
+        </p>
+        
+        <!-- 변수 값 정의 -->
+        <div class="text-xs bg-amber-50/50 border border-amber-100 rounded-lg p-4 mt-4 text-slate-600 space-y-2">
+          <div>
+            <strong class="text-amber-800"><code>{센터명}</code> 변수 값 정의:</strong>
+            <ul class="list-disc pl-4 mt-1 space-y-1 text-slate-500">
+              <li>아트 : (공란 처리 - 아래 문장으로 대체)</li>
+              <li>하이틴 : "하이틴센터"</li>
+              <li>키즈 : "키즈센터"</li>
+            </ul>
+          </div>
+          <div>
+            <strong class="text-amber-800"><code>{소개글}</code> 변수 값 정의:</strong>
+            <ul class="list-disc pl-4 mt-1 space-y-1 text-slate-500">
+              <li>아트 : "(주)BNB에서 직접 운영하는 BAEWOOHWA는 배우앤배움 미디어 컨텐츠팀과 함께 배우앤배움 전용 촬영 스튜디오에서 직접 컨셉미팅, 촬영, 보정, PPT 디자인까지 체계적인 시스템으로 연기자들의 프로필을 제작하고 있습니다."</li>
+              <li>하이틴, 키즈 : "연기자 프로필 전문제작업체와 함께 수강생 프로필의 기획, 촬영, 보정, 디자인까지 체계적인 시스템으로 촬영을 진행하고 있습니다. 배우앤배움 매니지먼트팀만의 안정적인 스튜디오 현장 서포트로 매회 촬영마다 퀄리티 높은 프로필 결과물을 제작해내고 있습니다."</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 Vertical Flow (Steps Timeline) -->
+      <div class="relative mt-16 before:absolute before:top-4 before:bottom-4 before:left-4 md:before:left-1/2 before:w-[2px] before:bg-slate-200 space-y-16 md:space-y-24">
+        
+        <!-- 00. BNB 전용 스튜디오 (아트센터 전용) -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12 border border-indigo-100 bg-indigo-50/10 p-6 rounded-2xl md:border-0 md:bg-transparent md:p-0">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-indigo-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono">00</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div class="flex items-center gap-2">
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">BNB 전용 스튜디오</h3>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-800">아트센터 전용</span>
+            </div>
+            <span class="text-xs text-slate-400 font-mono tracking-wider">BNB Exclusive Studio</span>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              프로필 촬영 및 개인연기 영상제작 등 모두 BNB 전용 스튜디오에서 진행됩니다. BNB 스튜디오는 최고급 장비를 보유하고 있으며, 단독 헤어&메이크업실을 갖추고 있어 프라이빗한 서비스를 이용하실 수 있습니다.
+            </p>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/art/studio-pic4.jpg</span>
+                <span class="text-[10px] mt-1 text-slate-400">(BNB 전용 스튜디오 전경)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 01. 프로필 신청 -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-indigo-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono font-bold">01</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div>
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">1. 프로필 신청</h3>
+              <span class="text-xs text-slate-400 font-mono tracking-wider">Application</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              프로필 촬영을 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{신청방식}</code>
+            </p>
+            
+            <!-- 변수 맵 안내 -->
+            <div class="text-xs bg-amber-50/50 border border-amber-100 rounded-lg p-3 text-slate-500">
+              <strong class="text-amber-800">변수 값 정의:</strong>
+              <ul class="list-disc pl-4 mt-1 space-y-1">
+                <li><code>{신청방식}</code> : 
+                  <ul class="list-disc pl-4 mt-1 space-y-1 text-slate-500">
+                    <li>아트: "희망하는 수강생은 하단의 QR 코드를 통해 신청폼을 작성합니다." (우측 QR 이미지 제공)</li>
+                    <li>하이틴, 키즈: "원하시는 수강생은 배우앤배움 아트센터 1층 안내데스크에서 프로필 애플리케이션을 작성한 후 작성된 애플리케이션을 매니지먼트팀에 전달합니다."</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/{center}/step01.jpg</span>
+                <span class="text-[10px] mt-2 text-slate-400">(아트센터: QR 코드 이미지 노출 / 하이틴, 키즈: 안내데스크 접수 전경 또는 일러스트)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02. 촬영 콘셉트미팅 -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-indigo-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono font-bold">02</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div>
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">2. 촬영 콘셉트미팅</h3>
+              <span class="text-xs text-slate-400 font-mono tracking-wider">Concept Meeting</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              촬영 스케줄이 결정되면 촬영에 앞서 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{미팅주체}</code>와 함께 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{미팅구분}</code> 콘셉트미팅을 진행하게 됩니다. 이때 연기자는 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{미팅주체}</code>와 본인이 준비한 콘셉트에 대해 상의 후 조명, 포즈, 헤어, 메이크업, 의상 등 프로필 제작의 전반적인 진행내용을 결정하게 됩니다.
+            </p>
+            
+            <!-- 변수 맵 안내 -->
+            <div class="text-xs bg-amber-50/50 border border-amber-100 rounded-lg p-3 text-slate-500">
+              <strong class="text-amber-800">변수 값 정의:</strong>
+              <ul class="list-disc pl-4 mt-1 space-y-1">
+                <li><code>{미팅주체}</code> : 아트(작가님) / 하이틴, 키즈(매니지먼트팀)</li>
+                <li><code>{미팅구분}</code> : 아트(컨셉 미팅) / 하이틴(콘셉트미팅) / 키즈(의상 및 콘셉트미팅)</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/{center}/profile_img02.jpg</span>
+                <span class="text-[10px] mt-1 text-slate-400">(작가 또는 매니저와의 미팅 장면)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03. 프로필 촬영 -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-indigo-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono font-bold">03</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div>
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">3. 프로필 촬영</h3>
+              <span class="text-xs text-slate-400 font-mono tracking-wider">Photo Shoot</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              프로필 촬영 당일 스튜디오에는 포토그래퍼/헤어팀/메이크업팀/그 외 스태프들이 촬영시간에 맞춰 시작합니다. <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{케어안내}</code>
+            </p>
+            
+            <!-- 변수 맵 안내 -->
+            <div class="text-xs bg-amber-50/50 border border-amber-100 rounded-lg p-3 text-slate-500">
+              <strong class="text-amber-800">변수 값 정의:</strong>
+              <ul class="list-disc pl-4 mt-1 space-y-1">
+                <li><code>{케어안내}</code> : 
+                  <ul class="list-disc pl-4 mt-1 space-y-1 text-slate-500">
+                    <li>아트: "헤어&메이크업팀의 경우, 청담동 연예인 전문 헤어샵 디자이너가 1:1로 배우를 직접 케어합니다."</li>
+                    <li>하이틴, 키즈: "특히 현장이 익숙하지 않은 수강생들을 위해 배우앤배움 매니지먼트팀 매니저들의 현장지원으로 연기자가 촬영에 집중할 수 있도록 서포트합니다."</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/{center}/profile_img03.jpg</span>
+                <span class="text-[10px] mt-1 text-slate-400">(스튜디오 촬영 현장 전경)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04. A컷 분류 및 보정작업 -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-indigo-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono font-bold">04</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div>
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">4. A컷 분류 및 보정작업</h3>
+              <span class="text-xs text-slate-400 font-mono tracking-wider">Photo Selection & Retouching</span>
+            </div>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              촬영이 끝나면 스튜디오에서 연기자에게 1차 원본 전체 파일을 jpg로 전송합니다. 전달받은 사진을 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{분류방식}</code> 후, 다시 스튜디오측에 2차 사진 보정작업을 의뢰합니다. (스튜디오의 보정작업은 약 <code class="text-rose-600 bg-rose-50 px-1 py-0.5 rounded font-mono font-bold">{보정기간}</code> 정도 소요됩니다.)
+            </p>
+            
+            <!-- 변수 맵 안내 -->
+            <div class="text-xs bg-amber-50/50 border border-amber-100 rounded-lg p-3 text-slate-500">
+              <strong class="text-amber-800">변수 값 정의:</strong>
+              <ul class="list-disc pl-4 mt-1 space-y-1">
+                <li><code>{분류방식}</code> : 아트("중 A컷 사진 분류") / 하이틴, 키즈("배우앤배움 담당매니저와 함께 A컷 사진 분류")</li>
+                <li><code>{보정기간}</code> : 아트("10-14일") / 하이틴, 키즈("5일")</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/{center}/profile_img04.jpg</span>
+                <span class="text-[10px] mt-1 text-slate-400">(A컷 선정 및 보정 작업 과정)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05-A. 연기영상 QR코드 프로필 삽입 (아트센터 전용) -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12 border border-indigo-100 bg-indigo-50/10 p-6 rounded-2xl md:border-0 md:bg-transparent md:p-0">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-indigo-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono font-bold font-mono">05</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div class="flex items-center gap-2">
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">5-A. 연기영상 QR코드 프로필 삽입</h3>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-800">아트센터 전용</span>
+            </div>
+            <span class="text-xs text-slate-400 font-mono tracking-wider">Video QR Insertion</span>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              배우앤배움의 영상 전문 프로덕션 계열사 (주)볼드 인사이트와 협업으로 수강 연기자들의 연기영상을 제작하고 있습니다. 제작된 연기영상은 제작사, 캐스팅 에이전시 등에서 바로 확인 할 수 있도록 프로필에 QR링크를 삽입해 드립니다.
+            </p>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/art/profile_img007.jpg</span>
+                <span class="text-[10px] mt-1 text-slate-400">(프로필 인쇄물에 QR코드가 삽입된 시각적 시안)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05-B. 최종 프로필 디자인 (하이틴/키즈 전용) -->
+        <div class="relative flex flex-col md:flex-row items-start md:odd:flex-row-reverse gap-8 md:gap-12 border border-emerald-100 bg-emerald-50/10 p-6 rounded-2xl md:border-0 md:bg-transparent md:p-0">
+          <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-4 border-white bg-emerald-600 shadow flex items-center justify-center text-xs font-bold text-white z-10 font-mono font-bold font-mono">05</div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)] flex flex-col space-y-4">
+            <div class="flex items-center gap-2">
+              <h3 class="text-xl md:text-2xl font-bold text-slate-900">5-B. 최종 프로필 디자인</h3>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">하이틴/키즈 전용</span>
+            </div>
+            <span class="text-xs text-slate-400 font-mono tracking-wider">PPT Profile Design</span>
+            
+            <p class="text-slate-600 leading-relaxed text-sm md:text-base bg-slate-50 p-4 rounded-xl border border-slate-100">
+              2차 보정작업이 완료된 사진파일을 스튜디오에서 수령 후 배우앤배움 디자인실에서 배우 프로필 PPT로 최종 디자인합니다. 완성된 파일은 디자인실에서 다시 연기자와 매니지먼트팀으로 전달됩니다.
+            </p>
+          </div>
+          
+          <div class="pl-12 md:pl-0 w-full md:w-[calc(50%-2rem)]">
+            <div class="overflow-hidden rounded-xl border border-slate-200 aspect-[16/10] bg-slate-100 relative">
+              <div class="w-full h-full flex flex-col items-center justify-center text-xs text-slate-400 font-mono p-4 text-center">
+                <span>Image Path: /images/profile/{teen_or_kids}/profile_img05.jpg</span>
+                <span class="text-[10px] mt-1 text-slate-400">(디자인실에서 완성된 PPT 파일 예시)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+
+  </div>
+
+</body>
+</html>
