@@ -31,7 +31,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
   const centerLabel = getCenterLabel(center)
 
   return (
-    <main className="page page-light page-admission page-top-offset" data-center={center}>
+    <main className="page page-light page-admission page-top-offset overflow-visible" data-center={center}>
       <section className="section-admission-intro section-p-b-sm bg-white">
         <div className="container">
           <header className="section-admission-intro__header">
@@ -43,7 +43,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
         </div>
       </section>
 
-      <div className="section-admission-anchor sticky top-[var(--page-top-offset)] z-20 border-b border-neutral-900/10 bg-white/95 backdrop-blur">
+      <div className="section-admission-anchor sticky top-[var(--page-top-offset)] z-20 bg-white/95 backdrop-blur">
         <div className="container">
           <nav aria-label="입학안내 섹션 이동" className="section-admission-anchor__nav">
             <div className="flex gap-8 overflow-x-auto md:gap-14">
