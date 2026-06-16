@@ -82,6 +82,12 @@ test('art mega menu exposes Figma baseline menu labels', () => {
       ?.items.find((item) => item.label === 'BNB 루키')?.href,
     '/art/rookies',
   )
+  assert.equal(
+    getHeaderMenu('art')
+      .find((group) => group.key === 'support')
+      ?.items.find((item) => item.label === '입학안내')?.href,
+    '/art/admission',
+  )
 })
 
 test('exam mega menu swaps casting and artist columns for exam-specific content', () => {

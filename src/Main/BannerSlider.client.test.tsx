@@ -6,7 +6,11 @@ import type { Media } from '@/payload-types'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
-import { MainBannerSlider, type MainBannerSlide } from './BannerSlider.client'
+import {
+  MainBannerSlider,
+  shouldProfileSetMarquee,
+  type MainBannerSlide,
+} from './BannerSlider.client'
 
 const image = {
   id: 1,
@@ -82,6 +86,11 @@ test('main banner profile cards start centered without duplicate marquee set', (
   assert.doesNotMatch(html, /aria-hidden="true" class="section-main-banner__profile-set"/)
 })
 
+test('main banner profile cards marquee as soon as the profile set is wider than the viewport', () => {
+  assert.equal(shouldProfileSetMarquee(721, 720), true)
+  assert.equal(shouldProfileSetMarquee(720, 720), false)
+  assert.equal(shouldProfileSetMarquee(700, 720), false)
+})
 
 test('main banner renders exam review cards with review buttons', () => {
   const html = render({

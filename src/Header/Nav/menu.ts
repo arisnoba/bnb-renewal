@@ -243,7 +243,7 @@ function supportItems(center: CenterSlug): HeaderMenuItem[] {
 
   return [
     { href: `/${center}/news`, label: 'NEWS&NOTICE' },
-    { href: centerHref(center, 'admission'), label: '입학안내' },
+    { href: `/${center}/admission`, label: '입학안내' },
     { href: howToUseHref, label: '학원100%이용법' },
     { href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' },
     { href: `/${center}/faq`, label: '자주하는 질문' },

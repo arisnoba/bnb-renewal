@@ -57,6 +57,7 @@ $type-scale: (
   label-m: (min: 14px, max: 14px, weight: 500, line-height: 1.35), // 피그마 label---m 0.88rem
   label-s: (min: 12px, max: 12px, weight: 500, line-height: 1.35), // 피그마 label---s 0.75rem
   // role: caption — 보조 설명/메타 정보. 디폴트 400, 고정 크기
+  caption-l: (min: 14px, max: 14px, weight: 400, line-height: 1.4), // 피그마 caption---m 0.81rem
   caption-m: (min: 13px, max: 13px, weight: 400, line-height: 1.4), // 피그마 caption---m 0.81rem
   caption-s: (min: 12px, max: 12px, weight: 400, line-height: 1.4), // 피그마 caption---s 0.75rem
 );

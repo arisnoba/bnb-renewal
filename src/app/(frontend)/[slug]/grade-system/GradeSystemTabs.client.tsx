@@ -990,8 +990,8 @@ function CriteriaPanel({ data }: { data: GradeSystemContent }) {
 function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
   return (
     <section>
-      <h3 className="mb-5 type-title-s font-extrabold leading-none">{data.gradeTableTitle}</h3>
-      <p className="mb-4 type-caption-s leading-[1.65] text-white/45">
+      <h3 className="mb-5 type-title-l font-extrabold leading-none">{data.gradeTableTitle}</h3>
+      <p className="mb-4 type-caption-l leading-[1.65] text-white/45">
         {data.gradeTableDescription}
       </p>
 
@@ -1105,7 +1105,7 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
 function PromotionTable({ data }: { data: GradeSystemContent }) {
   return (
     <section>
-      <h3 className="mb-5 type-title-s font-extrabold leading-none">{data.promotionTitle}</h3>
+      <h3 className="mb-5 type-title-l font-extrabold leading-none">{data.promotionTitle}</h3>
 
       {/* 데스크탑: 표 형태 */}
       <div className="hidden overflow-x-auto md:block">
@@ -1369,20 +1369,16 @@ function CohortsPanel({ data }: { data: GradeSystemContent }) {
 
   return (
     <div className="flex flex-col gap-12">
-      <section className="max-w-[760px]">
+      <section className="max-w-190">
         <h2 className="type-headline-xl font-extrabold leading-[1.3]">기수 안내</h2>
-        <p className="mt-7 type-body-s leading-[1.85] text-white/50">
-          배우앤배움 {data.centerName}에서는 매해 상반기, 하반기로 나누어 배우앤배움
-          기수를 부여하고 있습니다. 최초 {data.cohortStartYear}년 상반기 1기가 시작되었으며,
-          현재 {latestCohort?.year}년 {latestCohort?.half} 기준 {latestCohort?.number}기까지
-          진행중입니다.
+        <p className="mt-7 type-body-m leading-[1.85] text-white/50">
+          배우앤배움 {data.centerName}에서는 매해 상반기, 하반기로 나누어 배우앤배움 기수를 부여하고 있습니다. 최초 {data.cohortStartYear}년 상반기 1기가 시작되었으며, 현재 {latestCohort?.year}년 {latestCohort?.half} 기준 {latestCohort?.number}기까지 진행중입니다.
         </p>
       </section>
 
       <CohortTable cohorts={cohorts} />
-      <p className="type-caption-s leading-[1.7] text-white/35">
-        상반기 기수는 1월부터 6월 30일까지, 하반기 기수는 7월부터 12월 31일까지
-        산정됩니다.
+      <p className="type-caption-m leading-[1.7] text-white/35">
+        상반기 기수는 1월부터 6월 30일까지, 하반기 기수는 7월부터 12월 31일까지 산정됩니다.
       </p>
     </div>
   )

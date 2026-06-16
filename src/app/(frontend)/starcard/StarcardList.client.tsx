@@ -70,7 +70,7 @@ export function StarcardList({ items }: StarcardListProps) {
 
   return (
     <>
-      <div className="section-starcard-list__items grid grid-cols-1 gap-x-4 gap-y-11 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="section-starcard-list__items grid grid-cols-2 gap-x-3 gap-y-9 md:gap-x-4 md:gap-y-12 lg:grid-cols-4">
         {items.map((item) => (
           <button
             className="starcard-partner-card group block min-w-0 cursor-pointer appearance-none border-0 bg-transparent p-0 text-left text-inherit"

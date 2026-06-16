@@ -66,7 +66,18 @@ type MainBannerSliderProps = {
 }
 
 export const DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY = 5000
-const PROFILE_MARQUEE_OVERFLOW_RATIO = 1.15
+
+export function shouldProfileSetMarquee(profileSetWidth: number, containerWidth: number) {
+  if (
+    !Number.isFinite(profileSetWidth) ||
+    !Number.isFinite(containerWidth) ||
+    containerWidth <= 0
+  ) {
+    return false
+  }
+
+  return profileSetWidth > containerWidth
+}
 
 function isMedia(value: MainBannerSlide['desktopImage']): value is Media {
   return Boolean(value && typeof value === 'object')
@@ -340,7 +351,7 @@ function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
     }
 
     const updateShouldMarquee = () => {
-      setShouldMarquee(set.scrollWidth > container.clientWidth * PROFILE_MARQUEE_OVERFLOW_RATIO)
+      setShouldMarquee(shouldProfileSetMarquee(set.scrollWidth, container.clientWidth))
     }
 
     updateShouldMarquee()
@@ -374,7 +385,7 @@ function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
       data-marquee={shouldMarquee ? 'true' : 'false'}
       ref={containerRef}
     >
-      <div className="section-main-banner__profile-track flex w-max gap-7 py-5 max-[640px]:gap-4">
+      <div className="section-main-banner__profile-track flex w-max py-5">
         {cardSets.map((set, setIndex) => (
           <div
             aria-hidden={setIndex === 1 ? 'true' : undefined}
