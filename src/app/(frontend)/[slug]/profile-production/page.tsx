@@ -177,7 +177,7 @@ export default async function ProfileProductionPage({ params }: Args) {
   }
 
   return (
-    <main className="page page-light page-profile-production !overflow-visible" data-center={center}>
+    <main className="page page-light page-profile-production" data-center={center}>
       <section
         aria-labelledby="profile-production-hero-title"
         className="section-profile-production-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
@@ -216,7 +216,7 @@ export default async function ProfileProductionPage({ params }: Args) {
         aria-labelledby="profile-production-list-title"
         className="section-profile-production-list section-p-block-base bg-white text-neutral-900"
       >
-        <div className="container grid items-start gap-12 overflow-hidden lg:grid-cols-3">
+        <div className="container grid items-start gap-12 overflow-visible lg:grid-cols-3">
           <aside className="section-profile-production-list__aside lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:self-start">
             <h2
               className="section-profile-production-list__title type-display-m font-semibold md:type-display-l"
@@ -240,7 +240,7 @@ export default async function ProfileProductionPage({ params }: Args) {
                 <div className="section-profile-production-card__media relative aspect-[552/320]">
                   <PageDeco
                     className={[
-                      'z-20 hidden opacity-90 md:block',
+                      'z-20 opacity-90',
                       profileProductionCardDecoClasses[
                         index % profileProductionCardDecoClasses.length
                       ],

@@ -171,7 +171,7 @@ export default async function CastingSystemPage({ params }: Args) {
   }
 
   return (
-    <main className="page page-light page-casting-system !overflow-visible" data-center={center}>
+    <main className="page page-light page-casting-system" data-center={center}>
       <section
         aria-labelledby="casting-system-hero-title"
         className="section-casting-system-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
@@ -235,7 +235,7 @@ export default async function CastingSystemPage({ params }: Args) {
                 <div className="section-casting-system-card__media relative aspect-[552/320]">
                   <PageDeco
                     className={[
-                      'z-20 hidden opacity-90 md:block',
+                      'z-20 opacity-90',
                       castingSystemCardDecoClasses[index % castingSystemCardDecoClasses.length],
                     ].join(' ')}
                     icon={decoIcons[index + 2]}
