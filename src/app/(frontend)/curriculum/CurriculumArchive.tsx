@@ -173,7 +173,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
               options={timeOptions}
             />
             <button
-              className="section-curriculum-search__submit inline-flex items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 cursor-pointer"
+              className="section-curriculum-search__submit min-h-16 inline-flex items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 cursor-pointer"
               type="submit"
             >
               강의검색
