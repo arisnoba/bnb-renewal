@@ -217,7 +217,7 @@ export default async function CastingSystemPage({ params }: Args) {
               className="section-casting-system-list__title type-display-m font-semibold md:type-display-l"
               id="casting-system-list-title"
             >
-              수강생의 준비부터<br className='hidden md:block'/> 현장 관리까지
+              수강생의 준비부터<br className="hidden md:block" /> 현장 관리까지
             </h2>
 
             <CastingSystemIndex
@@ -274,7 +274,7 @@ export default async function CastingSystemPage({ params }: Args) {
                   {item.id === 'profile' ? (
                     <Link
                       className="section-casting-system-card__link mt-2 inline-flex w-fit items-center gap-2.5 type-label-l font-bold text-neutral-900 transition hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
-                      href={`/${center}/how-to-use#profile`}
+                      href={`/${center}/profile-production`}
                     >
                       프로필 제작 절차 안내
                       <ChevronRight
