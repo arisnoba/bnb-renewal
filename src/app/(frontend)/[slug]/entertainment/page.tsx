@@ -167,14 +167,14 @@ function EntertainmentEducationSection({
 function AgencyLogoGrid({ agencies }: { agencies: Agency[] }) {
   if (agencies.length === 0) {
     return (
-      <p className="section-entertainment__empty mt-16 rounded-lg border border-white/10 bg-white/3 px-6 py-10 text-center type-body-m text-white/50">
+      <p className="section-entertainment__empty mt-16 bg-white/3 px-6 py-10 text-center type-body-m text-white/50">
         등록된 엔터테인먼트 파트너사가 없습니다.
       </p>
     )
   }
 
   return (
-    <div className="section-entertainment__partners mt-14 grid grid-cols-3 overflow-hidden sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12">
+    <div className="section-entertainment__partners mt-14 grid grid-cols-4 overflow-hidden sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-14">
       {agencies.map((agency) => (
         <AgencyLogoCard agency={agency} key={agency.id} />
       ))}
@@ -195,7 +195,10 @@ function AgencyLogoCard({ agency }: { agency: Agency }) {
       {logo ? (
         <Media
           alt={agency.subject}
-          imgClassName="max-h-16 w-auto max-w-full object-contain transition-opacity duration-200 group-hover:opacity-10 group-focus-visible:opacity-10 md:max-h-20"
+          fill
+          htmlElement={null}
+          imgClassName="object-contain"
+          pictureClassName="relative block h-[64%] w-[88%] transition-opacity duration-200 group-hover:opacity-10 group-focus-visible:opacity-10"
           resource={logo}
         />
       ) : (
@@ -398,16 +401,25 @@ const queryAgencies = cache(async (center: EntertainmentCenter) => {
   try {
     const payload = await getPayload({ config: configPromise })
     const where: Where = {
-      or: [
+      and: [
         {
-          centers: {
-            contains: center,
+          displayStatus: {
+            equals: 'published',
           },
         },
         {
-          centers: {
-            contains: 'all',
-          },
+          or: [
+            {
+              centers: {
+                contains: center,
+              },
+            },
+            {
+              centers: {
+                contains: 'all',
+              },
+            },
+          ],
         },
       ],
     }

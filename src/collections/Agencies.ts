@@ -7,6 +7,7 @@ import {
   adminTabs,
   authorNameField,
   centersField,
+  displayStatusOptions,
   sidebarFields,
 } from "./shared";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
@@ -22,7 +23,15 @@ export const Agencies: CollectionConfig = {
     create: globalAdminOnly,
   },
   admin: {
-    defaultColumns: ["subject", "name", "centers", "authorName", "displayOrder", "updatedAt"],
+    defaultColumns: [
+      "subject",
+      "name",
+      "centers",
+      "displayStatus",
+      "authorName",
+      "displayOrder",
+      "updatedAt",
+    ],
     group: "교육",
     useAsTitle: "subject",
   },
@@ -102,6 +111,13 @@ export const Agencies: CollectionConfig = {
     ...sidebarFields([
       centersField,
       authorNameField,
+      {
+        name: "displayStatus",
+        type: "select",
+        label: "상태",
+        defaultValue: "archived",
+        options: displayStatusOptions,
+      },
       {
         name: "displayOrder",
         type: "number",

@@ -120,6 +120,7 @@ import * as migration_20260615_123800_profile_class_cohort from './20260615_1238
 import * as migration_20260615_150000_drop_pages_posts_collections from './20260615_150000_drop_pages_posts_collections'
 import * as migration_20260615_200800_classrooms from './20260615_200800_classrooms'
 import * as migration_20260615_211000_curriculum_classroom_tuition from './20260615_211000_curriculum_classroom_tuition'
+import * as migration_20260617_120000_agency_display_status from './20260617_120000_agency_display_status'
 
 export const migrations = [
   {
@@ -731,5 +732,10 @@ export const migrations = [
     up: migration_20260615_211000_curriculum_classroom_tuition.up,
     down: migration_20260615_211000_curriculum_classroom_tuition.down,
     name: '20260615_211000_curriculum_classroom_tuition',
+  },
+  {
+    up: migration_20260617_120000_agency_display_status.up,
+    down: migration_20260617_120000_agency_display_status.down,
+    name: '20260617_120000_agency_display_status',
   },
 ]
