@@ -254,7 +254,7 @@ function TrustActorEducationSystem({
       </div>
 
       <div className="section-trust-actor-system__cards mt-16 grid gap-5 lg:grid-cols-2 md:mt-24">
-        {educationSystemCards(center).map((card) => (
+        {educationSystemCards(center, centerName).map((card) => (
           <EducationSystemCard card={card} key={card.id} />
         ))}
         <NoticeCard />
@@ -275,7 +275,49 @@ type EducationSystemCardData = {
   title: string
 }
 
-function educationSystemCards(center: EntertainmentCenter): EducationSystemCardData[] {
+function educationSystemCards(
+  center: EntertainmentCenter,
+  centerName: string,
+): EducationSystemCardData[] {
+  if (center === 'kids') {
+    return [
+      {
+        body:
+          '위탁연기자의 경력, 영상자료 체크 및 대본리딩 테스트를 통해 Class가 나누어집니다. 자세한 내용은 홈페이지 교육폴더 중 등급제 교육관리시스템에 들어가시면 확인하실 수 있습니다.',
+        cta: { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
+        id: '01',
+        steps: ['I', 'R', 'U', 'D', 'A'],
+        title: '레벨 테스트',
+      },
+      {
+        body: '배우앤배움 위탁생의 교육관리는 총 네 가지로 나누어집니다.',
+        id: '02',
+        note: '※ 전체적인 교육은 일반 수강생과 동일하게 진행됩니다.',
+        steps: [
+          '커리큘럼 관리를 통해 위탁생의 전체적인 교육 흐름을 점검합니다.',
+          '개인 독백관리를 통해 차후 오디션이나 미팅에서 보여줄 연기를 준비합니다.',
+          '부족한 부분을 집중 보완하여 수정 보완합니다.',
+          '출결사항 및 수업내용 강사 피드백을 소속사에 전달합니다.',
+        ],
+        title: '교육 관리',
+      },
+      {
+        body:
+          `${centerName} 교육팀으로 작품의 시놉시스나 대본, 혹은 오디션 대본을 보내주시면 배우앤배움의 오디션 전문 1:1 강사진이 작품의 흐름과 감독 및 작가의 성향, 전작 정보를 분석해 오디션 전략교육을 진행합니다. 특히 최종 오디션에 가까워지면 연기자, 소속사 매니저, 전문강사, 배우앤배움 원장이 회의를 통해 작품에서 바라는 캐릭터 정보를 취합하여 완성도 있는 오디션을 볼 수 있도록 준비합니다.`,
+        id: '03',
+        note: '※ 일반 수강생의 경우에도 외부 오디션 시 동일하게 진행됩니다.',
+        title: '오디션 준비',
+      },
+      {
+        body:
+          '배우가 성장하는 과정을 보여드리기 위한 연기 영상자료를 제공해 드립니다. 특히 미디어 콘텐츠 계열사 ㈜비앤비 미디어를 통해 수준 있는 영상퀄리티로 연기자의 여러 가지 모습들을 담아낼 수 있습니다. 배우앤배움은 다양한 각도에서 엔터사 및 연기자를 보조하는 역할을 수행합니다.',
+        cta: { href: `/${center}/profile-production`, label: '영상제작 서비스' },
+        id: '04',
+        title: '영상제작지원',
+      },
+    ]
+  }
+
   return [
     {
       body:
