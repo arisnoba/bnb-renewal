@@ -32,7 +32,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
 
   return (
     <main className="page page-light page-admission page-top-offset" data-center={center}>
-      <section className="section-admission-intro section-p-block-sm bg-white">
+      <section className="section-admission-intro section-p-b-sm bg-white">
         <div className="container">
           <header className="section-admission-intro__header">
             <p className="type-label-m font-bold text-brand">{centerLabel}</p>
@@ -40,11 +40,12 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
               입학안내
             </h1>
           </header>
+        </div>
+      </section>
 
-          <nav
-            aria-label="입학안내 섹션 이동"
-            className="section-admission-intro__nav sticky top-[var(--page-top-offset)] z-10 mt-10 border-b border-neutral-900/10 bg-white/95 backdrop-blur"
-          >
+      <div className="section-admission-anchor sticky top-[var(--page-top-offset)] z-20 border-b border-neutral-900/10 bg-white/95 backdrop-blur">
+        <div className="container">
+          <nav aria-label="입학안내 섹션 이동" className="section-admission-anchor__nav">
             <div className="flex gap-8 overflow-x-auto md:gap-14">
               {navItems.map((item, index) => (
                 <SmoothAnchorLink
@@ -61,10 +62,10 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
             </div>
           </nav>
         </div>
-      </section>
+      </div>
 
       <section
-        className="section-admission-procedure section-p-b-base scroll-mt-[var(--page-top-offset)] bg-white"
+        className="section-admission-procedure section-p-block-sm scroll-mt-[calc(var(--page-top-offset)+72px)] bg-white"
         id="procedure"
       >
         <div className="container">
@@ -82,7 +83,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-tuition section-p-block-base scroll-mt-[var(--page-top-offset)] bg-neutral-50"
+        className="section-admission-tuition section-p-block-sm scroll-mt-[calc(var(--page-top-offset)+72px)] bg-neutral-50"
         id="tuition"
       >
         <div className="container">
@@ -94,7 +95,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-leave section-p-block-sm scroll-mt-[var(--page-top-offset)] bg-white"
+        className="section-admission-leave section-p-block-sm scroll-mt-[calc(var(--page-top-offset)+72px)] bg-white"
         id="leave-completion"
       >
         <div className="container">
@@ -106,7 +107,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-refund section-p-block-sm scroll-mt-[var(--page-top-offset)] bg-neutral-50"
+        className="section-admission-refund section-p-block-sm scroll-mt-[calc(var(--page-top-offset)+72px)] bg-neutral-50"
         id="refund"
       >
         <div className="container">
@@ -349,7 +350,7 @@ function TableCaptionContent({
         <dl className={cn('section-admission-table__notes grid gap-1', caption ? 'mt-2' : '')}>
           {notes.map((note) => (
             <div
-              className="flex scroll-mt-[var(--page-top-offset)] items-baseline gap-2"
+              className="flex scroll-mt-[calc(var(--page-top-offset)+72px)] items-baseline gap-2"
               id={footnoteId(note.marker)}
               key={note.marker}
             >
