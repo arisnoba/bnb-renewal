@@ -72,6 +72,18 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
   assert.equal(
     getHeaderMenu('art')
+      .find((group) => group.key === 'casting')
+      ?.items.find((item) => item.label === '드라마 광고 캐스팅')?.href,
+    '/art#casting',
+  )
+  assert.equal(
+    getHeaderMenu('art')
+      .find((group) => group.key === 'casting')
+      ?.items.find((item) => item.label === '캐스팅 시스템')?.href,
+    '/art/casting-system',
+  )
+  assert.equal(
+    getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
     '/art/artist-press',
@@ -155,8 +167,8 @@ test('highteen mega menu matches the approved highteen structure', () => {
   assert.deepEqual(itemsForGroup('highteen', 'casting'), [
     { href: '/highteen/screen-appearances', label: '드라마ㆍ광고 출연장면' },
     { href: '/highteen/casting-status', label: '진행중인 캐스팅 출연현황' },
-    { href: '/highteen#u-casting', label: '드라마 광고 캐스팅' },
-    { href: '/highteen#casting-system', label: '캐스팅 시스템' },
+    { href: '/highteen#casting', label: '드라마 광고 캐스팅' },
+    { href: '/highteen/casting-system', label: '캐스팅 시스템' },
     { href: '/highteen#monthly-schedule', label: '이달의 촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'artist'), [
@@ -194,8 +206,8 @@ test('kids mega menu matches the approved kids structure', () => {
   assert.deepEqual(itemsForGroup('kids', 'casting'), [
     { href: '/kids/screen-appearances', label: 'BNB 출연장면' },
     { href: '/kids/casting-status', label: '캐스팅 출연현황' },
-    { href: '/kids#u-casting', label: '드라마 광고 캐스팅' },
-    { href: '/kids#casting-system', label: '캐스팅 시스템' },
+    { href: '/kids#casting', label: '드라마 광고 캐스팅' },
+    { href: '/kids/casting-system', label: '캐스팅 시스템' },
     { href: '/kids#monthly-schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'artist'), [

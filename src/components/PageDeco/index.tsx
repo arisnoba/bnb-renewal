@@ -11,10 +11,12 @@ type PageDecoProps = {
   icon?: DecoIcon | 'random'
   parallax?: string
   seed?: string
+  size?: string
 }
 
 type DecoStyle = CSSProperties & {
   '--page-deco-image': string
+  '--page-deco-size'?: string
 }
 
 export function PageDeco({
@@ -22,10 +24,12 @@ export function PageDeco({
   icon = 'random',
   parallax,
   seed,
+  size,
 }: PageDecoProps) {
   const iconName = icon === 'random' ? resolveRandomIcon(seed ?? className ?? 'page-deco') : icon
   const style: DecoStyle = {
     '--page-deco-image': `url('/assets/common/deco/${iconName}')`,
+    ...(size ? { '--page-deco-size': size } : {}),
   }
 
   return (

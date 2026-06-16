@@ -177,8 +177,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
-      { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
-      { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
+      { href: centerHref(center, 'casting'), label: '드라마 광고 캐스팅' },
+      { href: castingSystemHref(center), label: '캐스팅 시스템' },
       { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
     ]
   }
@@ -187,8 +187,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: screenAppearancesHref(center), label: '드라마ㆍ광고 출연장면' },
       { href: castingStatusHref(center), label: '진행중인 캐스팅 출연현황' },
-      { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
-      { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
+      { href: centerHref(center, 'casting'), label: '드라마 광고 캐스팅' },
+      { href: castingSystemHref(center), label: '캐스팅 시스템' },
       { href: centerHref(center, 'monthly-schedule'), label: '이달의 촬영ㆍ오디션 스케줄' },
     ]
   }
@@ -197,8 +197,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
-      { href: centerHref(center, 'u-casting'), label: '드라마 광고 캐스팅' },
-      { href: centerHref(center, 'casting-system'), label: '캐스팅 시스템' },
+      { href: centerHref(center, 'casting'), label: '드라마 광고 캐스팅' },
+      { href: castingSystemHref(center), label: '캐스팅 시스템' },
       { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
     ]
   }
@@ -268,6 +268,10 @@ function screenAppearancesHref(center: CenterSlug) {
 
 function castingStatusHref(center: CenterSlug) {
   return `/${center}/casting-status`
+}
+
+function castingSystemHref(center: CenterSlug) {
+  return `/${center}/casting-system`
 }
 
 function teachersHref(center: CenterSlug) {

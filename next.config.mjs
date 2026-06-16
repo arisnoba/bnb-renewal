@@ -46,6 +46,9 @@ const nextConfig = {
         pathname: '/assets/common/**',
       },
       {
+        pathname: '/assets/casting-system/**',
+      },
+      {
         pathname: '/api/media/file/**',
       },
       {
