@@ -159,7 +159,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
   ])
   assert.deepEqual(itemsForGroup('highteen', 'education'), [
     { href: '/highteen/grade-system', label: '등급제 교육관리시스템' },
-    { href: '/highteen#entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: '/highteen/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: '/highteen/teachers', label: '교육진 소개' },
     { href: '/highteen/curriculum', label: '커리큘럼' },
     { href: '/highteen#special-lecture', label: '하이틴센터 특강' },
@@ -199,7 +199,7 @@ test('kids mega menu matches the approved kids structure', () => {
   ])
   assert.deepEqual(itemsForGroup('kids', 'education'), [
     { href: '/kids#grade-system', label: '등급제 교육관리시스템' },
-    { href: '/kids#entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: '/kids/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: '/kids/curriculum', label: '커리큘럼' },
     { href: '/kids/teachers', label: '교육진 소개' },
   ])
