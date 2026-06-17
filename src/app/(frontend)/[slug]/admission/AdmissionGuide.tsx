@@ -137,7 +137,7 @@ function ProcedureCard({ index, step }: { index: number; step: ProcedureStep }) 
   const Icon = procedureIcons[index] ?? CircleDot
 
   return (
-    <article className="section-admission-procedure__card grid gap-6 border-b border-neutral-200 py-6 last:border-b-0 md:grid-cols-4 md:gap-8 md:py-10">
+    <article className="section-admission-procedure__card grid gap-6 border-b border-neutral-200 py-6 last:border-b-0 md:grid-cols-3 lg:grid-cols-4 md:gap-8 md:py-10">
       <header className="col-span-1 md:col-span-1">
         <div className="flex items-start md:items-center gap-2">
           <Icon aria-hidden="true" className="mt-0.5 size-5.5 text-brand" strokeWidth={2} />
@@ -146,7 +146,7 @@ function ProcedureCard({ index, step }: { index: number; step: ProcedureStep }) 
           </h3>
         </div>
       </header>
-      <div className="grid min-w-0 gap-6 col-span-1 md:col-span-3 type-body-m leading-[1.65] text-neutral-700">
+      <div className="grid min-w-0 gap-6 col-span-1 md:col-span-2 lg:col-span-3 type-body-m leading-[1.65] text-neutral-700">
         {step.body ? (
           <div className="grid gap-3">
             {step.body.map((paragraph) => (

@@ -710,7 +710,9 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
           body:
             center === 'art'
               ? '희망 Class, 교육시작일, 교육횟수, 교육시간대를 확인한 뒤 수강상담을 신청합니다.'
-              : `${centerName} 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.`,
+              : center === 'kids'
+                ? '키즈센터 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.'
+                : `${centerName} 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.`,
           cta: { href: courseHref, label: '커리큘럼 확인' },
           title: '커리큘럼 확인',
         },
