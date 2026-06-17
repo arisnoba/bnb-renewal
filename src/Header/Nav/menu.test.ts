@@ -162,7 +162,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: '/highteen/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: '/highteen/teachers', label: '교육진 소개' },
     { href: '/highteen/curriculum', label: '커리큘럼' },
-    { href: '/highteen#special-lecture', label: '하이틴센터 특강' },
+    { href: '/highteen/special-lecture', label: '하이틴센터 특강' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'casting'), [
     { href: '/highteen/screen-appearances', label: '드라마ㆍ광고 출연장면' },

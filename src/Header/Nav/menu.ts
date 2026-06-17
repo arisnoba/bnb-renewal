@@ -160,7 +160,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     { href: teachersHref(center), label: '교육진 소개' },
     { href: curriculumHref(center), label: '커리큘럼' },
     ...(center === 'highteen'
-      ? [{ href: centerHref(center, 'special-lecture'), label: '하이틴센터 특강' }]
+      ? [{ href: `/${center}/special-lecture`, label: '하이틴센터 특강' }]
       : []),
   ]
 }
