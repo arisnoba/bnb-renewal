@@ -69,8 +69,8 @@ type DetailBackLinkProps = {
 
 export function DetailBackLink({ href, label, width = 'narrow' }: DetailBackLinkProps) {
   return (
-    <DetailContainer className="mb-10 md:mb-16" width={width}>
-      <div className="border-b border-foreground pb-7">
+    <DetailContainer className="mb-10" width={width}>
+      <div className="border-b-2 border-foreground pb-7">
         <Link
           className="inline-flex items-center gap-4 type-label-l font-bold text-foreground transition-colors hover:text-brand"
           href={href}
@@ -99,16 +99,16 @@ export function DetailHeader({
   return (
     <header className="mb-10 md:mb-16">
       {(eyebrow || dateTime) && (
-        <div className="mb-7 flex items-start justify-between gap-8 type-label-l font-semibold leading-[1.35] text-muted-foreground">
+        <div className="mb-6 flex items-start justify-between gap-8 type-label-l font-semibold leading-[1.35] text-muted-foreground">
           <div>{eyebrow}</div>
-          {dateTime && <time dateTime={dateTime}>{formatDate(dateTime)}</time>}
+          {dateTime && <time className='font-medium' dateTime={dateTime}>{formatDate(dateTime)}</time>}
         </div>
       )}
-      <h1 className="type-headline-xl font-extrabold leading-[1.35] text-foreground">
+      <h1 className="type-headline-xl font-bold leading-[1.35] text-foreground">
         {title}
       </h1>
       {description && (
-        <div className="mt-7 type-body-m font-medium leading-[1.65] text-muted-foreground">
+        <div className="mt-10 type-body-m font-medium leading-[1.65] text-muted-foreground">
           {description}
         </div>
       )}
@@ -135,7 +135,7 @@ export function DetailPager({
     <DetailContainer className="mt-16" width={width}>
       <nav
         aria-label="상세 페이지 이동"
-        className="flex min-h-22 items-center justify-between gap-6 border-t border-foreground py-8"
+        className="flex min-h-22 items-center justify-between gap-6 border-t-2 border-foreground py-8"
       >
         <DetailPagerLink direction="previous" href={previousHref} label={previousLabel} />
         <DetailPagerLink direction="next" href={nextHref} label={nextLabel} />
