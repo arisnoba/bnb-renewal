@@ -26,6 +26,13 @@ type PerformerInfo = {
   profileImageMedia?: PayloadMedia | null
 }
 
+type CareerItem = NonNullable<ScreenAppearance['careerItems']>[number]
+
+type CareerGroup = {
+  items: CareerItem[]
+  name?: string
+}
+
 export async function generateScreenAppearanceStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
@@ -89,7 +96,7 @@ export async function ScreenAppearanceDetailPage({
     { label: '반/클래스', value: appearance.className },
     { label: '방영일', value: formatDate(appearance.airDateLabel) },
   ].filter((item) => item.value)
-  const careerItems = appearance.careerItems?.filter((item) => item.title || item.content) ?? []
+  const careerGroups = getCareerGroups(appearance)
   const adjacent = await queryAdjacentScreenAppearances({ center, slug: appearance.slug })
 
   return (
@@ -169,24 +176,33 @@ export async function ScreenAppearanceDetailPage({
               </dl>
             )}
 
-            {careerItems.length > 0 && (
+            {careerGroups.length > 0 && (
               <section className="mt-8">
                 <h2 className="type-title-s font-extrabold leading-[1.35] text-foreground">
                   필모그래피
                 </h2>
                 <dl className="mt-4 type-body-s leading-[1.55]">
-                  {careerItems.map((item) => (
-                    <div
-                      className="border-t border-border py-4 first:border-t-0 first:pt-0"
-                      key={item.id ?? item.title}
-                    >
-                      <dt className="font-bold text-foreground">{item.title}</dt>
-                      {item.content && (
-                        <dd className="mt-2 whitespace-pre-line text-muted-foreground">
-                          {formatMultilineText(item.content)}
-                        </dd>
+                  {careerGroups.map((group, groupIndex) => (
+                    <React.Fragment key={group.name ?? `career-group-${groupIndex}`}>
+                      {group.name && careerGroups.length > 1 && (
+                        <div className="border-t border-border pt-4 first:border-t-0 first:pt-0">
+                          <dt className="type-label-m font-extrabold text-brand">{group.name}</dt>
+                        </div>
                       )}
-                    </div>
+                      {group.items.map((item, itemIndex) => (
+                        <div
+                          className="border-t border-border py-4 first:border-t-0 first:pt-0"
+                          key={item.id ?? `${group.name ?? 'career'}-${item.title}-${itemIndex}`}
+                        >
+                          <dt className="font-bold text-foreground">{item.title}</dt>
+                          {item.content && (
+                            <dd className="mt-2 whitespace-pre-line text-muted-foreground">
+                              {formatMultilineText(item.content)}
+                            </dd>
+                          )}
+                        </div>
+                      ))}
+                    </React.Fragment>
                   ))}
                 </dl>
               </section>
@@ -359,6 +375,33 @@ function getPerformer(appearance: ScreenAppearance): PerformerInfo {
         ? profile.profileImageMedia
         : null,
   }
+}
+
+function getCareerGroups(appearance: ScreenAppearance): CareerGroup[] {
+  const documentCareerItems = getCareerItems(appearance.careerItems)
+
+  if (appearance.actorInputMode === 'manual') {
+    return documentCareerItems.length > 0 ? [{ items: documentCareerItems }] : []
+  }
+
+  const profileCareerGroups =
+    appearance.linkedProfiles
+      ?.filter((profile): profile is Profile => typeof profile === 'object' && profile !== null)
+      .map((profile) => ({
+        items: getCareerItems(profile.careerItems),
+        name: profile.name?.trim(),
+      }))
+      .filter((group) => group.items.length > 0) ?? []
+
+  return profileCareerGroups.length > 0
+    ? profileCareerGroups
+    : documentCareerItems.length > 0
+      ? [{ items: documentCareerItems }]
+      : []
+}
+
+function getCareerItems(items: Profile['careerItems'] | ScreenAppearance['careerItems']) {
+  return items?.filter((item) => item.title || item.content) ?? []
 }
 
 function formatAdjacentLabel(
