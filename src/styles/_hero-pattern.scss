@@ -1,0 +1,27 @@
+@use 'mixins' as *;
+
+.hero-pattern {
+  &--edge-dim {
+    &::before,
+    &::after {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      bottom: 0;
+      width: fluid-clamp(72px, 220px);
+      pointer-events: none;
+      content: '';
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(-45deg, rgb(0 0 0 / 0.9), rgb(0 0 0 / 0));
+      z-index: 1;
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(135deg, rgb(0 0 0 / 0.9), rgb(0 0 0 / 0));
+    }
+  }
+}
