@@ -156,8 +156,8 @@ function ProcedureCard({ index, step }: { index: number; step: ProcedureStep }) 
         ) : null}
         {step.items ? (
           <div className="grid gap-6">
-            {step.items.map((item) => (
-              <div className="grid gap-3" key={item.title}>
+            {step.items.map((item, itemIndex) => (
+              <div className="grid gap-3" key={`${item.title}-${itemIndex}`}>
                 <h4 className="type-title-s font-semibold text-neutral-900">{item.title}</h4>
                 <p>{item.body}</p>
                 {item.cta ? <TextLink href={item.cta.href}>{item.cta.label}</TextLink> : null}
@@ -211,6 +211,7 @@ function TableGroup({ tables }: { tables: ContentTable[] }) {
           caption={table.caption}
           columns={table.columns}
           key={table.title}
+          minWidth={table.minWidth}
           notes={table.notes}
           rows={table.rows}
           title={table.title}
@@ -223,17 +224,19 @@ function TableGroup({ tables }: { tables: ContentTable[] }) {
 function DataTable({
   caption,
   columns,
+  minWidth: minWidthOverride,
   notes,
   rows,
   title,
 }: {
   caption?: ContentTable['caption']
   columns: Array<{ key: string; label: string }>
+  minWidth?: ContentTable['minWidth']
   notes?: ContentTable['notes']
   rows: TableRow[]
   title: string
 }) {
-  const minWidth = Math.max(680, columns.length * 170)
+  const minWidth = minWidthOverride ?? Math.max(680, columns.length * 170)
 
   return (
     <section className="section-admission-table">

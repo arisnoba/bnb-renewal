@@ -12,6 +12,7 @@ export type AdmissionContent = {
 export type ContentTable = {
   caption?: string[]
   columns: TableColumn[]
+  minWidth?: number
   notes?: Array<{
     body: string
     marker: string
@@ -427,6 +428,7 @@ const highteenTuitionTables: ContentTable[] = [
   {
     caption: ['기초생활수급자 장학 수강료는 아래 장학제도 표의 청소년 장학지원 기준을 참고하세요.'],
     columns: teenTuitionColumns,
+    minWidth: 720,
     rows: [
       { course: '청소년반', day: '주중 2회 (월목 / 화금)', duration: '420분', fee: '450,000원', time: '오후 18:00~21:30' },
       { course: '청소년반', day: '주말 1회 (토 / 일)', duration: '330분', fee: '350,000원', time: '오전 10:00~오후 16:30' },
@@ -514,6 +516,7 @@ const kidsTuitionTables: ContentTable[] = [
   {
     caption: ['수료자 장학지원은 아래 장학제도 표의 적용대상과 혜택을 참고하세요.'],
     columns: kidsTuitionColumns,
+    minWidth: 720,
     rows: [
       {
         classSize: '6명',
@@ -707,17 +710,17 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
           body:
             center === 'art'
               ? '희망 Class, 교육시작일, 교육횟수, 교육시간대를 확인한 뒤 수강상담을 신청합니다.'
-              : center === 'kids'
-                ? '희망 유선상담 일자, 시간, 신청자 정보를 입력합니다.'
-                : `${centerName} 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.`,
+              : `${centerName} 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.`,
           cta: { href: courseHref, label: '커리큘럼 확인' },
-          title: center === 'art' ? '커리큘럼 확인' : '온라인 상담신청',
+          title: '커리큘럼 확인',
         },
         {
           body:
             center === 'art'
               ? '방문 희망 일자, 시간, 신청자 정보를 입력합니다.'
-              : `${centerName} 온라인 상담신청 페이지에서 방문 희망 일자와 시간, 신청자 정보를 남깁니다.`,
+              : center === 'kids'
+                ? '키즈센터 온라인 상담신청 페이지에서 희망 유선상담 일자, 시간, 신청자 정보를 남깁니다.'
+                : `${centerName} 온라인 상담신청 페이지에서 방문 희망 일자와 시간, 신청자 정보를 남깁니다.`,
           cta: { href: `/consult?center=${center}`, label: '온라인 상담신청' },
           title: '온라인 상담신청',
         },
