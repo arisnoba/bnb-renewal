@@ -1,0 +1,25 @@
+.section-casting-company__marquee-track {
+  animation: casting-company-marquee 32s linear infinite;
+  will-change: transform;
+}
+
+.section-casting-company:nth-of-type(2n) .section-casting-company__marquee-track {
+  animation-direction: reverse;
+  animation-duration: 38s;
+}
+
+@keyframes casting-company-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-casting-company__marquee-track {
+    animation: none;
+  }
+}

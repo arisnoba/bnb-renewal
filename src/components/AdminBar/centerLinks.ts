@@ -30,6 +30,7 @@ const allCenterRouteSections = new Set([
 ])
 
 const routeCenters: Partial<Record<string, readonly CenterSlug[]>> = {
+  casting: ['art', 'avenue', 'highteen', 'kids'],
   curriculum: ['art', 'highteen', 'kids'],
   entertainment: ['art', 'avenue', 'highteen', 'kids'],
   'grade-system': ['art', 'highteen', 'kids'],
