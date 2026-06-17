@@ -99,7 +99,7 @@ export function DetailHeader({
   return (
     <header className="mb-10 md:mb-16">
       {(eyebrow || dateTime) && (
-        <div className="mb-7 flex items-start justify-between gap-8 type-label-l font-bold leading-[1.35] text-muted-foreground">
+        <div className="mb-7 flex items-start justify-between gap-8 type-label-l font-semibold leading-[1.35] text-muted-foreground">
           <div>{eyebrow}</div>
           {dateTime && <time dateTime={dateTime}>{formatDate(dateTime)}</time>}
         </div>
