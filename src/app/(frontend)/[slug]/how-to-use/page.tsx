@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 import { assertCenter } from '@/lib/centers'
-import { cn } from '@/utilities/ui'
 
 type Args = {
   params: Promise<{
@@ -123,8 +122,7 @@ const services: ServiceItem[] = [
   },
 ]
 
-const desktopLastRowStartIndex = services.length - (services.length % 2 === 0 ? 2 : 1)
-const hasDesktopEmptyCell = services.length % 2 === 1
+const hasTabletEmptyCell = services.length % 2 === 1
 
 export function generateStaticParams() {
   return [{ slug: 'art' }]
@@ -178,19 +176,11 @@ export default async function ArtHowToUsePage({ params }: Args) {
             
           </header>
 
-          <div className="section-how-to-use__grid grid border border-[#ddd] md:grid-cols-2">
-            {services.map((service, index) => {
-              const isDesktopLeftColumn = index % 2 === 0
-              const isDesktopLastRow = index >= desktopLastRowStartIndex
-
+          <div className="section-how-to-use__grid grid gap-px border border-neutral-200 bg-neutral-200 md:grid-cols-2 lg:grid-cols-3">
+            {services.map((service) => {
               return (
                 <article
-                  className={cn(
-                    'section-how-to-use__card flex min-h-[300px] flex-col p-7 md:min-h-[349px] md:p-10',
-                    index < services.length - 1 && 'border-b border-[#e5e5e5]',
-                    isDesktopLeftColumn && 'md:border-r md:border-[#e5e5e5]',
-                    isDesktopLastRow && 'md:border-b-0',
-                  )}
+                  className="section-how-to-use__card flex min-h-[300px] flex-col bg-white p-7 md:min-h-[349px] md:p-10"
                   id={service.id}
                   key={service.id}
                 >
@@ -224,10 +214,10 @@ export default async function ArtHowToUsePage({ params }: Args) {
                 </article>
               )
             })}
-            {hasDesktopEmptyCell ? (
+            {hasTabletEmptyCell ? (
               <div
                 aria-hidden="true"
-                className="section-how-to-use__empty-cell hidden min-h-[349px] border-t border-[#e5e5e5] md:block"
+                className="section-how-to-use__empty-cell hidden min-h-[349px] bg-white md:block lg:hidden"
               />
             ) : null}
           </div>
