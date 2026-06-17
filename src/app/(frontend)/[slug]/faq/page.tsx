@@ -23,9 +23,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug } = await paramsPromise
   const center = assertCenter(slug)
+  const centerLabel = getCenterLabel(center)
 
   return {
-    title: `${getCenterLabel(center)} 자주하는 질문`,
+    alternates: {
+      canonical: `/${center}/faq`,
+    },
+    description: `${centerLabel} 입학, 수업, 수강료, 캐스팅, 이용방법 관련 자주하는 질문과 답변을 확인하세요.`,
+    title: `${centerLabel} 자주하는 질문`,
   }
 }
 

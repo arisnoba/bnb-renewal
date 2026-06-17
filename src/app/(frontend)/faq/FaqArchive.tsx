@@ -4,7 +4,9 @@ import Link from 'next/link'
 import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
+import { getCenterLabel } from '@/lib/centers'
 import type { Faq } from '@/payload-types'
+import { getServerSideURL } from '@/utilities/getURL'
 
 import { FaqArchiveClient, type FaqCategoryTab } from './FaqArchive.client'
 
@@ -54,44 +56,53 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
   const visibleFaqs = category
     ? displayFaqs.filter((item) => item.category === category)
     : [...displayFaqs].reverse()
+  const faqJsonLd = buildFaqJsonLd({ center, faqs: visibleFaqs })
 
   return (
-    <main className="page page-light page-faq page-top-offset" data-center={center}>
-      <section className="section-faq-list section-p-block-base" aria-labelledby="faq-list-title">
-        <div className="container-sm">
-          <div className="section-faq-list__head page-heading">
-            <p className="section-faq-list__eyebrow page-eyebrow type-title-l font-bold leading-[1.4]">
-              자주하는 질문
-            </p>
-            <h1
-              id="faq-list-title"
-              className="section-faq-list__title page-title type-display-l font-extrabold leading-[1.35]"
-            >
-              배우앤배움 FAQ입니다.
-              <br />
-              궁금한 내용을 확인해보세요.
-            </h1>
-            <div className="section-faq-list__description page-desc">
-              {/* <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p> */}
-              <p className="type-body-m leading-normal">
-                더 궁금한 점이 있으시면 <Link href={'/consult'} className="text-brand hover:underline">
-                  CS상담센터에 문의
-                </Link>
-                바랍니다.
+    <>
+      {faqJsonLd && (
+        <script
+          dangerouslySetInnerHTML={{ __html: toSafeJsonLd(faqJsonLd) }}
+          type="application/ld+json"
+        />
+      )}
+      <main className="page page-light page-faq page-top-offset" data-center={center}>
+        <section className="section-faq-list section-p-block-base" aria-labelledby="faq-list-title">
+          <div className="container-sm">
+            <div className="section-faq-list__head page-heading">
+              <p className="section-faq-list__eyebrow page-eyebrow type-title-l font-bold leading-[1.4]">
+                자주하는 질문
               </p>
+              <h1
+                id="faq-list-title"
+                className="section-faq-list__title page-title type-display-l font-extrabold leading-[1.35]"
+              >
+                배우앤배움 FAQ입니다.
+                <br />
+                궁금한 내용을 확인해보세요.
+              </h1>
+              <div className="section-faq-list__description page-desc">
+                {/* <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p> */}
+                <p className="type-body-m leading-normal">
+                  더 궁금한 점이 있으시면 <Link href={'/consult'} className="text-brand hover:underline">
+                    CS상담센터에 문의
+                  </Link>
+                  바랍니다.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <FaqArchiveClient
-            activeCategory={category}
-            categoryTabs={categoryTabs}
-            center={center}
-            faqs={visibleFaqs}
-            totalCount={displayFaqs.length}
-          />
-        </div>
-      </section>
-    </main>
+            <FaqArchiveClient
+              activeCategory={category}
+              categoryTabs={categoryTabs}
+              center={center}
+              faqs={visibleFaqs}
+              totalCount={displayFaqs.length}
+            />
+          </div>
+        </section>
+      </main>
+    </>
   )
 }
 
@@ -212,4 +223,44 @@ function getCategoryTabs(categoryCounts: Record<FaqCategory, number>): FaqCatego
       label: categoryLabels[category],
       value: category,
     }))
+}
+
+function buildFaqJsonLd({ center, faqs }: { center: CenterSlug; faqs: FaqDisplayItem[] }) {
+  if (faqs.length === 0) {
+    return null
+  }
+
+  const pageUrl = `${getServerSideURL().replace(/\/+$/, '')}/${center}/faq`
+  const centerLabel = getCenterLabel(center)
+
+  return {
+    '@context': 'https://schema.org',
+    '@id': `${pageUrl}#faqpage`,
+    '@type': 'FAQPage',
+    inLanguage: 'ko-KR',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: toFaqAnswerSchemaText(faq.answer),
+      },
+      name: faq.title,
+    })),
+    name: `${centerLabel} 자주하는 질문`,
+    url: pageUrl,
+  }
+}
+
+function toFaqAnswerSchemaText(value: string) {
+  return value
+    .replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/g, '$1')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line && !/^:?-{3,}:?$/.test(line.replace(/\|/g, '').trim()))
+    .map((line) => line.replace(/\|/g, ' ').replace(/\s+/g, ' ').trim())
+    .join('\n')
+}
+
+function toSafeJsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, '\\u003c')
 }
