@@ -17,6 +17,7 @@ type CastingStatusListItem = Pick<
   | 'createdAt'
   | 'id'
   | 'publishedAt'
+  | 'slug'
   | 'thumbnailPath'
   | 'title'
 >
@@ -26,6 +27,7 @@ const castingStatusSelect = {
   castingCompany: true,
   createdAt: true,
   publishedAt: true,
+  slug: true,
   thumbnailPath: true,
   title: true,
 } as const
@@ -229,6 +231,7 @@ function toCastingStatusPosterItem(item: CastingStatusListItem): CastingStatusPo
     date: item.publishedAt ?? item.createdAt,
     id: item.id,
     imageUrl: normalizeImageUrl(item.thumbnailPath),
+    slug: item.slug,
     title: normalizeText(item.title) || '캐스팅 출연현황',
   }
 }

@@ -7,6 +7,7 @@ import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { A11y, Keyboard } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -23,6 +24,7 @@ export type CastingStatusPosterItem = {
   date: string
   id: number
   imageUrl: string
+  slug: string
   title: string
 }
 
@@ -309,7 +311,7 @@ function CastingStatusYearSection({
       >
         {items.map((item) => (
           <SwiperSlide className="h-auto! w-55! sm:w-62! lg:w-68!" key={item.id}>
-            <CastingStatusPosterCard item={item} />
+            <CastingStatusPosterCard center={center} item={item} />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -350,11 +352,19 @@ function CastingStatusControl({
   )
 }
 
-function CastingStatusPosterCard({ item }: { item: CastingStatusPosterItem }) {
+function CastingStatusPosterCard({
+  center,
+  item,
+}: {
+  center: CenterSlug
+  item: CastingStatusPosterItem
+}) {
+  const href = `/${center}/casting-status/${encodeURIComponent(item.slug)}`
+
   return (
-    <article
+    <Link
       className="group section-casting-status-poster relative flex h-full min-h-[320px] overflow-hidden rounded-xl bg-neutral-200 shadow-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:min-h-[360px] lg:min-h-[400px]"
-      tabIndex={0}
+      href={href}
     >
       {item.imageUrl ? (
         <Image
@@ -415,7 +425,7 @@ function CastingStatusPosterCard({ item }: { item: CastingStatusPosterItem }) {
           </div>
         </dl>
       </div>
-    </article>
+    </Link>
   )
 }
 
