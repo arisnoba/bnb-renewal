@@ -256,7 +256,7 @@ function TrustActorEducationSystem({
           <br />
           관리에서 시작됩니다.
         </h2>
-        <div className="mt-8 max-w-[960px] type-body-m leading-[1.5] text-white/60 md:mt-10">
+        <div className="mt-8 max-w-[960px] type-body-m leading-normal text-white/60 md:mt-10">
           <p>
             {centerName}의 위탁 교육연기자는 ‘활동준비 대상자’와 ‘현장투입 대상자’로
             분류되어 관리되고 있습니다.
@@ -396,7 +396,7 @@ function EducationSystemCard({ card }: { card: EducationSystemCardData }) {
       <div className="flex flex-col gap-7 md:flex-row md:gap-1">
         <div className="section-trust-actor-system-card__label flex shrink-0 flex-col gap-1 md:w-[200px]">
           <p className="type-headline-s font-bold leading-[1.2] text-brand">{card.id}</p>
-          <h3 className="type-title-s font-bold leading-[1.5] text-white">{card.title}</h3>
+          <h3 className="type-title-s font-bold leading-normal text-white">{card.title}</h3>
         </div>
         <div className="section-trust-actor-system-card__body flex min-w-0 flex-1 flex-col gap-7 md:px-6">
           <div className="flex flex-col gap-4">
@@ -412,7 +412,7 @@ function EducationSystemCard({ card }: { card: EducationSystemCardData }) {
             {card.steps ? <EducationSystemSteps steps={card.steps} /> : null}
           </div>
           {card.note ? (
-            <p className="type-body-s leading-[1.5] text-white/60">{card.note}</p>
+            <p className="type-body-s leading-normal text-white/60">{card.note}</p>
           ) : null}
           {card.cta ? (
             <Link
@@ -470,7 +470,7 @@ function EducationSystemSteps({ steps }: { steps: EducationSystemStep[] }) {
   return (
     <ol className="list-decimal space-y-2 pl-5 marker:font-semibold marker:text-white/60">
       {steps.map((step) => (
-        <li className="pl-2 type-body-s leading-[1.5] text-white/60" key={String(step)}>
+        <li className="pl-2 type-body-s leading-normal text-white/60" key={String(step)}>
           {typeof step === 'string' ? step : step.label}
         </li>
       ))}
@@ -482,7 +482,7 @@ function NoticeCard() {
   return (
     <article className="section-trust-actor-system-card section-trust-actor-system-card--notice flex items-center gap-3 pt-7 text-white/60">
       <Megaphone aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.8} />
-      <p className="type-body-s leading-[1.5]">
+      <p className="type-body-s leading-normal">
         엔터테인먼트 위탁 교육에 관련한 일체의 할인 및 협찬은 불가합니다.
       </p>
     </article>

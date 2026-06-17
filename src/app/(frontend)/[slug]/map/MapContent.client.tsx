@@ -88,7 +88,7 @@ function CenterInfoCard({ location }: { location: (typeof centerLocationList)[nu
           ) : (
             <p className="type-title-m font-bold leading-[1.4] text-white">{location.tabLabel}</p>
           )}
-          <div className="flex flex-col gap-2 type-body-s leading-[1.5] text-white">
+          <div className="flex flex-col gap-2 type-body-s leading-normal text-white">
             <h3 className="font-bold">{location.name}</h3>
             <p className="text-white/60">{location.summary}</p>
           </div>
@@ -122,7 +122,7 @@ function InfoItem({
   label: string
 }) {
   return (
-    <div className="flex min-w-0 gap-6 type-body-s leading-[1.5] text-white">
+    <div className="flex min-w-0 gap-6 type-body-s leading-normal text-white">
       <div className="flex w-14 shrink-0 items-center gap-3 font-bold">
         <span className="text-neutral-600">{icon}</span>
         <h3>{label}</h3>

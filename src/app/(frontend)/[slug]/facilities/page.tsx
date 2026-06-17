@@ -76,7 +76,7 @@ export default async function FacilitiesPage({ params }: Args) {
               <br />
               배우앤배움 아트센터 강남 사옥
             </h2>
-            <p className="mt-10 max-w-280 type-body-m leading-[1.5] text-white/70">
+            <p className="mt-10 max-w-280 type-body-m leading-normal text-white/70">
               배우앤배움 아트센터는 배우 훈련에 최적화된 스튜디오로 설계한 ‘공간 디자이너 김종구’의 작품입니다.
             </p>
           </header>

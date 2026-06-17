@@ -93,7 +93,7 @@ export async function CastingStatusDetailPage({
             {casting.title}
           </h1>
           <time
-            className="shrink-0 type-body-s font-medium leading-[1.5] text-muted-foreground"
+            className="shrink-0 type-body-s font-medium leading-normal text-muted-foreground"
             dateTime={casting.publishedAt ?? casting.createdAt}
           >
             {formatDate(casting.publishedAt ?? casting.createdAt)}
@@ -132,7 +132,7 @@ export async function CastingStatusDetailPage({
             </div>
 
             {infoItems.length > 0 && (
-              <dl className="section-casting-status-detail__info space-y-5 border-b border-border pb-6 type-body-s leading-[1.5] md:pb-8">
+              <dl className="section-casting-status-detail__info space-y-5 border-b border-border pb-6 type-body-s leading-normal md:pb-8">
                 {infoItems.map((item) => (
                   <div className="grid grid-cols-[100px_1fr] gap-4" key={item.label}>
                     <dt className="font-bold text-foreground">{item.label}</dt>

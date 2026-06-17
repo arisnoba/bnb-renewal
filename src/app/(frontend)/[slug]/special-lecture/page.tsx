@@ -186,7 +186,7 @@ function SpecialLectureCard({ lecture }: { lecture: SpecialLectureListItem }) {
           />
         </div>
         <div className="section-special-lecture-card__body flex min-h-14 items-center justify-center px-4 py-3 text-center">
-          <h3 className="line-clamp-2 type-body-m font-medium leading-[1.5] text-white">
+          <h3 className="line-clamp-2 type-body-m font-medium leading-normal text-white">
             {lecture.title}
           </h3>
         </div>

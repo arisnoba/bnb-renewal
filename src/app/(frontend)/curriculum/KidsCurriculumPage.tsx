@@ -255,7 +255,7 @@ function KidsCurriculumCard({ card }: { card: KidsCurriculumCard }) {
     <div className="section-kids-curriculum-card flex min-h-44 flex-col gap-8 rounded-xl bg-white/6 p-7 text-white md:min-h-48">
       <Icon aria-hidden="true" className="size-8 text-white/25" strokeWidth={1.8} />
       <div className="section-kids-curriculum-card__body">
-        <h3 className="type-title-s font-bold leading-[1.5]">{card.title}</h3>
+        <h3 className="type-title-s font-bold leading-normal">{card.title}</h3>
         <ul className="mt-3 space-y-1.5 type-body-s leading-[1.6] text-white/60">
           {card.items.map((item) => (
             <li className="flex gap-2" key={item}>
