@@ -69,14 +69,16 @@ type DetailBackLinkProps = {
 
 export function DetailBackLink({ href, label, width = 'narrow' }: DetailBackLinkProps) {
   return (
-    <DetailContainer className="mb-10 border-b border-foreground pb-7 md:mb-16" width={width}>
-      <Link
-        className="inline-flex items-center gap-4 type-label-l font-extrabold leading-[1.35] text-foreground transition-colors hover:text-brand"
-        href={href}
-      >
-        <ArrowLeft aria-hidden="true" className="size-6" strokeWidth={2.2} />
-        <span>{label}</span>
-      </Link>
+    <DetailContainer className="mb-10 md:mb-16" width={width}>
+      <div className="border-b border-foreground pb-7">
+        <Link
+          className="inline-flex items-center gap-4 type-label-l font-bold text-foreground transition-colors hover:text-brand"
+          href={href}
+        >
+          <ArrowLeft aria-hidden="true" className="size-6" strokeWidth={2.2} />
+          <span>{label}</span>
+        </Link>
+      </div>
     </DetailContainer>
   )
 }
@@ -130,10 +132,10 @@ export function DetailPager({
   width = 'narrow',
 }: DetailPagerProps) {
   return (
-    <DetailContainer className="mt-16 border-t border-foreground" width={width}>
+    <DetailContainer className="mt-16" width={width}>
       <nav
         aria-label="상세 페이지 이동"
-        className="flex min-h-22 items-center justify-between gap-6 py-8"
+        className="flex min-h-22 items-center justify-between gap-6 border-t border-foreground py-8"
       >
         <DetailPagerLink direction="previous" href={previousHref} label={previousLabel} />
         <DetailPagerLink direction="next" href={nextHref} label={nextLabel} />
@@ -154,16 +156,17 @@ function DetailPagerLink({
   const content = (
     <>
       {direction === 'previous' && (
-        <ChevronLeft aria-hidden="true" className="size-4" strokeWidth={2.4} />
+        <ChevronLeft aria-hidden="true" className="size-5" strokeWidth={2.4} />
       )}
       <span>{label}</span>
       {direction === 'next' && (
-        <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.4} />
+        <ChevronRight aria-hidden="true" className="size-5" strokeWidth={2.4} />
       )}
     </>
   )
   const className = cn(
-    'inline-flex items-center gap-2 type-label-l font-extrabold leading-[1.35] transition-colors',
+    'inline-flex items-center gap-2 type-label-l font-semibold transition-colors',
+    direction === 'next' && 'text-right',
     href ? 'text-foreground hover:text-brand' : 'text-muted-foreground/40',
   )
 
