@@ -106,8 +106,8 @@ export function FaqArchiveClient({
 
       <div className="section-faq-list__items">
         {visibleFaqs.length > 0 ? (
-          visibleFaqs.map((faq, index) => (
-            <details className="section-faq-item" key={faq.id} open={index === 0}>
+          visibleFaqs.map((faq) => (
+            <details className="section-faq-item" key={faq.id}>
               <summary className="section-faq-item__summary">
                 <span className="section-faq-item__index type-label-m font-extrabold leading-[1.2]">
                   Q
