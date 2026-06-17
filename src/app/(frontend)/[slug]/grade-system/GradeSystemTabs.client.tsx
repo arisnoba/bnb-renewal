@@ -384,8 +384,8 @@ const kidsStepClasses = [
       { label: '수업시간', value: '주 1회 2-3시간' },
       { label: '과정', value: '이해하기/말하기/움직이기/표현하기' },
     ],
-    headline: '영재 교육 과정',
-    label: '초급 Class',
+    headline: '영재교육 Class',
+    label: '초급',
     letter: '1',
   },
   {
@@ -419,8 +419,8 @@ const kidsStepClasses = [
       { label: '수업시간', value: '주 1회 2-3시간' },
       { label: '과정', value: '감정훈련/반응하기/대본분석/독백연기' },
     ],
-    headline: '아역배우 교육과정',
-    label: '중급 Class',
+    headline: '아역배우 Class',
+    label: '중급',
     letter: '2',
   },
   {
@@ -450,7 +450,7 @@ const kidsStepClasses = [
       { label: '과정', value: '인물창조/디테일작업/심화 카메라연기/현장 피드백' },
     ],
     headline: '아티스트 교육과정',
-    label: '고급 Class',
+    label: '고급',
     letter: '3',
   },
 ] satisfies StepClass[]
@@ -1031,7 +1031,11 @@ function StepsPanel({ data }: { data: GradeSystemContent }) {
         </p>
       </section>
 
-      {data.wordmarkLetters.length > 0 ? <IrudaWordmark letters={data.wordmarkLetters} /> : null}
+      {data.wordmarkLetters.length > 0 ? (
+        <IrudaWordmark letters={data.wordmarkLetters} />
+      ) : (
+        <ClassOverview classes={data.stepClasses} />
+      )}
 
       <div className="flex flex-col gap-20 md:gap-24">
         {data.stepClasses.map((item) => (
@@ -1108,6 +1112,29 @@ function ClassSection({
         })}
       </div>
     </section>
+  )
+}
+
+function ClassOverview({ classes }: { classes: StepClass[] }) {
+  return (
+    <div
+      className={cn(
+        'grid gap-5',
+        classes.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-5',
+      )}
+    >
+      {classes.map((item) => (
+        <article
+          className="flex min-h-[190px] flex-col items-center justify-center rounded-full bg-white/[0.12] p-6 text-center md:min-h-[220px]"
+          key={item.className}
+        >
+          <p className="type-title-s font-extrabold leading-none text-brand">{item.label}</p>
+          <h3 className="mt-6 whitespace-pre-line type-headline-s font-extrabold leading-[1.25] text-white">
+            {item.className.replace(' Class', '\nClass')}
+          </h3>
+        </article>
+      ))}
+    </div>
   )
 }
 
