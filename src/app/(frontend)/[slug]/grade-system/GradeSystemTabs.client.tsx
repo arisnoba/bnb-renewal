@@ -29,7 +29,7 @@ import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
 type TabKey = 'steps' | 'criteria' | 'cohorts'
-type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen'>
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
 type CriteriaEntryKey = 'experience' | 'inHouse' | 'major' | 'transfer'
 
 type StepCard = {
@@ -92,10 +92,12 @@ type GradeSystemContent = {
   gradeRows: GradeRow[]
   gradeTableDescription: string
   gradeTableTitle: string
-  promotionGroups: PromotionGroup[]
-  promotionTitle: string
+  promotionGroups?: PromotionGroup[]
+  promotionTitle?: string
   stepClasses: StepClass[]
+  stepsDescriptionLines?: string[]
   stepsCenterName: string
+  stepsTitleLines?: string[]
   wordmarkLetters: IrudaLetter[]
 }
 
@@ -355,6 +357,104 @@ const highteenStepClasses = [
   },
 ] satisfies StepClass[]
 
+const kidsStepClasses = [
+  {
+    className: '영재교육 Class',
+    cards: [
+      {
+        icon: Sparkles,
+        items: ['역할놀이를 통한 흥미 유발', '상황극을 통한 창의력, 상상력, 관찰력 훈련'],
+        title: '놀이 훈련',
+      },
+      {
+        icon: Speech,
+        items: ['개인별 화술적 습관 분석 및 교정', '화술 훈련 [소리, 발음교정]'],
+        title: '화술 훈련',
+      },
+      {
+        icon: ScanFace,
+        items: ['신체적으로 몸을 활용하는 방법 및 훈련', '기초 신체훈련을 통해 경직된 몸을 이완시키는 훈련'],
+        title: '신체 훈련',
+      },
+    ],
+    description:
+      '아이들이 상상하고 이해한 것을 자신의 색깔로 표현할 수 있도록 이해하기, 말하기, 움직이기, 표현하기의 기초를 다지는 과정입니다. 모든 수업이 종료된 후에는 학부모님께 수업 관련 피드백을 드립니다.',
+    details: [
+      { label: '인원', value: '정원 6명' },
+      { label: '수업시간', value: '주 1회 2-3시간' },
+      { label: '과정', value: '이해하기/말하기/움직이기/표현하기' },
+    ],
+    headline: '영재 교육 과정',
+    label: '초급 Class',
+    letter: '1',
+  },
+  {
+    className: '아역배우 Class',
+    cards: [
+      {
+        icon: Drama,
+        items: ['다양한 상황극을 통해 경험하지 못한 새로운 감정과 표현 도출', '반복적인 상황극 훈련을 통해 정형화되지 않은 유연한 연기 유도', "2인극을 통해 주고받는 '액션'과 '리액션' 훈련"],
+        title: '심화 연기훈련',
+      },
+      {
+        icon: Video,
+        items: ['카메라를 이용한 연기수업', '모니터링을 통해 연기의 디테일을 잡는 방법과 표현 구체화'],
+        title: '카메라연기',
+      },
+      {
+        icon: FileText,
+        items: ['대본 전체 파악하는 방법 배우기', '대본의 상황과 인물 분석 방법 알아보기'],
+        title: '대본 이해와 분석',
+      },
+      {
+        icon: ClipboardCheck,
+        items: ['자신에게 맞는 상황별 독백을 통해 오디션 준비', '오디션에서 이루어지는 과정 시뮬레이션 훈련'],
+        title: '오디션 독백 준비',
+      },
+    ],
+    description:
+      '감정훈련, 반응하기, 대본분석, 독백연기를 통해 아이가 장면 안에서 상대와 반응하며 표현의 폭을 넓히는 중급 과정입니다. 모든 수업이 종료된 후에는 학부모님께 수업 관련 피드백을 드립니다.',
+    details: [
+      { label: '인원', value: '정원 6명' },
+      { label: '수업시간', value: '주 1회 2-3시간' },
+      { label: '과정', value: '감정훈련/반응하기/대본분석/독백연기' },
+    ],
+    headline: '아역배우 교육과정',
+    label: '중급 Class',
+    letter: '2',
+  },
+  {
+    className: '아티스트 Class',
+    cards: [
+      {
+        icon: Users,
+        items: ['완성된 연기에 캐릭터의 색깔과 매력 입히기', '1차원적인 표현이 아닌 복합적인 감정을 통해 표현하기'],
+        title: '심화 연기 디테일 교정',
+      },
+      {
+        icon: ClipboardCheck,
+        items: ['오디션을 통한 개인별 연기 스타일, 특징 분석', '오디션 장르별 맞춤 전략'],
+        title: '오디션 훈련',
+      },
+      {
+        icon: Monitor,
+        items: ['모니터링을 통해 연기의 디테일을 잡는 방법과 액팅 리뷰', '시선, 제스처, 비즈니스, 디테일 표정 분석 및 교정'],
+        title: '카메라 훈련/모니터링 훈련',
+      },
+    ],
+    description:
+      '인물창조, 디테일 작업, 심화 카메라연기, 현장 피드백을 통해 현장 투입을 염두에 둔 고급 표현력을 완성하는 과정입니다. 모든 수업이 종료된 후에는 학부모님께 수업 관련 피드백을 드립니다.',
+    details: [
+      { label: '인원', value: '정원 6명' },
+      { label: '수업시간', value: '주 1회 2-3시간' },
+      { label: '과정', value: '인물창조/디테일작업/심화 카메라연기/현장 피드백' },
+    ],
+    headline: '아티스트 교육과정',
+    label: '고급 Class',
+    letter: '3',
+  },
+] satisfies StepClass[]
+
 const artGradeRows = [
   {
     classCode: 'I',
@@ -471,6 +571,48 @@ const highteenGradeRows = [
     major: '레벨 테스트',
     process: '전문 과정',
     transfer: '- 매니지먼트 위탁 아역배우\n- 드라마/영화/연극 경력자',
+  },
+] satisfies GradeRow[]
+
+const kidsCriteriaEntryLabels = [
+  { key: 'inHouse', label: '지원 기준' },
+  { key: 'transfer', label: '추가 기준' },
+  { key: 'major', label: '테스트 기준' },
+] satisfies GradeSystemContent['criteriaEntryLabels']
+
+const kidsGradeRows = [
+  {
+    classCode: 'K1',
+    className: '영재 교육과정',
+    department: '교육 본부',
+    experience: '',
+    inHouse: '- 연기 처음인 아이\n- 짧게 연기를 접한 아이',
+    level: '초급',
+    major: '',
+    process: '배움과정',
+    transfer: '',
+  },
+  {
+    classCode: 'K2',
+    className: '아역배우 교육과정',
+    department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
+    experience: '',
+    inHouse: '영재 교육과정 이수자',
+    level: '중급',
+    major: '카메라 테스트',
+    process: '배우과정',
+    transfer: '- 타학원에서 1년 이상 이수자\n- 드라마, 영화 등 현장촬영 경험자',
+  },
+  {
+    classCode: 'K3',
+    className: '아티스트 교육과정',
+    department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
+    experience: '',
+    inHouse: '- 드라마, 영화 주·조연 이상 경력 인정자\n- 즉시 현장 투입 가능한 아이',
+    level: '고급',
+    major: '카메라 테스트',
+    process: '배우과정',
+    transfer: '',
   },
 ] satisfies GradeRow[]
 
@@ -643,7 +785,15 @@ const gradeSystemContent = {
     promotionGroups: artPromotionGroups,
     promotionTitle: '성인 승급 기준',
     stepClasses: artStepClasses,
+    stepsDescriptionLines: [
+      'I am Ready to Undertake the Dedication of Acting.',
+      '각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.',
+    ],
     stepsCenterName: '아트센터',
+    stepsTitleLines: [
+      'IRUDA 연기트레이닝 시스템입니다.',
+      '아트센터의 모든 교육은 ‘나’로부터 시작됩니다.',
+    ],
     wordmarkLetters: [
       { className: 'I Class', fileNames: ['iruda-i.svg'] },
       { className: 'R Class', fileNames: ['iruda-r.svg'] },
@@ -672,13 +822,49 @@ const gradeSystemContent = {
     promotionGroups: highteenPromotionGroups,
     promotionTitle: '청소년 승급 기준',
     stepClasses: highteenStepClasses,
+    stepsDescriptionLines: [
+      'I am Ready to Undertake the Dedication of Acting.',
+      '각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.',
+    ],
     stepsCenterName: '하이틴센터',
+    stepsTitleLines: [
+      'IRUDA 연기트레이닝 시스템입니다.',
+      '하이틴센터의 모든 교육은 ‘나’로부터 시작됩니다.',
+    ],
     wordmarkLetters: [
       { className: 'I Class', fileNames: ['iruda-i.svg'] },
       { className: 'R Class', fileNames: ['iruda-r.svg'] },
       { className: 'U Class', fileNames: ['iruda-u.svg'] },
       { className: 'DA Class', fileNames: ['iruda-d.svg', 'iruda-a.svg'] },
     ],
+  },
+  kids: {
+    centerName: '키즈센터',
+    cohortStartYear: 2018,
+    criteriaDescription:
+      '클래스 편성 기준은 연기교육 경력과 촬영 현장 경험, 오디션 및 테스트의 전반적인 평가를 통해 정해집니다.\n승급 기준은 담당 선생님과 캐스팅 디렉터의 실시간 피드백을 종합평가하여 결정됩니다.',
+    criteriaEntryLabels: kidsCriteriaEntryLabels,
+    criteriaTitle:
+      '키즈 과정은 초급 영재 교육과정, 중급 아역배우 교육과정, 고급 아티스트 교육과정으로 클래스가 편성됩니다.',
+    extraPromotionCriteria: [
+      '담당 선생님과 캐스팅 디렉터의 실시간 레벨 체크',
+      '상·하반기에 진행되는 캐스팅 디렉터 레벨 테스트 우수자',
+      '자체적으로 진행되는 캐스팅 오디션 우수자',
+    ],
+    gradeRows: kidsGradeRows,
+    gradeTableDescription:
+      '아이들의 배정 Class는 아래 항목 중 충족되는 조건으로 진행되며, 중급 Class부터 카메라 테스트가 진행됩니다.',
+    gradeTableTitle: '키즈 등급 기준',
+    stepClasses: kidsStepClasses,
+    stepsDescriptionLines: [
+      '틀에 박힌 주입식 교육이 아닌, 아이들이 상상하고 이해한 것을 자신의 색깔로 표현할 수 있도록 구성된 전문적이고 체계적인 커리큘럼을 경험해보세요.',
+    ],
+    stepsCenterName: '키즈센터',
+    stepsTitleLines: [
+      '아이들의 잠재된 빛을 깨웁니다.',
+      '모든 성장은 ‘나를 표현하는 힘’에서 시작됩니다.',
+    ],
+    wordmarkLetters: [],
   },
 } satisfies Record<GradeSystemCenter, GradeSystemContent>
 
@@ -813,22 +999,39 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
 }
 
 function StepsPanel({ data }: { data: GradeSystemContent }) {
+  const titleLines = data.stepsTitleLines ?? [
+    'IRUDA 연기트레이닝 시스템입니다.',
+    `${data.stepsCenterName}의 모든 교육은 ‘나’로부터 시작됩니다.`,
+  ]
+  const descriptionLines = data.stepsDescriptionLines ?? [
+    'I am Ready to Undertake the Dedication of Acting.',
+    '각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.',
+  ]
+
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <section>
         <h2 className="max-w-[900px] type-display-l font-bold leading-[1.25] tracking-normal">
-          IRUDA 연기트레이닝 시스템입니다.
-          <br />
-          {data.stepsCenterName}의 모든 교육은 ‘나’로부터 시작됩니다.
+          {titleLines.map((line) => (
+            <span className="block" key={line}>
+              {line}
+            </span>
+          ))}
         </h2>
         <p className="mt-12 max-w-[720px] type-body-m leading-[1.8] text-white/55">
-          <AcronymSentence />
-          <br />
-          각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.
+          {descriptionLines.map((line) => (
+            <span className="block" key={line}>
+              {line === 'I am Ready to Undertake the Dedication of Acting.' ? (
+                <AcronymSentence />
+              ) : (
+                line
+              )}
+            </span>
+          ))}
         </p>
       </section>
 
-      <IrudaWordmark letters={data.wordmarkLetters} />
+      {data.wordmarkLetters.length > 0 ? <IrudaWordmark letters={data.wordmarkLetters} /> : null}
 
       <div className="flex flex-col gap-20 md:gap-24">
         {data.stepClasses.map((item) => (
@@ -969,7 +1172,7 @@ function CriteriaPanel({ data }: { data: GradeSystemContent }) {
       </section>
 
       <GradeCriteriaTable data={data} />
-      <PromotionTable data={data} />
+      {data.promotionGroups && data.promotionTitle ? <PromotionTable data={data} /> : null}
       {data.extraPromotionCriteria ? (
         <section className="rounded-[8px] border border-white/10 bg-white/[0.03] p-6">
           <h3 className="type-title-s font-extrabold leading-none">그 외 승급 기준</h3>
@@ -1103,9 +1306,16 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
 }
 
 function PromotionTable({ data }: { data: GradeSystemContent }) {
+  if (!data.promotionGroups || !data.promotionTitle) {
+    return null
+  }
+
+  const promotionGroups = data.promotionGroups
+  const promotionTitle = data.promotionTitle
+
   return (
     <section>
-      <h3 className="mb-5 type-title-l font-extrabold leading-none">{data.promotionTitle}</h3>
+      <h3 className="mb-5 type-title-l font-extrabold leading-none">{promotionTitle}</h3>
 
       {/* 데스크탑: 표 형태 */}
       <div className="hidden overflow-x-auto md:block">
@@ -1119,7 +1329,7 @@ function PromotionTable({ data }: { data: GradeSystemContent }) {
             </tr>
           </thead>
           <tbody>
-            {data.promotionGroups.map((group) =>
+            {promotionGroups.map((group) =>
               group.rows.map((row, index) => {
                 return (
                   <tr
@@ -1160,7 +1370,7 @@ function PromotionTable({ data }: { data: GradeSystemContent }) {
 
       {/* 모바일: 승급 단계별 카드 */}
       <div className="flex flex-col gap-8 md:hidden">
-        {data.promotionGroups.map((group) => {
+        {promotionGroups.map((group) => {
           return (
             <article
               className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
@@ -1313,6 +1523,9 @@ const gradeBadgeClassNames: Record<string, string> = {
   D: 'bg-[#faeeda] text-[#854f0b]',
   DA: 'bg-[#faeeda] text-[#854f0b]',
   I: 'bg-[#f1efe8] text-[#5f5e5a]',
+  K1: 'bg-[#f1efe8] text-[#5f5e5a]',
+  K2: 'bg-[#e1f5ee] text-[#0f6e56]',
+  K3: 'bg-[#e6f1fb] text-[#185fa5]',
   R: 'bg-[#e1f5ee] text-[#0f6e56]',
   U: 'bg-[#e6f1fb] text-[#185fa5]',
 }
@@ -1335,7 +1548,7 @@ function ProcessBadge({ className, process }: { className?: string; process: str
     <span
       className={cn(
         'inline-flex whitespace-nowrap rounded bg-[#e6f1fb] px-2 py-1 type-label-s font-bold leading-none text-[#185fa5]',
-        process === '배움' && 'bg-[#e1f5ee] text-[#0f6e56]',
+        (process === '배움' || process === '배움과정') && 'bg-[#e1f5ee] text-[#0f6e56]',
         className,
       )}
     >

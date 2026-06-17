@@ -13,7 +13,7 @@ type Args = {
   }>
 }
 
-type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen'>
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
 
 const gradeSystemMetadata = {
   art: {
@@ -24,14 +24,18 @@ const gradeSystemMetadata = {
     description: '배우앤배움 하이틴센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
     title: '등급제 교육관리시스템 | 배우앤배움 하이틴센터',
   },
+  kids: {
+    description: '배우앤배움 키즈센터 등급제 교육관리시스템 안내',
+    title: '등급제 교육관리시스템 | 배우앤배움 키즈센터',
+  },
 } satisfies Record<GradeSystemCenter, Metadata>
 
 function isGradeSystemCenter(center: CenterSlug): center is GradeSystemCenter {
-  return center === 'art' || center === 'highteen'
+  return center === 'art' || center === 'highteen' || center === 'kids'
 }
 
 export function generateStaticParams() {
-  return [{ slug: 'art' }, { slug: 'highteen' }]
+  return [{ slug: 'art' }, { slug: 'highteen' }, { slug: 'kids' }]
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
@@ -66,16 +70,24 @@ export default async function ArtGradeSystemPage({ params }: Args) {
         />
         <div className="absolute inset-0 bg-black/55" />
         <PageDeco
-          className="-left-20 top-[22%] md:-left-28"
-          icon={decoIcons[0]}
+          className={
+            center === 'kids'
+              ? '-left-52 top-[22%] md:-left-60'
+              : '-left-20 top-[22%] md:-left-28'
+          }
+          icon={center === 'kids' ? 'icon-ng.svg' : decoIcons[0]}
         />
         <PageDeco
-          className="-right-12 bottom-[10%] md:-right-20"
-          icon={decoIcons[1]}
+          className={
+            center === 'kids'
+              ? '-right-12 bottom-[10%] hidden md:block md:-right-20'
+              : '-right-12 bottom-[10%] md:-right-20'
+          }
+          icon={center === 'kids' ? 'icon-ae.svg' : decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
           <h1 className="page-title">
-            <span className="block text-brand">교육</span>
+            <span className="block whitespace-nowrap text-brand">교육</span>
             <span className="block">등급제</span>
             <span className="block">교육관리시스템</span>
           </h1>

@@ -198,7 +198,7 @@ test('kids mega menu matches the approved kids structure', () => {
     { href: '/kids/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'education'), [
-    { href: '/kids#grade-system', label: '등급제 교육관리시스템' },
+    { href: '/kids/grade-system', label: '등급제 교육관리시스템' },
     { href: '/kids/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: '/kids/curriculum', label: '커리큘럼' },
     { href: '/kids/teachers', label: '교육진 소개' },

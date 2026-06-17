@@ -135,7 +135,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 
   if (center === 'kids') {
     return [
-      { href: centerHref(center, 'grade-system'), label: '등급제 교육관리시스템' },
+      { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
       { href: curriculumHref(center), label: '커리큘럼' },
       { href: teachersHref(center), label: '교육진 소개' },
