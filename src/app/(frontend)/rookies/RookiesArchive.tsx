@@ -133,7 +133,7 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
         />
         <div className="section-rookies-hero__content">
           <p className="section-rookies-hero__eyebrow type-display-xl font-extrabold leading-[1.2]">
-            매니지먼트
+            아티스트
           </p>
           <h1
             id="rookies-hero-title"

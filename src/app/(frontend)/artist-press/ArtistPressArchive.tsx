@@ -108,7 +108,7 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
         />
         <div className="section-artist-press-hero__content">
           <p className="section-artist-press-hero__eyebrow type-display-xl font-extrabold leading-[1.2]">
-            매니지먼트
+            아티스트
           </p>
           <h1
             id="artist-press-hero-title"

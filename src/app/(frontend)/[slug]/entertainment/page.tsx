@@ -19,6 +19,8 @@ type Args = {
 
 type EntertainmentCenter = Exclude<CenterSlug, 'exam'>
 
+const TRUST_EDUCATION_STARTED_YEAR = 2010
+
 const entertainmentMetadata = {
   art: {
     description: '배우앤배움 아트센터 엔터테인먼트 위탁교육 안내',
@@ -79,7 +81,7 @@ export default async function EntertainmentEducationPage({ params }: Args) {
 
 function EntertainmentHero() {
   return (
-    <section className="section-entertainment-hero relative min-h-[520px] overflow-hidden bg-black md:min-h-[740px]">
+    <section className="section-entertainment-hero relative min-h-[520px] overflow-hidden md:min-h-[740px]">
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-cover bg-center opacity-55 grayscale"
@@ -114,14 +116,15 @@ function EntertainmentEducationSection({
 }) {
   const centerName = `배우앤배움 ${centers[center]}`
   const actorTotal = agencies.reduce((total, agency) => total + actorCount(agency), 0)
+  const summaryMetrics = getEntertainmentSummaryMetrics(agencies.length, actorTotal)
 
   return (
     <section
       aria-labelledby="entertainment-title"
-      className="section-entertainment section-p-block-base bg-bg-footer text-white"
+      className="section-entertainment section-p-block-base text-white"
     >
       <div className="container">
-        <div className="section-entertainment__header max-w-[1120px]">
+        <div className="section-entertainment__header">
           <p className="type-title-l font-bold leading-[1.4] text-brand">엔터테인먼트 파트너</p>
           <h2
             className="mt-8 type-display-l font-bold leading-[1.35] tracking-normal text-white md:mt-10"
@@ -131,9 +134,9 @@ function EntertainmentEducationSection({
             <br />
             현장 경험으로 배우의 성장을 만듭니다.
           </h2>
-          <div className="mt-8 max-w-[960px] type-body-m leading-[1.5] text-white/60 md:mt-10">
+          <div className="mt-8 type-body-m leading-normal text-white/60 md:mt-10">
             <p>
-              {centerName}는 국내 60여 곳 엔터테인먼트의 연기교육 파트너사로서 2010년
+              {centerName}는 국내 56여 곳 엔터테인먼트의 연기교육 파트너사로서 2010년
               개원부터 지금까지 해당 기획사의 소속 배우들을 위탁받아 교육하고 있습니다.
             </p>
             <p>
@@ -143,10 +146,22 @@ function EntertainmentEducationSection({
           </div>
         </div>
 
-        {actorTotal > 0 ? (
-          <div className="section-entertainment__summary mt-12 flex flex-wrap items-end gap-6 md:mt-16">
-            <p className="type-headline-s font-bold leading-[1.35] text-white/80">위탁중인 배우</p>
-            <p className="type-display-xl font-extrabold leading-none text-white">{actorTotal}명</p>
+        {agencies.length > 0 ? (
+          <div className="section-entertainment__summary grid sm:grid-cols-3 section-p-block-sm">
+            {summaryMetrics.map((metric) => (
+              <div
+                className="section-entertainment__summary-item border-l border-white/25 pl-6"
+                key={metric.label}
+              >
+                <p className="type-title-s font-semibold leading-[1.35] text-white/60">
+                  {metric.label}
+                </p>
+                <p className="mt-5 type-display-l font-bold leading-none text-white">
+                  {metric.value}
+                  {metric.unit}
+                </p>
+              </div>
+            ))}
           </div>
         ) : null}
       </div>
@@ -174,7 +189,7 @@ function AgencyLogoGrid({ agencies }: { agencies: Agency[] }) {
   }
 
   return (
-    <div className="section-entertainment__partners mt-14 grid grid-cols-4 overflow-hidden sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
+    <div className="section-entertainment__partners grid grid-cols-4 overflow-hidden sm:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
       {agencies.map((agency) => (
         <AgencyLogoCard agency={agency} key={agency.id} />
       ))}
@@ -437,6 +452,19 @@ function NoticeCard() {
 
 function actorCount(agency: Agency) {
   return agency.actors?.length ?? 0
+}
+
+function getEntertainmentSummaryMetrics(partnerCount: number, actorTotal: number) {
+  const educationYears = Math.max(
+    0,
+    new Date().getFullYear() - TRUST_EDUCATION_STARTED_YEAR,
+  )
+
+  return [
+    { label: '위탁 교육 기간', unit: '년', value: educationYears },
+    { label: '파트너사', unit: '개사', value: partnerCount },
+    { label: '교육 연기자', unit: '명', value: actorTotal },
+  ]
 }
 
 const queryAgencies = cache(async (center: EntertainmentCenter) => {

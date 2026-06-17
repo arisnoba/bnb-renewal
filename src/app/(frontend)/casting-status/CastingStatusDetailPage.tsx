@@ -158,7 +158,7 @@ export async function CastingStatusDetailPage({
                 <div>
                   {castMembers.map((member, index) => (
                     <div
-                      className="grid grid-cols-[minmax(78px,100px)_minmax(92px,148px)_minmax(0,1fr)] gap-4 border-b border-black/6 px-5 py-4 type-label-s font-medium leading-[1.6] text-foreground last:border-b-0 md:px-6"
+                      className="grid grid-cols-[minmax(78px,100px)_minmax(92px,148px)_minmax(0,1fr)] gap-4 border-b border-black/6 px-5 py-4 type-label-m font-medium leading-[1.6] text-foreground last:border-b-0 md:px-6"
                       key={`${member.actorName}-${member.roleName}-${index}`}
                     >
                       <span>{member.actorName || '배우명 미정'}</span>
