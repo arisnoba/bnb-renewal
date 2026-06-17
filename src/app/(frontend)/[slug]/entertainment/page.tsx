@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
-import { Bell, ChevronRight } from 'lucide-react'
+import { ChevronRight, Megaphone } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload, type Where } from 'payload'
@@ -268,7 +268,7 @@ function TrustActorEducationSystem({
         </div>
       </div>
 
-      <div className="section-trust-actor-system__cards mt-16 grid gap-5 lg:grid-cols-2 md:mt-24">
+      <div className="section-trust-actor-system__list mt-[60px] flex flex-col">
         {educationSystemCards(center, centerName).map((card) => (
           <EducationSystemCard card={card} key={card.id} />
         ))}
@@ -286,8 +286,13 @@ type EducationSystemCardData = {
   }
   id: string
   note?: string
-  steps?: string[]
+  steps?: EducationSystemStep[]
   title: string
+}
+
+type EducationSystemStep = string | {
+  label: string
+  level: string
 }
 
 function educationSystemCards(
@@ -301,7 +306,11 @@ function educationSystemCards(
           '위탁연기자의 경력, 영상자료 체크 및 대본리딩 테스트를 통해 Class가 나누어집니다. 자세한 내용은 홈페이지 교육폴더 중 등급제 교육관리시스템에 들어가시면 확인하실 수 있습니다.',
         cta: { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
         id: '01',
-        steps: ['I', 'R', 'U', 'D', 'A'],
+        steps: [
+          { label: '영재교육 Class', level: '초급' },
+          { label: '아역배우 Class', level: '중급' },
+          { label: '아티스트 Class', level: '고급' },
+        ],
         title: '레벨 테스트',
       },
       {
@@ -318,7 +327,7 @@ function educationSystemCards(
       },
       {
         body:
-          `${centerName} 교육팀으로 작품의 시놉시스나 대본, 혹은 오디션 대본을 보내주시면 배우앤배움의 오디션 전문 1:1 강사진이 작품의 흐름과 감독 및 작가의 성향, 전작 정보를 분석해 오디션 전략교육을 진행합니다. 특히 최종 오디션에 가까워지면 연기자, 소속사 매니저, 전문강사, 배우앤배움 원장이 회의를 통해 작품에서 바라는 캐릭터 정보를 취합하여 완성도 있는 오디션을 볼 수 있도록 준비합니다.`,
+          `소속사는 위탁연기자의 외부 오디션을 진행하는 경우, ${centerName} 교육팀으로 작품의 시놉시스나 대본, 혹은 오디션 대본을 보내주시면 됩니다. 배우앤배움의 오디션전문 1:1 강사진은 현재 미팅이 진행되고 있는 전체 드라마, 영화의 흐름을 파악하고 있으며, 해당 오디션에서 연기자들이 경쟁력을 갖출 수 있도록 감독 및 작가의 성향이나 전작에 대한 정보를 분석해 이에 맞춘 오디션 전략교육이 이루어집니다. 특히 최종 오디션에 가까워지면 연기자, 소속사 매니저, 전문강사, 배우앤배움 원장이 회의를 통해 작품에서 바라는 캐릭터 등의 정보를 취합하여 완성도 있는 오디션을 볼 수 있도록 준비합니다.`,
         id: '03',
         note: '※ 일반 수강생의 경우에도 외부 오디션 시 동일하게 진행됩니다.',
         title: '오디션 준비',
@@ -356,21 +365,21 @@ function educationSystemCards(
     },
     {
       body:
-        '소속사는 위탁연기자의 외부 오디션을 진행하는 경우, 배우앤배움 교육팀으로 해당 작품의 시놉시스나 대본, 혹은 오디션 대본을 보내주시면 됩니다. 해당 오디션에서 연기자들이 경쟁력을 갖출 수 있도록 감독 및 작가의 성향이나 전작에 대한 정보를 분석해 이에 맞춘 오디션 전략교육이 이루어집니다.',
+        `소속사는 위탁연기자의 외부 오디션을 진행하는 경우, ${centerName} 교육팀으로 해당 작품의 시놉시스나 대본, 혹은 오디션 대본을 보내주시면 됩니다. 배우앤배움의 오디션전문 1:1 강사진은 현재 미팅이 진행되고 있는 전체 드라마, 영화의 흐름을 파악하고 있으며, 해당 오디션에서 연기자들이 경쟁력을 갖출 수 있도록 감독 및 작가의 성향이나 전작에 대한 정보를 분석해 이에 맞춘 오디션 전략교육이 이루어집니다. 특히 최종 오디션에 가까워지면 연기자, 소속사 매니저, 전문강사, 배우앤배움 원장이 회의를 통해 작품에서 바라는 캐릭터 등의 정보를 취합하여 완성도 있는 오디션을 볼 수 있도록 준비합니다.`,
       id: '03',
       note: '※ 일반 수강생의 경우에도 외부 오디션 시 동일하게 진행됩니다.',
       title: '오디션 준비',
     },
     {
       body:
-        '배역 확정 시 1:1 작품코치진이 투입됩니다. 연출진의 작품의도와 원하는 전체 캐릭터 등 기본적인 내용을 파악한 후 코치진은 배우와 함께 개인 캐릭터 분석을 시작으로 대본리딩을 시작하게 됩니다.',
+        '배역 확정 시 1:1 작품코치진이 투입됩니다. 연출진의 작품의도와 원하는 전체 캐릭터 등 기본적인 내용을 파악한 후 코치진은 배우와 함께 개인 캐릭터 분석을 시작으로 대본리딩을 시작하게 됩니다. 작품의 전체 흐름 속에서 각 장면의 의도와 상황을 분석해 배우가 돋보이면서도 장면의 몰입도를 높일 수 있는 연기를 준비합니다. 배우앤배움 작품코치진은 첫번째 작품 연출진의 의도, 두번째 배우가 원하는 캐릭터, 세번째 소속사에서 원하는 부분들을 수렴해 배우의 전체적인 컨셉이나 연기의 톤을 결정하며, 작품이 끝날 때까지 배우는 모든 연기 부분에 있어 체계적인 시스템으로 관리됩니다.',
       id: '04',
       note: '※ 소속사가 없는 배우의 경우에도 코치진과 작품 준비를 하게 됩니다.',
       title: '작품 준비',
     },
     {
       body:
-        '배우가 성장하는 과정을 보여드리기 위한 연기 영상자료를 제공해 드립니다. 배우앤배움은 다양한 각도에서 엔터사 및 연기자를 보조하는 역할을 수행합니다.',
+        '배우가 성장하는 과정을 보여드리기 위한 연기 영상자료를 제공해 드립니다. 특히 미디어 콘텐츠 계열사 ㈜비앤비 콘텐츠를 통해 수준 있는 영상퀄리티로 연기자의 여러 가지 모습들을 담아낼 수 있습니다. 배우앤배움은 다양한 각도에서 엔터사 및 연기자를 보조하는 역할을 수행합니다.',
       cta: { href: `/${center}/profile-production`, label: '영상제작 서비스' },
       id: '05',
       title: '영상제작지원',
@@ -379,57 +388,90 @@ function educationSystemCards(
 }
 
 function EducationSystemCard({ card }: { card: EducationSystemCardData }) {
+  const hasDetailSteps =
+    card.steps?.some((step) => typeof step === 'string' && step.length > 1) ?? false
+
   return (
-    <article className="section-trust-actor-system-card flex min-h-[340px] flex-col rounded-xl bg-white/[0.06] p-7 md:p-8">
-      <p className="type-headline-l font-black leading-none text-white/20">{card.id}</p>
-      <div className="mt-10 flex flex-1 flex-col">
-        <h3 className="type-title-s font-bold leading-[1.5] text-white">{card.title}</h3>
-        <p className="mt-3 type-body-s leading-[1.5] text-white/60">{card.body}</p>
-        {card.steps ? <EducationSystemSteps steps={card.steps} /> : null}
-        {card.note ? <p className="mt-auto pt-8 type-body-s text-white/60">{card.note}</p> : null}
-        {card.cta ? (
-          <Link
-            className="mt-auto inline-flex w-fit items-center rounded-full border border-white/40 px-5 py-3 type-label-l font-semibold leading-[1.2] text-white transition-colors hover:border-brand hover:text-brand"
-            href={card.cta.href}
-          >
-            {card.cta.label}
-            <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
-          </Link>
-        ) : null}
+    <article className="section-trust-actor-system-card border-b border-white/15 py-12 md:py-14">
+      <div className="flex flex-col gap-7 md:flex-row md:gap-1">
+        <div className="section-trust-actor-system-card__label flex shrink-0 flex-col gap-1 md:w-[200px]">
+          <p className="type-headline-s font-bold leading-[1.2] text-brand">{card.id}</p>
+          <h3 className="type-title-s font-bold leading-[1.5] text-white">{card.title}</h3>
+        </div>
+        <div className="section-trust-actor-system-card__body flex min-w-0 flex-1 flex-col gap-7 md:px-6">
+          <div className="flex flex-col gap-4">
+            <p
+              className={
+                hasDetailSteps
+                  ? 'type-title-s font-bold leading-normal text-white'
+                  : 'type-body-m leading-relaxed text-white/60'
+              }
+            >
+              {card.body}
+            </p>
+            {card.steps ? <EducationSystemSteps steps={card.steps} /> : null}
+          </div>
+          {card.note ? (
+            <p className="type-body-s leading-[1.5] text-white/60">{card.note}</p>
+          ) : null}
+          {card.cta ? (
+            <Link
+              className="inline-flex w-fit items-center rounded-full border border-white/40 px-5 py-3 type-label-l font-semibold leading-[1.2] text-white transition-colors hover:border-brand hover:text-brand"
+              href={card.cta.href}
+            >
+              {card.cta.label}
+              <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
+            </Link>
+          ) : null}
+        </div>
       </div>
     </article>
   )
 }
 
-function EducationSystemSteps({ steps }: { steps: string[] }) {
-  const levelSteps = steps.every((step) => step.length === 1)
+function EducationSystemSteps({ steps }: { steps: EducationSystemStep[] }) {
+  const levelSteps = steps.every((step) => typeof step !== 'string' || step.length === 1)
 
   if (levelSteps) {
     return (
-      <div className="mt-5 grid grid-cols-5 gap-1">
-        {steps.map((step) => (
-          <div
-            className="grid h-20 place-items-center rounded-xl border border-white/10 text-center"
-            key={step}
-          >
-            <span className="block type-headline-s font-black uppercase leading-none text-white">
-              {step}
-            </span>
-            <span className="mt-1 block type-caption-s font-medium text-white/50">class</span>
-          </div>
+      <div className="flex w-full items-stretch gap-1">
+        {steps.map((step, index) => (
+          <React.Fragment key={typeof step === 'string' ? step : step.label}>
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl border border-white/20 p-4 text-center text-white sm:gap-2 md:p-7">
+              {typeof step === 'string' ? (
+                <>
+                  <span className="block type-headline-s font-black uppercase leading-none">{step}</span>
+                  <span className="block type-caption-s font-medium leading-none text-white/60">
+                    class
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="block type-label-l font-extrabold leading-none text-brand">
+                    {step.level}
+                  </span>
+                  <span className="mt-2 block type-title-s font-extrabold leading-[1.25]">
+                    {step.label.replace(' Class', '\nClass')}
+                  </span>
+                </>
+              )}
+            </div>
+            {index < steps.length - 1 ? (
+              <div className="grid shrink-0 place-items-center self-stretch text-white/30">
+                <ChevronRight aria-hidden="true" className="size-3 sm:size-4" strokeWidth={1.8} />
+              </div>
+            ) : null}
+          </React.Fragment>
         ))}
       </div>
     )
   }
 
   return (
-    <ol className="mt-5 space-y-2 border-y border-white/10 py-5">
-      {steps.map((step, index) => (
-        <li className="flex gap-2 type-body-s leading-[1.5] text-white/60" key={step}>
-          <span className="shrink-0 rounded-full border border-white/10 px-3 py-1 type-caption-s font-medium leading-[1.35]">
-            {['첫번째', '두번째', '세번째', '네번째'][index] ?? `${index + 1}번째`}
-          </span>
-          <span>{step}</span>
+    <ol className="list-decimal space-y-2 pl-5 marker:font-semibold marker:text-white/60">
+      {steps.map((step) => (
+        <li className="pl-2 type-body-s leading-[1.5] text-white/60" key={String(step)}>
+          {typeof step === 'string' ? step : step.label}
         </li>
       ))}
     </ol>
@@ -438,14 +480,11 @@ function EducationSystemSteps({ steps }: { steps: string[] }) {
 
 function NoticeCard() {
   return (
-    <article className="section-trust-actor-system-card section-trust-actor-system-card--notice flex min-h-[240px] flex-col rounded-xl border border-white/20 bg-bg-footer p-7 md:p-8">
-      <Bell aria-hidden="true" className="size-8 text-white/25" strokeWidth={1.8} />
-      <div className="mt-10">
-        <h3 className="type-title-s font-bold leading-[1.5] text-white">Notice</h3>
-        <p className="mt-3 type-body-s leading-[1.5] text-white/60">
-          엔터테인먼트 위탁 교육에 관련한 일체의 할인 및 협찬은 불가합니다.
-        </p>
-      </div>
+    <article className="section-trust-actor-system-card section-trust-actor-system-card--notice flex items-center gap-3 pt-7 text-white/60">
+      <Megaphone aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.8} />
+      <p className="type-body-s leading-[1.5]">
+        엔터테인먼트 위탁 교육에 관련한 일체의 할인 및 협찬은 불가합니다.
+      </p>
     </article>
   )
 }
