@@ -8,6 +8,7 @@ import {
   isCurriculumCenter,
   type CurriculumFilters,
 } from '../../curriculum/CurriculumArchive'
+import { KidsCurriculumPage } from '../../curriculum/KidsCurriculumPage'
 
 type Args = {
   params: Promise<{
@@ -23,13 +24,23 @@ export const revalidate = 600
 
 export function generateStaticParams() {
   return Object.keys(centers)
-    .filter((slug): slug is keyof typeof centers => isCurriculumCenter(slug as keyof typeof centers))
+    .filter(
+      (slug): slug is keyof typeof centers =>
+        slug === 'kids' || isCurriculumCenter(slug as keyof typeof centers),
+    )
     .map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   const center = assertCenter(slug)
+
+  if (center === 'kids') {
+    return {
+      description: '배우앤배움 키즈센터의 영재, 아역배우, 아티스트 과정별 정적 커리큘럼 안내',
+      title: `커리큘럼 | ${getCenterLabel(center)}`,
+    }
+  }
 
   if (!isCurriculumCenter(center)) {
     return {
@@ -51,6 +62,10 @@ export default async function CenterCurriculumPage({
 }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
+
+  if (center === 'kids') {
+    return <KidsCurriculumPage />
+  }
 
   if (!isCurriculumCenter(center)) {
     notFound()
