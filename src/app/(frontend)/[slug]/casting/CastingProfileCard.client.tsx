@@ -63,7 +63,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
       <DialogContent className="section-casting-profile-dialog z-[60] flex h-[min(760px,calc(100vh-48px))] max-w-[920px] flex-col overflow-hidden border-0 bg-white p-0">
         <DialogHeader className="section-casting-profile-dialog__header shrink-0 flex-row items-start justify-between gap-5 border-b border-neutral-200 bg-white px-6 py-6 text-left md:px-10">
           <div className="min-w-0">
-            <p className="mb-3 type-label-m font-bold leading-[1.4] text-brand">
+            <p className="mb-2 type-label-m font-bold leading-[1.4] text-brand">
               CASTING DIRECTOR
             </p>
             <DialogTitle className="type-headline-l font-extrabold leading-[1.3] tracking-normal text-neutral-900">
@@ -109,10 +109,10 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
                       className="section-casting-profile-dialog__career-item grid gap-2 border-b border-neutral-200 pb-5 last:border-b-0 last:pb-0 md:grid-cols-[72px_minmax(0,1fr)] md:gap-5"
                       key={`${item.title}-${index}`}
                     >
-                      <p className="type-title-s font-extrabold leading-[1.45] text-neutral-900">
+                      <p className="type-title-m font-bold leading-normal text-neutral-900">
                         {item.title || '이력'}
                       </p>
-                      <p className="whitespace-pre-line type-body-m font-medium leading-[1.7] text-neutral-600">
+                      <p className="whitespace-pre-line type-body-m font-medium leading-[1.7] text-neutral-500">
                         {item.content || '등록된 상세 이력이 없습니다.'}
                       </p>
                     </li>

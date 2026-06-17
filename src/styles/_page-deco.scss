@@ -2,4 +2,5 @@
 
 .page-deco {
   --page-deco-size: #{fluid-clamp(220px, 360px)};
+  z-index: 1;
 }

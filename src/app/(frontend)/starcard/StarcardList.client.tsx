@@ -132,7 +132,7 @@ function StarcardModal({
       <DialogContent className="starcard-partner-modal__panel flex h-[min(820px,calc(100vh-80px))] max-w-[920px] flex-col overflow-hidden border-0 p-0">
         <DialogHeader className="starcard-partner-modal__header shrink-0 flex-row items-start justify-between gap-5 border-b border-foreground/10 bg-background px-6 py-6 text-left md:px-10">
           <div className="min-w-0">
-            <p className="mb-3 type-label-m font-bold leading-[1.4] text-brand">
+            <p className="mb-2 type-label-m font-bold leading-[1.4] text-brand">
               {categoryLabel(item.category)}
             </p>
             <div className="starcard-partner-modal__title-row flex min-w-0 items-start md:items-center gap-4">
