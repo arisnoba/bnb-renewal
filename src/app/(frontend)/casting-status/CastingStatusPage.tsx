@@ -19,9 +19,9 @@ type CastingStatusPageProps = {
   center: CenterSlug
 }
 
-const HERO_POSTER_COUNT = 15
+const HERO_POSTER_COUNT = 21
 const HERO_POSTER_CENTER_INDEX = Math.floor(HERO_POSTER_COUNT / 2)
-const HERO_POSTER_COLUMNS = 5
+const HERO_POSTER_COLUMNS = 7
 const HERO_POSTER_SLOT_ORDER = getHeroPosterSlotOrder()
 
 export async function CastingStatusPage({ center }: CastingStatusPageProps) {
@@ -113,15 +113,23 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
 
 function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }) {
   if (items.length === 0) {
-    return <div className="absolute inset-0 bg-neutral-950" aria-hidden="true" />
+    return (
+      <div
+        className="hero-pattern hero-pattern--edge-dim section-casting-status-hero__visual absolute inset-0 bg-neutral-950"
+        aria-hidden="true"
+      />
+    )
   }
 
   return (
-    <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
-      <div className="absolute left-1/2 top-1/2 grid w-[210vw] -translate-x-1/2 -translate-y-1/2 grid-cols-5 gap-2 opacity-55 md:w-[92vw] md:rotate-[-4deg] md:scale-110 md:gap-4">
+    <div
+      aria-hidden="true"
+      className="hero-pattern hero-pattern--edge-dim section-casting-status-hero__visual absolute inset-0 overflow-hidden"
+    >
+      <div className="hero-pattern__grid section-casting-status-hero__poster-grid absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
         {items.map((item, index) => (
           <div
-            className="relative aspect-[2/3] overflow-hidden bg-neutral-900"
+            className="hero-pattern__item section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-neutral-900"
             key={`${item.id}-${index}`}
           >
             <Image
@@ -129,7 +137,7 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
               className="size-full object-cover"
               fill
               loading={index === HERO_POSTER_CENTER_INDEX || index < 4 ? 'eager' : 'lazy'}
-              sizes="(max-width: 767px) 42vw, 18vw"
+              sizes="(max-width: 767px) 34vw, 13vw"
               src={item.imageUrl}
               unoptimized
             />

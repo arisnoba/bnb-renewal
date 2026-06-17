@@ -126,16 +126,20 @@ export default async function CastingPage({ params }: Args) {
         className="section-casting-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <div className="absolute left-1/2 top-1/2 h-[760px] w-[1280px] max-w-none -translate-x-1/2 -translate-y-1/2 rotate-[-5.5deg] md:h-[1050px] md:w-[1900px] xl:h-[1269px] xl:w-[2406px]">
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="size-full object-cover opacity-65"
-            fill
-            priority
-            sizes="100vw"
-            src="/assets/casting/hero-posters.png"
-          />
+        <div
+          aria-hidden="true"
+          className="hero-pattern hero-pattern--edge-dim section-casting-hero__visual absolute inset-0 overflow-hidden"
+        >
+          <div className="hero-pattern__media absolute left-1/2 top-1/2 h-[760px] w-[1280px] max-w-none rounded-2xl -translate-x-1/2 -translate-y-1/2 rotate-[-5.5deg] md:h-[1050px] md:w-[1900px] xl:h-[1269px] xl:w-[2406px]">
+            <Image
+              alt=""
+              className="size-full object-cover opacity-65"
+              fill
+              priority
+              sizes="100vw"
+              src="/assets/casting/hero-posters.png"
+            />
+          </div>
         </div>
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
