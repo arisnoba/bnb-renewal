@@ -25,7 +25,7 @@ const categoryLabels = {
   casting: '캐스팅/프로필',
   exam: '입시',
   starcard: '스타카드',
-  etc: '기타',
+  etc: '이용방법',
 } satisfies Record<NonNullable<Faq['category']>, string>
 
 type FaqCategory = keyof typeof categoryLabels

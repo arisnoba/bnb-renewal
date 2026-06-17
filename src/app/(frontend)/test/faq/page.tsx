@@ -182,7 +182,7 @@ function categoryLabel(value: Faq['category']) {
     admission: '입학/상담',
     casting: '캐스팅/프로필',
     class: '수업/과정',
-    etc: '기타',
+    etc: '이용방법',
     exam: '입시',
     starcard: '스타카드',
     tuition: '수강료/할인',

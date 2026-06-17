@@ -27,7 +27,7 @@ const faqCategoryOptions = [
   { label: '캐스팅/프로필', value: 'casting' },
   { label: '입시', value: 'exam' },
   { label: '스타카드', value: 'starcard' },
-  { label: '기타', value: 'etc' },
+  { label: '이용방법', value: 'etc' },
 ]
 
 const answerModeOptions = [
