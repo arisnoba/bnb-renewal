@@ -15,9 +15,12 @@ import type {
 } from '@/payload-types'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 import React from 'react'
+
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 type ScreenAppearancesArchiveProps = {
   center: CenterSlug
@@ -41,6 +44,7 @@ type ScreenAppearanceListItem = Pick<
   | 'publishedAt'
   | 'roleName'
   | 'slug'
+  | 'thumbnailPath'
   | 'title'
 >
 
@@ -52,7 +56,7 @@ type ScreenAppearancesPageResult = {
 }
 
 const pageSize = 12
-const heroImageLimit = 12
+const heroImageLimit = 24
 const listAnchorId = 'screen-appearances-list'
 
 export async function ScreenAppearancesArchive({
@@ -170,7 +174,12 @@ export async function ScreenAppearancesArchive({
   )
 }
 
-function HeroImageWall({ images }: { images: PayloadMedia[] }) {
+type ScreenAppearanceHeroImage = {
+  id: ScreenAppearance['id']
+  src: string
+}
+
+function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
   if (images.length === 0) {
     return <div className="absolute inset-0 bg-neutral-950" aria-hidden="true" />
   }
@@ -178,20 +187,21 @@ function HeroImageWall({ images }: { images: PayloadMedia[] }) {
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-0 grid grid-cols-3 gap-2 opacity-70 blur-[0.2px] md:-inset-x-12 md:-top-20 md:grid-cols-6 md:rotate-[-4deg] md:scale-110 md:gap-4"
+      className="absolute -inset-x-8 -top-12 grid grid-cols-3 gap-2 opacity-70 blur-[0.2px] md:-inset-x-12 md:-top-24 md:grid-cols-6 md:rotate-[-4deg] md:scale-110 md:gap-4"
     >
       {images.map((image, index) => (
         <div
-          className="relative min-h-[190px] overflow-hidden bg-neutral-900 md:min-h-[260px]"
+          className="relative aspect-4/3 overflow-hidden bg-neutral-900"
           key={`${image.id}-${index}`}
         >
-          <Media
+          <Image
+            alt=""
+            className="size-full object-cover grayscale"
             fill
-            htmlElement={null}
-            imgClassName="size-full object-cover grayscale"
-            pictureClassName="block size-full"
-            resource={image}
-            size="(max-width: 767px) 34vw, 18vw"
+            loading={index < 6 ? 'eager' : 'lazy'}
+            sizes="(max-width: 767px) 34vw, 18vw"
+            src={image.src}
+            unoptimized
           />
         </div>
       ))}
@@ -212,6 +222,7 @@ function ScreenAppearanceCard({
     .filter(Boolean)
     .join(' · ')
   const screenImage = getScreenImage(appearance)
+  const thumbnailUrl = normalizeImageUrl(appearance.thumbnailPath)
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
   const airDate = formatDate(appearance.airDateLabel)
@@ -238,8 +249,18 @@ function ScreenAppearanceCard({
         </div>
       </div>
 
-      <div className="section-screen-appearances-card__media relative aspect-205/116 overflow-hidden bg-neutral-100">
-        {screenImage ? (
+      <div className="section-screen-appearances-card__media relative aspect-4/3 overflow-hidden bg-neutral-100">
+        {thumbnailUrl ? (
+          <Image
+            alt={`${projectTitle} 대표 이미지`}
+            className="size-full object-cover transition duration-300 group-hover:scale-[1.035]"
+            fill
+            loading="lazy"
+            sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 280px"
+            src={thumbnailUrl}
+            unoptimized
+          />
+        ) : screenImage ? (
           <Media
             fill
             htmlElement={null}
@@ -436,16 +457,17 @@ async function findHeroImages({
 }: {
   payload: Awaited<ReturnType<typeof getPayload>>
   where: Where
-}) {
+}): Promise<ScreenAppearanceHeroImage[]> {
   const result = await payload
     .find({
       collection: 'screen-appearances',
-      depth: 1,
+      depth: 0,
       limit: heroImageLimit,
       overrideAccess: false,
       pagination: false,
       select: {
-        bodyImages: true,
+        id: true,
+        thumbnailPath: true,
       },
       sort: '-publishedAt',
       where,
@@ -455,8 +477,20 @@ async function findHeroImages({
     }))
 
   return result.docs
-    .map((appearance) => getScreenImage(appearance as Pick<ScreenAppearance, 'bodyImages'>))
-    .filter((image): image is PayloadMedia => Boolean(image))
+    .map((appearance) => {
+      const item = appearance as Pick<ScreenAppearance, 'id' | 'thumbnailPath'>
+      const src = normalizeImageUrl(item.thumbnailPath)
+
+      if (!src) {
+        return null
+      }
+
+      return {
+        id: item.id,
+        src,
+      }
+    })
+    .filter((image): image is ScreenAppearanceHeroImage => Boolean(image))
 }
 
 const screenAppearancesArchiveSelect = {
@@ -474,6 +508,7 @@ const screenAppearancesArchiveSelect = {
   publishedAt: true,
   roleName: true,
   slug: true,
+  thumbnailPath: true,
   title: true,
 } as const
 
@@ -601,4 +636,18 @@ function formatDate(value: string | null | undefined) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function normalizeImageUrl(value: string | null | undefined) {
+  const trimmed = value?.trim()
+
+  if (!trimmed) {
+    return ''
+  }
+
+  if (/^(https?:)?\/\//.test(trimmed) || trimmed.startsWith('/')) {
+    return getMediaUrl(trimmed)
+  }
+
+  return getMediaUrl(`/${trimmed.replace(/^\/+/, '')}`)
 }
