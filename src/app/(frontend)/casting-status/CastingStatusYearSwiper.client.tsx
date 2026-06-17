@@ -310,7 +310,10 @@ function CastingStatusYearSection({
         spaceBetween={16}
       >
         {items.map((item) => (
-          <SwiperSlide className="h-auto! w-55! sm:w-62! lg:w-68!" key={item.id}>
+          <SwiperSlide
+            className="h-auto! w-full! sm:w-[calc((100%_-_16px)_/_2)]! md:w-[calc((100%_-_32px)_/_3)]! lg:w-[calc((100%_-_48px)_/_4)]!"
+            key={item.id}
+          >
             <CastingStatusPosterCard center={center} item={item} />
           </SwiperSlide>
         ))}
@@ -363,7 +366,7 @@ function CastingStatusPosterCard({
 
   return (
     <Link
-      className="group section-casting-status-poster relative flex h-full min-h-[320px] overflow-hidden rounded-xl bg-neutral-200 shadow-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand sm:min-h-[360px] lg:min-h-[400px]"
+      className="group section-casting-status-poster relative flex aspect-2/3 w-full overflow-hidden rounded-xl bg-neutral-200 shadow-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
       href={href}
     >
       {item.imageUrl ? (
@@ -372,7 +375,7 @@ function CastingStatusPosterCard({
           className="section-casting-status-poster__image absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-[1.035]"
           fill
           loading="lazy"
-          sizes="(max-width: 639px) 220px, (max-width: 1023px) 248px, 275px"
+          sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 767px) calc((100vw - 56px) / 2), (max-width: 1023px) calc((100vw - 72px) / 3), calc((min(100vw, 1160px) - 88px) / 4)"
           src={item.imageUrl}
           unoptimized
         />
