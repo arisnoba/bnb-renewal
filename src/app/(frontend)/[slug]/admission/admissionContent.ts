@@ -428,10 +428,8 @@ const highteenTuitionTables: ContentTable[] = [
     caption: ['기초생활수급자 장학 수강료는 아래 장학제도 표의 청소년 장학지원 기준을 참고하세요.'],
     columns: teenTuitionColumns,
     rows: [
-      { course: '청소년반', day: '월목', duration: '420분', fee: '450,000원', time: '오후 18:00~21:30' },
-      { course: '청소년반', day: '화금', duration: '420분', fee: '450,000원', time: '오후 18:00~21:30' },
-      { course: '청소년반', day: '토', duration: '330분', fee: '350,000원', time: '오전 10:00~오후 16:30' },
-      { course: '청소년반', day: '일', duration: '330분', fee: '350,000원', time: '오전 10:00~오후 16:30' },
+      { course: '청소년반', day: '주중 2회 (월목 / 화금)', duration: '420분', fee: '450,000원', time: '오후 18:00~21:30' },
+      { course: '청소년반', day: '주말 1회 (토 / 일)', duration: '330분', fee: '350,000원', time: '오전 10:00~오후 16:30' },
     ],
     title: '수업 시간대 및 수강료',
   },
@@ -442,7 +440,7 @@ const highteenTuitionTables: ContentTable[] = [
     ],
     columns: scholarshipColumns,
     rows: [
-      { benefit: '수강료표 기준 별도 장학 수강료 적용', target: '기초생활수급자', type: '청소년 장학지원' },
+      { benefit: '주2회 : 405,000원, 주1회: 315,000원', target: '기초생활수급자', type: '청소년 장학지원' },
       { benefit: '5% 장학혜택 적용', target: '18개월 초과 재학', type: '수료자 장학지원' },
       { benefit: '10% 장학혜택 적용', target: '30개월 초과 재학', type: '수료자 장학지원' },
     ],

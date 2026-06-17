@@ -309,7 +309,7 @@ export default async function CastingSystemPage({ params }: Args) {
           <div className="section-casting-system-list__items flex flex-col gap-16 md:gap-20 col-span-1 lg:col-span-2">
             {castingSystemItems.map((item, index) => (
               <article
-                className="section-casting-system-card scroll-mt-[var(--page-top-offset)]"
+                className="section-casting-system-card scroll-mt-(--page-top-offset)"
                 id={item.id}
                 key={item.id}
               >

@@ -64,7 +64,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-procedure section-p-b-base scroll-mt-[var(--page-top-offset)] bg-white"
+        className="section-admission-procedure section-p-b-sm scroll-mt-(--page-top-offset) bg-white"
         id="procedure"
       >
         <div className="container">
@@ -82,7 +82,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-tuition section-p-block-base scroll-mt-[var(--page-top-offset)] bg-neutral-50"
+        className="section-admission-tuition section-p-block-sm scroll-mt-(--page-top-offset) bg-neutral-50"
         id="tuition"
       >
         <div className="container">
@@ -94,7 +94,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-leave section-p-block-sm scroll-mt-[var(--page-top-offset)] bg-white"
+        className="section-admission-leave section-p-block-sm scroll-mt-(--page-top-offset) bg-white"
         id="leave-completion"
       >
         <div className="container">
@@ -106,7 +106,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-refund section-p-block-sm scroll-mt-[var(--page-top-offset)] bg-neutral-50"
+        className="section-admission-refund section-p-block-sm scroll-mt-(--page-top-offset) bg-neutral-50"
         id="refund"
       >
         <div className="container">
@@ -349,7 +349,7 @@ function TableCaptionContent({
         <dl className={cn('section-admission-table__notes grid gap-1', caption ? 'mt-2' : '')}>
           {notes.map((note) => (
             <div
-              className="flex scroll-mt-[var(--page-top-offset)] items-baseline gap-2"
+              className="flex scroll-mt-(--page-top-offset) items-baseline gap-2"
               id={footnoteId(note.marker)}
               key={note.marker}
             >

@@ -123,7 +123,7 @@ export async function ScreenAppearancesArchive({
       </section>
 
       <section
-        className="section-screen-appearances-list section-p-block-base scroll-mt-[var(--page-top-offset)] bg-white text-neutral-900"
+        className="section-screen-appearances-list section-p-block-base scroll-mt-(--page-top-offset) bg-white text-neutral-900"
         aria-labelledby="screen-appearances-list-title"
         id={listAnchorId}
       >
