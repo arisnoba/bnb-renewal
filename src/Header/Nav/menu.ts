@@ -239,12 +239,10 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
 }
 
 function supportItems(center: CenterSlug): HeaderMenuItem[] {
-  const howToUseHref = center === 'art' ? `/${center}/how-to-use` : centerHref(center, 'how-to-use')
-
   return [
     { href: `/${center}/news`, label: 'NEWS&NOTICE' },
     { href: `/${center}/admission`, label: '입학안내' },
-    { href: howToUseHref, label: '학원100%이용법' },
+    { href: `/${center}/how-to-use`, label: '학원100%이용법' },
     { href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' },
     { href: `/${center}/faq`, label: '자주하는 질문' },
   ]

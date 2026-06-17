@@ -233,6 +233,17 @@ test('all center support menus match art support labels', () => {
   }
 })
 
+test('all center support menus link to the how-to-use page', () => {
+  for (const center of Object.keys(centers) as Parameters<typeof getHeaderMenu>[0][]) {
+    assert.equal(
+      getHeaderMenu(center)
+        .find((group) => group.key === 'support')
+        ?.items.find((item) => item.label === '학원100%이용법')?.href,
+      `/${center}/how-to-use`,
+    )
+  }
+})
+
 test('avenue mega menu uses the avenue one-page structure', () => {
   const labels = labelsFor('avenue')
 
