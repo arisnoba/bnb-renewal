@@ -55,6 +55,9 @@ const nextConfig = {
         pathname: '/assets/profile-production/**',
       },
       {
+        pathname: '/assets/facilities/**',
+      },
+      {
         pathname: '/api/media/file/**',
       },
       {

@@ -70,7 +70,7 @@ function avenueMenu(): HeaderMenuGroup[] {
       items: [
         { href: centerAboutHref('avenue'), label: '애비뉴센터 소개' },
         { href: '/avenue#partners', label: '제휴업체' },
-        { href: '/avenue#facilities', label: '시설 안내' },
+        { href: facilitiesHref('avenue'), label: '시설 안내' },
       ],
       key: 'about',
       label: '배우앤배움',
@@ -110,7 +110,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: '/art#company', label: '회사 소개' },
       { href: centerAboutHref(center), label: '센터 소개' },
-      { href: centerHref(center, 'facilities'), label: '시설 안내' },
+      { href: facilitiesHref(center), label: '시설 안내' },
       { href: `/${center}/map`, label: '오시는 길' },
     ]
   }
@@ -118,7 +118,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
   return [
     { href: '/art#company', label: '회사 소개' },
     { href: centerAboutHref(center), label: '센터 소개' },
-    { href: centerHref(center, 'facilities'), label: '시설 안내' },
+    { href: facilitiesHref(center), label: '시설 안내' },
     { href: `/${center}/map`, label: '오시는 길' },
   ]
 }
@@ -260,6 +260,10 @@ function entertainmentHref(center: CenterSlug) {
 
 function centerAboutHref(center: CenterSlug) {
   return `/${center}/about`
+}
+
+function facilitiesHref(center: CenterSlug) {
+  return `/${center}/facilities`
 }
 
 function curriculumHref(center: CenterSlug) {

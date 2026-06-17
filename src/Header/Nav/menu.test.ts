@@ -154,7 +154,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
   assert.deepEqual(itemsForGroup('highteen', 'about'), [
     { href: '/art#company', label: '회사 소개' },
     { href: '/highteen/about', label: '센터 소개' },
-    { href: '/highteen#facilities', label: '시설 안내' },
+    { href: '/highteen/facilities', label: '시설 안내' },
     { href: '/highteen/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'education'), [
@@ -194,7 +194,7 @@ test('kids mega menu matches the approved kids structure', () => {
   assert.deepEqual(itemsForGroup('kids', 'about'), [
     { href: '/art#company', label: '회사 소개' },
     { href: '/kids/about', label: '센터 소개' },
-    { href: '/kids#facilities', label: '시설 안내' },
+    { href: '/kids/facilities', label: '시설 안내' },
     { href: '/kids/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'education'), [
@@ -239,6 +239,12 @@ test('avenue mega menu uses the avenue one-page structure', () => {
   assert.ok(labels.includes('애비뉴센터 소개'))
   assert.ok(labels.includes('제휴업체'))
   assert.ok(labels.includes('캐스팅/모집 안내'))
+  assert.equal(
+    getHeaderMenu('avenue')
+      .find((group) => group.key === 'about')
+      ?.items.find((item) => item.label === '시설 안내')?.href,
+    '/avenue/facilities',
+  )
   assert.equal(
     getHeaderMenu('avenue')
       .find((group) => group.key === 'education')

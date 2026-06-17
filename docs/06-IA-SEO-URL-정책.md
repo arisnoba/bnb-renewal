@@ -266,7 +266,7 @@ redirects: [
 |---|-------------|-----|------|------|
 | 1-1 | 회사 소개 | `/art#company` | static | 공통 회사 소개 |
 | 1-2 | 센터 소개 | `/exam/about` | static | |
-| 1-3 | 시설 안내 | `/exam#facilities` | static | |
+| 1-3 | 시설 안내 | `/exam/facilities` | static | |
 | 1-4 | 오시는 길 | `/exam/map` | static | 지도 embed 포함 가능 |
 
 ### 교육
