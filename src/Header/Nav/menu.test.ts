@@ -115,7 +115,7 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
       ['about', '/exam/about'],
       ['education', '/exam/exam-management'],
       ['casting', '/exam/university-results'],
-      ['artist', '/exam#exam-passed-reviews'],
+      ['artist', '/exam/exam-passed-reviews'],
       ['support', '/exam/news'],
     ],
   )
@@ -130,8 +130,8 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam/arts-high-results', label: '예술고등학교' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'artist'), [
-    { href: '/exam#exam-passed-reviews', label: '합격 후기' },
-    { href: '/exam#exam-passed-videos', label: '합격 영상' },
+    { href: '/exam/exam-passed-reviews', label: '합격 후기' },
+    { href: '/exam/exam-passed-videos', label: '합격 영상' },
   ])
   assert.ok(labels.includes('특별한 시스템'))
   assert.ok(!labels.includes('대표인사말'))

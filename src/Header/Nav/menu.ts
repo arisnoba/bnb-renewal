@@ -49,7 +49,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       label: center === 'exam' ? '합격현황' : '캐스팅',
     },
     {
-      href: center === 'exam' ? centerHref(center, 'exam-passed-reviews') : centerHref(center, 'management'),
+      href: center === 'exam' ? examPassedReviewsHref(center) : centerHref(center, 'management'),
       items: artistItems(center),
       key: 'artist',
       label: center === 'exam' ? '합격자소개' : '아티스트',
@@ -209,8 +209,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
 function artistItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: centerHref(center, 'exam-passed-reviews'), label: '합격 후기' },
-      { href: centerHref(center, 'exam-passed-videos'), label: '합격 영상' },
+      { href: examPassedReviewsHref(center), label: '합격 후기' },
+      { href: examPassedVideosHref(center), label: '합격 영상' },
     ]
   }
 
@@ -258,6 +258,14 @@ function universityResultsHref(center: CenterSlug) {
 
 function artsHighResultsHref(center: CenterSlug) {
   return `/${center}/arts-high-results`
+}
+
+function examPassedReviewsHref(center: CenterSlug) {
+  return `/${center}/exam-passed-reviews`
+}
+
+function examPassedVideosHref(center: CenterSlug) {
+  return `/${center}/exam-passed-videos`
 }
 
 function entertainmentHref(center: CenterSlug) {

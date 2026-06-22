@@ -33,6 +33,11 @@ function remotePatternFromURL(value) {
 const remotePatterns = [
   remotePatternFromURL(serverURL),
   remotePatternFromURL(r2PublicBaseURL),
+  {
+    hostname: 'img.youtube.com',
+    pathname: '/vi/**',
+    protocol: 'https',
+  },
 ].filter(Boolean)
 
 /** @type {import('next').NextConfig} */
