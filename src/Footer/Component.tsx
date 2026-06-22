@@ -75,7 +75,7 @@ export async function Footer() {
           </p>
           <div className="grid gap-8 sm:grid-cols-2 lg:gap-5">
             <FooterLinkGroup title="고객 안내 센터">
-              <ul className="flex flex-col gap-4">
+              <ul className="flex flex-col gap-2">
                 {customerLinks.map((item) => (
                   <li key={item.label}>
                     <Link
