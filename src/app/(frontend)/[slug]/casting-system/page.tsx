@@ -27,10 +27,8 @@ type CastingSystemItemId =
   | "pr"
   | "audition"
   | "director-meeting"
-  | "car-support"
-  | "filming-care"
+  | "filming-support"
   | "press"
-  | "portal"
   | "agency";
 
 type CastingSystemCenterConfig = {
@@ -56,10 +54,8 @@ function castingSystemCenterAssets(
   return {
     agency: `/assets/casting-system/${center}/system11.jpg`,
     audition: `/assets/casting-system/${center}/system05.jpg`,
-    "car-support": `/assets/casting-system/${center}/system07.jpg`,
     "director-meeting": `/assets/casting-system/${center}/system06.jpg`,
-    "filming-care": `/assets/casting-system/${center}/system08.jpg`,
-    portal: `/assets/casting-system/${center}/system10.jpg`,
+    "filming-support": `/assets/casting-system/${center}/system07.jpg`,
     pr: `/assets/casting-system/${center}/system04.jpg`,
     press: `/assets/casting-system/${center}/system09.jpg`,
     profile: `/assets/casting-system/${center}/system01.jpg`,
@@ -74,10 +70,8 @@ const castingSystemConfigs = {
     images: {
       agency: "/assets/casting-system/agency.png",
       audition: "/assets/casting-system/audition.png",
-      "car-support": "/assets/casting-system/car-support.png",
       "director-meeting": "/assets/casting-system/director-meeting.png",
-      "filming-care": "/assets/casting-system/filming-care.png",
-      portal: "/assets/casting-system/portal.png",
+      "filming-support": "/assets/casting-system/car-support.png",
       pr: "/assets/casting-system/pr.png",
       press: "/assets/casting-system/press.png",
       profile: "/assets/casting-system/profile.png",
@@ -174,22 +168,12 @@ function getCastingSystemItems(center: CenterSlug): CastingSystemItem[] {
     },
     {
       description: [
-        "매니지먼트BNB는 수강생의 외부 드라마와 영화의 오디션에 학원 카니발밴 차량으로 현장지원을 나가고 있습니다. 또한, 광고에이전시 영상미팅은 매주 정해진 스케줄과 인원을 맞춰 매니저지원 및 차량지원을 하고 있으며, 특히 드라마나 영화에 캐스팅된 연기자들의 촬영에서는 매니저와 차량지원 뿐만 아니라 담당 헤어, 메이크업, 스타일리스트 지원까지 진행하고 있습니다.",
-        "* 매니지먼트 인력과 차량 스케줄로 인해 우선시되는 촬영현장에 지원이 먼저 이루어지며, 모든 촬영에 배우앤배움의 재원이 투입되지는 않습니다.",
+        "드라마·영화·광고 촬영 및 외부 오디션 현장에서 연기자들이 안정적으로 일정에 참여할 수 있도록 현장 케어 시스템을 운영하고 있습니다. 주요 일정에 따라 필요 시 매니저 동행, 현장 동선 안내, 헤어·메이크업·스타일링 협업을 지원하며 배우가 촬영 환경에 원활히 적응할 수 있도록 돕습니다.",
       ],
-      englishTitle: "Backup Of Cars",
-      id: "car-support",
-      image: config.images["car-support"],
-      title: "차량 지원",
-    },
-    {
-      description: [
-        "드라마·영화·광고에 캐스팅되어 촬영장에 나가게 되면, 배우가 생각할 부분은 연기 이외에도 많은 부분이 있습니다. 촬영 콜 타임부터 헤어, 메이크업, 의상 등의 기본적인 체크와 함께 예정에 없던 현장상황에 적절하게 대처해야 합니다. 매니지먼트BNB는 촬영현장 경험이 부족한 연기자들을 위해 촬영현장 케어 시스템으로 첫 촬영이나, 특수한 촬영 또는 현장 케어가 필요한 연기자의 스케줄에 매니저가 동행하여 배우가 연기에 집중할 수 있게 돕고, 촬영 분량을 완성도 있게 끝마칠 수 있도록 지원하고 있습니다.",
-      ],
-      englishTitle: "Filming Care",
-      id: "filming-care",
-      image: config.images["filming-care"],
-      title: "촬영현장 케어",
+      englishTitle: "Filming Support",
+      id: "filming-support",
+      image: config.images["filming-support"],
+      title: "촬영현장 지원",
     },
     {
       description: [
@@ -199,15 +183,6 @@ function getCastingSystemItems(center: CenterSlug): CastingSystemItem[] {
       id: "press",
       image: config.images.press,
       title: "언론홍보",
-    },
-    {
-      description: [
-        "일정 수준 이상의 출연으로 인해 경력이 생긴 수강생들에 한하여 네이버나 다음 등 국내 대형 포털 사이트에 인물검색등록을 진행하고 있습니다. 작품출연이 진행되고 있는 수강생들은 매니지먼트BNB에 간단한 동의서 작성과 함께 포털사이트 인물검색등록 신청을 하시면, 매니지먼트팀에서 절차에 따라 포털사이트 측에 서류를 접수합니다. 차후 필요한 사항이 충족되면 등록이 완료됩니다.",
-      ],
-      englishTitle: "Portal Registration",
-      id: "portal",
-      image: config.images.portal,
-      title: "포털사이트 인물검색등록",
     },
     {
       description: [
@@ -236,8 +211,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const center = assertCenter(slug);
 
   return {
-    description: `${getCenterLabel(center)} 프로필 제작, 영상 제작, 오디션, 현장 케어까지 이어지는 캐스팅 시스템 안내`,
-    title: `캐스팅 시스템 | ${getCenterLabel(center)}`,
+    description: `${getCenterLabel(center)} 프로필 제작, 영상 제작, 오디션, 현장 케어까지 이어지는 배우 케어 시스템 안내`,
+    title: `배우 케어 시스템 | ${getCenterLabel(center)}`,
   };
 }
 
@@ -282,7 +257,7 @@ export default async function CastingSystemPage({ params }: Args) {
             id="casting-system-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
-            <span className="block">시스템</span>
+            <span className="block">배우 케어 시스템</span>
           </h1>
         </div>
       </section>

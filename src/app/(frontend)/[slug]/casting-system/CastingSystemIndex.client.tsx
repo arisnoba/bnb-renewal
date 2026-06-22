@@ -74,7 +74,7 @@ export function CastingSystemIndex({ items }: CastingSystemIndexProps) {
 
   return (
     <nav
-      aria-label="캐스팅 시스템 목차"
+      aria-label="배우 케어 시스템 목차"
       className="section-casting-system-list__nav mt-12 flex flex-col gap-3 md:mt-16"
     >
       {items.map((item) => {

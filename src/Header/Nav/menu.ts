@@ -84,7 +84,7 @@ function avenueMenu(): HeaderMenuGroup[] {
     {
       href: castingHref('avenue'),
       items: [
-        { href: castingHref('avenue'), label: '드라마 광고 캐스팅' },
+        { href: castingHref('avenue'), label: '캐스팅 센터' },
         { href: '/avenue#portfolio', label: '프로필 촬영' },
       ],
       key: 'casting',
@@ -177,8 +177,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
-      { href: castingHref(center), label: '드라마 광고 캐스팅' },
-      { href: castingSystemHref(center), label: '캐스팅 시스템' },
+      { href: castingHref(center), label: '캐스팅 센터' },
+      { href: castingSystemHref(center), label: '배우 케어 시스템' },
       { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
     ]
   }
@@ -187,8 +187,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: screenAppearancesHref(center), label: '드라마ㆍ광고 출연장면' },
       { href: castingStatusHref(center), label: '진행중인 캐스팅 출연현황' },
-      { href: castingHref(center), label: '드라마 광고 캐스팅' },
-      { href: castingSystemHref(center), label: '캐스팅 시스템' },
+      { href: castingHref(center), label: '캐스팅 센터' },
+      { href: castingSystemHref(center), label: '배우 케어 시스템' },
       { href: centerHref(center, 'monthly-schedule'), label: '이달의 촬영ㆍ오디션 스케줄' },
     ]
   }
@@ -197,8 +197,8 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
-      { href: castingHref(center), label: '드라마 광고 캐스팅' },
-      { href: castingSystemHref(center), label: '캐스팅 시스템' },
+      { href: castingHref(center), label: '캐스팅 센터' },
+      { href: castingSystemHref(center), label: '배우 케어 시스템' },
       { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
     ]
   }

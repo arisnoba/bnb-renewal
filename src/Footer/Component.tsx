@@ -69,11 +69,9 @@ export async function Footer() {
       <div className="mx-auto flex w-full container flex-col gap-10 px-5 py-16 md:px-8 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-5">
           <p className="text-[32px] font-semibold leading-[1.2] tracking-normal">
-            배움의 시작이
+            배우의 서사가
             <br />
-            당신만의 무대로
-            <br />
-            이어집니다.
+            시작되는 곳
           </p>
           <div className="grid gap-8 sm:grid-cols-2 lg:gap-5">
             <FooterLinkGroup title="고객 안내 센터">

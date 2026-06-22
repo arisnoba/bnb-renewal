@@ -48,20 +48,20 @@ const castingCompanies = [
     marquee: 'BNB Casting BNB Casting',
   },
   {
-    directorCompanyNames: ['C&A Agency', 'CNA Agency', 'C&A', 'CNA', '씨앤에이'],
+    directorCompanyNames: ['CNA Agency', 'CNA', '씨앤에이'],
     description: commonDescription,
     headline: '국내 드라마 점유율 상위의 드라마 캐스팅 에이전시로 구성되어 있으며,',
     id: 'cna-agency',
-    label: 'C&A Agency',
-    marquee: 'C&A Agency CNA Agency',
+    label: 'CNA Agency',
+    marquee: 'CNA Agency CNA Agency',
   },
   {
-    directorCompanyNames: ['ARCO LAB', 'ARCO', '아르코랩', '유캐스팅', 'U CASTING'],
+    directorCompanyNames: ['ARKO LAB', 'ARKO', '아르코랩', '유캐스팅', 'U CASTING'],
     description: commonDescription,
     headline: '아르코 랩은 국내 드라마 점유율 상위의 드라마 캐스팅 에이전시로 구성되어 있으며,',
-    id: 'arco-lab',
-    label: 'ARCO LAB',
-    marquee: 'ARCO LAB ARCO LAB',
+    id: 'arko-lab',
+    label: 'ARKO LAB',
+    marquee: 'ARKO LAB ARKO LAB',
   },
   {
     directorCompanyNames: ['IMGround', 'IM Ground'],
@@ -88,7 +88,7 @@ const castingCompanies = [
 ] satisfies CastingCompany[]
 
 const profileOrderByCompany = {
-  'arco-lab': ['김건보', '홍진희'],
+  'arko-lab': ['김건보', '홍진희'],
   'bnb-casting': ['오재동', '양형서', '신주현'],
   'bx-model-agency': ['이덕화', '김하나'],
   'cna-agency': [],
@@ -104,8 +104,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const center = assertCastingCenter(assertCenter(slug))
 
   return {
-    description: `${getCenterLabel(center)} 드라마 광고 캐스팅 에이전시 안내`,
-    title: `드라마 광고 캐스팅 | ${getCenterLabel(center)}`,
+    description: `${getCenterLabel(center)} 캐스팅 센터 안내`,
+    title: `캐스팅 센터 | ${getCenterLabel(center)}`,
   }
 }
 
@@ -164,7 +164,7 @@ export default async function CastingPage({ params }: Args) {
       </section>
 
       <section
-        aria-label="드라마 광고 캐스팅 회사"
+        aria-label="캐스팅 센터 회사"
         className="section-casting-companies flex flex-col gap-[120px] overflow-hidden bg-white section-p-block-lg text-neutral-900"
       >
         {companies.map((company) => (
