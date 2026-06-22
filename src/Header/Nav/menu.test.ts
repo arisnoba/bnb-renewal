@@ -113,14 +113,14 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     menu.map((group) => [group.key, group.href]),
     [
       ['about', '/exam/about'],
-      ['education', '/exam/exam-management'],
+      ['education', '/exam/management'],
       ['casting', '/exam/university-results'],
-      ['artist', '/exam/exam-passed-reviews'],
+      ['artist', '/exam/passed-reviews'],
       ['support', '/exam/news'],
     ],
   )
   assert.deepEqual(itemsForGroup('exam', 'education'), [
-    { href: '/exam/exam-management', label: '입시 매니지먼트' },
+    { href: '/exam/management', label: '입시 매니지먼트' },
     { href: '/exam/special-system', label: '특별한 시스템' },
     { href: '/exam/teachers', label: '교육진 소개' },
     { href: '/exam/curriculum', label: '커리큘럼' },
@@ -130,8 +130,8 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam/arts-high-results', label: '예술고등학교' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'artist'), [
-    { href: '/exam/exam-passed-reviews', label: '합격 후기' },
-    { href: '/exam/exam-passed-videos', label: '합격 영상' },
+    { href: '/exam/passed-reviews', label: '합격 후기' },
+    { href: '/exam/passed-videos', label: '합격 영상' },
   ])
   assert.ok(labels.includes('특별한 시스템'))
   assert.ok(!labels.includes('대표인사말'))

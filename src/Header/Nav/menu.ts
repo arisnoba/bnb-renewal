@@ -37,7 +37,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       label: '배우앤배움',
     },
     {
-      href: center === 'exam' ? `/${center}/exam-management` : centerHref(center, 'education'),
+      href: center === 'exam' ? `/${center}/management` : centerHref(center, 'education'),
       items: educationItems(center),
       key: 'education',
       label: '교육',
@@ -126,7 +126,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
 function educationItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: `/${center}/exam-management`, label: '입시 매니지먼트' },
+      { href: `/${center}/management`, label: '입시 매니지먼트' },
       { href: `/${center}/special-system`, label: '특별한 시스템' },
       { href: teachersHref(center), label: '교육진 소개' },
       { href: curriculumHref(center), label: '커리큘럼' },
@@ -261,11 +261,11 @@ function artsHighResultsHref(center: CenterSlug) {
 }
 
 function examPassedReviewsHref(center: CenterSlug) {
-  return `/${center}/exam-passed-reviews`
+  return `/${center}/passed-reviews`
 }
 
 function examPassedVideosHref(center: CenterSlug) {
-  return `/${center}/exam-passed-videos`
+  return `/${center}/passed-videos`
 }
 
 function entertainmentHref(center: CenterSlug) {

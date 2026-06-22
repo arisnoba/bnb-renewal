@@ -24,7 +24,7 @@ type ExamPassedReviewDetail = ExamPassedReview & {
 }
 
 const center: CenterSlug = 'exam'
-const pathPrefix = '/exam/exam-passed-reviews'
+const pathPrefix = '/exam/passed-reviews'
 
 export async function generateExamPassedReviewStaticParams() {
   try {

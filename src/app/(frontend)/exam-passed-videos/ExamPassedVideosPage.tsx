@@ -324,7 +324,7 @@ function ExamPassedVideosPaginationLink({
 }
 
 function examPassedVideosHref({ page }: { page?: number }) {
-  const pathname = '/exam/exam-passed-videos'
+  const pathname = '/exam/passed-videos'
 
   if (!page || page <= 1) {
     return `${pathname}#${listAnchorId}`

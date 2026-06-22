@@ -1,7 +1,7 @@
 # IA SEO URL 정책
 
 > 목적: 센터별 URL, SEO, canonical, sitemap, redirect 기준을 한 문서로 관리한다.
-> 마지막 갱신: 2026-06-15
+> 마지막 갱신: 2026-06-22
 
 ## 기본 결론
 
@@ -259,6 +259,7 @@ redirects: [
 
 > 기준: 배우앤배움 입시센터 (`/exam`)
 > 현재 GNB 기준: 교육 / 합격현황 / 합격자소개는 입시센터 전용 메뉴 구조를 사용한다.
+> URL 경로는 `/exam` 하위에서 `exam-` 접두어를 반복하지 않는다.
 
 ### 배우앤배움
 
@@ -273,7 +274,7 @@ redirects: [
 
 | # | 한글 메뉴명 | URL | 유형 | 비고 |
 |---|-------------|-----|------|------|
-| 2-1 | 입시 매니지먼트 | `/exam#exam-management` | static | |
+| 2-1 | 입시 매니지먼트 | `/exam/management` | static | |
 | 2-2 | 특별한 시스템 | `/exam#special-system` | static | 레거시 `new_sys02` 계열 |
 | 2-3 | 교육진 소개 | `/exam/teachers` | dynamic | 강사 목록·상세 |
 | 2-4 | 커리큘럼 | `/exam#curriculum` | static | 입시반/재입시반/편입반/예비 입시반/예고 입시반을 통합 노출 |
@@ -289,8 +290,8 @@ redirects: [
 
 | # | 한글 메뉴명 | URL | 유형 | 비고 |
 |---|-------------|-----|------|------|
-| 4-1 | 합격 후기 | `/exam#exam-passed-reviews` | dynamic | `exam-passed-reviews` |
-| 4-2 | 합격 영상 | `/exam#exam-passed-videos` | dynamic | `exam-passed-videos` |
+| 4-1 | 합격 후기 | `/exam/passed-reviews` | dynamic | `exam-passed-reviews`, 상세 `/{slug}` |
+| 4-2 | 합격 영상 | `/exam/passed-videos` | dynamic | `exam-passed-videos` |
 
 ### 지원센터
 

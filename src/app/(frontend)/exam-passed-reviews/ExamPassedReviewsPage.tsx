@@ -380,7 +380,7 @@ function ExamPassedReviewsPaginationLink({
 }
 
 function examPassedReviewsHref({ page }: { page?: number }) {
-  const pathname = '/exam/exam-passed-reviews'
+  const pathname = '/exam/passed-reviews'
 
   if (!page || page <= 1) {
     return `${pathname}#${listAnchorId}`
@@ -390,7 +390,7 @@ function examPassedReviewsHref({ page }: { page?: number }) {
 }
 
 function examPassedReviewDetailHref(slug: string) {
-  return `/exam/exam-passed-reviews/${encodeURIComponent(slug)}`
+  return `/exam/passed-reviews/${encodeURIComponent(slug)}`
 }
 
 function paginationWindow(page: number, totalPages: number) {

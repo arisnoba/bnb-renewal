@@ -34,8 +34,10 @@ const routeCenters: Partial<Record<string, readonly CenterSlug[]>> = {
   casting: ['art', 'avenue', 'highteen', 'kids'],
   curriculum: ['art', 'highteen', 'kids'],
   entertainment: ['art', 'avenue', 'highteen', 'kids'],
-  'exam-management': ['exam'],
   'grade-system': ['art', 'highteen', 'kids'],
+  management: ['exam'],
+  'passed-reviews': ['exam'],
+  'passed-videos': ['exam'],
   'special-system': ['exam'],
   'special-lecture': ['highteen'],
 }
