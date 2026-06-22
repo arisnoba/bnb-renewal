@@ -113,15 +113,15 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     menu.map((group) => [group.key, group.href]),
     [
       ['about', '/exam/about'],
-      ['education', '/exam#exam-management'],
+      ['education', '/exam/exam-management'],
       ['casting', '/exam#university-results'],
       ['artist', '/exam#exam-passed-reviews'],
       ['support', '/exam/news'],
     ],
   )
   assert.deepEqual(itemsForGroup('exam', 'education'), [
-    { href: '/exam#exam-management', label: '입시 매니지먼트' },
-    { href: '/exam#special-system', label: '특별한 시스템' },
+    { href: '/exam/exam-management', label: '입시 매니지먼트' },
+    { href: '/exam/special-system', label: '특별한 시스템' },
     { href: '/exam/teachers', label: '교육진 소개' },
     { href: '/exam#curriculum', label: '커리큘럼' },
   ])

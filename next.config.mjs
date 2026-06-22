@@ -58,6 +58,12 @@ const nextConfig = {
         pathname: '/assets/profile-production/**',
       },
       {
+        pathname: '/assets/exam-management/**',
+      },
+      {
+        pathname: '/assets/special-system/**',
+      },
+      {
         pathname: '/assets/facilities/**',
       },
       {
