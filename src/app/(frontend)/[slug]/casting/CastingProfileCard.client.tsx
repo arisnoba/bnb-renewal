@@ -44,13 +44,13 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
             <h3 className="section-casting-profile__name type-title-s font-bold leading-[1.2] text-neutral-900">
               {profile.name}
             </h3>
-            <p className="section-casting-profile__role type-body-s font-bold leading-[1.5] text-neutral-900">
+            <p className="section-casting-profile__role type-body-s font-bold leading-normal text-neutral-900">
               {profile.role}
             </p>
           </div>
           <DialogTrigger asChild>
             <button
-              className="section-casting-profile__link inline-flex w-fit items-center gap-2 type-body-s font-bold leading-[1.5] text-neutral-900 transition hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+              className="section-casting-profile__link inline-flex w-fit items-center gap-2 type-body-s font-bold leading-normal text-neutral-900 transition hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
               type="button"
             >
               자세히 보기

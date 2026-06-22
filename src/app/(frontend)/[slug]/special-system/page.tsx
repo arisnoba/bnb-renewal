@@ -201,7 +201,7 @@ export default async function SpecialSystemPage({ params }: Args) {
                   </h3>
                 </header>
 
-                <div className="section-special-system-card__intro mt-8 flex flex-col gap-3 type-body-m font-medium leading-[1.5]">
+                <div className="section-special-system-card__intro mt-8 flex flex-col gap-3 type-body-m font-medium leading-normal">
                   <p className="text-white">{item.description[0]}</p>
                   <p className="text-white/40">{item.description[1]}</p>
                 </div>
@@ -238,7 +238,7 @@ export default async function SpecialSystemPage({ params }: Args) {
                             {detail.title}
                           </h4>
                         </header>
-                        <p className="section-special-system-detail__description type-body-m font-medium leading-[1.5] text-white/55">
+                        <p className="section-special-system-detail__description type-body-m font-medium leading-normal text-white/55">
                           {detail.description}
                         </p>
                       </section>

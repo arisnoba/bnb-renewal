@@ -43,7 +43,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       label: '교육',
     },
     {
-      href: center === 'exam' ? centerHref(center, 'university-results') : centerHref(center, 'casting'),
+      href: center === 'exam' ? universityResultsHref(center) : centerHref(center, 'casting'),
       items: castingItems(center),
       key: 'casting',
       label: center === 'exam' ? '합격현황' : '캐스팅',
@@ -168,8 +168,8 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 function castingItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: centerHref(center, 'university-results'), label: '대학교' },
-      { href: centerHref(center, 'arts-high-results'), label: '예술고등학교' },
+      { href: universityResultsHref(center), label: '대학교' },
+      { href: artsHighResultsHref(center), label: '예술고등학교' },
     ]
   }
 
@@ -250,6 +250,14 @@ function supportItems(center: CenterSlug): HeaderMenuItem[] {
 
 function centerHref(center: CenterSlug, anchor: string) {
   return `/${center}#${anchor}`
+}
+
+function universityResultsHref(center: CenterSlug) {
+  return `/${center}/university-results`
+}
+
+function artsHighResultsHref(center: CenterSlug) {
+  return `/${center}/arts-high-results`
 }
 
 function entertainmentHref(center: CenterSlug) {

@@ -39,24 +39,48 @@ npm install pretendard
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 ```
 
-### 타이포그래피 스케일 (피그마 GNB/버튼 기준)
+### 타이포그래피 스케일 (피그마 기준)
 
-| 역할 | Size | Weight | Line Height |
-|------|------|--------|-------------|
-| GNB 메뉴 | 16px | 900 (Black) | 135% |
-| 버튼 텍스트 | 14px | 700 (Bold) | 135% |
+피그마 로컬 Text styles를 기준으로 `src/styles/_type-scale.scss`에 매핑한다. 크기는 rem 설명이 아니라 **px 원값**으로 확인한다. 특히 12px/13px/14px 보조 텍스트를 임의로 더 작게 줄이지 않는다.
+
+| Figma style | 코드 토큰 | Size | 기본 Weight | Line Height |
+|------|------|------:|------:|------:|
+| Display/XL | `type-display-xl` | 60px | 800 | 120% |
+| Display/L | `type-display-l` | 48px | 700 | 135% |
+| Display/M | `type-display-m` | 36px | 700 | 130% |
+| Display/S | `type-display-s` | 32px | 600 | 125% |
+| Headline/XL | `type-headline-xl` | 42px | 800 | 120% |
+| Headline/L | `type-headline-l` | 32px | 700 | 135% |
+| Headline/M | `type-headline-m` | 28px | 700 | 150% |
+| Headline/S | `type-headline-s` | 24px | 700 | 120% |
+| Title/L | `type-title-l` | 20px | 700 | 140% |
+| Title/M | `type-title-m` | 18px | 700 | 140% |
+| Title/S | `type-title-s` | 16px | 700 | 150% |
+| Body/L | `type-body-l` | 18px | 400 | 150% |
+| Body/M | `type-body-m` | 16px | 500 | 150% |
+| Body/S | `type-body-s` | 14px | 400 | 150% |
+| Label/L | `type-label-l` | 16px | 600 | 120% |
+| Label/M | `type-label-m` | 14px | 600 | 120% |
+| Label/S | `type-label-s` | 12px | 700 | 120% |
+| Caption/L Medium | `type-caption-l` | 12px | 500 | 135% |
+| Caption/M | `type-caption-m` | 13px | 500 | 120% |
+| Caption/S | `type-caption-s` | 12px | 400 | 140% |
+
+GNB 메뉴처럼 컴포넌트 고유 style이 별도로 잡힌 경우에는 해당 컴포넌트 구현에서 명시하되, 공통 텍스트 크기 자체를 새로 만들지 않는다.
 
 ### 타입 스케일 토큰 (`type-{role}-{size}`)
 
 공통 텍스트 크기의 단일 정의처는 `src/styles/_type-scale.scss`다. 피그마 "Text-size styles"(role × size)를 클래스로 매핑했고, 크기 변경은 마크업이 아니라 이 파일의 `$type-scale` 맵에서만 한다.
 
-- 클래스: `type-display-{xl,l,m,s}`, `type-headline-{xl,l,m,s}`, `type-title-{l,m,s}`, `type-body-{l,m,s}`, `type-label-{l,m,s}`, `type-caption-{m,s}`
-- 토큰은 **font-size + 디폴트 line-height + 디폴트 font-weight**만 책임진다. 굵기/서체 세부 조정은 Tailwind로 조합한다. 예: 피그마 `headline---l--semi-bold` → `type-headline-l font-semibold`, `title---m--extra-bold` → `type-title-m font-extrabold`. 피그마의 weight/서체 변형 스타일을 별도 클래스로 만들지 않는다.
-- display/headline은 fluid(clamp), title 이하(body/label/caption)는 고정 크기다. 피그마 값은 데스크톱(max) 기준이며, **모바일 min 값은 임의 초안 상태** — 모바일 시안 확정 시 맵에서 교체.
+- 클래스: `type-display-{xl,l,m,s}`, `type-headline-{xl,l,m,s}`, `type-title-{l,m,s}`, `type-body-{l,m,s}`, `type-label-{l,m,s}`, `type-caption-{l,m,s}`
+- 토큰은 **font-size + 디폴트 line-height + 디폴트 font-weight**만 책임진다. 굵기/서체 세부 조정은 Tailwind로 조합한다. 예: 피그마 `Headline/L SemiBold` → `type-headline-l font-semibold leading-tight`, `Title/M ExtraBold` → `type-title-m font-extrabold`. 피그마의 weight/서체 변형 스타일을 별도 클래스로 만들지 않는다.
+- display/headline은 fluid(clamp)로 모바일 min과 데스크톱 max를 가진다. **max 값은 반드시 피그마 Text style px 값과 일치**해야 한다. title 이하(body/label/caption)는 피그마 px 값 그대로 고정 크기다.
 - `@layer components`에 선언되어 있어 Tailwind 유틸리티(`font-bold`, `text-sm` 등)가 토큰 디폴트를 항상 덮을 수 있다.
-- 새 텍스트 크기가 필요하면 임의 `text-[Npx]`를 만들기 전에 기존 슬롯 재사용을 먼저 검토하고, 같은 값이 반복되면 슬롯을 추가한다.
+- 150% 행간은 `leading-[1.5]`가 아니라 `leading-normal`을 쓴다. 타입 토큰의 기본 line-height가 150%인 경우 별도 `leading-*`를 덧붙이지 않는다.
+- `leading-[1.2]`, `leading-[1.35]` 같은 unitless arbitrary는 피그마 특수 비율을 토큰 밖에서 꼭 맞춰야 할 때만 제한적으로 허용한다. 반복되면 타입 토큰 또는 별도 문서화된 유틸로 승격한다.
+- 새 텍스트 크기가 필요하면 임의 `text-[Npx]`를 만들기 전에 위 표의 슬롯 재사용을 먼저 검토하고, 같은 값이 반복되면 슬롯을 추가한다.
 
-> 피그마 caption 그룹은 위계 역전이 있어(`caption---l--medium` 0.75rem < `caption---m` 0.81rem) 코드에서는 m(13px) > s(12px)로 정리함 — 디자이너 확인 필요.
+> 피그마 caption 그룹은 이름과 크기 위계가 섞여 있다. `Caption/L Medium`은 12px이고 `Caption/M`은 13px이다. 코드에서는 style 이름을 보존해 `type-caption-l`/`m`/`s`로 매핑한다.
 
 ---
 
@@ -262,7 +286,7 @@ Tailwind로 작성해야 하는 것:
 - 섹션 상하 여백: `section-p-block-base`, `section-p-t-sm`, `section-p-b-lg` 같은 공용 section padding 유틸
 - 컨테이너 조합: `container`, `container-sm`, `container-fluid`
 - 일반 색상/테두리/배경: `bg-background`, `text-foreground`, `border-border`, `bg-brand`, `text-brand`
-- 일반 타이포그래피: `text-base`, `text-[48px]`, `font-bold`, `leading-[1.35]`
+- 일반 타이포그래피: `type-body-m`, `type-display-l`, `font-bold`, `leading-normal`
 - 일반 상태 스타일: `hover:*`, `focus-visible:*`, `data-[active=true]:*` 등 Tailwind로 표현 가능한 상태
 
 의미 클래스는 함께 붙인다. 예를 들어 FAQ 페이지는 다음처럼 작성한다.
@@ -302,7 +326,7 @@ Tailwind로 작성해야 하는 것:
 
 - 새 스타일 파일은 기본 선택지가 아니다. 먼저 Tailwind로 해결하고, 아래 예외에 해당할 때만 추가한다.
 - SCSS mixin 대신 네이티브 CSS를 우선 사용한다. SCSS는 이미 프로젝트에 쓰는 파일이 있거나 중첩이 꼭 필요할 때만 쓴다.
-- Tailwind arbitrary value(`text-[48px]`, `leading-[1.35]`)는 피그마의 고정값을 반영할 때 허용한다.
+- Tailwind arbitrary value(`text-[48px]`, `leading-[1.35]`)는 피그마의 고정값을 반영할 때만 허용한다. 단, 150% 행간은 `leading-[1.5]` 대신 `leading-normal`을 사용한다.
 - `main > section > .container*` 구조의 대표 섹션 상하 여백은 `section-p-{t,b,block}-{xs,sm,base,lg}` 유틸을 우선 사용한다. 기준 최대값은 `xs: 80px`, `sm: 100px`, `base: 120px`, `lg: 160px`이며, `src/styles/_section-spacing.scss`에서 `fluid-space`로 관리한다.
 - 별도 CSS/SCSS를 추가하더라도 레이아웃과 spacing은 가능한 한 Tailwind className에 남겨 둔다.
 

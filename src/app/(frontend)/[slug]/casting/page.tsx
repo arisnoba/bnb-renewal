@@ -206,7 +206,7 @@ function CastingCompanySection({
           <h2 className="section-casting-company__title max-w-[1120px] text-[30px] font-bold leading-[1.35] md:text-[48px]">
             {company.headline}
           </h2>
-          <div className="section-casting-company__description flex max-w-[1120px] flex-col gap-1 type-body-m font-medium leading-[1.5] text-neutral-500">
+          <div className="section-casting-company__description flex max-w-[1120px] flex-col gap-1 type-body-m font-medium leading-normal text-neutral-500">
             {company.description.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}

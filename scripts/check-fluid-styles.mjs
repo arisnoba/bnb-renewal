@@ -48,6 +48,13 @@ const RULES = [
     test: line => /\btext-\[\d+px\]/.test(line),
     message: '임의 텍스트 크기(text-[Npx]) - 반복되면 슬롯 추가 검토',
   },
+  {
+    id: 'no-leading-1-5-arbitrary',
+    level: 'error',
+    files: /\.(tsx|jsx)$/,
+    test: line => /(?:^|[\s"'`])(?:[a-z]+:)*leading-\[(?:1\.50?|150%)\]/.test(line),
+    message: '150% 행간은 leading-[1.5]가 아니라 leading-normal 사용',
+  },
 ]
 
 function collectFiles(dir) {

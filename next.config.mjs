@@ -61,6 +61,9 @@ const nextConfig = {
         pathname: '/assets/exam-management/**',
       },
       {
+        pathname: '/assets/exam-results/**',
+      },
+      {
         pathname: '/assets/special-system/**',
       },
       {
