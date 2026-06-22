@@ -16,6 +16,7 @@ type NamedField = Field & {
   fields?: Field[]
   labels?: unknown
   required?: unknown
+  validate?: (value: unknown, options: Record<string, unknown>) => unknown
 }
 
 function getField(global: GlobalConfig, fieldName: string) {
@@ -60,4 +61,20 @@ test('footer center infos expose required center fields with row labels', () => 
   ]) {
     assert.equal(getNestedField(field, fieldName).required, true)
   }
+
+  for (const fieldName of ['youtubeUrl', 'naverBlogUrl', 'instagramUrl']) {
+    const socialField = getNestedField(field, fieldName)
+
+    assert.equal(socialField.type, 'text')
+    assert.equal(socialField.required, undefined)
+  }
+})
+
+test('footer center sns fields validate optional http URLs', async () => {
+  const field = getField(Footer, 'centerInfos')
+  const youtubeUrl = getNestedField(field, 'youtubeUrl')
+
+  assert.equal(await youtubeUrl.validate?.('', {}), true)
+  assert.equal(await youtubeUrl.validate?.('https://www.youtube.com/@bnb', {}), true)
+  assert.equal(await youtubeUrl.validate?.('/youtube', {}), 'http:// 또는 https:// URL만 입력할 수 있습니다.')
 })

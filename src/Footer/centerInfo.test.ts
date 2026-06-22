@@ -5,6 +5,7 @@ import {
   centerSlugFromPathname,
   footerAddressLines,
   footerCenterInfoForPathname,
+  footerSocialLinksForPathname,
   type FooterCenterInfo,
 } from './centerInfo'
 
@@ -18,8 +19,11 @@ const centerInfos: FooterCenterInfo[] = [
   {
     address: '서울특별시 강남구 입시로 1\n2층',
     centerName: '배우앤배움 입시센터 학원',
+    instagramUrl: 'https://www.instagram.com/bnb_exam',
+    naverBlogUrl: 'https://blog.naver.com/bnb_exam',
     operationRegistrationNumber: '제99999호',
     url: '/exam',
+    youtubeUrl: 'https://www.youtube.com/@bnb-exam',
   },
 ]
 
@@ -41,5 +45,25 @@ test('footerAddressLines renders company and selected center lines', () => {
     '배우앤배움 입시센터 학원 | 운영등록번호 : 제99999호',
     '서울특별시 강남구 입시로 1',
     '2층',
+  ])
+})
+
+test('footerSocialLinksForPathname renders selected center sns links', () => {
+  assert.deepEqual(footerSocialLinksForPathname(centerInfos, '/exam'), [
+    {
+      href: 'https://www.youtube.com/@bnb-exam',
+      icon: '/assets/footer/icon-youtube.png',
+      label: 'Youtube',
+    },
+    {
+      href: 'https://blog.naver.com/bnb_exam',
+      icon: '/assets/footer/icon-naver-blog.png',
+      label: 'Naver Blog',
+    },
+    {
+      href: 'https://www.instagram.com/bnb_exam',
+      icon: '/assets/footer/icon-instagram.png',
+      label: 'Instagram',
+    },
   ])
 })

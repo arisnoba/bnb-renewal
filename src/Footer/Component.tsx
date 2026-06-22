@@ -1,6 +1,5 @@
 import type { Footer as FooterData } from '@/payload-types'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { headers } from 'next/headers'
 import React from 'react'
@@ -8,6 +7,7 @@ import React from 'react'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { FooterAddress } from './Address.client'
 import { FooterLogo } from './FooterLogo.client'
+import { FooterSocialLinks } from './SocialLinks.client'
 import { centerSlugFromPathname } from './centerInfo'
 
 const fallbackFamilySites = [
@@ -16,13 +16,6 @@ const fallbackFamilySites = [
   { href: '/highteen', label: 'HIGH TEEN CENTER', name: '하이틴센터' },
   { href: '/kids', label: 'KIDS CENTER', name: '키즈센터' },
   { href: '/avenue', label: 'AVENUE CENTER', name: '애비뉴센터' },
-]
-
-const socialItems = [
-  { href: 'https://www.youtube.com/', icon: '/assets/footer/icon-youtube.png', label: 'Youtube' },
-  { href: 'https://www.instagram.com/', icon: '/assets/footer/icon-instagram.png', label: 'Instagram' },
-  { href: 'https://www.facebook.com/', icon: '/assets/footer/icon-facebook.png', label: 'Facebook' },
-  { href: 'https://blog.naver.com/', icon: '/assets/footer/icon-naver-blog.png', label: 'Naver Blog' },
 ]
 
 async function getFooterData() {
@@ -125,21 +118,7 @@ export async function Footer() {
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
             <FooterLinkGroup title="Social">
-              <ul className="flex flex-col gap-2">
-                {socialItems.map((item) => (
-                  <li key={item.label}>
-                    <a
-                      className="flex items-center gap-2 text-[#666] transition-colors hover:text-white"
-                      href={item.href}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <Image alt="" height={20} src={item.icon} width={20} />
-                      <span className="w-[142px] text-sm leading-normal">{item.label}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <FooterSocialLinks centerInfos={centerInfos} initialPathname={pathname} />
             </FooterLinkGroup>
           </div>
         </div>
