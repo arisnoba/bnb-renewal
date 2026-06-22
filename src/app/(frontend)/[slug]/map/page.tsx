@@ -1,8 +1,14 @@
 import type { Metadata } from 'next'
 
+import { footerCenterInfoMatchForCenter } from '@/Footer/centerInfo'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
-import { centerLocationList, centerLocations } from '@/lib/centerLocations'
+import {
+  centerLocationList,
+  centerLocations,
+  type CenterLocation,
+} from '@/lib/centerLocations'
+import { getCachedGlobal } from '@/utilities/getGlobals'
 
 import { MapContent } from './MapContent.client'
 
@@ -33,6 +39,7 @@ export default async function CenterMapPage({ params }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
   const decoIcons = getPageDecoIcons(2, `map-hero-${center}`)
+  const locations = await queryCenterLocations()
 
   return (
     <main className="page page-dark map-page" data-center={center}>
@@ -59,9 +66,31 @@ export default async function CenterMapPage({ params }: Args) {
         </div>
       </section>
 
-      <MapContent initialCenter={center} scriptUrl={naverMapScriptUrl} />
+      <MapContent initialCenter={center} locations={locations} scriptUrl={naverMapScriptUrl} />
     </main>
   )
+}
+
+async function queryCenterLocations(): Promise<CenterLocation[]> {
+  const footer = await getCachedGlobal('footer', 0)()
+  const centerInfos = footer.centerInfos ?? []
+
+  return centerLocationList.map((location) => {
+    const centerInfo = footerCenterInfoMatchForCenter(centerInfos, location.slug)
+    const address = mapAddress(centerInfo?.address) || location.address
+
+    return address === location.address ? location : { ...location, address }
+  })
+}
+
+function mapAddress(value: unknown) {
+  return typeof value === 'string'
+    ? value
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .join(' ')
+    : ''
 }
 
 function resolveNaverMapScriptUrl() {

@@ -2,7 +2,7 @@
 
 import type { CenterSlug } from '@/lib/centers'
 
-import { centerLocationList, centerLocations } from '@/lib/centerLocations'
+import type { CenterLocation } from '@/lib/centerLocations'
 import { cn } from '@/utilities/ui'
 import { MapPin, Phone, Printer } from 'lucide-react'
 import Image from 'next/image'
@@ -12,12 +12,14 @@ import { NaverMap } from './NaverMap.client'
 
 type MapContentProps = {
   initialCenter: CenterSlug
+  locations: CenterLocation[]
   scriptUrl: string | null
 }
 
-export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
+export function MapContent({ initialCenter, locations, scriptUrl }: MapContentProps) {
   const [selectedCenter, setSelectedCenter] = useState(initialCenter)
-  const selectedLocation = centerLocations[selectedCenter]
+  const selectedLocation =
+    locations.find((location) => location.slug === selectedCenter) ?? locations[0]!
 
   return (
     <section className="container section-p-block-base" data-center={selectedCenter}>
@@ -32,7 +34,7 @@ export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
         </div>
 
         <nav aria-label="센터 선택" className="flex flex-wrap gap-3">
-          {centerLocationList.map((location) => {
+          {locations.map((location) => {
             const isSelected = location.slug === selectedCenter
 
             return (
@@ -56,14 +58,14 @@ export function MapContent({ initialCenter, scriptUrl }: MapContentProps) {
       </div>
 
       <div className="flex flex-col gap-6">
-        <NaverMap location={selectedLocation} scriptUrl={scriptUrl} />
+        <NaverMap location={selectedLocation} locations={locations} scriptUrl={scriptUrl} />
         <CenterInfoCard location={selectedLocation} />
       </div>
     </section>
   )
 }
 
-function CenterInfoCard({ location }: { location: (typeof centerLocationList)[number] }) {
+function CenterInfoCard({ location }: { location: CenterLocation }) {
   return (
     <section className="section-map-info flex flex-col gap-8 rounded-xl bg-neutral-900 p-6 md:p-8 lg:flex-row lg:items-start">
       <div className="section-map-info__summary flex min-w-0 flex-col gap-6 md:flex-row lg:w-[631px] lg:shrink-0">

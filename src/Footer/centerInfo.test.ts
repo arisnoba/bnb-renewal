@@ -5,6 +5,7 @@ import {
   centerSlugFromPathname,
   footerAddressLines,
   footerCenterInfoForPathname,
+  footerCenterInfoMatchForCenter,
   footerSocialLinksForPathname,
   type FooterCenterInfo,
 } from './centerInfo'
@@ -37,6 +38,11 @@ test('footerCenterInfoForPathname selects center-specific footer information', (
 
   assert.equal(centerInfo.centerName, '배우앤배움 입시센터 학원')
   assert.equal(centerInfo.operationRegistrationNumber, '제99999호')
+})
+
+test('footerCenterInfoMatchForCenter returns only an exact center match', () => {
+  assert.equal(footerCenterInfoMatchForCenter(centerInfos, 'exam')?.address, '서울특별시 강남구 입시로 1\n2층')
+  assert.equal(footerCenterInfoMatchForCenter(centerInfos, 'kids'), null)
 })
 
 test('footerAddressLines renders company and selected center lines', () => {

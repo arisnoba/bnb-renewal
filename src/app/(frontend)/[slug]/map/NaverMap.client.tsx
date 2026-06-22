@@ -2,7 +2,6 @@
 
 import type { CenterLocation } from '@/lib/centerLocations'
 
-import { centerLocationList } from '@/lib/centerLocations'
 import { useEffect, useRef, useState } from 'react'
 
 type NaverLatLng = {
@@ -64,12 +63,13 @@ declare global {
 
 type NaverMapProps = {
   location: CenterLocation
+  locations: CenterLocation[]
   scriptUrl: string | null
 }
 
 const naverMapCustomStyleId = 'c4300a1b-6d48-49cd-8316-c3a91a0a7aa0'
 
-export function NaverMap({ location, scriptUrl }: NaverMapProps) {
+export function NaverMap({ location, locations, scriptUrl }: NaverMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<NaverMapInstance | null>(null)
   const markersRef = useRef<NaverMarker[]>([])
@@ -100,9 +100,9 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
         map.panTo(center)
 
         markersRef.current.forEach((marker) => marker.setMap(null))
-        markersRef.current = centerLocationList.map((centerLocation, index) => {
+        markersRef.current = locations.map((centerLocation, index) => {
           const isActive = centerLocation.slug === location.slug
-          const markerPosition = markerPositionFor(centerLocation, index)
+          const markerPosition = markerPositionFor(centerLocation, index, locations)
 
           return new maps.Marker({
             icon: {
@@ -125,7 +125,7 @@ export function NaverMap({ location, scriptUrl }: NaverMapProps) {
     return () => {
       isActive = false
     }
-  }, [location, scriptUrl])
+  }, [location, locations, scriptUrl])
 
   useEffect(() => {
     return () => {
@@ -220,8 +220,8 @@ function appendScript(src: string, onLoad: () => void, onError: () => void) {
   document.head.appendChild(script)
 }
 
-function markerPositionFor(location: CenterLocation, index: number) {
-  const sameCoordinateLocations = centerLocationList.filter((candidate) =>
+function markerPositionFor(location: CenterLocation, index: number, locations: CenterLocation[]) {
+  const sameCoordinateLocations = locations.filter((candidate) =>
     sameCoordinate(candidate, location),
   )
 

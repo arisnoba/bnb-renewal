@@ -45,13 +45,20 @@ export function footerCenterInfoForCenter(
   centerInfos: FooterCenterInfo[],
   center: CenterSlug | null,
 ) {
-  const targetName = center ? centers[center] : centers.art
-
   return (
-    centerInfos.find((item) => centerNameMatches(item.centerName, targetName)) ??
+    (center ? footerCenterInfoMatchForCenter(centerInfos, center) : null) ??
     centerInfos.find((item) => centerNameMatches(item.centerName, centers.art)) ??
     fallbackCenterInfo
   )
+}
+
+export function footerCenterInfoMatchForCenter(
+  centerInfos: FooterCenterInfo[],
+  center: CenterSlug,
+) {
+  const targetName = centers[center]
+
+  return centerInfos.find((item) => centerNameMatches(item.centerName, targetName)) ?? null
 }
 
 export function footerAddressLines(centerInfo: FooterCenterInfo) {
