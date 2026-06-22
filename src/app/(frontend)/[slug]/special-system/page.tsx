@@ -63,7 +63,7 @@ const specialSystemItems = [
       },
     ],
     id: 'education-support',
-    title: '수업 밖에서도 이어지는 입시 맞춤형 교육지원 시스템',
+    title: '수업 밖에서도 이어지는 \n입시 맞춤형 교육지원 시스템',
   },
 ] satisfies SpecialSystemItem[]
 
@@ -196,7 +196,7 @@ export default async function SpecialSystemPage({ params }: Args) {
                     icon={decoIcons[index + 2]}
                     size="57px"
                   />
-                  <h3 className="section-special-system-card__title whitespace-pre-line type-title-l font-bold leading-[1.2] text-white">
+                  <h3 className="section-special-system-card__title whitespace-pre-line type-title-l font-bold leading-1.4 text-white">
                     {item.title}
                   </h3>
                 </header>

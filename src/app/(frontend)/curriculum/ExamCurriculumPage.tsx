@@ -336,10 +336,10 @@ function ExamCurriculumTrackCard({ track }: { track: ExamCurriculumTrack }) {
         </p>
       </aside>
 
-      <div className="section-exam-curriculum-track__lessons border-t border-white/10 md:border-l md:border-t-0 md:col-span-2">
+      <div className="section-exam-curriculum-track__lessons flex flex-col border-t border-white/10 md:border-l md:border-t-0 md:col-span-2">
         {track.lessons.map((lesson, index) => (
           <div
-            className="section-exam-curriculum-lesson grid min-h-28 grid-cols-[minmax(0,1fr)_auto] items-center gap-6 border-b border-white/8 px-8 last:border-b-0 md:min-h-34 md:px-12"
+            className="section-exam-curriculum-lesson flex min-h-20 flex-1 items-center justify-between gap-6 border-b border-white/8 px-8 last:border-b-0 md:min-h-0 md:px-12"
             key={`${lesson.name}-${index}`}
           >
             <div className="flex min-w-0 items-center gap-6">
@@ -350,7 +350,7 @@ function ExamCurriculumTrackCard({ track }: { track: ExamCurriculumTrack }) {
                 {lesson.name}
               </p>
             </div>
-            <p className="type-caption-m font-semibold text-white/45">{lesson.duration}</p>
+            <p className="shrink-0 type-caption-m font-semibold text-white/45">{lesson.duration}</p>
           </div>
         ))}
       </div>
@@ -370,10 +370,10 @@ function ExamCurriculumRoadmap({ items }: { items: ExamCurriculumRoadmapItem[] }
       >
         단계별 로드맵
       </h2>
-      <ol className="section-exam-curriculum-roadmap__list mt-8 grid gap-1 md:grid-cols-3">
+      <ol className="section-exam-curriculum-roadmap__list mt-8 flex flex-col gap-1 md:flex-row md:flex-nowrap">
         {items.map((item) => (
           <li
-            className="section-exam-curriculum-roadmap__item bg-white/6 px-6 py-8 text-center"
+            className="section-exam-curriculum-roadmap__item bg-white/6 px-6 py-8 text-center md:min-w-0 md:flex-1 md:basis-0"
             key={`${item.step}-${item.title}`}
           >
             <p className="type-body-m font-bold text-brand">{item.step}</p>
