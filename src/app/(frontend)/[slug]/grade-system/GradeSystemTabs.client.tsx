@@ -1011,7 +1011,7 @@ function StepsPanel({ data }: { data: GradeSystemContent }) {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <section>
-        <h2 className="max-w-[900px] type-display-l font-bold leading-[1.25] tracking-normal">
+        <h2 className="max-w-[900px] type-display-l font-bold leading-tight tracking-normal">
           {titleLines.map((line) => (
             <span className="block" key={line}>
               {line}
@@ -1129,7 +1129,7 @@ function ClassOverview({ classes }: { classes: StepClass[] }) {
           key={item.className}
         >
           <p className="type-title-s font-extrabold leading-none text-brand">{item.label}</p>
-          <h3 className="mt-6 whitespace-pre-line type-headline-s font-extrabold leading-[1.25] text-white">
+          <h3 className="mt-6 whitespace-pre-line type-headline-s font-extrabold leading-tight text-white">
             {item.className.replace(' Class', '\nClass')}
           </h3>
         </article>

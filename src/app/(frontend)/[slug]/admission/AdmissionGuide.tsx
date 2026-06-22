@@ -36,7 +36,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
         <div className="container">
           <header className="section-admission-intro__header">
             <p className="type-label-m font-bold text-brand">{centerLabel}</p>
-            <h1 className="mt-4 type-headline-xl font-extrabold leading-[1.25] text-neutral-950">
+            <h1 className="mt-4 type-headline-xl font-extrabold leading-tight text-neutral-950">
               입학안내
             </h1>
           </header>

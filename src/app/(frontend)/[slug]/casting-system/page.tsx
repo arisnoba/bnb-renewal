@@ -244,11 +244,11 @@ export default async function CastingSystemPage({ params }: Args) {
         />
         <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[38%] max-md:!hidden md:block md:-left-28"
+          className="-left-20 top-[38%] max-md:hidden! md:block md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:!hidden md:block md:right-[-104px]"
+          className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">

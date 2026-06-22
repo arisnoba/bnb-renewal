@@ -450,7 +450,7 @@ function EducationSystemSteps({ steps }: { steps: EducationSystemStep[] }) {
                   <span className="block type-label-l font-extrabold leading-none text-brand">
                     {step.level}
                   </span>
-                  <span className="mt-2 block type-title-s font-extrabold leading-[1.25]">
+                  <span className="mt-2 block type-title-s font-extrabold leading-tight">
                     {step.label.replace(' Class', '\nClass')}
                   </span>
                 </>

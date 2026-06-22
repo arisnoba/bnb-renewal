@@ -168,11 +168,11 @@ export function KidsCurriculumPage() {
         />
         <div aria-hidden="true" className="absolute inset-0 bg-black/75" />
         <PageDeco
-          className="-left-24 top-[48%] max-md:!hidden md:-left-28"
+          className="-left-24 top-[48%] max-md:hidden! md:-left-28"
           icon={heroDecoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:!hidden md:right-[-104px]"
+          className="right-[-72px] top-[16%] max-md:hidden! md:right-[-104px]"
           icon={heroDecoIcons[1]}
         />
 

@@ -101,15 +101,15 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] max-md:!hidden md:block md:-left-72 2xl:-left-39"
+          className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:!hidden md:block md:right-[-104px]"
+          className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[16%] bottom-[-8%] max-md:!hidden md:block"
+          className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
@@ -256,7 +256,7 @@ function ExamResultCard({
 
   return (
     <article className="section-exam-result-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
-      <div className="section-exam-result-card__media relative aspect-[270/268] overflow-hidden bg-neutral-100">
+      <div className="section-exam-result-card__media relative aspect-270/268 overflow-hidden bg-neutral-100">
         {imageUrl ? (
           <Image
             alt=""

@@ -117,7 +117,7 @@ export async function CurriculumDetailPage({
                   Curriculum
                 </p>
                 <h2
-                  className="mt-2 type-title-l font-black leading-[1.25] text-neutral-900"
+                  className="mt-2 type-title-l font-black leading-tight text-neutral-900"
                   id="curriculum-lessons-title"
                 >
                   주차별 커리큘럼
@@ -327,7 +327,7 @@ function TeacherBrief({
           </p>
           <div className="mt-2">
             <h2
-              className="type-title-l font-black leading-[1.25] text-neutral-900"
+              className="type-title-l font-black leading-tight text-neutral-900"
               id="curriculum-teacher-title"
             >
               {teacher.name}

@@ -231,10 +231,10 @@ function BannerSlide({
       )}
     >
       <BannerVisual banner={banner} />
-      <div className="section-main-banner__overlay absolute inset-0 z-[1]" />
+      <div className="section-main-banner__overlay absolute inset-0 z-1" />
       <div
         className={cn(
-          'section-main-banner__brand-block absolute left-0 top-0 z-[2]',
+          'section-main-banner__brand-block absolute left-0 top-0 z-2',
           'h-[var(--section-main-banner-brand-block-height)]',
           'w-[var(--section-main-banner-brand-block-width)] bg-brand',
           'max-[980px]:opacity-[0.86]',
@@ -243,7 +243,7 @@ function BannerSlide({
       />
       <div
         className={cn(
-          'section-main-banner__brand-ring absolute bottom-[-4%] right-[-3%] z-[2]',
+          'section-main-banner__brand-ring absolute bottom-[-4%] right-[-3%] z-2',
           'size-[var(--section-main-banner-brand-ring-size)] rounded-full',
           'border-[length:var(--section-main-banner-brand-ring-border)] border-brand',
           'max-[980px]:right-[-18%] max-[980px]:opacity-[0.72]',

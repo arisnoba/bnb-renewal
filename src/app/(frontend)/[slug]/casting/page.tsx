@@ -143,12 +143,12 @@ export default async function CastingPage({ params }: Args) {
         </div>
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-28 top-[43%] max-md:!hidden md:block"
+          className="-left-28 top-[43%] max-md:hidden! md:block"
           icon={decoIcons[0]}
           size="360px"
         />
         <PageDeco
-          className="right-[-92px] top-[20%] max-md:!hidden md:block"
+          className="right-[-92px] top-[20%] max-md:hidden! md:block"
           icon={decoIcons[1]}
           size="360px"
         />
@@ -183,7 +183,7 @@ function CastingCompanySection({
   company: CastingCompany & { profiles: CastingProfile[] }
 }) {
   return (
-    <article className="section-casting-company relative min-h-[760px] overflow-hidden">
+    <article className="section-casting-company relative overflow-hidden">
       <div className="section-casting-company__marquee pointer-events-none absolute left-0 top-0 max-w-none">
         <div className="section-casting-company__marquee-track flex w-max items-start gap-20">
           <span className="whitespace-nowrap text-[96px] font-extrabold leading-none text-neutral-900/5 sm:text-[140px] md:text-[200px] xl:text-[265px]">
@@ -198,15 +198,15 @@ function CastingCompanySection({
         </div>
       </div>
 
-      <div className="container relative z-10 pt-0 md:pt-[100px]">
-        <header className="section-casting-company__header flex max-w-[1120px] flex-col gap-10">
+      <div className="container relative z-10 pt-0 pb-2 md:pt-25">
+        <header className="section-casting-company__header flex flex-col gap-10">
           <p className="section-casting-company__label inline-flex items-center gap-3 type-title-s font-bold leading-[1.4] text-brand">
             {company.label}
           </p>
-          <h2 className="section-casting-company__title max-w-[1120px] text-[30px] font-bold leading-[1.35] md:text-[48px]">
+          <h2 className="section-casting-company__title text-[30px] font-bold leading-[1.35] md:text-[48px]">
             {company.headline}
           </h2>
-          <div className="section-casting-company__description flex max-w-[1120px] flex-col gap-1 type-body-m font-medium leading-normal text-neutral-500">
+          <div className="section-casting-company__description flex flex-col gap-1 type-body-m font-medium leading-normal text-neutral-500">
             {company.description.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -222,7 +222,7 @@ function CastingCompanySection({
         ) : null}
 
         <Link
-          className="section-casting-company__direct mt-12 inline-flex min-h-12 items-center gap-2 bg-neutral-900 px-6 type-label-l font-bold text-white transition hover:bg-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+          className="section-casting-company__direct mt-12 inline-flex min-h-12 items-center gap-2 bg-neutral-900 px-6 type-label-l font-bold text-white transition hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand"
           href={`/${center}/casting-status`}
         >
           DIRECT CASTING

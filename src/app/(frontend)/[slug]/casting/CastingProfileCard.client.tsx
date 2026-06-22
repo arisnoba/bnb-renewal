@@ -50,7 +50,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
           </div>
           <DialogTrigger asChild>
             <button
-              className="section-casting-profile__link inline-flex w-fit items-center gap-2 type-body-s font-bold leading-normal text-neutral-900 transition hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+              className="section-casting-profile__link inline-flex w-fit items-center gap-2 type-body-s font-bold leading-normal text-neutral-900 transition hover:text-brand focus-visible:outline focus-visible:outline-offset-4 focus-visible:outline-brand"
               type="button"
             >
               자세히 보기
@@ -60,7 +60,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
         </div>
       </article>
 
-      <DialogContent className="section-casting-profile-dialog z-[60] flex h-[min(760px,calc(100vh-48px))] max-w-[920px] flex-col overflow-hidden border-0 bg-white p-0">
+      <DialogContent className="section-casting-profile-dialog z-60 flex h-[min(760px,calc(100vh-48px))] max-w-[920px] flex-col overflow-hidden border-0 bg-white p-0">
         <DialogHeader className="section-casting-profile-dialog__header shrink-0 flex-row items-start justify-between gap-5 border-b border-neutral-200 bg-white px-6 py-6 text-left md:px-10">
           <div className="min-w-0">
             <p className="mb-2 type-label-m font-bold leading-[1.4] text-brand">
@@ -75,7 +75,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
           </div>
           <DialogClose
             aria-label="이력 닫기"
-            className="section-casting-profile-dialog__close grid size-10 shrink-0 place-items-center rounded-full bg-white text-neutral-500 shadow-sm transition-colors hover:text-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+            className="section-casting-profile-dialog__close grid size-10 shrink-0 place-items-center rounded-full bg-white text-neutral-500 shadow-sm transition-colors hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
             type="button"
           >
             <X aria-hidden="true" size={20} strokeWidth={2.2} />
