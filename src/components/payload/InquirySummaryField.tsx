@@ -130,7 +130,6 @@ function attachmentLinkValue({ fileName, url }: { fileName: unknown; url: unknow
       href={href}
       rel="noreferrer"
       style={{ color: 'var(--theme-success-600)', fontWeight: 600 }}
-      target="_blank"
     >
       {label}
     </a>

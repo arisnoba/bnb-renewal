@@ -48,11 +48,11 @@ import { cn } from '@/utilities/ui'
 import { inquiryTypeValues, type InquiryType } from './inquiryTypeParams'
 
 const inquiryTypes = [
-  { label: '아트', value: 'art' },
-  { label: '입시', value: 'admission' },
-  { label: '하이틴', value: 'highteen' },
-  { label: '키즈', value: 'kids' },
-  { label: '애비뉴', value: 'avenue' },
+  { label: '아트센터', value: 'art' },
+  { label: '입시센터', value: 'admission' },
+  { label: '하이틴센터', value: 'highteen' },
+  { label: '키즈센터', value: 'kids' },
+  { label: '애비뉴센터', value: 'avenue' },
   { label: '제휴문의', value: 'partnership' },
 ] satisfies Array<{ label: string; value: InquiryType }>
 
@@ -139,6 +139,10 @@ declare global {
 
 function requiresActingMajor(inquiryType: InquiryType | undefined) {
   return inquiryType === 'art' || inquiryType === 'admission' || inquiryType === 'highteen'
+}
+
+function requiresOccupation(inquiryType: InquiryType | undefined) {
+  return inquiryType === 'art' || inquiryType === 'admission'
 }
 
 const consultationFormSchema = z
@@ -239,7 +243,7 @@ const consultationFormSchema = z
       addIssue(context, contactPath, koreanPhoneMessage)
     }
 
-    if (values.inquiryType === 'admission') {
+    if (requiresOccupation(values.inquiryType)) {
       addRequiredIssue(context, values.occupation, 'occupation', '직업 구분을 선택해 주세요.')
     }
 
@@ -296,7 +300,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
   const [turnstileToken, setTurnstileToken] = useState('')
   const [validationErrors, setValidationErrors] = useState<ValidationErrorMessages>({})
   const form = useForm<ConsultationFormValues>({
-    defaultValues: getDefaultValues(initialInquiryType, earliestPreferredDate),
+    defaultValues: getDefaultValues(initialInquiryType),
     mode: 'onSubmit',
     reValidateMode: 'onChange',
     resolver: zodResolver(consultationFormSchema),
@@ -341,10 +345,10 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
   )
 
   useEffect(() => {
-    form.reset(getDefaultValues(initialInquiryType, earliestPreferredDate))
+    form.reset(getDefaultValues(initialInquiryType))
     setSubmitError(null)
     setValidationErrors({})
-  }, [earliestPreferredDate, form, initialInquiryType])
+  }, [form, initialInquiryType])
 
   useEffect(() => {
     window.consultTurnstileSuccess = (token: string) => {
@@ -401,7 +405,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
         return
       }
 
-      form.reset(getDefaultValues(initialInquiryType, getEarliestPreferredDateValue()))
+      form.reset(getDefaultValues(initialInquiryType))
       setFormResetKey((currentKey) => currentKey + 1)
       setValidationErrors({})
       setSubmitError(null)
@@ -453,43 +457,68 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           control={form.control}
           name="inquiryType"
           render={({ field }) => (
-            <div
-              className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
-              role="radiogroup"
-            >
-              {inquiryTypes.map((type) => {
-                const id = `inquiryType-${type.value}`
+            <FormItem>
+              <FormLabel className="sr-only">센터 및 문의 선택</FormLabel>
+              <div className="lg:hidden">
+                <Select
+                  name={field.name}
+                  onValueChange={(value: InquiryType) => {
+                    field.onChange(value)
+                    resetSubmitFeedback()
+                  }}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className={controlClassName}>
+                      <SelectValue placeholder="센터 및 문의 선택" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {inquiryTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="hidden grid-cols-6 gap-2 lg:grid" role="radiogroup">
+                {inquiryTypes.map((type) => {
+                  const id = `inquiryType-${type.value}`
 
-                return (
-                  <div className="grid" key={type.value}>
-                    <input
-                      checked={field.value === type.value}
-                      className="peer sr-only"
-                      id={id}
-                      name={field.name}
-                      onBlur={field.onBlur}
-                      onChange={() => {
-                        field.onChange(type.value)
-                        resetSubmitFeedback()
-                      }}
-                      ref={field.ref}
-                      type="radio"
-                      value={type.value}
-                    />
-                    <Label
-                      className={cn(
-                        controlClassName,
-                        radioButtonClassName,
-                        'px-3',
-                      )}
-                      htmlFor={id}
-                    >
-                      {type.label}
-                    </Label>
-                  </div>
-                )
-              })}
-            </div>
+                  return (
+                    <div className="grid" key={type.value}>
+                      <input
+                        checked={field.value === type.value}
+                        className="peer sr-only"
+                        id={id}
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        onChange={() => {
+                          field.onChange(type.value)
+                          resetSubmitFeedback()
+                        }}
+                        ref={field.ref}
+                        type="radio"
+                        value={type.value}
+                      />
+                      <Label
+                        className={cn(
+                          controlClassName,
+                          radioButtonClassName,
+                          'px-3',
+                        )}
+                        htmlFor={id}
+                      >
+                        {type.label}
+                      </Label>
+                    </div>
+                  )
+                })}
+              </div>
+            </FormItem>
           )}
         />
         {!isPartnership && (
@@ -649,7 +678,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                 required
               />
 
-              {inquiryType === 'admission' && (
+              {requiresOccupation(inquiryType) && (
                 <RadioButtonGroup
                   control={form.control}
                   label="직업 구분"
@@ -1265,7 +1294,7 @@ function getVisibleValidationMessages(values: ConsultationFormValues) {
     messages[contactPath] = koreanPhoneMessage
   }
 
-  if (values.inquiryType === 'admission') {
+  if (requiresOccupation(values.inquiryType)) {
     setVisibleMessage(messages, values.occupation, 'occupation', '직업 구분을 선택해 주세요.')
   }
 
@@ -1314,10 +1343,7 @@ function setVisibleMessage(
   }
 }
 
-function getDefaultValues(
-  inquiryType: InquiryType,
-  earliestPreferredDate: string,
-): ConsultationFormValues {
+function getDefaultValues(inquiryType: InquiryType): ConsultationFormValues {
   return {
     actingMajor: '',
     applicantName: '',
@@ -1339,7 +1365,7 @@ function getDefaultValues(
     partnerPhone: '',
     partnershipContent: '',
     phone: '',
-    preferredDate: earliestPreferredDate,
+    preferredDate: '',
     preferredTime: '',
     privacyConsent: false,
     region: '',
