@@ -2,6 +2,7 @@
 
 import type { CenterSlug } from '@/lib/centers'
 
+import { WordRotate } from '@/components/ui/word-rotate'
 import type { CenterLocation } from '@/lib/centerLocations'
 import { cn } from '@/utilities/ui'
 import { MapPin, Phone, Printer } from 'lucide-react'
@@ -26,14 +27,25 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
       <div className="mb-[60px] flex flex-col gap-10">
         <div>
           <p className="mb-10 type-title-l font-bold leading-[1.4] text-brand">오시는 길</p>
-          <h2 className="font-['Pyeojin_Gothic','Pretendard',sans-serif] type-display-l font-bold leading-tight tracking-normal md:leading-[1.35]">
+          <h2 className="type-display-l font-bold leading-tight tracking-normal md:leading-[1.35]">
             배우의 가능성이 완성되는 공간
             <br />
-            {selectedLocation.name}
+            <WordRotate
+              className="block"
+              activeWord={selectedLocation.name}
+              inline
+              motionProps={{
+                initial: { opacity: 0, y: -38 },
+                animate: { opacity: 1, y: 0 },
+                exit: { opacity: 0, y: 38 },
+                transition: { duration: 0.25, ease: 'easeOut' },
+              }}
+              words={locations.map((location) => location.name)}
+            />
           </h2>
         </div>
 
-        <nav aria-label="센터 선택" className="flex flex-wrap gap-3">
+        <nav aria-label="센터 선택" className="flex flex-wrap gap-2">
           {locations.map((location) => {
             const isSelected = location.slug === selectedCenter
 
@@ -41,7 +53,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
               <button
                 aria-current={isSelected ? 'page' : undefined}
                 className={cn(
-                  'inline-flex items-center justify-center rounded-full border px-5 py-3 type-title-m font-semibold leading-[1.4] transition-[border-color,background-color,color,opacity]',
+                  'inline-flex items-center justify-center rounded-full border px-4 md:px-5 py-2.5 md:py-3 text-sm md:text-base font-semibold leading-normal transition-[border-color,background-color,color,opacity]',
                   isSelected
                     ? 'border-brand bg-brand text-white'
                     : 'border-white bg-transparent text-white opacity-40 hover:opacity-80',
@@ -69,13 +81,13 @@ function CenterInfoCard({ location }: { location: CenterLocation }) {
   return (
     <section className="section-map-info flex flex-col gap-8 rounded-xl bg-neutral-900 p-6 md:p-8 lg:flex-row lg:items-start">
       <div className="section-map-info__summary flex min-w-0 flex-col gap-6 md:flex-row lg:w-[630px] lg:shrink-0 border-white/10 pt-8 md:border-b lg:border-r lg:border-b-0 lg:py-0 lg:pr-10">
-        <div className="relative size-[148px] shrink-0 overflow-hidden rounded-xl bg-neutral-600">
+        <div className="relative size-[148px] shrink-0 overflow-hidden rounded-lg bg-neutral-600">
           <Image
             alt=""
             className="object-cover"
             fill
             sizes="148px"
-            src="/assets/map/map-hero.png"
+            src={location.imageSrc}
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-6">

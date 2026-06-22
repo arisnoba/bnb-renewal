@@ -7,6 +7,7 @@ export type CenterLocation = {
     lng: number
   }
   fax?: string
+  imageSrc: string
   label: string
   logoSrc?: string
   name: string
@@ -26,6 +27,7 @@ export const centerLocations: Record<CenterSlug, CenterLocation> = {
       lng: 127.020560589267,
     },
     fax: '02-540-3987',
+    imageSrc: '/assets/map/art.png',
     label: '아트센터',
     logoSrc: '/assets/common/logo/logo-art.svg',
     name: '배우앤배움 아트센터',
@@ -41,6 +43,7 @@ export const centerLocations: Record<CenterSlug, CenterLocation> = {
       lat: 37.508864669094,
       lng: 127.019705255841,
     },
+    imageSrc: '/assets/map/exam.png',
     label: '입시센터',
     logoSrc: '/assets/common/logo/logo-exam.svg',
     name: '배우앤배움 입시센터',
@@ -56,6 +59,7 @@ export const centerLocations: Record<CenterSlug, CenterLocation> = {
       lat: 37.5091652265931,
       lng: 127.020857745851,
     },
+    imageSrc: '/assets/map/highteen.png',
     label: '하이틴센터',
     logoSrc: '/assets/common/logo/logo-highteen.svg',
     name: '배우앤배움 하이틴센터',
@@ -71,6 +75,7 @@ export const centerLocations: Record<CenterSlug, CenterLocation> = {
       lat: 37.5098475066178,
       lng: 127.020633988838,
     },
+    imageSrc: '/assets/map/kids.png',
     label: '키즈센터',
     logoSrc: '/assets/common/logo/logo-kids.svg',
     name: '배우앤배움 키즈센터',
@@ -82,10 +87,11 @@ export const centerLocations: Record<CenterSlug, CenterLocation> = {
   },
   avenue: {
     address: '서울 서초구 사평대로55길 126',
-   coordinates: {
+    coordinates: {
       lat: 37.5094542308936,
       lng: 127.020560589267,
     },
+    imageSrc: '/assets/map/avenue.png',
     label: '애비뉴센터',
     name: '배우앤배움 애비뉴센터',
     phone: '1577-9929',
