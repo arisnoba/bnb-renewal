@@ -55,6 +55,9 @@ const nextConfig = {
         pathname: '/assets/casting/**',
       },
       {
+        pathname: '/assets/center-about/**',
+      },
+      {
         pathname: '/assets/profile-production/**',
       },
       {
