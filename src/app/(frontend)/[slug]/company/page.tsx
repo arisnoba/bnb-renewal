@@ -33,31 +33,39 @@ const affiliates: CompanyAffiliate[] = [
       '수많은 신인 배우 성장의 흐름을 바꿔온, 대한민국 연기 교육의 상징적인 플랫폼입니다. 이곳에서 연기는 직업이 되고, 배우는 하나의 브랜드가 됩니다.',
     href: null,
     imageAlt: 'BAEWOO&BAEWOOM EnM 서비스 이미지',
-    imageSrc: '/assets/company/slide-phone.png',
+    imageSrc: '/assets/company/company-01.jpg',
     name: 'BAEWOO&BAEWOOM EnM',
   },
   {
     description:
       '개성과 감정, 에너지를 담아내는 ‘무브먼트 아티스트’들의 공간으로, 자유롭고 정교한 스토리 빌드업을 통해 무대 위에서 자신을 설계할 줄 아는 퍼포머를 만들어 갑니다.',
     href: null,
+    imageAlt: 'PERFECT PERFORMANCE ENT 서비스 이미지',
+    imageSrc: '/assets/company/company-02.jpg',
     name: 'PERFECT PERFORMANCE ENT',
   },
   {
     description:
       '수많은 화제작에서 주역을 발굴·연결해 온 경험을 바탕으로, 세대와 장르를 아우르는 최적의 캐스팅을 제공합니다. TV·OTT 등 다양한 매체에서 탁월한 매칭을 실현하며, 제작사와 감독들의 신뢰를 받고 있습니다.',
     href: null,
+    imageAlt: 'BNB CASTING 서비스 이미지',
+    imageSrc: '/assets/company/company-03.jpg',
     name: 'BNB CASTING',
   },
   {
     description:
       '세계 시장을 향해, 정교한 매니지먼트와 세심한 브랜딩으로 아티스트를 시대를 아우르는 주역으로 완성하며, 문화와 트렌드를 선도하는 글로벌 아이콘으로 성장시킵니다.',
     href: null,
+    imageAlt: 'BISTUS ENT. 서비스 이미지',
+    imageSrc: '/assets/company/company-04.jpg',
     name: 'BISTUS ENT.',
   },
   {
     description:
       '배우를 중심으로, 감독·작가의 성장을 함께 이끄는 종합 아티스트 매니지먼트입니다. 차별화된 전략으로 커리어를 확장하고, 각자가 지닌 색과 가치를 세계 무대에서 빛나게 합니다.',
     href: null,
+    imageAlt: 'BAA ENT. 서비스 이미지',
+    imageSrc: '/assets/company/company-05.jpg',
     name: 'BAA ENT.',
   },
   {
@@ -65,13 +73,15 @@ const affiliates: CompanyAffiliate[] = [
       '아티스트의 본질을 포착해 고유한 색을 깊이 끌어올리고, 독창적인 시각으로 정체성을 담은 이미지를 완성합니다. 한 컷의 사진으로 가치를 만들어가는 크리에이티브 포토 스튜디오입니다.',
     href: null,
     imageAlt: 'STUDIO BNB 촬영 이미지',
-    imageSrc: '/assets/company/slide-child.png',
+    imageSrc: '/assets/company/company-06.jpg',
     name: 'STUDIO BNB',
   },
   {
     description:
       '세계 무대와 팬덤의 중심에서 경쟁력 있는 아티스트를 기획·육성하며, 글로벌 브랜딩 경험과 해외 파트너십 네트워크를 통해 전략적 빌드업과 독창적인 콘텐츠로 K-pop의 다음 흐름을 만들어가는 음악 IP 제작사입니다.',
     href: null,
+    imageAlt: 'BNB MUSIC 서비스 이미지',
+    imageSrc: '/assets/company/company-07.jpg',
     name: 'BNB MUSIC',
   },
   {
@@ -79,43 +89,55 @@ const affiliates: CompanyAffiliate[] = [
       '글로벌 미디어 기업과의 프로젝트에서 검증된 제작 역량을 바탕으로, AI·버추얼·XR 등 첨단 기술을 창의적으로 결합합니다. 브랜드 메시지를 한층 입체적으로 구현하며, 시청자의 경험을 새롭게 디자인하는 차세대 프로덕션입니다.',
     href: null,
     imageAlt: 'VORD INSIGHT 미디어 이미지',
-    imageSrc: '/assets/company/slide-screens.png',
+    imageSrc: '/assets/company/company-08.jpg',
     name: 'VORD INSIGHT',
   },
   {
     description:
       '틱톡 코리아에서 그룹 라이브 부문 1위를 공식 수상한 크리에이션 그룹으로, 라이브 스트리밍과 아티스트 매니지먼트를 통해 K-Culture 실시간 콘텐츠 IP를 기획·확장하며 글로벌 시장에서 새로운 팬 경험을 만들어갑니다.',
     href: null,
+    imageAlt: 'BNB PLAY 서비스 이미지',
+    imageSrc: '/assets/company/company-09.jpg',
     name: 'BNB PLAY',
   },
   {
     description:
       '우리는 아티스트 IP를 문화적 자산으로 완성해 온 경험을 바탕으로, 그 가치를 브랜드와 커머스로 확장합니다. IP의 스토리와 정체성을 제품에 입혀, 글로벌 K-Commerce의 새로운 기준을 만듭니다.',
     href: null,
+    imageAlt: 'BNB CNX 서비스 이미지',
+    imageSrc: '/assets/company/company-10.jpg',
     name: 'BNB CNX',
   },
   {
     description:
       'K-아티스트의 콘서트와 팬미팅을 비롯해, SNS를 통한 실시간 팬덤 연결까지 아우르는 글로벌 활동을 설계·운영합니다. IP를 중심에 두고, 팬들과의 거리를 좁히며 세계 무대에서 영향력을 확장하는 커뮤니케이션 플랫폼입니다.',
     href: null,
+    imageAlt: 'FANCONN 서비스 이미지',
+    imageSrc: '/assets/company/company-11.jpg',
     name: 'FANCONN',
   },
   {
     description:
       '국내외 유수 기업과 협력해 광고 캐스팅을 전문적으로 수행하며, 브랜드 아이덴티티와 모델의 헤리티지를 정교하게 매칭합니다. 글로벌 마켓 인사이트와 트렌드 분석력으로 브랜드 가치와 매력을 극대화합니다.',
     href: null,
+    imageAlt: 'BX MODEL AGENCY 서비스 이미지',
+    imageSrc: '/assets/company/company-12.jpg',
     name: 'BX MODEL AGENCY',
   },
   {
     description:
       'AI와 데이터 기반의 SOIAA 플랫폼은, 누구나 광고 영상을 제작하고 시청하며 보상을 얻을 수 있는 공간입니다. 창작과 참여가 선순환하는 IP 가치 생태계를 기술로 구현해, 새로운 패러다임을 열어갑니다.',
     href: null,
+    imageAlt: 'DEEPCON 서비스 이미지',
+    imageSrc: '/assets/company/company-13.jpg',
     name: 'DEEPCON',
   },
   {
     description:
       'IP 기반 콘텐츠의 성장 잠재력에 주목해, 엔터테인먼트를 비롯한 전방위 IP 비즈니스에 전략적으로 투자합니다. 브랜드 자산과 창의성을 결합한 기업에 집중하며, 장기 가치를 축적하고 지속 가능한 성장을 설계합니다.',
     href: null,
+    imageAlt: 'BNB INVEST 서비스 이미지',
+    imageSrc: '/assets/company/company-14.jpg',
     name: 'BNB INVEST',
   },
 ]
