@@ -68,6 +68,7 @@ type NaverMapProps = {
 }
 
 const naverMapCustomStyleId = 'c4300a1b-6d48-49cd-8316-c3a91a0a7aa0'
+const sameCoordinateMarkerOffset = 0.00002
 
 export function NaverMap({ location, locations, scriptUrl }: NaverMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -100,13 +101,13 @@ export function NaverMap({ location, locations, scriptUrl }: NaverMapProps) {
         map.panTo(center)
 
         markersRef.current.forEach((marker) => marker.setMap(null))
-        markersRef.current = locations.map((centerLocation, index) => {
+        markersRef.current = locations.map((centerLocation) => {
           const isActive = centerLocation.slug === location.slug
-          const markerPosition = markerPositionFor(centerLocation, index, locations)
+          const markerPosition = markerPositionFor(centerLocation, locations)
 
           return new maps.Marker({
             icon: {
-              anchor: isActive ? new maps.Point(132, 92) : new maps.Point(52, 46),
+              anchor: isActive ? new maps.Point(132, 92) : new maps.Point(52, 18),
               content: mapMarkerContent(centerLocation, isActive),
             },
             map,
@@ -220,7 +221,7 @@ function appendScript(src: string, onLoad: () => void, onError: () => void) {
   document.head.appendChild(script)
 }
 
-function markerPositionFor(location: CenterLocation, index: number, locations: CenterLocation[]) {
+function markerPositionFor(location: CenterLocation, locations: CenterLocation[]) {
   const sameCoordinateLocations = locations.filter((candidate) =>
     sameCoordinate(candidate, location),
   )
@@ -231,7 +232,7 @@ function markerPositionFor(location: CenterLocation, index: number, locations: C
 
   const groupIndex = sameCoordinateLocations.findIndex((candidate) => candidate.slug === location.slug)
   const angle = (Math.PI * 2 * groupIndex) / sameCoordinateLocations.length - Math.PI / 2
-  const radius = 0.00009 + index * 0.000005
+  const radius = sameCoordinateMarkerOffset
 
   return {
     lat: location.coordinates.lat + Math.sin(angle) * radius,

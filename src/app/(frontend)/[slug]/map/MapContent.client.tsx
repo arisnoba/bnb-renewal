@@ -41,7 +41,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
               <button
                 aria-current={isSelected ? 'page' : undefined}
                 className={cn(
-                  'inline-flex h-[45px] items-center justify-center rounded-full border px-5 type-title-m font-bold leading-[1.4] transition-[border-color,background-color,color,opacity]',
+                  'inline-flex items-center justify-center rounded-full border px-5 py-3 type-title-m font-semibold leading-[1.4] transition-[border-color,background-color,color,opacity]',
                   isSelected
                     ? 'border-brand bg-brand text-white'
                     : 'border-white bg-transparent text-white opacity-40 hover:opacity-80',
@@ -68,7 +68,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
 function CenterInfoCard({ location }: { location: CenterLocation }) {
   return (
     <section className="section-map-info flex flex-col gap-8 rounded-xl bg-neutral-900 p-6 md:p-8 lg:flex-row lg:items-start">
-      <div className="section-map-info__summary flex min-w-0 flex-col gap-6 md:flex-row lg:w-[631px] lg:shrink-0">
+      <div className="section-map-info__summary flex min-w-0 flex-col gap-6 md:flex-row lg:w-[630px] lg:shrink-0 border-white/10 pt-8 md:border-b lg:border-r lg:border-b-0 lg:py-0 lg:pr-10">
         <div className="relative size-[148px] shrink-0 overflow-hidden rounded-xl bg-neutral-600">
           <Image
             alt=""
@@ -97,7 +97,7 @@ function CenterInfoCard({ location }: { location: CenterLocation }) {
         </div>
       </div>
 
-      <div className="section-map-info__details flex min-w-0 flex-1 flex-col gap-6 border-white/10 pt-8 md:border-t lg:border-l lg:border-t-0 lg:py-0 lg:pl-10">
+      <div className="section-map-info__details flex min-w-0 flex-1 flex-col gap-6 ">
         <InfoItem icon={<MapPin aria-hidden="true" size={18} />} label="주소">
           {location.address}
         </InfoItem>

@@ -253,23 +253,23 @@ body:has(.page-dark, [data-page-tone='dark']) {
 }
 
 .map-page__naver-marker[data-active='false'][data-center='art'] {
-  --map-marker-color: #e54545;
+  --map-marker-color: var(--color-brand-art);
 }
 
 .map-page__naver-marker[data-active='false'][data-center='exam'] {
-  --map-marker-color: #3b82f6;
+  --map-marker-color: var(--color-brand-exam);
 }
 
 .map-page__naver-marker[data-active='false'][data-center='kids'] {
-  --map-marker-color: #22c55e;
+  --map-marker-color: var(--color-brand-kids);
 }
 
 .map-page__naver-marker[data-active='false'][data-center='highteen'] {
-  --map-marker-color: #a855f7;
+  --map-marker-color: var(--color-brand-highteen);
 }
 
 .map-page__naver-marker[data-active='false'][data-center='avenue'] {
-  --map-marker-color: #f59e0b;
+  --map-marker-color: var(--color-brand-avenue);
 }
 
 .map-page__naver-marker-card {
