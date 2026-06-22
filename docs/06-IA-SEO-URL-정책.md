@@ -228,8 +228,8 @@ redirects: [
 |---|-------------|-----|------|------|
 | 3-1 | 드라마·광고 출연장면 | `/art/casting/appearances` | dynamic | 갤러리형 목록 |
 | 3-2 | 캐스팅 출연현황 | `/art/casting/ongoing` | dynamic | |
-| 3-3 | 드라마 광고 캐스팅 | `/art/casting` | dynamic | 캐스팅 섹션 대표 랜딩 |
-| 3-4 | 캐스팅 시스템 | `/art/casting/system` | dynamic | |
+| 3-3 | 캐스팅 센터 | `/art/casting` | dynamic | 캐스팅 섹션 대표 랜딩 |
+| 3-4 | 배우 케어 시스템 | `/art/casting/system` | dynamic | |
 | 3-5 | 촬영·오디션 스케줄 | `/art/casting/schedule` | dynamic | 월별 캘린더 또는 목록 |
 
 ### 아티스트
