@@ -95,10 +95,10 @@ export default async function HighteenSpecialLecturePage({
 
       <section
         aria-labelledby="special-lecture-list-title"
-        className="section-special-lecture-list section-p-block-base bg-bg-footer text-white"
+        className="section-special-lecture-list section-p-block-base text-white"
       >
         <div className="container">
-          <header className="section-special-lecture-list__head mb-14 max-w-[960px] md:mb-20">
+          <header className="section-special-lecture-list__head mb-14 md:mb-20">
             <p className="section-special-lecture-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
               하이틴센터 특강
             </p>

@@ -196,7 +196,7 @@ function ExamPassedVideoCard({ item }: { item: ExamPassedVideoListItem }) {
   const cardLabel = `${title} 영상 보기`
 
   return (
-    <article className="section-exam-passed-video-card bg-neutral-100">
+    <article className="section-exam-passed-video-card bg-neutral-100 rounded-sm overflow-hidden">
       <Link
         aria-label={cardLabel}
         className="section-exam-passed-video-card__link group relative block aspect-video overflow-hidden bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
