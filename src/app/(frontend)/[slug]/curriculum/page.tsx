@@ -8,6 +8,7 @@ import {
   isCurriculumCenter,
   type CurriculumFilters,
 } from '../../curriculum/CurriculumArchive'
+import { ExamCurriculumPage } from '../../curriculum/ExamCurriculumPage'
 import { KidsCurriculumPage } from '../../curriculum/KidsCurriculumPage'
 
 type Args = {
@@ -17,7 +18,9 @@ type Args = {
   searchParams: Promise<CurriculumSearchParams>
 }
 
-type CurriculumSearchParams = Record<keyof CurriculumFilters, string | string[] | undefined>
+type CurriculumSearchParams = Partial<
+  Record<keyof CurriculumFilters | 'tab', string | string[] | undefined>
+>
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 600
@@ -26,7 +29,9 @@ export function generateStaticParams() {
   return Object.keys(centers)
     .filter(
       (slug): slug is keyof typeof centers =>
-        slug === 'kids' || isCurriculumCenter(slug as keyof typeof centers),
+        slug === 'exam' ||
+        slug === 'kids' ||
+        isCurriculumCenter(slug as keyof typeof centers),
     )
     .map((slug) => ({ slug }))
 }
@@ -38,6 +43,13 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   if (center === 'kids') {
     return {
       description: '배우앤배움 키즈센터의 영재, 아역배우, 아티스트 과정별 정적 커리큘럼 안내',
+      title: `커리큘럼 | ${getCenterLabel(center)}`,
+    }
+  }
+
+  if (center === 'exam') {
+    return {
+      description: '배우앤배움 입시센터의 입시반, 예비 입시반, 예고 입시반 커리큘럼 안내',
       title: `커리큘럼 | ${getCenterLabel(center)}`,
     }
   }
@@ -62,9 +74,14 @@ export default async function CenterCurriculumPage({
 }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
+  const resolvedSearchParams = await searchParams
 
   if (center === 'kids') {
     return <KidsCurriculumPage />
+  }
+
+  if (center === 'exam') {
+    return <ExamCurriculumPage tab={firstValue(resolvedSearchParams.tab)} />
   }
 
   if (!isCurriculumCenter(center)) {
@@ -74,7 +91,7 @@ export default async function CenterCurriculumPage({
   return (
     <CurriculumArchive
       center={center}
-      filters={normalizeFilters(await searchParams)}
+      filters={normalizeFilters(resolvedSearchParams)}
     />
   )
 }

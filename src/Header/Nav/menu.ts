@@ -129,7 +129,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: `/${center}/exam-management`, label: '입시 매니지먼트' },
       { href: `/${center}/special-system`, label: '특별한 시스템' },
       { href: teachersHref(center), label: '교육진 소개' },
-      { href: centerHref(center, 'curriculum'), label: '커리큘럼' },
+      { href: curriculumHref(center), label: '커리큘럼' },
     ]
   }
 
