@@ -61,25 +61,9 @@ const artProfileProductionItems = [
     ],
     id: "studio",
     media: {
-      images: [
-        {
-          objectPosition: "center",
-          src: "/assets/profile-production/studio-01.png",
-        },
-        {
-          objectPosition: "center",
-          src: "/assets/profile-production/studio-02.png",
-        },
-        {
-          objectPosition: "center",
-          src: "/assets/profile-production/studio-03.png",
-        },
-        {
-          objectPosition: "center",
-          src: "/assets/profile-production/studio-04.png",
-        },
-      ],
-      kind: "grid",
+      kind: "single",
+      objectPosition: "center",
+      src: "/assets/profile-production/art-01.jpg",
     },
     title: "BNB 전용 스튜디오",
   },
@@ -89,18 +73,9 @@ const artProfileProductionItems = [
     ],
     id: "application",
     media: {
-      images: [
-        {
-          objectPosition: "center",
-          src: "/assets/profile-production/application.png",
-        },
-        {
-          className: "bg-neutral-50 p-10 md:p-14",
-          objectFit: "contain",
-          src: "/assets/profile-production/qr.png",
-        },
-      ],
-      kind: "grid",
+      kind: "single",
+      objectPosition: "center",
+      src: "/assets/profile-production/art-02.jpg",
     },
     title: "프로필 신청",
   },
@@ -111,8 +86,8 @@ const artProfileProductionItems = [
     id: "concept-meeting",
     media: {
       kind: "single",
-      objectPosition: "45% center",
-      src: "/assets/profile-production/profile-workflow.png",
+      objectPosition: "center",
+      src: "/assets/profile-production/art-03.jpg",
     },
     title: "촬영 콘셉트미팅",
   },
@@ -123,8 +98,8 @@ const artProfileProductionItems = [
     id: "shooting",
     media: {
       kind: "single",
-      objectPosition: "50% center",
-      src: "/assets/profile-production/profile-workflow.png",
+      objectPosition: "center",
+      src: "/assets/profile-production/art-04.jpg",
     },
     title: "프로필 촬영",
   },
@@ -135,30 +110,10 @@ const artProfileProductionItems = [
     id: "retouching",
     media: {
       kind: "single",
-      objectPosition: "60% center",
-      src: "/assets/profile-production/profile-workflow.png",
+      objectPosition: "center",
+      src: "/assets/profile-production/art-05.jpg",
     },
     title: "A컷 분류 및 보정작업",
-  },
-  {
-    description: [
-      "배우앤배움의 영상 전문 프로덕션 계열사 (주)볼드 인사이트와 협업으로 수강 연기자들의 연기영상을 제작하고 있습니다. 제작된 연기영상은 제작사, 캐스팅 에이전시 등에서 바로 확인 할 수 있도록 프로필에 QR링크를 삽입해 드립니다.",
-    ],
-    id: "qr-profile",
-    media: {
-      images: [
-        {
-          objectPosition: "46% center",
-          src: "/assets/profile-production/profile-workflow.png",
-        },
-        {
-          objectPosition: "center",
-          src: "/assets/profile-production/qr-profile.png",
-        },
-      ],
-      kind: "grid",
-    },
-    title: "연기영상 QR코드 프로필 삽입",
   },
 ] satisfies ProfileProductionItem[];
 
@@ -319,8 +274,8 @@ export default async function ProfileProductionPage({ params }: Args) {
             className="section-profile-production-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
             id="profile-production-hero-title"
           >
-            <span className="block text-brand">프로필 제작</span>
-            <span className="block">절차 안내</span>
+            <span className="block text-brand">캐스팅</span>
+            <span className="block">배우 케어 시스템</span>
           </h1>
         </div>
       </section>
