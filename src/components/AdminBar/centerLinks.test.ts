@@ -7,6 +7,7 @@ test('adminBarCenterHref keeps the current center page when the target center su
   assert.equal(adminBarCenterHref('/art/news', 'kids'), '/kids/news')
   assert.equal(adminBarCenterHref('/kids/teachers/kim-seoha', 'highteen'), '/highteen/teachers/kim-seoha')
   assert.equal(adminBarCenterHref('/art/casting', 'avenue'), '/avenue/casting')
+  assert.equal(adminBarCenterHref('/art/consult', 'exam'), '/exam/consult')
 })
 
 test('adminBarCenterHref sends unsupported center pages to the target center main', () => {

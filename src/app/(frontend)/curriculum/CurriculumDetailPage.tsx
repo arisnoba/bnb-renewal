@@ -383,7 +383,7 @@ function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps
   return {
     capacity: curriculum.capacity ? String(curriculum.capacity) : '문의',
     className,
-    consultHref: `/consult?center=${center}&curriculum=${encodeURIComponent(curriculum.slug)}`,
+    consultHref: `/${center}/consult?curriculum=${encodeURIComponent(curriculum.slug)}`,
     dayLabel: days.length > 0 ? days.join('') : '요일 문의',
     educationDate: formatEducationDate(curriculum.educationStartDate),
     lessonCount: lessons.length > 0 ? `${lessons.length}회` : '문의',

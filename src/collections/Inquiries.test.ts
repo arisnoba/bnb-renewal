@@ -43,3 +43,24 @@ test('inquiry center-facing options keep the requested center order', () => {
     'avenue',
   ])
 })
+
+test('inquiry public form options stay aligned with storage select values', () => {
+  assert.deepEqual(optionValues(getField(Inquiries, 'preferredTime')), [
+    '11:00',
+    '13:00',
+    '14:00',
+    '15:00',
+    '16:00',
+    '17:00',
+    '18:00',
+  ])
+  assert.deepEqual(optionValues(getField(Inquiries, 'inflowSource')), [
+    '포털 사이트(구글, 네이버)',
+    'SNS(인스타그램, 스레드 등)',
+    '유튜브',
+    '네이버카페',
+    '지인소개',
+    'AI(GPT, gemini, claude)',
+    '기타',
+  ])
+})

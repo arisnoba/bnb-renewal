@@ -28,6 +28,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
   const pathname = usePathname()
   const center = headerCenterFromPathname(pathname)
   const menuGroups = getHeaderMenu(center)
+  const consultHref = `/${center}/consult`
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [activeMobileGroupKey, setActiveMobileGroupKey] = useState<string | null>(null)
@@ -97,13 +98,13 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         </nav>
       </div>
       <div className="site-header__actions">
-        <Link className="site-header__consult" href="/consult">
+        <Link className="site-header__consult" href={consultHref}>
           온라인상담
         </Link>
         <HeaderCenterSelect currentCenter={center} />
       </div>
       <div className="site-header__mobile-actions">
-        <Link className="site-header__mobile-consult" href="/consult">
+        <Link className="site-header__mobile-consult" href={consultHref}>
           상담
         </Link>
         <button
@@ -130,6 +131,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
       </div>
       <MobileMenu
         activeGroupKey={activeMobileGroupKey}
+        consultHref={consultHref}
         groups={menuGroups}
         isOpen={isMobileOpen}
         onBack={() => setActiveMobileGroupKey(null)}
@@ -189,6 +191,7 @@ function navZoneStyle(groups: HeaderMenuGroup[]): NavZoneStyle {
 
 function MobileMenu({
   activeGroupKey,
+  consultHref,
   groups,
   isOpen,
   onBack,
@@ -196,6 +199,7 @@ function MobileMenu({
   onLinkClick,
 }: {
   activeGroupKey: string | null
+  consultHref: string
   groups: HeaderMenuGroup[]
   isOpen: boolean
   onBack: () => void
@@ -224,7 +228,7 @@ function MobileMenu({
                 <ChevronRight aria-hidden="true" size={24} strokeWidth={2.4} />
               </button>
             ))}
-            <Link className="site-header__mobile-root-link" href="/consult" onClick={onLinkClick}>
+            <Link className="site-header__mobile-root-link" href={consultHref} onClick={onLinkClick}>
               온라인상담
             </Link>
           </nav>

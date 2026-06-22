@@ -34,16 +34,23 @@ export async function verifyTurnstileToken(
       'Content-Type': 'application/json',
     },
     method: 'POST',
-  })
+  }).catch(() => null)
 
-  if (!response.ok) {
+  if (!response?.ok) {
     return {
       errorCodes: ['siteverify-request-failed'],
       success: false,
     }
   }
 
-  const result = (await response.json()) as TurnstileSiteverifyResponse
+  const result = (await response.json().catch(() => null)) as TurnstileSiteverifyResponse | null
+
+  if (!result) {
+    return {
+      errorCodes: ['siteverify-response-invalid'],
+      success: false,
+    }
+  }
 
   return {
     errorCodes: result['error-codes'] ?? [],

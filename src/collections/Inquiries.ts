@@ -50,11 +50,14 @@ const yesNoOptions = [
 ]
 
 const preferredTimeOptions = [
-  { label: '오전', value: '오전' },
-  { label: '오후', value: '오후' },
-  { label: '저녁', value: '저녁' },
-  { label: '상담 후 조율', value: '상담 후 조율' },
-]
+  '11:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+].map((time) => ({ label: time, value: time }))
 
 const regionOptions = [
   '서울',
@@ -76,12 +79,18 @@ const regionOptions = [
   '세종',
 ].map((region) => ({ label: region, value: region }))
 
-const inflowSourceOptions = ['랜딩', '포털', 'SNS', '네이버카페', '지인소개', 'AI', '기타'].map(
-  (source) => ({
-    label: source,
-    value: source,
-  }),
-)
+const inflowSourceOptions = [
+  '포털 사이트(구글, 네이버)',
+  'SNS(인스타그램, 스레드 등)',
+  '유튜브',
+  '네이버카페',
+  '지인소개',
+  'AI(GPT, gemini, claude)',
+  '기타',
+].map((source) => ({
+  label: source,
+  value: source,
+}))
 
 const statusOptions = [
   { label: '신규', value: 'new' },

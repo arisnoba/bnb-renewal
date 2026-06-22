@@ -221,7 +221,7 @@ export const privacyPolicyDocument: LegalDocument = {
           ['전화', '1577-9929'],
           ['이메일', '운영자 확인 필요'],
           ['열람청구 및 고충처리 부서', '배우앤배움 운영팀'],
-          ['온라인 접수', '/consult'],
+          ['온라인 접수', '/{center}/consult'],
         ],
       },
     },

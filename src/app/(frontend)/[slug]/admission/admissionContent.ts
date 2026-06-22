@@ -642,7 +642,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
           },
           {
             body: '입시 상담신청 페이지에서 방문 희망 일자와 시간, 신청자 정보를 남깁니다.',
-            cta: { href: '/consult?center=exam', label: '온라인 상담신청' },
+            cta: { href: '/exam/consult', label: '온라인 상담신청' },
             title: '온라인 상담신청',
           },
           {
@@ -723,7 +723,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
               : center === 'kids'
                 ? '키즈센터 온라인 상담신청 페이지에서 희망 유선상담 일자, 시간, 신청자 정보를 남깁니다.'
                 : `${centerName} 온라인 상담신청 페이지에서 방문 희망 일자와 시간, 신청자 정보를 남깁니다.`,
-          cta: { href: `/consult?center=${center}`, label: '온라인 상담신청' },
+          cta: { href: `/${center}/consult`, label: '온라인 상담신청' },
           title: '온라인 상담신청',
         },
         {

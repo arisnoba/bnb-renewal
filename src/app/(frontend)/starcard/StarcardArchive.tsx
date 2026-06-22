@@ -47,7 +47,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
                 </Link>
                 <Link
                   className="section-starcard-list__faq-link inline-flex h-[43px] items-center justify-center rounded-full border border-foreground/15 px-5 type-label-m font-bold leading-none text-muted-foreground transition-colors hover:border-brand hover:text-brand"
-                  href="/consult?inquiryType=partnership#partnership"
+                  href={`/${center}/consult?inquiryType=partnership#partnership`}
                 >
                   제휴문의
                   <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />

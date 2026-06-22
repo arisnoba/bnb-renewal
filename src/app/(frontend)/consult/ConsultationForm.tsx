@@ -11,6 +11,7 @@ import {
   useMemo,
   useState,
   type InputHTMLAttributes,
+  type TextareaHTMLAttributes,
 } from 'react'
 import { useForm, type Control, type FieldErrors, type FieldPath } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -75,7 +76,7 @@ const regions = [
   '세종',
 ]
 
-const preferredTimes = ['오전', '오후', '저녁', '상담 후 조율']
+const preferredTimes = ['11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
 
 const genderOptions = [
   { label: '남', value: 'male' },
@@ -104,7 +105,15 @@ const yesNoOptions = [
   { label: '없음', value: 'no' },
 ]
 
-const inflowSources = ['랜딩', '포털', 'SNS', '네이버카페', '지인소개', 'AI', '기타']
+const inflowSources = [
+  '포털 사이트(구글, 네이버)',
+  'SNS(인스타그램, 스레드 등)',
+  '유튜브',
+  '네이버카페',
+  '지인소개',
+  'AI(GPT, gemini, claude)',
+  '기타',
+]
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
@@ -432,14 +441,14 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
     <ValidationFeedbackContext.Provider value={validationFeedback}>
       <Form {...form}>
         <form
-          className="grid gap-10"
+          className="space-y-14"
           encType="multipart/form-data"
           noValidate
           onChange={resetSubmitFeedback}
           onSubmit={form.handleSubmit(handleValidSubmit, handleInvalidSubmit)}
         >
       <section className="grid gap-5">
-        <SectionHeading index="01" title="문의 유형" />
+        <SectionHeading index="1" title="상담 예약" />
         <FormField
           control={form.control}
           name="inquiryType"
@@ -470,7 +479,8 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                     <Label
                       className={cn(
                         controlClassName,
-                        'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 type-label-m font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
+                        radioButtonClassName,
+                        'px-3',
                       )}
                       htmlFor={id}
                     >
@@ -482,30 +492,66 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
             </div>
           )}
         />
+        {!isPartnership && (
+          <div className="grid items-start gap-5 md:grid-cols-2">
+            <TextInputField
+              control={form.control}
+              label="희망일"
+              min={earliestPreferredDate}
+              name="preferredDate"
+              placeholder="방문 가능한 날짜를 선택해 주세요."
+              required
+              type="date"
+            />
+
+            <SelectField
+              control={form.control}
+              label="희망 시간"
+              name="preferredTime"
+              onValueChange={resetSubmitFeedback}
+              options={preferredTimes}
+              placeholder="상담 가능 시간 선택"
+              required
+            />
+          </div>
+        )}
       </section>
 
       {isPartnership ? (
         <section className="grid gap-5" id="partnership">
-          <SectionHeading index="02" title="제휴 신청" />
+          <SectionHeading index="2" title="제휴 신청" />
           <div className="grid items-start gap-5 md:grid-cols-2">
-            <TextInputField control={form.control} label="회사명" name="companyName" required />
+            <TextInputField
+              control={form.control}
+              label="회사명"
+              name="companyName"
+              placeholder="회사명"
+              required
+            />
 
             <TextInputField
               control={form.control}
               inputMode="url"
               label="홈페이지"
               name="companyWebsite"
-              placeholder="https://"
+              placeholder="https://domain.com"
               type="url"
             />
 
-            <TextInputField control={form.control} label="직책/지위" name="jobTitle" required />
+            <TextInputField
+              control={form.control}
+              label="직책/지위"
+              name="jobTitle"
+              placeholder="직책/지위"
+              required
+            />
 
             <TextInputField
               autoComplete="name"
               control={form.control}
               label="담당자 성명"
               name="contactPersonName"
+              placeholder="담당자 성명"
               required
             />
 
@@ -515,6 +561,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
               inputMode="tel"
               label="연락처"
               name="partnerPhone"
+              placeholder="01012345678"
               required
               type="tel"
             />
@@ -524,6 +571,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
               control={form.control}
               label="이메일"
               name="partnerEmail"
+              placeholder="contact@email.com"
               required
               type="email"
             />
@@ -541,6 +589,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
               control={form.control}
               label="제휴 내용"
               name="partnershipContent"
+              placeholder="제휴 목적, 제안 내용, 희망 진행 방식을 입력해 주세요."
               required
             />
           </div>
@@ -548,37 +597,14 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       ) : (
         <>
           <section className="grid gap-5">
-            <SectionHeading index="02" title="상담 예약" />
-            <div className="grid items-start gap-5 md:grid-cols-2">
-              <TextInputField
-                control={form.control}
-                label="희망일"
-                min={earliestPreferredDate}
-                name="preferredDate"
-                required
-                type="date"
-              />
-
-              <SelectField
-                control={form.control}
-                label="희망 시간"
-                name="preferredTime"
-                onValueChange={resetSubmitFeedback}
-                options={preferredTimes}
-                placeholder="시간 선택"
-                required
-              />
-            </div>
-          </section>
-
-          <section className="grid gap-5">
-            <SectionHeading index="03" title="신청자 정보" />
+            <SectionHeading index="2" title="신청자 정보" />
             <div className="grid items-start gap-5 md:grid-cols-2">
               <TextInputField
                 autoComplete="name"
                 control={form.control}
                 label="이름"
                 name="applicantName"
+                placeholder="이름"
                 required
               />
 
@@ -598,7 +624,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                 maxLength={8}
                 name="birthDate"
                 pattern="[0-9]{8}"
-                placeholder="예: 19870725"
+                placeholder="19870725"
                 required
               />
 
@@ -608,7 +634,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                 inputMode="tel"
                 label={inquiryType === 'kids' ? '보호자 연락처' : '연락처'}
                 name={inquiryType === 'kids' ? 'guardianPhone' : 'phone'}
-                placeholder="예: 01012345678"
+                placeholder="01012345678"
                 required
                 type="tel"
               />
@@ -619,7 +645,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                 name="region"
                 onValueChange={resetSubmitFeedback}
                 options={regions}
-                placeholder="지역 선택"
+                placeholder="사는 지역 선택"
                 required
               />
 
@@ -646,7 +672,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           </section>
 
           <section className="grid gap-5">
-            <SectionHeading index="04" title="연기 경험 정보" />
+            <SectionHeading index="3" title="연기 경험 정보" />
             <div className="grid items-start gap-5 md:grid-cols-2">
               {needsActingMajor && (
                 <RadioButtonGroup
@@ -683,7 +709,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                 name="inflowSource"
                 onValueChange={resetSubmitFeedback}
                 options={inflowSources}
-                placeholder="유입경로 선택"
+                placeholder="알게 된 경로 선택"
                 required
               />
 
@@ -702,8 +728,8 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
         </>
       )}
 
-      <section className="flex gap-4 flex-col">
-        <h2 className="type-title-m font-semibold tracking-normal">개인정보 수집 및 이용 방침</h2>
+      <section className="grid gap-5">
+        <SectionHeading index={isPartnership ? '3' : '4'} title="개인정보 수집 및 이용 방침" />
         <div className="max-h-40 overflow-y-auto rounded-md border bg-background p-4 type-body-s leading-6 text-muted-foreground">
           상담 신청 확인과 안내를 위해 이름, 생년월일, 연락처, 거주지역, 문의 유형,
           예약 희망일, 연기 경험 정보 또는 제휴 신청 정보를 수집합니다. 수집된 정보는 상담
@@ -781,13 +807,13 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       <div className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p
           className={cn(
-            'type-body-s leading-6',
+            'type-body-m leading-6',
             submitError ? 'font-medium text-destructive' : 'text-muted-foreground',
           )}
           role={submitError ? 'alert' : undefined}
         >
           {submitError ??
-            '제출 전 자동 제출 방지 확인을 진행한 뒤 상담 문의로 저장됩니다.'}
+            '방문예약 일정을 체크 후, 확인차 연락드립니다.'}
         </p>
         <Button className="h-12 px-8 type-label-l" disabled={isSubmitting} type="submit">
           {isSubmitting ? '접수 중' : '상담 신청 접수'}
@@ -801,8 +827,8 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 
 function SectionHeading({ index, title }: { index: string; title: string }) {
   return (
-    <div className="flex items-center gap-3 border-b pb-3">
-      <span className="font-mono type-label-m text-muted-foreground">{index}</span>
+    <div className="flex items-center gap-3">
+      <span className="font-mono type-label-m bg-brand px-3 py-2 rounded-full text-white">{index}</span>
       <h2 className="type-title-l font-semibold tracking-normal">{title}</h2>
     </div>
   )
@@ -917,7 +943,7 @@ function FileInputField({
                 )}
                 inputName={field.name}
                 onBlur={field.onBlur}
-                prompt="클릭하거나 파일을 끌어 놓아 첨부"
+                prompt="회사소개서, 제안서 등 파일 첨부"
               />
             </FormControl>
             <FileError />
@@ -944,7 +970,8 @@ function TextareaField({
   label,
   name,
   required = false,
-}: ControlledFieldProps) {
+  ...textareaProps
+}: ControlledFieldProps & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'name'>) {
   const { clearFieldError, errors } = useValidationFeedback()
 
   return (
@@ -961,6 +988,7 @@ function TextareaField({
           </FormLabel>
           <FormControl>
             <Textarea
+              {...textareaProps}
               {...field}
               aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
               className={cn(
@@ -1073,14 +1101,14 @@ function RadioButtonGroup({
           <div
             aria-invalid={Boolean(getFieldMessage(errors, name) || fieldState.invalid)}
             aria-required={required || undefined}
-            className="grid grid-cols-2 gap-2"
+            className="flex gap-2 flex-row flex-nowrap"
             role="radiogroup"
           >
             {options.map((option) => {
               const id = `${name}-${option.value}`
 
               return (
-                <div className="grid" key={option.value}>
+                <div className="grid min-w-0 flex-1" key={option.value}>
                   <input
                     checked={field.value === option.value}
                     className="peer sr-only"
@@ -1099,7 +1127,8 @@ function RadioButtonGroup({
                   <Label
                     className={cn(
                       controlClassName,
-        'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-4 type-label-m font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1',
+                      radioButtonClassName,
+                      'w-full px-4',
                       (getFieldMessage(errors, name) || fieldState.invalid) &&
                         'border-destructive/60 text-destructive',
                     )}
@@ -1120,6 +1149,8 @@ function RadioButtonGroup({
 
 const controlClassName = 'h-12'
 const invalidControlClassName = 'border-destructive/60 outline-destructive/60 ring-destructive/20'
+const radioButtonClassName =
+  'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background type-label-m font-medium text-foreground shadow-xs outline-ring/50 ring-ring/10 transition-[background-color,border-color,color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-foreground/60 peer-checked:bg-muted peer-checked:text-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1 peer-focus-visible:ring-ring/10 peer-focus-visible:outline-ring/50'
 
 function useValidationFeedback() {
   return useContext(ValidationFeedbackContext)

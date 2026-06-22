@@ -253,7 +253,7 @@ redirects: [
 
 | # | 한글 메뉴명 | URL | 유형 | 비고 |
 |---|-------------|-----|------|------|
-| – | 온라인 상담신청 | `/consult` | dynamic | 전 센터 공통. 센터 지정 쿼리 `?center=art` 허용 |
+| – | 온라인 상담신청 | `/{center}/consult` | dynamic | 센터별 상담 경로. 기존 `/consult?center=art`는 호환 리다이렉트 |
 
 ## 입시센터 IA 및 URL 구조표
 

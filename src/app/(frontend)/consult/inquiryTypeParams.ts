@@ -35,11 +35,24 @@ const inquiryTypeAliases: Record<string, InquiryType> = {
 
 const paramNames = ['inquiryType', 'type', 'center']
 
+const centerInquiryTypes: Record<string, InquiryType> = {
+  art: 'art',
+  avenue: 'avenue',
+  exam: 'admission',
+  highteen: 'highteen',
+  kids: 'kids',
+}
+
+export function inquiryTypeFromCenter(center: string): InquiryType {
+  return centerInquiryTypes[center] ?? 'art'
+}
+
 export function resolveInitialInquiryType(
   searchParams?: ConsultationSearchParams,
+  fallback: InquiryType = 'art',
 ): InquiryType {
   if (!searchParams) {
-    return 'art'
+    return fallback
   }
 
   for (const paramName of paramNames) {
@@ -51,7 +64,7 @@ export function resolveInitialInquiryType(
     }
   }
 
-  return 'art'
+  return fallback
 }
 
 function firstParamValue(value: string | string[] | undefined) {

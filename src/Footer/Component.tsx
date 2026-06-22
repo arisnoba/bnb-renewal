@@ -52,14 +52,15 @@ export async function Footer() {
   const centerInfos = footer?.centerInfos ?? []
   const pathname = (await headers()).get('x-pathname')
   const center = centerSlugFromPathname(pathname) ?? 'art'
+  const consultHref = `/${center}/consult`
   const customerLinks = [
     { href: 'tel:15779929', label: '대표전화', value: '1577-9929' },
-    { href: '/consult', label: 'CS센터 운영안내' },
+    { href: consultHref, label: 'CS센터 운영안내' },
     { href: `/${center}/map`, label: '오시는 길' },
   ]
   const consultationLinks = [
-    { href: '/consult', label: '입학안내' },
-    { href: '/consult', label: '상담신청' },
+    { href: `/${center}/admission`, label: '입학안내' },
+    { href: consultHref, label: '상담신청' },
     { href: `/${center}/faq`, label: '자주 묻는 질문' },
   ]
   const copyrightYear = new Date().getFullYear()

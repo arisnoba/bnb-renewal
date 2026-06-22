@@ -28,7 +28,7 @@ const publicTestPages = [
   },
   {
     description: '저장 연결 전 상담 신청 MVP 폼',
-    href: '/consult',
+    href: '/art/consult',
     label: '상담하기',
   },
   {

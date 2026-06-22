@@ -16,6 +16,7 @@ const allCenterRouteSections = new Set([
   'artist-press',
   'casting-status',
   'casting-system',
+  'consult',
   'facilities',
   'faq',
   'how-to-use',
