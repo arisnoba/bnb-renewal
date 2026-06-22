@@ -107,7 +107,12 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   const groupLabels = menu.map((group) => group.label)
   const labels = labelsFor('exam')
 
-  assert.deepEqual(labelsForGroup('exam', 'about'), labelsForGroup('art', 'about'))
+  assert.deepEqual(itemsForGroup('exam', 'about'), [
+    { href: '/exam/company', label: '회사 소개' },
+    { href: '/exam/about', label: '센터 소개' },
+    { href: '/exam/facilities', label: '시설 안내' },
+    { href: '/exam/map', label: '오시는 길' },
+  ])
   assert.deepEqual(groupLabels, ['배우앤배움', '교육', '합격현황', '합격자소개', '지원센터'])
   assert.deepEqual(
     menu.map((group) => [group.key, group.href]),
@@ -152,7 +157,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
     ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
   )
   assert.deepEqual(itemsForGroup('highteen', 'about'), [
-    { href: '/art#company', label: '회사 소개' },
+    { href: '/highteen/company', label: '회사 소개' },
     { href: '/highteen/about', label: '센터 소개' },
     { href: '/highteen/facilities', label: '시설 안내' },
     { href: '/highteen/map', label: '오시는 길' },
@@ -192,7 +197,7 @@ test('kids mega menu matches the approved kids structure', () => {
     ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
   )
   assert.deepEqual(itemsForGroup('kids', 'about'), [
-    { href: '/art#company', label: '회사 소개' },
+    { href: '/kids/company', label: '회사 소개' },
     { href: '/kids/about', label: '센터 소개' },
     { href: '/kids/facilities', label: '시설 안내' },
     { href: '/kids/map', label: '오시는 길' },
@@ -247,6 +252,7 @@ test('all center support menus link to the how-to-use page', () => {
 test('avenue mega menu uses the avenue one-page structure', () => {
   const labels = labelsFor('avenue')
 
+  assert.ok(labels.includes('회사 소개'))
   assert.ok(labels.includes('애비뉴센터 소개'))
   assert.ok(labels.includes('제휴업체'))
   assert.ok(labels.includes('캐스팅 센터'))

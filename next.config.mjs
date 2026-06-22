@@ -63,6 +63,9 @@ const nextConfig = {
         pathname: '/assets/center-about/**',
       },
       {
+        pathname: '/assets/company/**',
+      },
+      {
         pathname: '/assets/profile-production/**',
       },
       {
