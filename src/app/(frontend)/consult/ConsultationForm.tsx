@@ -452,7 +452,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           onSubmit={form.handleSubmit(handleValidSubmit, handleInvalidSubmit)}
         >
       <section className="grid gap-5">
-        <SectionHeading index="1" title="상담 예약" />
+        <SectionHeading index="1" title={isPartnership ? '문의 유형' : '상담 예약'} />
         <FormField
           control={form.control}
           name="inquiryType"
@@ -547,7 +547,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       </section>
 
       {isPartnership ? (
-        <section className="grid gap-5" id="partnership">
+        <section className="grid gap-5">
           <SectionHeading index="2" title="제휴 신청" />
           <div className="grid items-start gap-5 md:grid-cols-2">
             <TextInputField

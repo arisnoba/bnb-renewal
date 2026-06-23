@@ -103,7 +103,8 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
 
       <section
         aria-labelledby="consult-form-title"
-        className="section-consult-form section-p-block-sm bg-background"
+        className="section-consult-form section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
+        id="partnership"
       >
         <div className="container-sm">
           <div className="section-consult-form__stack grid gap-10">
