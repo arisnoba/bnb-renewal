@@ -8,6 +8,7 @@ import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import { Media } from '@/components/Media/Renderer'
+import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { assertCenter, centers, type CenterSlug } from '@/lib/centers'
 import type { Agency } from '@/payload-types'
 
@@ -157,7 +158,7 @@ function EntertainmentEducationSection({
                   {metric.label}
                 </p>
                 <p className="mt-5 type-display-l font-bold leading-none text-white">
-                  {metric.value}
+                  <AnimatedCounter value={metric.value} />
                   {metric.unit}
                 </p>
               </div>
