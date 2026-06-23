@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import React, { cache } from 'react'
 
 import { MainBannerSection } from '@/Main/BannerSection'
-import { SocialLinksSection } from '@/Main/SocialLinksSection'
+import { CenterHomeSections } from '@/Main/CenterHomeSections'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type { Main, MainStatistic } from '@/payload-types'
 
@@ -70,10 +70,10 @@ export default async function Page({ params: paramsPromise }: Args) {
   const statistics = await queryMainStatisticsGlobal()
 
   return (
-    <main className="page page-dark page-landing page-landing--center">
+    <main className="page page-dark page-landing page-landing--center" data-center={center}>
       <MainBannerSection center={center} main={main} statistics={statistics} />
       <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
-      <SocialLinksSection center={center} />
+      <CenterHomeSections center={center} />
     </main>
   )
 }
