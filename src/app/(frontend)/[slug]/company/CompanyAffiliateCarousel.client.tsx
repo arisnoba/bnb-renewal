@@ -71,6 +71,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
             nextSlideMessage: '다음 계열사',
             prevSlideMessage: '이전 계열사',
           }}
+          watchSlidesProgress
           breakpoints={{
             768: {
               slidesPerView: 1.05,
@@ -201,6 +202,8 @@ function AffiliateImage({
       priority={priority}
       sizes={sizes}
       src={src}
+      placeholder="blur"
+      blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxIDEiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMxNzE3MTciLz48L3N2Zz4="
     />
   )
 }
