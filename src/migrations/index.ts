@@ -123,6 +123,7 @@ import * as migration_20260615_211000_curriculum_classroom_tuition from './20260
 import * as migration_20260617_120000_agency_display_status from './20260617_120000_agency_display_status'
 import * as migration_20260622_170000_inquiry_public_form_options from './20260622_170000_inquiry_public_form_options'
 import * as migration_20260622_182500_footer_center_sns_urls from './20260622_182500_footer_center_sns_urls'
+import * as migration_20260623_120000_direct_casting_company_arko_lab from './20260623_120000_direct_casting_company_arko_lab'
 
 export const migrations = [
   {
@@ -749,5 +750,10 @@ export const migrations = [
     up: migration_20260622_182500_footer_center_sns_urls.up,
     down: migration_20260622_182500_footer_center_sns_urls.down,
     name: '20260622_182500_footer_center_sns_urls',
+  },
+  {
+    up: migration_20260623_120000_direct_casting_company_arko_lab.up,
+    down: migration_20260623_120000_direct_casting_company_arko_lab.down,
+    name: '20260623_120000_direct_casting_company_arko_lab',
   },
 ]

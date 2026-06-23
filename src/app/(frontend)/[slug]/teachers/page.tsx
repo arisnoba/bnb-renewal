@@ -8,9 +8,6 @@ type Args = {
   params: Promise<{
     slug?: string
   }>
-  searchParams?: Promise<{
-    visible?: string
-  }>
 }
 
 export const dynamic = 'force-dynamic'
@@ -28,18 +25,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   }
 }
 
-export default async function CenterTeachersPage({
-  params: paramsPromise,
-  searchParams: searchParamsPromise,
-}: Args) {
-  const [{ slug = '' }, query = {}] = await Promise.all([paramsPromise, searchParamsPromise])
+export default async function CenterTeachersPage({ params: paramsPromise }: Args) {
+  const { slug = '' } = await paramsPromise
   const center = assertCenter(slug)
 
-  return <TeachersArchive center={center} visible={parseVisible(query.visible)} />
-}
-
-function parseVisible(value: string | undefined) {
-  const visible = Number(value)
-
-  return Number.isFinite(visible) && visible > 0 ? Math.floor(visible) : undefined
+  return <TeachersArchive center={center} />
 }

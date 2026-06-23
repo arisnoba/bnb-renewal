@@ -66,8 +66,8 @@ const castingCompanies = [
   {
     directorCompanyNames: ['IMGround', 'IM Ground'],
     description: [
-      '다양한 작품에서 주, 조연 및 주요배역을 캐스팅하고 있습니다. 모든 캐스팅은 해당 제작사와 계약과 동시에 오디션 및 미팅을 거쳐 직접 캐스팅하는 작품입니다.',
-      '주, 조연 및 주요배역 캐스팅. 디렉터의 급이 다른 능력을 확인하시기 바랍니다.',
+      '다양한 작품에서 주·조연 및 주요배역을 캐스팅하고 있습니다. 모든 캐스팅은 해당 제작사와 계약과 동시에 오디션 및 미팅을 거쳐 직접 캐스팅하는 작품입니다.',
+      '주·조연 및 주요배역 캐스팅. 디렉터의 급이 다른 능력을 확인하시기 바랍니다.',
     ],
     headline: '협력사인 IMGround 캐스팅 에이전시는 다년간의 캐스팅 노하우를 바탕으로 설립된 에이전시로',
     id: 'im-ground',
@@ -77,7 +77,7 @@ const castingCompanies = [
   {
     directorCompanyNames: ['BX MODEL AGENCY', 'BX Model Agency', 'BX모델에이전시'],
     description: [
-      '캐스팅, 매니지먼트, 광고제작, 광고 언론과 홍보 대행을 One-step으로 해결하는 종합 agency 입니다.',
+      '캐스팅, 매니지먼트, 광고 제작, 광고 언론과 홍보 대행을 One-step으로 해결하는 종합 Agency입니다.',
       '혁신적이고 새로운 가치를 지향하고 있으며 유기적 커뮤니케이션을 통해 광고 업계의 새로운 방향성을 제시하고 있습니다.',
     ],
     headline: '배우앤배움 자회사 BX MODEL AGENCY는 다양한 브랜드들과 협업을 바탕으로',
@@ -158,7 +158,7 @@ export default async function CastingPage({ params }: Args) {
             id="casting-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
-            <span className="block">BNB CASTING</span>
+            <span className="block">캐스팅 센터</span>
           </h1>
         </div>
       </section>
@@ -223,7 +223,7 @@ function CastingCompanySection({
 
         <Link
           className="section-casting-company__direct mt-12 inline-flex min-h-12 items-center gap-2 bg-neutral-900 px-6 type-label-l font-bold text-white transition hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand"
-          href={`/${center}/casting-status`}
+          href={directCastingHref(center, company.id)}
         >
           DIRECT CASTING
           <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.4} />
@@ -364,11 +364,17 @@ function careerSortValue(value: string) {
 }
 
 function getCastingCompanies(center: CenterSlug) {
-  if (center === 'art') {
+  if (center === 'art' || center === 'avenue') {
     return castingCompanies.filter((company) => company.id !== 'im-ground')
   }
 
   return castingCompanies
+}
+
+function directCastingHref(center: CenterSlug, companyId: string) {
+  const company = companyId === 'im-ground' ? 'imground' : companyId
+
+  return `/${center}/direct-castings?company=${encodeURIComponent(company)}#direct-castings-list`
 }
 
 function assertCastingCenter(center: CenterSlug) {

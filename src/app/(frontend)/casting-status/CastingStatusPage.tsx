@@ -83,11 +83,11 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
               <span className="block md:inline">배우앤배움 수강생들의</span>{' '}
               <span className="block md:inline">출연 작품은</span>
               <br className="hidden md:block" />
-              <span className="block md:inline">유캐스팅의 단독 캐스팅으로</span>{' '}
+              <span className="block md:inline">ARKO Lab의 단독 캐스팅으로</span>{' '}
               <span className="block md:inline">이어지고 있습니다.</span>
             </h2>
             <p className="section-casting-status-list__description mt-6 type-body-m leading-[1.6] text-neutral-500 md:mt-8">
-              유캐스팅 에이전시와 사전협의 없는
+              ARKO Lab 에이전시와 사전협의 없는
               <br className="md:hidden" />
               무단도용 및 복제, 배포를 금합니다.
             </p>

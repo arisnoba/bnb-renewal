@@ -19,10 +19,10 @@ import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 const directCastingSlugify = createKoreanSlugifyWithFallback('direct-casting')
 
 const companyOptions = [
-  { label: '유캐스팅', value: 'ucasting' },
-  { label: 'IMGround', value: 'imground' },
-  { label: 'BNB캐스팅', value: 'bnb-casting' },
-  { label: 'BX모델에이전시', value: 'bx-model-agency' },
+  { label: 'ARKO Lab', value: 'arko-lab' },
+  { label: 'IM Ground', value: 'imground' },
+  { label: 'BNB Casting', value: 'bnb-casting' },
+  { label: 'BX Model Agency', value: 'bx-model-agency' },
 ]
 
 const sourceCenterOptions = [

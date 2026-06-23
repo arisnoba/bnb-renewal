@@ -7,6 +7,11 @@ test('adminBarCenterHref keeps the current center page when the target center su
   assert.equal(adminBarCenterHref('/art/news', 'kids'), '/kids/news')
   assert.equal(adminBarCenterHref('/kids/teachers/kim-seoha', 'highteen'), '/highteen/teachers/kim-seoha')
   assert.equal(adminBarCenterHref('/art/casting', 'avenue'), '/avenue/casting')
+  assert.equal(adminBarCenterHref('/art/direct-castings', 'kids'), '/kids/direct-castings')
+  assert.equal(
+    adminBarCenterHref('/art/direct-castings/sample-project', 'highteen'),
+    '/highteen/direct-castings/sample-project',
+  )
   assert.equal(adminBarCenterHref('/art/company', 'kids'), '/kids/company')
   assert.equal(adminBarCenterHref('/art/consult', 'exam'), '/exam/consult')
   assert.equal(adminBarCenterHref('/exam/management', 'exam'), '/exam/management')
@@ -16,6 +21,7 @@ test('adminBarCenterHref keeps the current center page when the target center su
 test('adminBarCenterHref sends unsupported center pages to the target center main', () => {
   assert.equal(adminBarCenterHref('/art/grade-system', 'exam'), '/exam')
   assert.equal(adminBarCenterHref('/art/casting', 'exam'), '/exam')
+  assert.equal(adminBarCenterHref('/art/direct-castings', 'exam'), '/exam')
   assert.equal(adminBarCenterHref('/exam/special-system', 'art'), '/art')
   assert.equal(adminBarCenterHref('/highteen/special-lecture', 'kids'), '/kids')
   assert.equal(adminBarCenterHref('/art/curriculum/basic-class', 'kids'), '/kids')

@@ -4,18 +4,16 @@ import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 import React from 'react'
 
-import { INITIAL_VISIBLE_TEACHERS, TeachersGrid } from './TeachersGrid.client'
+import { TeachersGrid } from './TeachersGrid.client'
 
 const MAX_TEACHERS_TO_RENDER = 1000
 
 type TeachersArchiveProps = {
   center: CenterSlug
-  visible?: number
 }
 
-export async function TeachersArchive({ center, visible }: TeachersArchiveProps) {
+export async function TeachersArchive({ center }: TeachersArchiveProps) {
   const payload = await getPayload({ config: configPromise })
-  const visibleCount = clampVisibleCount(visible)
   const decoIcons = getPageDecoIcons(3, `teachers-${center}`)
   const where: Where = {
     and: [
@@ -128,7 +126,6 @@ export async function TeachersArchive({ center, visible }: TeachersArchiveProps)
           ) : (
             <TeachersGrid
               center={center}
-              initialVisible={visibleCount}
               teachers={teachers.docs}
             />
           )}
@@ -136,12 +133,4 @@ export async function TeachersArchive({ center, visible }: TeachersArchiveProps)
       </section>
     </main>
   )
-}
-
-function clampVisibleCount(value: number | undefined) {
-  if (!value) {
-    return INITIAL_VISIBLE_TEACHERS
-  }
-
-  return Math.min(Math.max(value, INITIAL_VISIBLE_TEACHERS), MAX_TEACHERS_TO_RENDER)
 }

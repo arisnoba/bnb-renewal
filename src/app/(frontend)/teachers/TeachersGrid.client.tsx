@@ -1,17 +1,10 @@
-'use client'
-
 import type { CSSProperties } from 'react'
 
 import { Media } from '@/components/Media/Renderer'
 import type { CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
-import { ChevronDown, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import React, { useMemo, useState } from 'react'
-
-export const INITIAL_VISIBLE_TEACHERS = 16
-const VISIBLE_INCREMENT = 8
-const LOAD_MORE_DELAY = 260
+import React from 'react'
 
 const teacherMaskIcons = [
   'iruda-d.svg',
@@ -40,72 +33,21 @@ type TeacherMaskStyle = CSSProperties & {
 
 type TeachersGridProps = {
   center: CenterSlug
-  initialVisible: number
   teachers: TeacherListItem[]
 }
 
-export function TeachersGrid({ center, initialVisible, teachers }: TeachersGridProps) {
-  const normalizedInitialVisible = Math.min(
-    Math.max(initialVisible, INITIAL_VISIBLE_TEACHERS),
-    teachers.length,
-  )
-  const [visibleCount, setVisibleCount] = useState(normalizedInitialVisible)
-  const [isLoading, setIsLoading] = useState(false)
-  const visibleTeachers = useMemo(
-    () => teachers.slice(0, visibleCount),
-    [teachers, visibleCount],
-  )
-  const remainingCount = teachers.length - visibleCount
-  const skeletonCount = Math.min(VISIBLE_INCREMENT, Math.max(remainingCount, 0))
-  const hasMore = remainingCount > 0
-
-  function handleLoadMore() {
-    if (isLoading || !hasMore) {
-      return
-    }
-
-    setIsLoading(true)
-    window.setTimeout(() => {
-      setVisibleCount((current) => Math.min(current + VISIBLE_INCREMENT, teachers.length))
-      setIsLoading(false)
-    }, LOAD_MORE_DELAY)
-  }
-
+export function TeachersGrid({ center, teachers }: TeachersGridProps) {
   return (
-    <>
-      <div className="section-teachers-list__grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {visibleTeachers.map((teacher, index) => (
-          <TeacherCard
-            center={center}
-            index={index}
-            key={teacher.id}
-            teacher={teacher}
-          />
-        ))}
-        {isLoading &&
-          Array.from({ length: skeletonCount }, (_, index) => (
-            <TeacherSkeletonCard index={visibleCount + index} key={`teacher-skeleton-${index}`} />
-          ))}
-      </div>
-
-      {hasMore && (
-        <div className="section-teachers-list__more mt-12 flex justify-center md:mt-16">
-          <button
-            className="inline-flex min-h-11 items-center gap-3 px-5 type-label-l font-bold leading-none text-white transition hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand disabled:cursor-wait disabled:text-white/45"
-            disabled={isLoading}
-            onClick={handleLoadMore}
-            type="button"
-          >
-            {isLoading ? '불러오는 중' : '더보기'}
-            {isLoading ? (
-              <Loader2 aria-hidden="true" className="size-4 animate-spin" strokeWidth={2.4} />
-            ) : (
-              <ChevronDown aria-hidden="true" className="size-4" strokeWidth={2.4} />
-            )}
-          </button>
-        </div>
-      )}
-    </>
+    <div className="section-teachers-list__grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {teachers.map((teacher, index) => (
+        <TeacherCard
+          center={center}
+          index={index}
+          key={teacher.id}
+          teacher={teacher}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -136,10 +78,13 @@ function TeacherCard({
         >
           {hasMediaImage ? (
             <Media
+              fadeIn={true}
               fill
               htmlElement={null}
-              imgClassName="size-full object-cover object-top grayscale opacity-55 transition duration-300 group-hover:scale-105 group-hover:opacity-85"
-              pictureClassName="block size-full"
+              imgClassName="size-full object-cover object-top grayscale transition duration-300 group-hover:scale-105"
+              loading="lazy"
+              placeholder="empty"
+              pictureClassName="block size-full opacity-55 transition duration-300 group-hover:opacity-85"
               resource={media}
               size="(max-width: 767px) 46vw, (max-width: 1279px) 30vw, 268px"
             />
@@ -155,18 +100,6 @@ function TeacherCard({
         </div>
       </article>
     </Link>
-  )
-}
-
-function TeacherSkeletonCard({ index }: { index: number }) {
-  const maskIcon = teacherMaskIcons[index % teacherMaskIcons.length]
-
-  return (
-    <div
-      aria-hidden="true"
-      className="section-teachers-card__skeleton aspect-square animate-pulse bg-white/[0.06]"
-      style={teacherMaskStyle(maskIcon)}
-    />
   )
 }
 
