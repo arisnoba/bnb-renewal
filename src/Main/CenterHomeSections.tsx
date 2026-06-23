@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element -- Home cards use mixed Payload/R2/local URLs already normalized by getMediaUrl. */
 import configPromise from '@payload-config'
-import { ChevronDown, ChevronRight, Info, Search } from 'lucide-react'
+import { ChevronDown, ChevronRight, Info, Instagram, Search, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
 
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { extractYouTubeVideoId } from '@/lib/youtube'
 import type { ArtistPress, Media, News, Profile, ScreenAppearance, SocialLink } from '@/payload-types'
 import {
   getArtistPressThumbnailMedia,
@@ -50,6 +51,8 @@ type HomeSocialLink = Pick<
   'id' | 'externalUrl' | 'representativeImage' | 'representativeImageUrl' | 'title'
 >
 
+type SocialPlatform = 'instagram' | 'youtube'
+
 type CenterHomeData = {
   artistPress: HomeArtistPress[]
   news: HomeNews[]
@@ -62,7 +65,7 @@ const screenAppearanceLimit = 7
 const profileLimit = 5
 const artistPressLimit = 5
 const newsLimit = 5
-const socialLimit = 5
+const socialLimit = 10
 
 const centerHeroImage: Record<CenterSlug, string> = {
   art: '/assets/art/grade-system-hero.png',
@@ -511,54 +514,132 @@ function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeS
     .map((link) => ({
       href: link.externalUrl?.trim() || '',
       imageUrl: socialImageUrl(link),
+      platform: socialPlatform(link.externalUrl),
       title: link.title || 'SNS 링크',
     }))
     .filter((link) => link.href && link.imageUrl)
+    .slice(0, socialLimit)
+  const marqueeLinks = [...visibleLinks, ...visibleLinks]
 
   return (
     <section
       aria-labelledby="center-home-social-title"
-      className="section-center-home-social relative overflow-hidden bg-neutral-950 px-5 py-24 text-white md:py-[120px]"
+      className="section-center-home-social relative overflow-hidden bg-neutral-950 py-24 text-white md:py-[120px]"
       data-center={center}
     >
-      <div className="pointer-events-none absolute -right-12 top-0 hidden h-50 w-50 bg-brand md:block" />
       <div className="container">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <SectionIntro eyebrow="CASTING & SOCIAL" id="center-home-social-title" title="지금, 배우들이 만들어가는 순간" />
-          <div className="type-label-m font-semibold leading-[1.2] text-neutral-400">
-            <p>BNB_ENM</p>
-            <p className="mt-2">bnbartcenter</p>
+          <div className="grid gap-3 type-title-s font-normal leading-normal text-white/50 md:justify-items-end md:type-headline-s">
+            <p className="inline-flex items-center gap-3">
+              <Youtube aria-hidden="true" className="size-8" fill="currentColor" strokeWidth={0} />
+              <span>BNB_ENM</span>
+            </p>
+            <p className="inline-flex items-center gap-3">
+              <Instagram aria-hidden="true" className="size-8" strokeWidth={1.8} />
+              <span>bnbartcenter</span>
+            </p>
           </div>
         </div>
-        {visibleLinks.length > 0 ? (
-          <div className="section-center-home-social__grid mt-14 grid grid-cols-2 gap-4 md:grid-cols-5">
-            {visibleLinks.map((link) => (
-              <a
-                aria-label={link.title}
-                className="group block overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-                href={link.href}
-                key={link.href}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <img
-                  alt=""
-                  className="aspect-square w-full object-cover transition duration-300 group-hover:scale-[1.035]"
-                  loading="lazy"
-                  src={link.imageUrl}
-                />
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div className="section-center-home-social__grid mt-14 grid grid-cols-2 gap-4 md:grid-cols-5">
-            {[0, 1, 2, 3, 4].map((item) => (
-              <div className="aspect-square bg-neutral-900" key={item} />
-            ))}
-          </div>
-        )}
       </div>
+      {visibleLinks.length > 0 ? (
+        <div className="section-center-home-social__viewport mt-16 overflow-hidden md:mt-[100px]">
+          <div className="section-center-home-social__track flex w-max items-center gap-8 md:gap-[60px]">
+            {marqueeLinks.map((link, index) => (
+              <SocialMarqueeCard
+                href={link.href}
+                imageUrl={link.imageUrl}
+                isDuplicate={index >= visibleLinks.length}
+                key={`${link.href}-${index}`}
+                platform={link.platform}
+                title={link.title}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="section-center-home-social__viewport mt-16 overflow-hidden md:mt-[100px]">
+          <div className="flex items-center justify-center gap-8 md:gap-[60px]">
+            {[0, 1, 2, 3, 4].map((item) => (
+              <div
+                className="h-[216px] w-[min(82vw,384px)] shrink-0 bg-neutral-900 md:h-[256px]"
+                key={item}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      <style>{`
+        @keyframes center-home-social-marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+
+        .section-center-home-social__track {
+          animation: center-home-social-marquee 44s linear infinite;
+        }
+
+        .section-center-home-social__track:hover {
+          animation-duration: 88s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .section-center-home-social__track {
+            animation: none;
+          }
+        }
+      `}</style>
     </section>
+  )
+}
+
+function SocialMarqueeCard({
+  href,
+  imageUrl,
+  isDuplicate = false,
+  platform,
+  title,
+}: {
+  href: string
+  imageUrl: string
+  isDuplicate?: boolean
+  platform: SocialPlatform
+  title: string
+}) {
+  const isYoutube = platform === 'youtube'
+
+  return (
+    <a
+      aria-hidden={isDuplicate ? 'true' : undefined}
+      aria-label={title}
+      className={`group relative block shrink-0 overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 ${
+        isYoutube
+          ? 'aspect-video w-[min(82vw,384px)]'
+          : 'aspect-[4/5] w-[min(76vw,304px)]'
+      }`}
+      href={href}
+      rel="noopener noreferrer"
+      tabIndex={isDuplicate ? -1 : undefined}
+      target="_blank"
+    >
+      <img
+        alt=""
+        className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-[1.035]"
+        loading="lazy"
+        src={imageUrl}
+      />
+      <span
+        className={`absolute left-3 top-3 inline-flex size-10 items-center justify-center rounded-full text-white ${
+          isYoutube ? 'bg-red-600' : 'bg-brand'
+        }`}
+      >
+        {isYoutube ? (
+          <Youtube aria-hidden="true" className="size-5" fill="currentColor" strokeWidth={0} />
+        ) : (
+          <Instagram aria-hidden="true" className="size-5" strokeWidth={2} />
+        )}
+      </span>
+    </a>
   )
 }
 
@@ -687,7 +768,25 @@ function screenAppearanceImageUrl(appearance: HomeScreenAppearance | null | unde
 }
 
 function socialImageUrl(link: HomeSocialLink) {
-  return mediaUrl(link.representativeImage) || normalizeImageUrl(link.representativeImageUrl)
+  return socialMediaUrl(link.representativeImage) || normalizeImageUrl(link.representativeImageUrl)
+}
+
+function socialPlatform(value: string | null | undefined): SocialPlatform {
+  if (extractYouTubeVideoId(value)) {
+    return 'youtube'
+  }
+
+  try {
+    const hostname = new URL(value?.trim() || '').hostname.replace(/^www\./, '')
+
+    if (hostname === 'youtube.com' || hostname === 'm.youtube.com' || hostname === 'youtu.be') {
+      return 'youtube'
+    }
+  } catch {
+    return 'instagram'
+  }
+
+  return 'instagram'
 }
 
 function mediaUrl(value: number | null | Media | undefined) {
@@ -697,6 +796,17 @@ function mediaUrl(value: number | null | Media | undefined) {
 
   const media = value as Media
   const url = media.sizes?.medium?.url || media.url || (media.filename ? `/media/${media.filename}` : '')
+
+  return getMediaUrl(url, media.updatedAt)
+}
+
+function socialMediaUrl(value: number | null | Media | undefined) {
+  if (!value || typeof value !== 'object') {
+    return ''
+  }
+
+  const media = value as Media
+  const url = media.url || media.sizes?.medium?.url || (media.filename ? `/media/${media.filename}` : '')
 
   return getMediaUrl(url, media.updatedAt)
 }
