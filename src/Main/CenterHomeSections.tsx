@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element -- Home cards use mixed Payload/R2/local URLs already normalized by getMediaUrl. */
 import configPromise from '@payload-config'
-import { ChevronDown, ChevronRight, Info, Instagram, Search, Youtube } from 'lucide-react'
+import { ChevronDown, ChevronRight, Info, Search } from 'lucide-react'
 import Link from 'next/link'
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
 
+import { Marquee } from '@/components/ui/marquee'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
 import { extractYouTubeVideoId } from '@/lib/youtube'
@@ -52,6 +53,11 @@ type HomeSocialLink = Pick<
 >
 
 type SocialPlatform = 'instagram' | 'youtube'
+
+const socialBadgeIcon: Record<SocialPlatform, string> = {
+  instagram: '/assets/icons/badge-instagram.svg',
+  youtube: '/assets/icons/badge-youtube.svg',
+}
 
 type CenterHomeData = {
   artistPress: HomeArtistPress[]
@@ -519,7 +525,6 @@ function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeS
     }))
     .filter((link) => link.href && link.imageUrl)
     .slice(0, socialLimit)
-  const marqueeLinks = [...visibleLinks, ...visibleLinks]
 
   return (
     <section
@@ -532,30 +537,34 @@ function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeS
           <SectionIntro eyebrow="CASTING & SOCIAL" id="center-home-social-title" title="지금, 배우들이 만들어가는 순간" />
           <div className="grid gap-3 type-title-s font-normal leading-normal text-white/50 md:justify-items-end md:type-headline-s">
             <p className="inline-flex items-center gap-3">
-              <Youtube aria-hidden="true" className="size-8" fill="currentColor" strokeWidth={0} />
+              <img alt="" aria-hidden="true" className="size-10" src={socialBadgeIcon.youtube} />
               <span>BNB_ENM</span>
             </p>
             <p className="inline-flex items-center gap-3">
-              <Instagram aria-hidden="true" className="size-8" strokeWidth={1.8} />
+              <img alt="" aria-hidden="true" className="size-10" src={socialBadgeIcon.instagram} />
               <span>bnbartcenter</span>
             </p>
           </div>
         </div>
       </div>
       {visibleLinks.length > 0 ? (
-        <div className="section-center-home-social__viewport mt-16 overflow-hidden md:mt-[100px]">
-          <div className="section-center-home-social__track flex w-max items-center gap-8 md:gap-[60px]">
-            {marqueeLinks.map((link, index) => (
+        <div className="section-center-home-social__viewport overflow-hidden">
+          <Marquee
+            className="section-center-home-social__track mt-16 p-0 [--duration:44s] [--gap:2rem] md:mt-[100px] md:[--gap:60px]"
+            hoverPlaybackRate={0.5}
+            repeat={2}
+            slowOnHover
+          >
+            {visibleLinks.map((link, index) => (
               <SocialMarqueeCard
                 href={link.href}
                 imageUrl={link.imageUrl}
-                isDuplicate={index >= visibleLinks.length}
                 key={`${link.href}-${index}`}
                 platform={link.platform}
                 title={link.title}
               />
             ))}
-          </div>
+          </Marquee>
         </div>
       ) : (
         <div className="section-center-home-social__viewport mt-16 overflow-hidden md:mt-[100px]">
@@ -569,26 +578,6 @@ function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeS
           </div>
         </div>
       )}
-      <style>{`
-        @keyframes center-home-social-marquee {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-
-        .section-center-home-social__track {
-          animation: center-home-social-marquee 44s linear infinite;
-        }
-
-        .section-center-home-social__track:hover {
-          animation-duration: 88s;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .section-center-home-social__track {
-            animation: none;
-          }
-        }
-      `}</style>
     </section>
   )
 }
@@ -596,13 +585,11 @@ function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeS
 function SocialMarqueeCard({
   href,
   imageUrl,
-  isDuplicate = false,
   platform,
   title,
 }: {
   href: string
   imageUrl: string
-  isDuplicate?: boolean
   platform: SocialPlatform
   title: string
 }) {
@@ -610,35 +597,29 @@ function SocialMarqueeCard({
 
   return (
     <a
-      aria-hidden={isDuplicate ? 'true' : undefined}
       aria-label={title}
-      className={`group relative block shrink-0 overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 ${
+      className={`group/social-card relative block shrink-0 overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 ${
         isYoutube
           ? 'aspect-video w-[min(82vw,384px)]'
           : 'aspect-[4/5] w-[min(76vw,304px)]'
       }`}
       href={href}
       rel="noopener noreferrer"
-      tabIndex={isDuplicate ? -1 : undefined}
       target="_blank"
     >
       <img
         alt=""
-        className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-[1.035]"
+        className="absolute inset-0 size-full object-cover transition duration-500 group-hover/social-card:scale-[1.035]"
         loading="lazy"
         src={imageUrl}
       />
-      <span
-        className={`absolute left-3 top-3 inline-flex size-10 items-center justify-center rounded-full text-white ${
-          isYoutube ? 'bg-red-600' : 'bg-brand'
-        }`}
-      >
-        {isYoutube ? (
-          <Youtube aria-hidden="true" className="size-5" fill="currentColor" strokeWidth={0} />
-        ) : (
-          <Instagram aria-hidden="true" className="size-5" strokeWidth={2} />
-        )}
-      </span>
+      <img
+        alt=""
+        aria-hidden="true"
+        className="absolute left-3 top-3 size-10"
+        loading="lazy"
+        src={socialBadgeIcon[platform]}
+      />
     </a>
   )
 }
