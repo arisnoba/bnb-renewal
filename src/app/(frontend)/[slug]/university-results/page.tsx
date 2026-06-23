@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { assertCenter, getCenterLabel } from '@/lib/centers'
+import { assertCenter } from '@/lib/centers'
 import { notFound } from 'next/navigation'
 
 import {
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: '배우앤배움 입시센터 대학교 합격현황',
-    title: `${getExamResultPageTitle(resultType)} | ${getCenterLabel(center)}`,
+    title: getExamResultPageTitle(resultType),
   }
 }
 

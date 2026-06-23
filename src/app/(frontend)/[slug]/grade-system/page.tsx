@@ -18,15 +18,15 @@ type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
 const gradeSystemMetadata = {
   art: {
     description: '배우앤배움 아트센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
-    title: '등급제 교육관리시스템 | 배우앤배움 아트센터',
+    title: '등급제 교육관리시스템',
   },
   highteen: {
     description: '배우앤배움 하이틴센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
-    title: '등급제 교육관리시스템 | 배우앤배움 하이틴센터',
+    title: '등급제 교육관리시스템',
   },
   kids: {
     description: '배우앤배움 키즈센터 등급제 교육관리시스템 안내',
-    title: '등급제 교육관리시스템 | 배우앤배움 키즈센터',
+    title: '등급제 교육관리시스템',
   },
 } satisfies Record<GradeSystemCenter, Metadata>
 

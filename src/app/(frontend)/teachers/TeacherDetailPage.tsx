@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
-import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centers, type CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
@@ -191,7 +191,7 @@ export async function generateTeacherMetadata({
 
   return {
     description: teacher.summary || teacher.role || undefined,
-    title: [teacher.name, '교육진 소개', getCenterLabel(center)].filter(Boolean).join(' | '),
+    title: teacher.name || '교육진 소개',
   }
 }
 

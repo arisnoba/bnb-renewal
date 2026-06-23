@@ -25,19 +25,19 @@ const TRUST_EDUCATION_STARTED_YEAR = 2010
 const entertainmentMetadata = {
   art: {
     description: '배우앤배움 아트센터 엔터테인먼트 위탁교육 안내',
-    title: '엔터테인먼트 위탁교육 | 배우앤배움 아트센터',
+    title: '엔터테인먼트 위탁교육',
   },
   avenue: {
     description: '배우앤배움 애비뉴센터 엔터테인먼트 위탁교육 안내',
-    title: '엔터테인먼트 위탁교육 | 배우앤배움 애비뉴센터',
+    title: '엔터테인먼트 위탁교육',
   },
   highteen: {
     description: '배우앤배움 하이틴센터 엔터테인먼트 위탁교육 안내',
-    title: '엔터테인먼트 위탁교육 | 배우앤배움 하이틴센터',
+    title: '엔터테인먼트 위탁교육',
   },
   kids: {
     description: '배우앤배움 키즈센터 엔터테인먼트 위탁교육 안내',
-    title: '엔터테인먼트 위탁교육 | 배우앤배움 키즈센터',
+    title: '엔터테인먼트 위탁교육',
   },
 } satisfies Record<EntertainmentCenter, Metadata>
 

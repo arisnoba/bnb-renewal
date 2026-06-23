@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { assertCenter, centers, getCenterLabel } from '@/lib/centers'
+import { assertCenter, centers } from '@/lib/centers'
 
 import { ScreenAppearancesArchive } from '../../screen-appearances/ScreenAppearancesArchive'
 
@@ -22,10 +22,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const center = assertCenter(slug)
+  assertCenter(slug)
 
   return {
-    title: `${getCenterLabel(center)} BNB 출연장면`,
+    title: 'BNB 출연장면',
   }
 }
 

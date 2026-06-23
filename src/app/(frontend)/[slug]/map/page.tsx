@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${location.name} 오시는 길과 주소, 전화번호를 확인하세요.`,
-    title: `${location.name} 오시는 길`,
+    title: '오시는 길',
   }
 }
 

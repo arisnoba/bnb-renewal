@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centers, type CenterSlug } from '@/lib/centers'
 import type { CastingAppearance } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import configPromise from '@payload-config'
@@ -198,9 +198,7 @@ export async function generateCastingStatusMetadata({
   const casting = await queryCastingStatusBySlug({ center, slug }).catch(() => null)
 
   return {
-    title: casting?.title
-      ? `${casting.title} | ${getCenterLabel(center)} 캐스팅 출연현황`
-      : `${getCenterLabel(center)} 캐스팅 출연현황`,
+    title: casting?.title || '캐스팅 출연현황',
   }
 }
 

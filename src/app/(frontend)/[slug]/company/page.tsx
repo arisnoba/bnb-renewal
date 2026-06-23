@@ -161,7 +161,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `배우앤배움 ${centers[center]} 회사소개와 BNB INDUSTRY 네트워크를 확인하세요.`,
-    title: `회사소개 | ${centers[center]}`,
+    title: '회사소개',
   }
 }
 

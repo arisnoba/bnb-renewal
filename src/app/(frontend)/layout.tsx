@@ -51,6 +51,10 @@ export default async function RootLayout({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
+  title: {
+    default: '배우앤배움',
+    template: '%s - 배우앤배움',
+  },
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',

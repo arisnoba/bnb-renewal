@@ -2,7 +2,7 @@ import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
-import { getCenterLabel, type CenterSlug } from '@/lib/centers'
+import type { CenterSlug } from '@/lib/centers'
 import type { ExamPassedReview, ExamSchoolLogo } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import configPromise from '@payload-config'
@@ -171,9 +171,7 @@ export async function generateExamPassedReviewMetadata(slug: string): Promise<Me
 
   return {
     description: review ? getReviewDescription(review) : undefined,
-    title: review
-      ? `${getReviewTitle(review)} | ${getCenterLabel(center)} 수강생 합격후기`
-      : `${getCenterLabel(center)} 수강생 합격후기`,
+    title: review ? getReviewTitle(review) : '수강생 합격후기',
   }
 }
 

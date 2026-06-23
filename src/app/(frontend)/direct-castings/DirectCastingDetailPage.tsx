@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
-import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centers, type CenterSlug } from '@/lib/centers'
 import type { DirectCasting } from '@/payload-types'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
@@ -128,9 +128,7 @@ export async function generateDirectCastingMetadata({
 
   return {
     description: casting?.projectInfo || undefined,
-    title: casting?.title
-      ? `${casting.title} | ${getCenterLabel(center)} 다이렉트 캐스팅`
-      : `${getCenterLabel(center)} 다이렉트 캐스팅`,
+    title: casting?.title || '다이렉트 캐스팅',
   }
 }
 

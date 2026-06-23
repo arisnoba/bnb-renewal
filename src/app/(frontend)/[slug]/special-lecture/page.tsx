@@ -8,7 +8,7 @@ import React from 'react'
 
 import { Media } from '@/components/Media/Renderer'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
-import { assertCenter, getCenterLabel } from '@/lib/centers'
+import { assertCenter } from '@/lib/centers'
 import { extractYouTubeVideoId, youtubeThumbnailUrl, youtubeWatchUrl } from '@/lib/youtube'
 import type { HighteenSpecialClass, Media as MediaType } from '@/payload-types'
 
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: '배우앤배움 하이틴센터에서 진행한 특강 영상 모음',
-    title: `하이틴센터 특강 | ${getCenterLabel(center)}`,
+    title: '특강',
   }
 }
 

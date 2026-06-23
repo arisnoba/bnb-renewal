@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { assertCenter, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { assertCenter, type CenterSlug } from '@/lib/centers'
 import { notFound } from 'next/navigation'
 
 import { DirectCastingsArchive } from '../../direct-castings/DirectCastingsArchive'
@@ -26,10 +26,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const center = assertDirectCastingCenter(assertCenter(slug))
+  assertDirectCastingCenter(assertCenter(slug))
 
   return {
-    title: `${getCenterLabel(center)} 다이렉트 캐스팅`,
+    title: '다이렉트 캐스팅',
   }
 }
 

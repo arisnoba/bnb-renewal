@@ -227,7 +227,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${getCenterLabel(center)} 프로필 제작 절차와 BNB 전용 스튜디오 안내`,
-    title: `프로필 제작 절차 안내 | ${getCenterLabel(center)}`,
+    title: '프로필 제작 절차 안내',
   };
 }
 

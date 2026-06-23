@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: CenterConsultPageProps): Prom
   const center = assertCenter(slug)
 
   return {
-    title: `${centers[center]} 상담하기`,
     description: `${centers[center]} 온라인 상담 신청`,
+    title: '상담하기',
   }
 }
 

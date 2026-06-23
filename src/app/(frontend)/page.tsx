@@ -51,7 +51,7 @@ const gateCenters: ImageGalleryItem[] = [
 ]
 
 export const metadata: Metadata = {
-  title: '배우앤배움 센터 선택',
+  title: '센터 선택 - 배우앤배움',
   description:
     '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터를 선택하는 게이트 페이지입니다.',
 }

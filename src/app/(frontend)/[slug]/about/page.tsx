@@ -136,11 +136,9 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     }
   }
 
-  const title = centers[center]
-
   return {
-    title: `센터소개 | ${title}`,
-    description: `배우앤배움 ${title} 센터소개`,
+    title: '센터소개',
+    description: `배우앤배움 ${centers[center]} 센터소개`,
   }
 }
 

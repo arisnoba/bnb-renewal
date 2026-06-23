@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { centers, assertCenter, getCenterLabel } from '@/lib/centers'
+import { centers, assertCenter } from '@/lib/centers'
 
 import { ArtistPressArchive } from '../../artist-press/ArtistPressArchive'
 
@@ -22,10 +22,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug } = await paramsPromise
-  const center = assertCenter(slug)
+  assertCenter(slug)
 
   return {
-    title: `${getCenterLabel(center)} 출신 아티스트`,
+    title: '출신 아티스트',
   }
 }
 

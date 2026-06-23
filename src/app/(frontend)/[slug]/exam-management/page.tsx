@@ -99,7 +99,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${getCenterLabel(center)} 입시 설계, 이미지 컨설팅, 전략 매핑, 합격 이후 관리 안내`,
-    title: `입시 매니지먼트 | ${getCenterLabel(center)}`,
+    title: '입시 매니지먼트',
   }
 }
 

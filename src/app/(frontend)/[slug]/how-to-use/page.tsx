@@ -206,7 +206,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `배우앤배움 ${centerName} 곳곳에 숨어있는 프리미엄 서비스 안내`,
-    title: `학원100%이용법 | 배우앤배움 ${centerName}`,
+    title: '학원100%이용법',
   }
 }
 

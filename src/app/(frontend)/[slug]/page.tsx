@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 
 function fallbackMetadata(): Metadata {
   return {
-    title: 'BNB Renewal',
+    title: '페이지를 찾을 수 없습니다',
     description: 'BNB Renewal 웹사이트 템플릿',
   }
 }
@@ -34,7 +34,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const title = centers[center]
 
   return {
-    title,
+    title: {
+      absolute: `배우앤배움 ${title}`,
+    },
     description: `${title} 메인 페이지`,
   }
 }

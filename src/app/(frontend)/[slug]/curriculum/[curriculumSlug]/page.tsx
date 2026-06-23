@@ -67,8 +67,6 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     description: title
       ? `${getCenterLabel(center)} ${title} 커리큘럼 상세 안내`
       : `${getCenterLabel(center)} 커리큘럼 상세 안내`,
-    title: title
-      ? `${title} | ${getCenterLabel(center)} 커리큘럼`
-      : `${getCenterLabel(center)} 커리큘럼`,
+    title: title || '커리큘럼',
   }
 }

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `배우앤배움 ${centerLabel} 시설 안내와 내부 공간 이미지를 확인하세요.`,
-    title: `시설 안내 | ${centerLabel}`,
+    title: '시설 안내',
   }
 }
 

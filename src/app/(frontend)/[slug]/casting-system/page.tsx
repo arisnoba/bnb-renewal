@@ -212,7 +212,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${getCenterLabel(center)} 프로필 제작, 영상 제작, 오디션, 현장 케어까지 이어지는 배우 케어 시스템 안내`,
-    title: `배우 케어 시스템 | ${getCenterLabel(center)}`,
+    title: '배우 케어 시스템',
   };
 }
 

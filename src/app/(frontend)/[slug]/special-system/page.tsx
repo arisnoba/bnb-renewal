@@ -86,7 +86,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${getCenterLabel(center)} 의상, 헤어, 메이크업과 특별 교육 지원 시스템 안내`,
-    title: `특별한 시스템 | ${getCenterLabel(center)}`,
+    title: '특별한 시스템',
   }
 }
 

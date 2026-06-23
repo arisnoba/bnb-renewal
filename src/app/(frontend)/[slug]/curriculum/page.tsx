@@ -43,14 +43,14 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   if (center === 'kids') {
     return {
       description: '배우앤배움 키즈센터의 영재, 아역배우, 아티스트 과정별 정적 커리큘럼 안내',
-      title: `커리큘럼 | ${getCenterLabel(center)}`,
+      title: '커리큘럼',
     }
   }
 
   if (center === 'exam') {
     return {
       description: '배우앤배움 입시센터의 입시반, 예비 입시반, 예고 입시반 커리큘럼 안내',
-      title: `커리큘럼 | ${getCenterLabel(center)}`,
+      title: '커리큘럼',
     }
   }
 
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${getCenterLabel(center)}의 ${periodMonths}개월 단위 클래스별 커리큘럼 안내`,
-    title: `커리큘럼 | ${getCenterLabel(center)}`,
+    title: '커리큘럼',
   }
 }
 

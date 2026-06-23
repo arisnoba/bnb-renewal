@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
-import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centers, type CenterSlug } from '@/lib/centers'
 import type {
   Media as PayloadMedia,
   Profile,
@@ -235,9 +235,7 @@ export async function generateScreenAppearanceMetadata({
 
   return {
     description: appearance?.introText || undefined,
-    title: title
-      ? `${title} | ${getCenterLabel(center)} BNB 출연장면`
-      : `${getCenterLabel(center)} BNB 출연장면`,
+    title: title || 'BNB 출연장면',
   }
 }
 

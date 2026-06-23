@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { assertCenter, getCenterLabel } from '@/lib/centers'
+import { assertCenter } from '@/lib/centers'
 import { notFound } from 'next/navigation'
 
 import { ExamPassedVideosPage } from '../../exam-passed-videos/ExamPassedVideosPage'
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: '배우앤배움 입시센터 수강생 합격영상',
-    title: `수강생 합격영상 | ${getCenterLabel(center)}`,
+    title: '수강생 합격영상',
   }
 }
 

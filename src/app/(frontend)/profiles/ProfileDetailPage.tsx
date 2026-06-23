@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
-import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centers, type CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
@@ -206,11 +206,9 @@ export async function generateProfileMetadata({
     }
   }
 
-  const centerLabel = center ? getCenterLabel(center) : undefined
-
   return {
     description: [profile.englishName, profile.filter].filter(Boolean).join(' / ') || undefined,
-    title: [profile.name, centerLabel].filter(Boolean).join(' | '),
+    title: profile.name || '프로필',
   }
 }
 

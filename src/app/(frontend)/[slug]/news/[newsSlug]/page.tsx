@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
 import RichText from '@/components/RichText'
-import { assertCenter, getCenterLabel } from '@/lib/centers'
+import { assertCenter } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import {
   getNewsDescription,
@@ -94,7 +94,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   return {
     description,
-    title: news?.title ? `${news.title} | ${getCenterLabel(center)} 뉴스` : `${getCenterLabel(center)} 뉴스`,
+    title: news?.title || '뉴스',
   }
 }
 

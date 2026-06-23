@@ -105,7 +105,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   return {
     description: `${getCenterLabel(center)} 캐스팅 센터 안내`,
-    title: `캐스팅 센터 | ${getCenterLabel(center)}`,
+    title: '캐스팅 센터',
   }
 }
 
