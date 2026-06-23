@@ -96,19 +96,18 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
           slidesPerView={1.15}
           spaceBetween={16}
         >
-          {affiliates.map((affiliate) => {
+          {affiliates.map((affiliate, index) => {
             const isExternalHref = affiliate.href?.startsWith('http') ?? false
+            const isPriority = index < 2
 
             return (
               <SwiperSlide className="h-auto!" key={affiliate.name}>
                 <article className="section-company-affiliates__card grid overflow-hidden bg-black md:grid-cols-2">
                   {affiliate.imageSrc ? (
                     <figure className="relative order-1 aspect-square overflow-hidden bg-neutral-900 md:order-2 md:self-start">
-                      <Image
+                      <AffiliateImage
                         alt={affiliate.imageAlt ?? affiliate.name}
-                        className="size-full object-cover"
-                        fill
-                        loading="lazy"
+                        priority={isPriority}
                         sizes="(max-width: 767px) 82vw, (max-width: 1279px) 40vw, 430px"
                         src={affiliate.imageSrc}
                       />
@@ -173,5 +172,35 @@ function CarouselButton({
     >
       {children}
     </button>
+  )
+}
+
+function AffiliateImage({
+  src,
+  alt,
+  sizes,
+  priority,
+}: {
+  src: string
+  alt: string
+  sizes: string
+  priority: boolean
+}) {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  return (
+    <Image
+      alt={alt}
+      className={cn(
+        'size-full object-cover transition-opacity duration-500 ease-in-out',
+        isLoaded ? 'opacity-100' : 'opacity-0',
+      )}
+      fill
+      loading={priority ? undefined : 'lazy'}
+      onLoad={() => setIsLoaded(true)}
+      priority={priority}
+      sizes={sizes}
+      src={src}
+    />
   )
 }
