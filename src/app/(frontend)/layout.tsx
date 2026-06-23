@@ -28,10 +28,6 @@ export default async function RootLayout({
 
   return (
     <html lang="ko" suppressHydrationWarning>
-      <head>
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-      </head>
       <body>
         <AdminBar
           adminBarProps={{
@@ -50,6 +46,12 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+  },
   metadataBase: new URL(getServerSideURL()),
   title: {
     default: '배우앤배움',

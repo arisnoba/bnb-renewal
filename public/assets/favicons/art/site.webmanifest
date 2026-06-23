@@ -1,0 +1,19 @@
+{
+  "name": "배우앤배움 아트센터",
+  "short_name": "BNB 아트",
+  "icons": [
+    {
+      "src": "/assets/favicons/art/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/favicons/art/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#c80000",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
