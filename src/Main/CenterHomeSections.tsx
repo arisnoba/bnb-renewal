@@ -5,11 +5,16 @@ import Link from 'next/link'
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
 
+import {
+  footerCenterInfoForCenter,
+  footerSocialLinks,
+  type FooterSocialLink,
+} from '@/Footer/centerInfo'
 import { Marquee } from '@/components/ui/marquee'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
 import { extractYouTubeVideoId } from '@/lib/youtube'
-import type { ArtistPress, Media, News, Profile, ScreenAppearance, SocialLink } from '@/payload-types'
+import type { ArtistPress, Footer, Media, News, Profile, ScreenAppearance, SocialLink } from '@/payload-types'
 import {
   getArtistPressThumbnailMedia,
   getArtistPressUrl,
@@ -59,11 +64,16 @@ const socialBadgeIcon: Record<SocialPlatform, string> = {
   youtube: '/assets/icons/badge-youtube.svg',
 }
 
+type HomeSocialAccount = FooterSocialLink & {
+  platform: SocialPlatform
+}
+
 type CenterHomeData = {
   artistPress: HomeArtistPress[]
   news: HomeNews[]
   profiles: HomeProfile[]
   screenAppearances: HomeScreenAppearance[]
+  socialAccounts: HomeSocialAccount[]
   socialLinks: HomeSocialLink[]
 }
 
@@ -125,7 +135,7 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
       <ScreenAppearancesHomeSection center={center} appearances={data.screenAppearances} />
       <ArtistPressHomeSection artistPress={data.artistPress} center={center} />
       <NewsHomeSection center={center} news={data.news} />
-      <SocialHomeSection center={center} links={data.socialLinks} />
+      <SocialHomeSection center={center} links={data.socialLinks} socialAccounts={data.socialAccounts} />
       <HomeCtaSection center={center} />
     </>
   )
@@ -515,7 +525,15 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
   )
 }
 
-function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeSocialLink[] }) {
+function SocialHomeSection({
+  center,
+  links,
+  socialAccounts,
+}: {
+  center: CenterSlug
+  links: HomeSocialLink[]
+  socialAccounts: HomeSocialAccount[]
+}) {
   const visibleLinks = links
     .map((link) => ({
       href: link.externalUrl?.trim() || '',
@@ -534,16 +552,20 @@ function SocialHomeSection({ center, links }: { center: CenterSlug; links: HomeS
     >
       <div className="container">
         <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-          <SectionIntro eyebrow="CASTING & SOCIAL" id="center-home-social-title" title="지금, 배우들이 만들어가는 순간" />
+          <SectionIntro eyebrow="CASTING & SOCIAL" id="center-home-social-title" title={'지금, 배우들이\n만들어가는 순간'} />
           <div className="grid gap-3 type-title-s font-normal leading-normal text-white/50 md:justify-items-end md:type-headline-s">
-            <p className="inline-flex items-center gap-3">
-              <img alt="" aria-hidden="true" className="size-10" src={socialBadgeIcon.youtube} />
-              <span>BNB_ENM</span>
-            </p>
-            <p className="inline-flex items-center gap-3">
-              <img alt="" aria-hidden="true" className="size-10" src={socialBadgeIcon.instagram} />
-              <span>bnbartcenter</span>
-            </p>
+            {socialAccounts.map((account) => (
+              <a
+                className="inline-flex items-center gap-3 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                href={account.href}
+                key={account.platform}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <img alt="" aria-hidden="true" className="size-10" src={account.icon} />
+                <span>{socialAccountDisplayLabel(account)}</span>
+              </a>
+            ))}
           </div>
         </div>
       </div>
@@ -695,11 +717,11 @@ function SectionIntro({
 }) {
   return (
     <header className={align === 'center' ? 'text-center' : ''}>
-      <p className="section-center-home__eyebrow type-label-s font-extrabold leading-[1.4] text-white/50">
+      <p className="section-center-home__eyebrow type-title-m font-semibold leading-[1.4] text-white/50">
         {eyebrow}
       </p>
       <h2
-        className="section-center-home__title mt-6 type-display-m font-bold leading-[1.25] text-white md:type-display-l"
+        className="section-center-home__title mt-6 whitespace-pre-line type-display-l font-semibold leading-[1.25] text-white md:type-display-l"
         id={id}
       >
         {title}
@@ -768,6 +790,45 @@ function socialPlatform(value: string | null | undefined): SocialPlatform {
   }
 
   return 'instagram'
+}
+
+function socialAccountDisplayLabel(account: HomeSocialAccount) {
+  try {
+    const parsedUrl = new URL(account.href)
+    const handle = parsedUrl.pathname.split('/').filter(Boolean)[0]
+
+    if (handle) {
+      return account.platform === 'youtube' ? handle.replace(/^@/, '') : handle
+    }
+  } catch {
+    return account.label
+  }
+
+  return account.label
+}
+
+function centerSocialAccounts(footer: Footer | null, center: CenterSlug): HomeSocialAccount[] {
+  const centerInfo = footerCenterInfoForCenter(footer?.centerInfos ?? [], center)
+
+  return footerSocialLinks(centerInfo).flatMap((link) => {
+    const platform = footerSocialPlatform(link)
+
+    return platform ? [{ ...link, platform }] : []
+  })
+}
+
+function footerSocialPlatform(link: FooterSocialLink): SocialPlatform | null {
+  const normalizedLabel = link.label.toLowerCase()
+
+  if (normalizedLabel.includes('youtube')) {
+    return 'youtube'
+  }
+
+  if (normalizedLabel.includes('instagram')) {
+    return 'instagram'
+  }
+
+  return null
 }
 
 function mediaUrl(value: number | null | Media | undefined) {
@@ -859,7 +920,7 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
   try {
     const payload = await getPayload({ config: configPromise })
-    const [screenAppearances, profiles, artistPress, news, socialLinks] = await Promise.all([
+    const [screenAppearances, profiles, artistPress, news, socialLinks, footer] = await Promise.all([
       payload.find({
         collection: 'screen-appearances',
         depth: 0,
@@ -959,6 +1020,10 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
           },
         },
       }),
+      payload.findGlobal({
+        slug: 'footer',
+        depth: 0,
+      }),
     ])
 
     return {
@@ -966,6 +1031,7 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
       news: news.docs as HomeNews[],
       profiles: profiles.docs as HomeProfile[],
       screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
+      socialAccounts: centerSocialAccounts(footer as Footer, center),
       socialLinks: socialLinks.docs as HomeSocialLink[],
     }
   } catch {
@@ -974,6 +1040,7 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
       news: [],
       profiles: [],
       screenAppearances: [],
+      socialAccounts: [],
       socialLinks: [],
     }
   }
