@@ -113,7 +113,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
 
       <section
         aria-labelledby="curriculum-search-title"
-        className="section-curriculum-search bg-neutral-950 py-8 text-white md:py-10"
+        className="section-curriculum-search bg-neutral-950 py-6 text-white md:py-8"
       >
         <div className="container grid gap-6 lg:grid-cols-[177px_minmax(0,1fr)] lg:items-center">
           <div className="section-curriculum-search__heading">
@@ -136,7 +136,11 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
                       <Info aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="text-sm leading-normal">
+                  <TooltipContent
+                    side="top"
+                    className="bg-brand text-sm leading-normal"
+                    arrowClassName="fill-brand"
+                  >
                     기간 : {period.start} ~ {period.end}
                   </TooltipContent>
                 </Tooltip>

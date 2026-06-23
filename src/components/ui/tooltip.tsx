@@ -20,9 +20,17 @@ const TooltipTrigger: React.FC<
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
 }
 
-const TooltipContent: React.FC<
-  React.ComponentProps<typeof TooltipPrimitive.Content>
-> = ({ children, className, sideOffset = 6, ...props }) => {
+type TooltipContentProps = React.ComponentProps<typeof TooltipPrimitive.Content> & {
+  arrowClassName?: string
+}
+
+const TooltipContent: React.FC<TooltipContentProps> = ({
+  arrowClassName,
+  children,
+  className,
+  sideOffset = 6,
+  ...props
+}) => {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
@@ -35,7 +43,7 @@ const TooltipContent: React.FC<
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="fill-neutral-950" />
+        <TooltipPrimitive.Arrow className={cn('fill-neutral-950', arrowClassName)} />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )

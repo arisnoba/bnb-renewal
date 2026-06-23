@@ -7,6 +7,7 @@ import type {
   Profile,
   ScreenAppearance,
 } from '@/payload-types'
+import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -474,8 +475,4 @@ function formatDate(value: string | null | undefined) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}. ${month}. ${day}`
-}
-
-function formatMultilineText(value: string) {
-  return value.replace(/<br\s*\/?>/gi, '\n').trim()
 }

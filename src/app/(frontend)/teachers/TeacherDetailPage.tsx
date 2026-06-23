@@ -4,6 +4,7 @@ import { Media } from '@/components/Media/Renderer'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
+import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -333,8 +334,4 @@ function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
       )}
     </article>
   )
-}
-
-function formatMultilineText(value: string) {
-  return value.replace(/<br\s*\/?>/gi, '\n').trim()
 }

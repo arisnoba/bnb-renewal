@@ -3,6 +3,7 @@
 import { ChevronRight, X } from 'lucide-react'
 import Image from 'next/image'
 
+import { formatMultilineText } from '@/utilities/formatMultilineText'
 import {
   Dialog,
   DialogClose,
@@ -113,7 +114,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
                         {item.title || '이력'}
                       </p>
                       <p className="whitespace-pre-line type-body-m font-medium leading-[1.7] text-neutral-500">
-                        {item.content || '등록된 상세 이력이 없습니다.'}
+                        {formatMultilineText(item.content) || '등록된 상세 이력이 없습니다.'}
                       </p>
                     </li>
                   ))}

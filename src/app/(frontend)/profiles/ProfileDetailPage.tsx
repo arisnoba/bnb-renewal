@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Media } from '@/components/Media/Renderer'
 import { centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Profile } from '@/payload-types'
+import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -170,7 +171,7 @@ export async function ProfileDetailPage({
                     <h2 className="font-extrabold text-foreground">{item.title}</h2>
                     {item.content && (
                       <p className="whitespace-pre-line text-muted-foreground">
-                        {item.content}
+                        {formatMultilineText(item.content)}
                       </p>
                     )}
                   </div>

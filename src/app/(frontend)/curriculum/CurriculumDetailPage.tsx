@@ -1,5 +1,14 @@
 import configPromise from '@payload-config'
-import { BookOpen, CalendarDays, ChevronDown, Clock3, UserRound, Users } from 'lucide-react'
+import {
+  BookOpen,
+  CalendarDays,
+  ChevronDown,
+  Clock3,
+  ListOrdered,
+  ReceiptText,
+  School,
+  UserRound,
+} from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
@@ -8,9 +17,12 @@ import { getPayload } from 'payload'
 
 import { Media } from '@/components/Media/Renderer'
 import type { CenterSlug } from '@/lib/centers'
-import type { Curriculum, Media as PayloadMedia, Teacher } from '@/payload-types'
+import type { Classroom, Curriculum, Media as PayloadMedia, Teacher } from '@/payload-types'
+import { formatMultilineText } from '@/utilities/formatMultilineText'
+import { cn } from '@/utilities/ui'
 
 import { CurriculumStickyCta } from './CurriculumBottomSheet.client'
+import { CurriculumClassroomGallery } from './CurriculumClassroomGallery.client'
 
 type CurriculumDetailPageProps = {
   center: Extract<CenterSlug, 'art' | 'highteen'>
@@ -20,6 +32,9 @@ type CurriculumDetailPageProps = {
 type DetailModel = {
   capacity: string
   className: string
+  classroomName: string
+  classroomPhotos: PayloadMedia[]
+  classroomTitle: string
   consultHref: string
   dayLabel: string
   educationDate: string
@@ -32,6 +47,7 @@ type DetailModel = {
   teacher: TeacherSummary
   timeRange: string
   title: string
+  tuitionFee: string
 }
 
 type TeacherSummary = {
@@ -74,18 +90,7 @@ export async function CurriculumDetailPage({
     >
       <section className="section-curriculum-detail section-p-block-base bg-white">
         <div className="container">
-          <div className="section-curriculum-detail__layout mx-auto grid max-w-[1160px] gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-12">
-            <header className="section-curriculum-detail__intro order-1 min-w-0 lg:col-start-1">
-              <p className="mb-5 inline-flex min-h-9 items-center rounded-full bg-neutral-900 px-4 type-label-m font-extrabold text-white">
-                {model.className}
-              </p>
-              <h1 className="type-headline-xl font-black leading-[1.18] text-neutral-900">
-                {model.lessons[0]?.topic ?? model.title}
-              </h1>
-              <p className="mt-5 type-title-s font-bold leading-[1.45] text-neutral-500">
-                {model.dayLabel} / {model.timeRange}
-              </p>
-            </header>
+          <div className="section-curriculum-detail__layout mx-auto grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-12">
 
             <aside className="section-curriculum-detail__side order-3 lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:order-2 lg:col-start-2 lg:row-span-4 lg:row-start-1">
               <CurriculumOverview model={model} />
@@ -97,14 +102,7 @@ export async function CurriculumDetailPage({
               </Link>
             </aside>
 
-            <div className="section-curriculum-detail__visual relative order-2 aspect-[16/8.4] w-full overflow-hidden bg-neutral-300 md:mt-2 lg:col-start-1">
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
-              />
-              <div aria-hidden="true" className="absolute inset-0 bg-black/10" />
-            </div>
+            <CurriculumVisual model={model} />
 
             <TeacherBrief className="order-4 lg:col-start-1" teacher={model.teacher} />
 
@@ -163,6 +161,44 @@ export async function CurriculumDetailPage({
   )
 }
 
+function CurriculumVisual({ model }: { model: DetailModel }) {
+  if (model.classroomPhotos.length > 1) {
+    return (
+      <CurriculumClassroomGallery
+        className="section-curriculum-detail__visual order-2 lg:col-start-1"
+        photos={model.classroomPhotos}
+        title={model.classroomTitle}
+      />
+    )
+  }
+
+  const [photo] = model.classroomPhotos
+
+  return (
+    <div className="section-curriculum-detail__visual relative order-2 aspect-[16/8.4] w-full overflow-hidden bg-neutral-300 lg:col-start-1">
+      {photo ? (
+        <Media
+          alt={model.classroomTitle}
+          fill
+          htmlElement={null}
+          imgClassName="size-full object-cover"
+          pictureClassName="block size-full"
+          priority
+          resource={photo}
+          size="(max-width: 1023px) calc(100vw - 40px), 748px"
+        />
+      ) : (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
+        />
+      )}
+      <div aria-hidden="true" className="absolute inset-0 bg-black/10" />
+    </div>
+  )
+}
+
 export const queryCurriculumBySlug = cache(
   async ({ center, slug }: { center: string; slug: string }) => {
     const payload = await getPayload({ config: configPromise })
@@ -217,23 +253,30 @@ function CurriculumOverview({ model }: { model: DetailModel }) {
     >
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="type-caption-m font-extrabold uppercase tracking-normal text-brand">
+          <p className="type-caption-m font-extrabold uppercase tracking-normal text-brand mb-4">
             Class Overview
           </p>
-          <h2
-            className="mt-2 type-title-m font-black leading-[1.3]"
-            id="curriculum-overview-title"
-          >
-            수강 정보
-          </h2>
+          <h1 className="type-headline-m font-black leading-[1.18] text-neutral-900">
+            {model.lessons[0]?.topic ?? model.title}
+          </h1>
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 bg-white/10">
+      <div className="mt-8 flex flex-col gap-4 border-t border-black/10 pt-8">
         <OverviewItem
           icon={<BookOpen aria-hidden="true" className="size-5" strokeWidth={2.2} />}
           label="클래스"
           value={model.className}
+        />
+        <OverviewItem
+          icon={<School aria-hidden="true" className="size-5" strokeWidth={2.2} />}
+          label="강의실"
+          value={model.classroomName}
+        />
+        <OverviewItem
+          icon={<CalendarDays aria-hidden="true" className="size-5" strokeWidth={2.2} />}
+          label="교육 시작일"
+          value={model.educationDate}
         />
         <OverviewItem
           icon={<CalendarDays aria-hidden="true" className="size-5" strokeWidth={2.2} />}
@@ -246,12 +289,7 @@ function CurriculumOverview({ model }: { model: DetailModel }) {
           value={model.timeRange}
         />
         <OverviewItem
-          icon={<CalendarDays aria-hidden="true" className="size-5" strokeWidth={2.2} />}
-          label="교육 시작일"
-          value={model.educationDate}
-        />
-        <OverviewItem
-          icon={<Users aria-hidden="true" className="size-5" strokeWidth={2.2} />}
+          icon={<ListOrdered aria-hidden="true" className="size-5" strokeWidth={2.2} />}
           label="교육 횟수"
           value={model.lessonCount}
         />
@@ -260,6 +298,14 @@ function CurriculumOverview({ model }: { model: DetailModel }) {
           label="정원"
           value={model.capacity}
         />
+        <div className="mt-2 border-t border-black/10 pt-8">
+          <OverviewItem
+            icon={<ReceiptText aria-hidden="true" className="size-5" strokeWidth={2.2} />}
+            label="수강료"
+            value={model.tuitionFee}
+            valueClassName="type-headline-m font-black leading-none text-neutral-900"
+          />
+        </div>
       </div>
     </section>
   )
@@ -269,18 +315,20 @@ function OverviewItem({
   icon,
   label,
   value,
+  valueClassName,
 }: {
   icon: ReactNode
   label: string
   value: string
+  valueClassName?: string
 }) {
   return (
-    <div className="flex items-start justify-between">
+    <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-2 text-black/45">
         {icon}
         <p className="type-label-m font-bold">{label}</p>
       </div>
-      <p className="type-title-s font-bold text-neutral-900">
+      <p className={cn('text-right font-bold text-neutral-900', valueClassName ?? 'type-title-s')}>
         {value}
       </p>
     </div>
@@ -341,7 +389,7 @@ function TeacherBrief({
 
           {careerItems.length > 0 ? (
             <details className="group border-neutral-200 mt-4">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 type-label-m font-extrabold text-neutral-900 transition-colors hover:border-brand hover:text-brand [&::-webkit-details-marker]:hidden">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-4 type-label-m font-extrabold text-neutral-900 transition-colors hover:border-brand hover:text-brand [&::-webkit-details-marker]:hidden">
                 <span>프로필 자세히보기</span>
                 <ChevronDown
                   aria-hidden="true"
@@ -355,7 +403,7 @@ function TeacherBrief({
                     <dt className="type-label-m font-extrabold text-neutral-900">{item.title}</dt>
                     {item.content ? (
                       <dd className="whitespace-pre-line type-body-s font-medium leading-[1.55] text-neutral-600">
-                        {item.content}
+                        {formatMultilineText(item.content)}
                       </dd>
                     ) : null}
                   </div>
@@ -371,6 +419,7 @@ function TeacherBrief({
 
 function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps['center']): DetailModel {
   const className = curriculum.className ?? '클래스 미정'
+  const classroom = typeof curriculum.classroom === 'object' ? (curriculum.classroom as Classroom) : null
   const days = getEducationDays(curriculum)
   const teacher = typeof curriculum.teacher === 'object' ? (curriculum.teacher as Teacher) : null
   const timeRange = formatTimeRange(curriculum.educationStartTime, curriculum.educationEndTime)
@@ -383,6 +432,9 @@ function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps
   return {
     capacity: curriculum.capacity ? String(curriculum.capacity) : '문의',
     className,
+    classroomName: classroom?.title ?? '문의',
+    classroomPhotos: normalizeClassroomPhotos(classroom),
+    classroomTitle: classroom?.title ?? '강의실',
     consultHref: `/${center}/consult?curriculum=${encodeURIComponent(curriculum.slug)}`,
     dayLabel: days.length > 0 ? days.join('') : '요일 문의',
     educationDate: formatEducationDate(curriculum.educationStartDate),
@@ -392,7 +444,14 @@ function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps
     teacher: toTeacherSummary(teacher),
     timeRange,
     title: className,
+    tuitionFee: formatTuitionFee(curriculum.tuitionFee),
   }
+}
+
+function normalizeClassroomPhotos(classroom: Classroom | null) {
+  return (classroom?.photos ?? []).filter((photo): photo is PayloadMedia => {
+    return typeof photo === 'object' && photo !== null
+  })
 }
 
 function toTeacherSummary(teacher: Teacher | null): TeacherSummary {
@@ -481,4 +540,12 @@ function formatEducationDate(value: string | null | undefined) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function formatTuitionFee(value: number | null | undefined) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return '문의'
+  }
+
+  return `${new Intl.NumberFormat('ko-KR').format(value)}원`
 }
