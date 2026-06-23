@@ -1232,7 +1232,7 @@ function CriteriaPanel({ data }: { data: GradeSystemContent }) {
       <GradeCriteriaTable data={data} />
       {data.promotionGroups && data.promotionTitle ? <PromotionTable data={data} /> : null}
       {data.extraPromotionCriteria ? (
-        <section className="rounded-[8px] border border-white/10 bg-white/[0.03] p-6">
+        <section className="other-classes">
           <h3 className="type-title-s font-extrabold leading-none">그 외 승급 기준</h3>
           <ul className="mt-5 space-y-2 type-body-s leading-[1.7] text-white/60">
             {data.extraPromotionCriteria.map((item) => (
