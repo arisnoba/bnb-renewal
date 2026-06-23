@@ -114,10 +114,10 @@ export async function Footer() {
           </div>
 
           <div className="order-1 grid gap-8 sm:grid-cols-2 lg:order-2 lg:gap-6">
-            <FooterLinkGroup title="패밀리사이트">
+            <FooterLinkGroup title="FAMILY SITE">
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
-            <FooterLinkGroup title="Social">
+            <FooterLinkGroup title="SOCIAL">
               <FooterSocialLinks centerInfos={centerInfos} initialPathname={pathname} />
             </FooterLinkGroup>
           </div>

@@ -13,9 +13,9 @@ export type FooterSocialLink = {
 const centerSlugs = Object.keys(centers) as CenterSlug[]
 
 const socialLinkMeta = [
-  { field: 'youtubeUrl', icon: '/assets/footer/icon-youtube.png', label: 'Youtube' },
-  { field: 'naverBlogUrl', icon: '/assets/footer/icon-naver-blog.png', label: 'Naver Blog' },
-  { field: 'instagramUrl', icon: '/assets/footer/icon-instagram.png', label: 'Instagram' },
+  { field: 'youtubeUrl', icon: '/assets/footer/icon-youtube.svg', label: 'Youtube' },
+  { field: 'naverBlogUrl', icon: '/assets/footer/icon-naver-blog.svg', label: 'Naver Blog' },
+  { field: 'instagramUrl', icon: '/assets/footer/icon-instagram.svg', label: 'Instagram' },
 ] as const
 
 const fallbackCenterInfo: FooterCenterInfo = {
