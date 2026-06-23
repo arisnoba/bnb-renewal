@@ -11,6 +11,7 @@ import { youtubeThumbnailUrl } from '@/lib/youtube'
 
 type SocialLinkData = {
   center?: unknown
+  displayStatus?: unknown
   externalUrl?: unknown
   representativeImage?: unknown
   representativeImageUrl?: unknown
@@ -134,7 +135,7 @@ const centerAccess: Access = ({ req }) => {
     : false
 }
 
-const normalizeSocialLinkData: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
+const normalizeSocialLinkData: CollectionBeforeValidateHook = ({ data, operation, originalDoc, req }) => {
   if (!data) {
     return data
   }
@@ -152,6 +153,10 @@ const normalizeSocialLinkData: CollectionBeforeValidateHook = ({ data, originalD
 
   nextData.externalUrl = stringValue(nextData.externalUrl)
   nextData.representativeImageUrl = stringValue(nextData.representativeImageUrl)
+
+  if (operation === 'create' && !stringValue(nextData.displayStatus)) {
+    nextData.displayStatus = 'published'
+  }
 
   if (!nextData.representativeImage && !nextData.representativeImageUrl) {
     nextData.representativeImageUrl = youtubeThumbnailUrl(nextData.externalUrl)
@@ -244,7 +249,7 @@ export const SocialLinks: CollectionConfig = {
       name: 'displayStatus',
       type: 'select',
       label: '상태',
-      defaultValue: 'draft',
+      defaultValue: 'published',
       options: displayStatusOptions,
       validate: requiredValue('상태를 선택해야 합니다.'),
       admin: {

@@ -55,6 +55,7 @@ test('social links use a single center and image URL fallback fields', async () 
   const externalUrl = getField(SocialLinks, 'externalUrl')
   const representativeImage = getField(SocialLinks, 'representativeImage')
   const representativeImageUrl = getField(SocialLinks, 'representativeImageUrl')
+  const displayStatus = getField(SocialLinks, 'displayStatus')
   const imagePreview = getField(SocialLinks, 'imagePreview')
   const fieldOrder = SocialLinks.fields
     .filter((field): field is NamedField => 'name' in field)
@@ -132,6 +133,10 @@ test('social links use a single center and image URL fallback fields', async () 
   assert.equal(await externalUrl.validate?.('https://www.instagram.com/baewoo', {}), true)
   assert.equal(await externalUrl.validate?.('http://www.youtube.com/@baewoo', {}), true)
 
+  assert.equal(displayStatus.type, 'select')
+  assert.equal(displayStatus.defaultValue, 'published')
+  assert.equal(displayStatus.admin?.position, 'sidebar')
+
   assert.equal(imagePreview.type, 'ui')
   assert.equal(imagePreview.admin?.position, 'sidebar')
   assert.equal(
@@ -165,4 +170,5 @@ test('social links auto-fill YouTube thumbnail URL before validation', async () 
     normalized?.representativeImageUrl,
     'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
   )
+  assert.equal(normalized?.displayStatus, 'published')
 })
