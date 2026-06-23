@@ -1,6 +1,7 @@
 @use 'mixins' as *;
 
 .page-deco {
-  --page-deco-size: #{fluid-clamp(220px, 360px)};
+  --page-deco-size: #{fluid-clamp(180px, 360px)};
   z-index: 1;
+  opacity: 0.8;
 }

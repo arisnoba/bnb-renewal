@@ -38,8 +38,8 @@ const centerIntroductions: CenterIntro[] = [
       '실전 중심의 커리큘럼과 업계 최고 수준의 전문가 네트워크를 기반으로 단순한 교육을 넘어 아티스트의 성장을 체계적으로 지원합니다.',
     ],
     imageSrc: '/assets/center-about/enm-kim-miji.png',
-    imageAlt: 'ENM 대표 김미지',
-    caption: 'ENM 대표 김미지',
+    imageAlt: 'EnM 대표 김미지',
+    caption: 'EnM 대표 김미지',
   },
   {
     id: 'art',
@@ -257,7 +257,7 @@ function CenterIntroArticle({ item }: { item: CenterIntro }) {
           src={item.imageSrc}
           width={240}
         />
-        <figcaption className="mt-4 text-center type-caption-s font-bold uppercase leading-none text-white">
+        <figcaption className="mt-6 text-center type-body-m font-semibold leading-none text-white">
           {item.caption}
         </figcaption>
       </figure>
