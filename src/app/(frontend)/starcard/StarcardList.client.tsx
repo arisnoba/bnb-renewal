@@ -1,8 +1,10 @@
 'use client'
 
+import type { Swiper as SwiperInstance } from 'swiper'
+
 import { ChevronRight, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { Autoplay, Pagination } from 'swiper/modules'
+import { Autoplay } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Media } from '@/components/Media/Renderer'
@@ -15,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import type { CenterSlug } from '@/lib/centers'
 import type { Media as MediaType, StarCard } from '@/payload-types'
 
 export type StarcardListItem = {
@@ -29,6 +32,7 @@ export type StarcardListItem = {
 }
 
 type StarcardListProps = {
+  center: CenterSlug
   items: StarcardListItem[]
 }
 
@@ -45,7 +49,7 @@ function categoryLabel(value: StarcardListItem['category']) {
   return value ? categoryLabels[value] : '스타카드 제휴업체'
 }
 
-export function StarcardList({ items }: StarcardListProps) {
+export function StarcardList({ center, items }: StarcardListProps) {
   const [selectedItem, setSelectedItem] = useState<StarcardListItem | null>(null)
 
   useEffect(() => {
@@ -110,16 +114,18 @@ export function StarcardList({ items }: StarcardListProps) {
       </div>
 
       {selectedItem ? (
-        <StarcardModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+        <StarcardModal center={center} item={selectedItem} onClose={() => setSelectedItem(null)} />
       ) : null}
     </>
   )
 }
 
 function StarcardModal({
+  center,
   item,
   onClose,
 }: {
+  center: CenterSlug
   item: StarcardListItem
   onClose: () => void
 }) {
@@ -129,10 +135,13 @@ function StarcardModal({
         onClose()
       }
     }}>
-      <DialogContent className="starcard-partner-modal__panel flex h-[min(820px,calc(100vh-80px))] max-w-[920px] flex-col overflow-hidden border-0 p-0">
+      <DialogContent
+        className="starcard-partner-modal__panel flex max-h-[calc(100vh-80px)] max-w-[920px] flex-col overflow-hidden border-0 p-0"
+        data-center={center}
+      >
         <DialogHeader className="starcard-partner-modal__header shrink-0 flex-row items-start justify-between gap-5 border-b border-foreground/10 bg-background px-6 py-6 text-left md:px-10">
           <div className="min-w-0">
-            <p className="mb-2 type-label-m font-bold leading-[1.4] text-brand">
+            <p className="starcard-partner-modal__category mb-2 type-label-m font-bold leading-[1.4]">
               {categoryLabel(item.category)}
             </p>
             <div className="starcard-partner-modal__title-row flex min-w-0 items-start md:items-center gap-4">
@@ -190,46 +199,54 @@ function StarcardModal({
 }
 
 function StarcardModalImages({ item }: { item: StarcardListItem }) {
+  const [activeIndex, setActiveIndex] = useState(0)
   const images = item.images.length > 0 ? item.images : item.image ? [item.image] : []
   const shouldRoll = images.length > 1
+  const updateActiveIndex = (swiper: SwiperInstance) => {
+    setActiveIndex(swiper.realIndex)
+  }
 
   return (
-    <div className="starcard-partner-modal__media bg-muted">
+    <div className="starcard-partner-modal__media relative bg-muted">
       {images.length > 0 ? (
-        <Swiper
-          autoplay={
-            shouldRoll
-              ? {
-                  delay: 3500,
-                  disableOnInteraction: false,
-                }
-              : false
-          }
-          className="starcard-partner-modal__swiper"
-          loop={shouldRoll}
-          modules={[Autoplay, Pagination]}
-          pagination={
-            shouldRoll
-              ? {
-                  clickable: true,
-                }
-              : false
-          }
-          slidesPerView={1}
-        >
-          {images.map((image, index) => (
-            <SwiperSlide key={`${image.id}-${index}`}>
-              <Media
-                alt={index === 0 ? item.title : `${item.title} 이미지 ${index + 1}`}
-                className="h-full w-full"
-                imgClassName="h-full w-full object-cover"
-                pictureClassName="block aspect-video h-full w-full"
-                resource={{ ...image, alt: item.title }}
-                size="(max-width: 768px) 100vw, 920px"
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <>
+          <Swiper
+            autoplay={
+              shouldRoll
+                ? {
+                    delay: 3500,
+                    disableOnInteraction: false,
+                  }
+                : false
+            }
+            className="starcard-partner-modal__swiper"
+            loop={shouldRoll}
+            modules={[Autoplay]}
+            onSlideChange={updateActiveIndex}
+            onSwiper={updateActiveIndex}
+            slidesPerView={1}
+          >
+            {images.map((image, index) => (
+              <SwiperSlide key={`${image.id}-${index}`}>
+                <Media
+                  alt={index === 0 ? item.title : `${item.title} 이미지 ${index + 1}`}
+                  className="h-full w-full"
+                  imgClassName="h-full w-full object-cover"
+                  pictureClassName="block aspect-video h-full w-full"
+                  resource={{ ...image, alt: item.title }}
+                  size="(max-width: 768px) 100vw, 920px"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          {shouldRoll ? (
+            <p className="starcard-partner-modal__pagination absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1.5 type-label-m font-bold text-white/55 backdrop-blur">
+              <span className="text-white">{String(activeIndex + 1)}</span>
+              <span aria-hidden="true">/</span>
+              <span>{String(images.length)}</span>
+            </p>
+          ) : null}
+        </>
       ) : (
         <div className="aspect-video w-full" />
       )}

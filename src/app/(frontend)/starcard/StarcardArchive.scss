@@ -53,6 +53,10 @@
   scrollbar-width: thin;
 }
 
+.starcard-partner-modal__category {
+  color: var(--brand);
+}
+
 .starcard-partner-modal__header {
   position: relative;
   z-index: 1;
@@ -110,37 +114,6 @@
     aspect-ratio: 16 / 9;
     height: 100%;
     overflow: hidden;
-  }
-
-  .swiper-pagination {
-    bottom: 14px;
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    left: 50%;
-    line-height: 0;
-    position: absolute;
-    transform: translateX(-50%);
-    width: auto;
-    z-index: 2;
-  }
-
-  .swiper-pagination-bullet {
-    background: rgb(255 255 255 / 62%);
-    border-radius: 999px;
-    cursor: pointer;
-    height: 6px;
-    margin: 0;
-    opacity: 1;
-    transition:
-      background-color 160ms ease,
-      width 160ms ease;
-    width: 6px;
-  }
-
-  .swiper-pagination-bullet-active {
-    background: #fff;
-    width: 18px;
   }
 }
 

@@ -80,7 +80,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
           </div>
 
           {items.length > 0 ? (
-            <StarcardList items={items} />
+            <StarcardList center={center} items={items} />
           ) : (
             <div className="section-starcard-list__empty py-16 text-center type-body-m text-muted-foreground">
               등록된 스타카드 제휴업체가 없습니다.
