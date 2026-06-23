@@ -69,11 +69,11 @@ export async function Footer() {
           </p>
           <div className="grid gap-8 sm:grid-cols-2 lg:gap-5">
             <FooterLinkGroup title="고객 안내 센터">
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
                 {customerLinks.map((item) => (
                   <li key={item.label}>
                     <Link
-                      className="flex flex-wrap items-center gap-3 text-xl font-medium leading-[1.2] text-[#666] transition-colors hover:text-white"
+                      className="flex flex-wrap items-center gap-3 whitespace-nowrap text-xl font-medium leading-[1.2] text-[#666] transition-colors hover:text-white"
                       href={item.href}
                     >
                       <span>{item.label}</span>
@@ -94,7 +94,7 @@ export async function Footer() {
         <div className="h-px w-full bg-white/10" />
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-6">
-          <div className="flex flex-col items-start gap-6 lg:min-h-[234px] lg:justify-between">
+          <div className="order-2 flex flex-col items-start gap-6 lg:order-1 lg:min-h-[234px] lg:justify-between">
             <FooterLogo initialCenter={center} />
 
             <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
@@ -113,7 +113,7 @@ export async function Footer() {
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:gap-6">
+          <div className="order-1 grid gap-8 sm:grid-cols-2 lg:order-2 lg:gap-6">
             <FooterLinkGroup title="패밀리사이트">
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
@@ -157,10 +157,10 @@ function FooterTextLinks({
       : 'text-sm font-normal leading-normal text-[#666]'
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
       {links.map((link) => (
         <li key={link.label}>
-          <Link className={`${className} transition-colors hover:text-white`} href={link.href}>
+          <Link className={`${className} whitespace-nowrap transition-colors hover:text-white`} href={link.href}>
             {link.label}
           </Link>
         </li>

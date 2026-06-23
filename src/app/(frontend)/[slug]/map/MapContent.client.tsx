@@ -23,7 +23,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
     locations.find((location) => location.slug === selectedCenter) ?? locations[0]!
 
   return (
-    <section className="container section-p-block-base" data-center={selectedCenter}>
+    <section className="container section-p-block-base" >
       <div className="mb-[60px] flex flex-col gap-10">
         <div>
           <p className="mb-10 type-title-l font-bold leading-[1.4] text-brand">오시는 길</p>
@@ -45,7 +45,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
           </h2>
         </div>
 
-        <nav aria-label="센터 선택" className="flex flex-wrap gap-2">
+        <nav aria-label="센터 선택" className="flex flex-wrap gap-2" data-center={selectedCenter}>
           {locations.map((location) => {
             const isSelected = location.slug === selectedCenter
 

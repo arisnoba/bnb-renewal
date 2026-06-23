@@ -582,7 +582,7 @@ const kidsCriteriaEntryLabels = [
 
 const kidsGradeRows = [
   {
-    classCode: 'K1',
+    classCode: '영재 교육',
     className: '영재 교육과정',
     department: '교육 본부',
     experience: '',
@@ -593,7 +593,7 @@ const kidsGradeRows = [
     transfer: '',
   },
   {
-    classCode: 'K2',
+    classCode: '아역 배우',
     className: '아역배우 교육과정',
     department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
     experience: '',
@@ -604,7 +604,7 @@ const kidsGradeRows = [
     transfer: '- 타학원에서 1년 이상 이수자\n- 드라마, 영화 등 현장촬영 경험자',
   },
   {
-    classCode: 'K3',
+    classCode: '아티스트',
     className: '아티스트 교육과정',
     department: '교육 본부\n매니지먼트 본부\n드라마 캐스팅 본부',
     experience: '',
@@ -990,7 +990,7 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
           </div>
         </nav>
 
-        {activeTab === 'steps' ? <StepsPanel data={data} /> : null}
+        {activeTab === 'steps' ? <StepsPanel center={center} data={data} /> : null}
         {activeTab === 'criteria' ? <CriteriaPanel data={data} /> : null}
         {activeTab === 'cohorts' ? <CohortsPanel data={data} /> : null}
       </div>
@@ -998,7 +998,7 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
   )
 }
 
-function StepsPanel({ data }: { data: GradeSystemContent }) {
+function StepsPanel({ center, data }: { center: GradeSystemCenter; data: GradeSystemContent }) {
   const titleLines = data.stepsTitleLines ?? [
     'IRUDA 연기트레이닝 시스템입니다.',
     `${data.stepsCenterName}의 모든 교육은 ‘나’로부터 시작됩니다.`,
@@ -1031,7 +1031,9 @@ function StepsPanel({ data }: { data: GradeSystemContent }) {
         </p>
       </section>
 
-      {data.wordmarkLetters.length > 0 ? (
+      {center === 'kids' ? (
+        <KidsIrudaOverview classes={data.stepClasses} />
+      ) : data.wordmarkLetters.length > 0 ? (
         <IrudaWordmark letters={data.wordmarkLetters} />
       ) : (
         <ClassOverview classes={data.stepClasses} />
@@ -1058,21 +1060,21 @@ function ClassSection({
           <span className="grid h-9 min-w-9 shrink-0 place-items-center rounded-full bg-brand px-2 type-label-m font-black text-white">
             {item.letter}
           </span>
-          <h3 className="pt-1 type-headline-s font-extrabold leading-[1.3]">{item.label}</h3>
+          <h3 className="pt-1 type-headline-s font-semibold leading-[1.3]">{item.label}</h3>
         </div>
         <div className="lg:col-span-2">
-          <h4 className="type-headline-s font-extrabold leading-[1.45]">{item.headline}</h4>
+          <h4 className="type-headline-s font-semibold leading-[1.45]">{item.headline}</h4>
           {item.details ? (
-            <dl className="mt-7 grid gap-3 type-body-s leading-[1.65] text-white/60 sm:grid-cols-3">
+            <dl className="mt-8 grid gap-y-1 type-title-m font-normal leading-normal text-white/55">
               {item.details.map((detail) => (
-                <div className="rounded-[8px] border border-white/10 bg-white/[0.03] px-4 py-3" key={detail.label}>
-                  <dt className="type-caption-s font-bold text-white/35">{detail.label}</dt>
-                  <dd className="mt-1 text-white/70">{detail.value}</dd>
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-1.5" key={detail.label}>
+                  <dt className="whitespace-nowrap">{detail.label} :</dt>
+                  <dd>{detail.value}</dd>
                 </div>
               ))}
             </dl>
           ) : null}
-          <p className="mt-9 max-w-[760px] type-body-m leading-[1.95] text-white/50">
+          <p className="mt-4 type-body-m leading-[1.95] text-white/50">
             {item.description}
           </p>
         </div>
@@ -1182,6 +1184,35 @@ function IrudaWordmark({ letters }: { letters: IrudaLetter[] }) {
           </div>
         ))}
       </div>
+    </figure>
+  )
+}
+
+function KidsIrudaOverview({ classes }: { classes: StepClass[] }) {
+  const letters = ['iruda-i.svg', 'iruda-r.svg', 'iruda-u.svg', 'iruda-d.svg', 'iruda-a.svg']
+
+  return (
+    <figure aria-label="키즈 IRUDA 클래스 구성" className="mt-4">
+      <div className="grid grid-cols-5 gap-3">
+        {letters.map((fileName) => (
+          <NextImage
+            alt=""
+            aria-hidden="true"
+            className="h-auto w-full opacity-10"
+            height={216}
+            key={fileName}
+            src={`${gradeAssetBase}/${fileName}`}
+            width={216}
+          />
+        ))}
+      </div>
+      <figcaption className="mt-5 grid gap-y-4 text-center sm:grid-cols-3">
+        {classes.map((item) => (
+          <span className="type-title-s font-extrabold uppercase leading-none text-white" key={item.className}>
+            <span className="text-brand">{item.label}</span> {item.className}
+          </span>
+        ))}
+      </figcaption>
     </figure>
   )
 }
@@ -1550,9 +1581,9 @@ const gradeBadgeClassNames: Record<string, string> = {
   D: 'bg-[#faeeda] text-[#854f0b]',
   DA: 'bg-[#faeeda] text-[#854f0b]',
   I: 'bg-[#f1efe8] text-[#5f5e5a]',
-  K1: 'bg-[#f1efe8] text-[#5f5e5a]',
-  K2: 'bg-[#e1f5ee] text-[#0f6e56]',
-  K3: 'bg-[#e6f1fb] text-[#185fa5]',
+  '영재 교육': 'bg-[#f1efe8] text-[#5f5e5a]',
+  '아역 배우': 'bg-[#e1f5ee] text-[#0f6e56]',
+  '아티스트': 'bg-[#e6f1fb] text-[#185fa5]',
   R: 'bg-[#e1f5ee] text-[#0f6e56]',
   U: 'bg-[#e6f1fb] text-[#185fa5]',
 }

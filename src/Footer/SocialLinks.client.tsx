@@ -23,17 +23,17 @@ export function FooterSocialLinks({
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
       {socialLinks.map((item) => (
         <li key={item.label}>
           <a
-            className="flex items-center gap-2 text-[#666] transition-colors hover:text-white"
+            className="flex items-center gap-2 whitespace-nowrap text-[#666] transition-colors hover:text-white"
             href={item.href}
             rel="noreferrer"
             target="_blank"
           >
             <Image alt="" height={20} src={item.icon} width={20} />
-            <span className="w-[142px] text-sm leading-normal">{item.label}</span>
+            <span className="text-sm leading-normal">{item.label}</span>
           </a>
         </li>
       ))}
