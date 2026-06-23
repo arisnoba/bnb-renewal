@@ -148,10 +148,10 @@ function EntertainmentEducationSection({
         </div>
 
         {agencies.length > 0 ? (
-          <div className="section-entertainment__summary grid sm:grid-cols-3 section-p-block-sm">
+          <div className="section-entertainment__summary grid gap-y-8 sm:grid-cols-3 sm:gap-y-0 section-p-block-sm">
             {summaryMetrics.map((metric) => (
               <div
-                className="section-entertainment__summary-item border-l border-white/25 pl-6"
+                className="section-entertainment__summary-item border-t border-white/15 pt-6 first:border-t-0 first:pt-0 sm:border-l sm:border-white/25 sm:border-t-0 sm:pl-6 sm:pt-0"
                 key={metric.label}
               >
                 <p className="type-title-s font-semibold leading-[1.35] text-white/60">
