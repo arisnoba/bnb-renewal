@@ -109,6 +109,13 @@ const tabs = [
 
 const gradeAssetBase = '/assets/art/grade-system'
 const gradeSystemDecoIcons = getPageDecoIcons(4, 'grade-system')
+const kidsOverviewDecoIcons = [
+  'icon-b.svg',
+  'icon-ae.svg',
+  'icon-ng.svg',
+  'icon-u.svg',
+  'icon-m.svg',
+] as const
 
 const artStepClasses = [
   {
@@ -1189,26 +1196,24 @@ function IrudaWordmark({ letters }: { letters: IrudaLetter[] }) {
 }
 
 function KidsIrudaOverview({ classes }: { classes: StepClass[] }) {
-  const letters = ['iruda-i.svg', 'iruda-r.svg', 'iruda-u.svg', 'iruda-d.svg', 'iruda-a.svg']
-
   return (
-    <figure aria-label="키즈 IRUDA 클래스 구성" className="mt-4">
-      <div className="grid grid-cols-5 gap-3">
-        {letters.map((fileName) => (
+    <figure aria-label="키즈 클래스 구성" className="mt-4">
+      <div className="grid grid-cols-5 gap-1 md:gap-3">
+        {kidsOverviewDecoIcons.map((icon, index) => (
           <NextImage
             alt=""
             aria-hidden="true"
-            className="h-auto w-full opacity-10"
-            height={216}
-            key={fileName}
-            src={`${gradeAssetBase}/${fileName}`}
-            width={216}
+            className="h-auto w-full brightness-0 invert opacity-10"
+            height={360}
+            key={`${icon}-${index}`}
+            src={`/assets/common/deco/${icon}`}
+            width={360}
           />
         ))}
       </div>
-      <figcaption className="mt-5 grid gap-y-4 text-center sm:grid-cols-3">
+      <figcaption className="mt-5 grid grid-cols-3 gap-x-2 gap-y-4 text-center">
         {classes.map((item) => (
-          <span className="type-title-s font-extrabold uppercase leading-none text-white" key={item.className}>
+          <span className="type-title-s font-semibold uppercase leading-normal text-white" key={item.className}>
             <span className="text-brand">{item.label}</span> {item.className}
           </span>
         ))}
