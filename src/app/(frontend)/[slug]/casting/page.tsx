@@ -64,15 +64,15 @@ const castingCompanies = [
     marquee: 'ARKO LAB ARKO LAB',
   },
   {
-    directorCompanyNames: ['IMGround', 'IM Ground'],
+    directorCompanyNames: ['IMGround'],
     description: [
       '다양한 작품에서 주·조연 및 주요배역을 캐스팅하고 있습니다. 모든 캐스팅은 해당 제작사와 계약과 동시에 오디션 및 미팅을 거쳐 직접 캐스팅하는 작품입니다.',
       '주·조연 및 주요배역 캐스팅. 디렉터의 급이 다른 능력을 확인하시기 바랍니다.',
     ],
     headline: '협력사인 IMGround 캐스팅 에이전시는 다년간의 캐스팅 노하우를 바탕으로 설립된 에이전시로',
     id: 'im-ground',
-    label: 'IM Ground',
-    marquee: 'IM Ground IM Ground',
+    label: 'IMGround',
+    marquee: 'IMGround IMGround',
   },
   {
     directorCompanyNames: ['BX MODEL AGENCY', 'BX Model Agency', 'BX모델에이전시'],

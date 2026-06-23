@@ -20,7 +20,7 @@ const directCastingSlugify = createKoreanSlugifyWithFallback('direct-casting')
 
 const companyOptions = [
   { label: 'ARKO Lab', value: 'arko-lab' },
-  { label: 'IM Ground', value: 'imground' },
+  { label: 'IMGround', value: 'imground' },
   { label: 'BNB Casting', value: 'bnb-casting' },
   { label: 'BX Model Agency', value: 'bx-model-agency' },
 ]
