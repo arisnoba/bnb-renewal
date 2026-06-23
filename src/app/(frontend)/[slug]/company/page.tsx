@@ -277,7 +277,7 @@ export default async function CompanyPage({ params }: Args) {
             <figure className="relative bg-neutral-300">
               <Image
                 alt="배우앤배움 대표 임채홍"
-                className="size-full object-cover"
+                className="w-full h-auto object-cover"
                 height={760}
                 priority
                 sizes="(max-width: 767px) calc(100vw - 40px), 960px"
