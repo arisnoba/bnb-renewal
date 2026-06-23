@@ -49,13 +49,13 @@ $type-scale: (
   title-m: (min: 18px, max: 18px, weight: 700, line-height: 1.4), // Figma Title/M 18px/140%
   title-s: (min: 16px, max: 16px, weight: 700, line-height: 1.5), // Figma Title/S 16px/150%
   // role: body — 본문. 디폴트 400, 고정 크기
-  body-l: (min: 18px, max: 18px, weight: 400, line-height: 1.5), // Figma Body/L 18px/150%
-  body-m: (min: 16px, max: 16px, weight: 500, line-height: 1.5), // Figma Body/M 16px/150%
-  body-s: (min: 14px, max: 14px, weight: 400, line-height: 1.5), // Figma Body/S 14px/150%
+  body-l: (min: 18px, max: 18px, weight: 400, line-height: 1.55), // Figma Body/L 18px/150%
+  body-m: (min: 16px, max: 16px, weight: 400, line-height: 1.55), // Figma Body/M 16px/150%
+  body-s: (min: 14px, max: 14px, weight: 400, line-height: 1.55), // Figma Body/S 14px/150%
   // role: label — 버튼/폼/네비 텍스트. 디폴트 500, 고정 크기
-  label-l: (min: 16px, max: 16px, weight: 600, line-height: 1.2), // Figma Label/L 16px/120%
-  label-m: (min: 14px, max: 14px, weight: 600, line-height: 1.2), // Figma Label/M 14px/120%
-  label-s: (min: 12px, max: 12px, weight: 700, line-height: 1.2), // Figma Label/S 12px/120%
+  label-l: (min: 16px, max: 16px, weight: 500, line-height: 1.2), // Figma Label/L 16px/120%
+  label-m: (min: 14px, max: 14px, weight: 500, line-height: 1.2), // Figma Label/M 14px/120%
+  label-s: (min: 12px, max: 12px, weight: 500, line-height: 1.2), // Figma Label/S 12px/120%
   // role: caption — 보조 설명/메타 정보. 디폴트 400, 고정 크기
   caption-l: (min: 12px, max: 12px, weight: 500, line-height: 1.35), // Figma Caption/L Medium 12px/135%
   caption-m: (min: 13px, max: 13px, weight: 500, line-height: 1.2), // Figma Caption/M 13px/120%

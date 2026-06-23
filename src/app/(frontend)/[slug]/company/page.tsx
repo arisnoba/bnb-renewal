@@ -274,7 +274,7 @@ export default async function CompanyPage({ params }: Args) {
               />
               <p className="type-label-l font-bold text-white/75">대표 인사말</p>
             </div>
-            <figure className="relative overflow-hidden bg-neutral-300">
+            <figure className="relative bg-neutral-300">
               <Image
                 alt="배우앤배움 대표 임채홍"
                 className="size-full object-cover"
@@ -295,7 +295,7 @@ export default async function CompanyPage({ params }: Args) {
             </figure>
 
           <div className="mt-14 relative z-10 grid md:mt-20 md:grid-cols-12 md:justify-center md:gap-24">
-            <div className='col-span-6 col-start-5'>
+            <div className='col-span-8 col-start-5'>
               <h2 className="type-headline-l font-bold text-white" id="company-message-title">
                 우리가 아티스트의 새로운
                 <br />
@@ -318,9 +318,8 @@ export default async function CompanyPage({ params }: Args) {
         className="section-company-history section-p-t-base section-p-b-lg relative overflow-hidden"
       >
         <PageDeco
-          className="absolute -left-8 bottom-0 hidden md:block"
+          className="absolute -left-8 -bottom-8 hidden md:block"
           icon={decoIcons[3]}
-          size="176px"
         />
         <PageDeco
           className="absolute -right-36 top-56 hidden md:block lg:-right-44"
