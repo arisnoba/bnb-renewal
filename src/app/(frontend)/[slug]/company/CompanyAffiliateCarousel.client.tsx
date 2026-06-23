@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
-import { A11y, Keyboard } from 'swiper/modules'
+import { A11y, Autoplay, Keyboard } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { cn } from '@/utilities/ui'
@@ -71,6 +71,11 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
             nextSlideMessage: '다음 계열사',
             prevSlideMessage: '이전 계열사',
           }}
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
           watchSlidesProgress
           breakpoints={{
             768: {
@@ -90,7 +95,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
           keyboard={{
             enabled: true,
           }}
-          modules={[A11y, Keyboard]}
+          modules={[A11y, Autoplay, Keyboard]}
           onResize={updateState}
           onSlideChange={updateState}
           onSwiper={handleSwiper}
@@ -103,7 +108,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
 
             return (
               <SwiperSlide className="h-auto!" key={affiliate.name}>
-                <article className="section-company-affiliates__card grid overflow-hidden bg-black md:grid-cols-2">
+                <article className="section-company-affiliates__card group grid overflow-hidden bg-black md:grid-cols-2">
                   {affiliate.imageSrc ? (
                     <figure className="relative order-1 aspect-square overflow-hidden bg-neutral-900 md:order-2 md:self-start">
                       <AffiliateImage
@@ -127,7 +132,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
                     </div>
                     {affiliate.href ? (
                       <Link
-                        className="inline-flex items-center gap-1 type-caption-m font-bold text-white/70 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                        className="inline-flex items-center gap-1 type-caption-m font-bold text-white/70 transition group-hover:text-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
                         href={affiliate.href}
                         rel={isExternalHref ? 'noreferrer' : undefined}
                         target={isExternalHref ? '_blank' : undefined}

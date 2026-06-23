@@ -172,7 +172,7 @@ export default async function CompanyPage({ params }: Args) {
   const historyItems = await queryHistoryItems()
 
   return (
-    <main className="page page-dark page-company bg-neutral-950 text-white" data-center="art">
+    <main className="page page-dark page-company bg-neutral-950 text-white" data-center={center}>
       <section
         aria-labelledby="company-hero-title"
         className="section-company-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
