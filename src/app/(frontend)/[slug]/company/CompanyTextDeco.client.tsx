@@ -35,7 +35,7 @@ export function CompanyTextDeco() {
   return (
     <p
       aria-hidden="true"
-      className="text-deco pointer-events-none absolute inset-0 flex select-none flex-col justify-center overflow-hidden font-extrabold leading-none text-white/[0.03]"
+      className="text-deco pointer-events-none absolute inset-0 flex select-none flex-col justify-center overflow-hidden font-extrabold leading-[.9] text-white/[0.015]"
       ref={textRef}
       style={fontSize ? { fontSize: `${fontSize}px` } : undefined}
     >

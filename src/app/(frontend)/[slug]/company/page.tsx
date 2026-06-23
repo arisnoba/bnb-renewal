@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { centers, type CenterSlug, assertCenter } from '@/lib/centers'
 import type { History } from '@/payload-types'
 
@@ -31,7 +32,7 @@ const affiliates: CompanyAffiliate[] = [
   {
     description:
       '수많은 신인 배우 성장의 흐름을 바꿔온, 대한민국 연기 교육의 상징적인 플랫폼입니다. 이곳에서 연기는 직업이 되고, 배우는 하나의 브랜드가 됩니다.',
-    href: null,
+    href: 'https://bnbindustry.com/business-units/baewoo-baewoom-enm/',
     imageAlt: 'BAEWOO&BAEWOOM EnM 서비스 이미지',
     imageSrc: '/assets/company/company-01.jpg',
     name: 'BAEWOO&BAEWOOM EnM',
@@ -39,7 +40,7 @@ const affiliates: CompanyAffiliate[] = [
   {
     description:
       '개성과 감정, 에너지를 담아내는 ‘무브먼트 아티스트’들의 공간으로, 자유롭고 정교한 스토리 빌드업을 통해 무대 위에서 자신을 설계할 줄 아는 퍼포머를 만들어 갑니다.',
-    href: null,
+    href: 'https://perfectj.co.kr/',
     imageAlt: 'PERFECT PERFORMANCE ENT 서비스 이미지',
     imageSrc: '/assets/company/company-02.jpg',
     name: 'PERFECT PERFORMANCE ENT',
@@ -47,7 +48,7 @@ const affiliates: CompanyAffiliate[] = [
   {
     description:
       '수많은 화제작에서 주역을 발굴·연결해 온 경험을 바탕으로, 세대와 장르를 아우르는 최적의 캐스팅을 제공합니다. TV·OTT 등 다양한 매체에서 탁월한 매칭을 실현하며, 제작사와 감독들의 신뢰를 받고 있습니다.',
-    href: null,
+    href: 'https://bnbindustry.com/business-units/bnb-casting/',
     imageAlt: 'BNB CASTING 서비스 이미지',
     imageSrc: '/assets/company/company-03.jpg',
     name: 'BNB CASTING',
@@ -55,7 +56,7 @@ const affiliates: CompanyAffiliate[] = [
   {
     description:
       '세계 시장을 향해, 정교한 매니지먼트와 세심한 브랜딩으로 아티스트를 시대를 아우르는 주역으로 완성하며, 문화와 트렌드를 선도하는 글로벌 아이콘으로 성장시킵니다.',
-    href: null,
+    href: 'https://bnbindustry.com/business-units/bistus-ent/',
     imageAlt: 'BISTUS ENT. 서비스 이미지',
     imageSrc: '/assets/company/company-04.jpg',
     name: 'BISTUS ENT.',
@@ -63,81 +64,89 @@ const affiliates: CompanyAffiliate[] = [
   {
     description:
       '배우를 중심으로, 감독·작가의 성장을 함께 이끄는 종합 아티스트 매니지먼트입니다. 차별화된 전략으로 커리어를 확장하고, 각자가 지닌 색과 가치를 세계 무대에서 빛나게 합니다.',
-    href: null,
+    href: 'https://breeze-artist.com/',
     imageAlt: 'BAA ENT. 서비스 이미지',
     imageSrc: '/assets/company/company-05.jpg',
     name: 'BAA ENT.',
   },
   {
     description:
-      '아티스트의 본질을 포착해 고유한 색을 깊이 끌어올리고, 독창적인 시각으로 정체성을 담은 이미지를 완성합니다. 한 컷의 사진으로 가치를 만들어가는 크리에이티브 포토 스튜디오입니다.',
-    href: null,
-    imageAlt: 'STUDIO BNB 촬영 이미지',
-    imageSrc: '/assets/company/company-06.jpg',
-    name: 'STUDIO BNB',
-  },
-  {
-    description:
       '세계 무대와 팬덤의 중심에서 경쟁력 있는 아티스트를 기획·육성하며, 글로벌 브랜딩 경험과 해외 파트너십 네트워크를 통해 전략적 빌드업과 독창적인 콘텐츠로 K-pop의 다음 흐름을 만들어가는 음악 IP 제작사입니다.',
-    href: null,
+    href: 'https://bnbindustry.com/business-units/bnb-music/',
     imageAlt: 'BNB MUSIC 서비스 이미지',
-    imageSrc: '/assets/company/company-07.jpg',
+    imageSrc: '/assets/company/company-06.jpg',
     name: 'BNB MUSIC',
   },
   {
     description:
-      '글로벌 미디어 기업과의 프로젝트에서 검증된 제작 역량을 바탕으로, AI·버추얼·XR 등 첨단 기술을 창의적으로 결합합니다. 브랜드 메시지를 한층 입체적으로 구현하며, 시청자의 경험을 새롭게 디자인하는 차세대 프로덕션입니다.',
-    href: null,
-    imageAlt: 'VORD INSIGHT 미디어 이미지',
-    imageSrc: '/assets/company/company-08.jpg',
-    name: 'VORD INSIGHT',
-  },
-  {
-    description:
       '틱톡 코리아에서 그룹 라이브 부문 1위를 공식 수상한 크리에이션 그룹으로, 라이브 스트리밍과 아티스트 매니지먼트를 통해 K-Culture 실시간 콘텐츠 IP를 기획·확장하며 글로벌 시장에서 새로운 팬 경험을 만들어갑니다.',
-    href: null,
+    href: 'https://bnb-play.com/',
     imageAlt: 'BNB PLAY 서비스 이미지',
-    imageSrc: '/assets/company/company-09.jpg',
+    imageSrc: '/assets/company/company-07.jpg',
     name: 'BNB PLAY',
   },
   {
     description:
-      '우리는 아티스트 IP를 문화적 자산으로 완성해 온 경험을 바탕으로, 그 가치를 브랜드와 커머스로 확장합니다. IP의 스토리와 정체성을 제품에 입혀, 글로벌 K-Commerce의 새로운 기준을 만듭니다.',
-    href: null,
-    imageAlt: 'BNB CNX 서비스 이미지',
+      '아티스트의 본질을 포착해 고유한 색을 깊이 끌어올리고, 독창적인 시각으로 정체성을 담은 이미지를 완성합니다. 한 컷의 사진으로 가치를 만들어가는 크리에이티브 포토 스튜디오입니다.',
+    href: 'https://bnbindustry.com/business-units/baewoohwa-studio/',
+    imageAlt: 'STUDIO BNB 촬영 이미지',
+    imageSrc: '/assets/company/company-08.jpg',
+    name: 'BAEWOOHWA STUDIO',
+  },
+  {
+    description:
+    '글로벌 미디어 기업과의 프로젝트에서 검증된 제작 역량을 바탕으로, AI·버추얼·XR 등 첨단 기술을 창의적으로 결합합니다. 브랜드 메시지를 한층 입체적으로 구현하며, 시청자의 경험을 새롭게 디자인하는 차세대 프로덕션입니다.',
+    href: 'https://www.vordinsight.com/',
+    imageAlt: 'VORD INSIGHT 미디어 이미지',
+    imageSrc: '/assets/company/company-09.jpg',
+    name: 'VORD INSIGHT',
+  },
+  {
+    description:
+      '글로벌 트렌드에 최적화된 숏폼 콘텐츠를 기획·제작하는 미디어 크리에이티브 허브입니다. 아티스트의 IP를 스토리와 결합해 새로운 콘텐츠의 생태계를 확장합니다.',
+    href: 'https://bnbindustry.com/business-units/x-stream/',
+    imageAlt: 'X STREAM 미디어 이미지',
     imageSrc: '/assets/company/company-10.jpg',
-    name: 'BNB CNX',
+    name: 'X STREAM',
   },
   {
     description:
-      'K-아티스트의 콘서트와 팬미팅을 비롯해, SNS를 통한 실시간 팬덤 연결까지 아우르는 글로벌 활동을 설계·운영합니다. IP를 중심에 두고, 팬들과의 거리를 좁히며 세계 무대에서 영향력을 확장하는 커뮤니케이션 플랫폼입니다.',
-    href: null,
-    imageAlt: 'FANCONN 서비스 이미지',
-    imageSrc: '/assets/company/company-11.jpg',
-    name: 'FANCONN',
-  },
-  {
-    description:
-      '국내외 유수 기업과 협력해 광고 캐스팅을 전문적으로 수행하며, 브랜드 아이덴티티와 모델의 헤리티지를 정교하게 매칭합니다. 글로벌 마켓 인사이트와 트렌드 분석력으로 브랜드 가치와 매력을 극대화합니다.',
-    href: null,
+    '국내외 유수 기업과 협력해 광고 캐스팅을 전문적으로 수행하며, 브랜드 아이덴티티와 모델의 헤리티지를 정교하게 매칭합니다. 글로벌 마켓 인사이트와 트렌드 분석력으로 브랜드 가치와 매력을 극대화합니다.',
+    href: 'http://bx-agency.com/',
     imageAlt: 'BX MODEL AGENCY 서비스 이미지',
-    imageSrc: '/assets/company/company-12.jpg',
+    imageSrc: '/assets/company/company-11.jpg',
     name: 'BX MODEL AGENCY',
   },
   {
     description:
-      'AI와 데이터 기반의 SOIAA 플랫폼은, 누구나 광고 영상을 제작하고 시청하며 보상을 얻을 수 있는 공간입니다. 창작과 참여가 선순환하는 IP 가치 생태계를 기술로 구현해, 새로운 패러다임을 열어갑니다.',
-    href: null,
-    imageAlt: 'DEEPCON 서비스 이미지',
+    'K-아티스트의 콘서트와 팬미팅을 비롯해, SNS를 통한 실시간 팬덤 연결까지 아우르는 글로벌 활동을 설계·운영합니다. IP를 중심에 두고, 팬들과의 거리를 좁히며 세계 무대에서 영향력을 확장하는 커뮤니케이션 플랫폼입니다.',
+    href: 'https://bnbindustry.com/business-units/fanconn/',
+    imageAlt: 'FANCONN 서비스 이미지',
+    imageSrc: '/assets/company/company-12.jpg',
+    name: 'FANCONN',
+  },
+  {
+    description:
+      '우리는 아티스트 IP를 문화적 자산으로 완성해 온 경험을 바탕으로, 그 가치를 브랜드와 커머스로 확장합니다. IP의 스토리와 정체성을 제품에 입혀, 글로벌 K-Commerce의 새로운 기준을 만듭니다.',
+    href: 'https://bnb-cnx.com/',
+    imageAlt: 'BNB CNX 서비스 이미지',
     imageSrc: '/assets/company/company-13.jpg',
+    name: 'BNB CNX',
+  },
+  {
+    description:
+      'AI와 데이터 기반의 SOIAA 플랫폼은, 누구나 광고 영상을 제작하고 시청하며 보상을 얻을 수 있는 공간입니다. 창작과 참여가 선순환하는 IP 가치 생태계를 기술로 구현해, 새로운 패러다임을 열어갑니다.',
+    href: 'https://soiaa.com/',
+    imageAlt: 'DEEPCON 서비스 이미지',
+    imageSrc: '/assets/company/company-14.jpg',
     name: 'DEEPCON',
   },
   {
     description:
       'IP 기반 콘텐츠의 성장 잠재력에 주목해, 엔터테인먼트를 비롯한 전방위 IP 비즈니스에 전략적으로 투자합니다. 브랜드 자산과 창의성을 결합한 기업에 집중하며, 장기 가치를 축적하고 지속 가능한 성장을 설계합니다.',
-    href: null,
+    href: 'https://bnbindustry.com/business-units/bnb-invest/',
     imageAlt: 'BNB INVEST 서비스 이미지',
-    imageSrc: '/assets/company/company-14.jpg',
+    imageSrc: '/assets/company/company-15.jpg',
     name: 'BNB INVEST',
   },
 ]
@@ -158,7 +167,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
 export default async function CompanyPage({ params }: Args) {
   const { slug } = await params
-  assertCenter(decodeURIComponent(slug))
+  const center = assertCenter(decodeURIComponent(slug))
+  const decoIcons = getPageDecoIcons(5, `company-${center}`)
   const historyItems = await queryHistoryItems()
 
   return (
@@ -177,23 +187,15 @@ export default async function CompanyPage({ params }: Args) {
           src="/assets/company/hero-building.png"
         />
         <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute -left-18 top-24 hidden size-45 md:block md:size-65 lg:size-90"
-          height={360}
-          src="/assets/company/deco-square.svg"
-          unoptimized
-          width={360}
+        <PageDeco
+          className="absolute -left-18 top-24 hidden md:block"
+          icon={decoIcons[0]}
+          size="clamp(260px, 26vw, 360px)"
         />
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute -right-20 bottom-[-56px] hidden size-52 md:block md:size-72 lg:size-90"
-          height={360}
-          src="/assets/company/deco-ring.svg"
-          unoptimized
-          width={360}
+        <PageDeco
+          className="absolute -right-20 bottom-[-56px] hidden md:block"
+          icon={decoIcons[1]}
+          size="clamp(288px, 26vw, 360px)"
         />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">
           <h1 className="section-company-hero__title type-display-l font-extrabold text-white md:type-display-xl" id="company-hero-title">
@@ -258,7 +260,7 @@ export default async function CompanyPage({ params }: Args) {
 
       <section
         aria-labelledby="company-message-title"
-        className="section-company-message section-p-b-lg relative overflow-hidden"
+        className="section-company-message section-p-b-base relative overflow-hidden"
       >
         <div className="container relative">
           <div className="mb-8 flex items-center gap-3 md:mb-10">
@@ -282,33 +284,28 @@ export default async function CompanyPage({ params }: Args) {
                 src="/assets/company/ceo-portrait.jpg"
                 width={1120}
               />
+              <PageDeco
+                className="bottom-0 left-0 -translate-x-1/2 translate-y-1/2 opacity-75"
+                icon={decoIcons[2]}
+                size="clamp(192px, 20vw, 256px)"
+              />
               <figcaption className="sr-only">
                 임채홍 LIM, CHAE-HONG
               </figcaption>
             </figure>
 
-          <div className="mt-14 grid gap-10 md:mt-20 md:grid-cols-[200px_minmax(0,560px)] md:justify-center md:gap-24">
-            <Image
-              alt=""
-              aria-hidden="true"
-              className="hidden size-40 md:block"
-              height={160}
-              src="/assets/company/deco-square.svg"
-              unoptimized
-              width={160}
-            />
-            <div>
-              <h2 className="type-headline-l font-extrabold text-white" id="company-message-title">
+          <div className="mt-14 relative z-10 grid md:mt-20 md:grid-cols-12 md:justify-center md:gap-24">
+            <div className='col-span-6 col-start-5'>
+              <h2 className="type-headline-l font-bold text-white" id="company-message-title">
                 우리가 아티스트의 새로운
                 <br />
                 가능성을 발견하는 순간,
               </h2>
-              <div className="mt-8 space-y-5 type-body-s text-white/55">
+              <div className="mt-8 space-y-5 type-body-m leading-loose text-white/55">
                 <p>
-                  BNB는 배우의 가능성을 교육 과정 안에 가두지 않고, 현장의 언어와 산업의 흐름으로 확장합니다. 배우가 가진 감각을 발견하고 새로운 브랜드로 성장할 수 있도록 함께 설계합니다.
-                </p>
-                <p>
-                  앞으로도 배우앤배움은 아티스트의 시작과 도약을 연결하는 문화기업으로서, 더 넓은 무대를 만드는 일에 집중하겠습니다.
+                 BNB는 ‘BAEWOO NEW BRANDING’이라는 설립 이념 아래, 아티스트 중심 비즈니스로 출발한 글로벌 엔터테인먼트 기업입니다. 2010년, 배우와 가수로 대표되는 미디어 IP에서 시작해, 디지털 크리에이터 기반의 뉴미디어 영역을 거쳐, AI기술이 결합된 버추얼 IP로 진화하고 있습니다. 
+또한, 콘텐츠와 기술을 융합해 휴먼 IP의 가치를 확장하고, 모두가 참여할 수 있는 AI기반 엔터테인먼트 플랫폼을 통해, 창작과 기여가 가치로 환원되는 새로운 패러다임을 실현해 나가고 있습니다.
+우리는 한 사람의 서사가 세계를 바꿀 수 있다고 믿습니다. 그 믿음과 함께, BNB는 글로벌 엔터테인먼트 산업의 새로운 기준과 레퍼런스를 만들어가겠습니다.
                 </p>
               </div>
             </div>
@@ -318,73 +315,65 @@ export default async function CompanyPage({ params }: Args) {
 
       <section
         aria-labelledby="company-history-title"
-        className="section-company-history section-p-block-lg relative overflow-hidden"
+        className="section-company-history section-p-t-base section-p-b-lg relative overflow-hidden"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute -left-8 bottom-0 hidden size-44 md:block"
-          height={176}
-          src="/assets/company/deco-square.svg"
-          unoptimized
-          width={176}
+        <PageDeco
+          className="absolute -left-8 bottom-0 hidden md:block"
+          icon={decoIcons[3]}
+          size="176px"
         />
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute -right-36 top-56 hidden size-64 md:block lg:-right-44 lg:size-80"
-          height={360}
-          src="/assets/company/deco-ring.svg"
-          unoptimized
-          width={360}
+        <PageDeco
+          className="absolute -right-36 top-56 hidden md:block lg:-right-44"
+          icon={decoIcons[4]}
+          size="clamp(256px, 24vw, 320px)"
         />
-        <div className="container relative grid gap-14 grid-cols-1 md:grid-cols-3">
+        <div className="container relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <header className="section-company-history__head col-span-1">
-            <p className="type-label-s font-extrabold uppercase text-brand">History</p>
-            <h2 className="mt-7 type-display-m font-extrabold text-white md:type-display-l" id="company-history-title">
+            <p className="type-title-l font-extrabold uppercase text-brand">History</p>
+            <h2 className="mt-7 type-display-l font-bold text-white" id="company-history-title">
               새로운 가능성을
               <br />
               만들어온 시간
             </h2>
           </header>
-          <ol className="section-company-history__list relative flex flex-col md:col-span-2">
+          <ol className="section-company-history__list relative flex flex-col lg:col-span-2">
             <span
               aria-hidden="true"
-              className="absolute bottom-4 left-0 top-4 w-px bg-white/10 md:left-1/2"
+              className="absolute bottom-4 left-0 top-4 w-px bg-white/10 lg:left-1/2"
             />
             {historyItems.length > 0 ? (
               historyItems.map((item) => (
                 <li
-                  className="section-company-history__item relative grid min-h-16 grid-cols-[1fr] items-center pl-7 md:min-h-23 md:grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)] md:pl-0"
+                  className="section-company-history__item relative grid min-h-16 grid-cols-[1fr] items-center pl-7 md:min-h-23 lg:grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)] lg:pl-0"
                   key={`${item.date}-${item.label}`}
                 >
                   <span
                     aria-hidden="true"
-                    className="absolute left-[-3px] top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-white/20 md:left-1/2 md:z-10 md:-translate-x-1/2"
+                    className="absolute -left-0.75 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-white/20 lg:left-1/2 lg:z-10 lg:-translate-x-1/2"
                   />
                   {item.side === 'left' ? (
                     <>
-                      <div className="flex items-center justify-start gap-5 md:justify-end md:pr-4 md:text-right">
-                        <span className="order-2 max-w-34 type-body-m font-bold text-white/30 md:order-1">{item.label}</span>
-                        <strong className="order-1 type-headline-m font-extrabold text-white md:order-2">{item.date}</strong>
+                      <div className="flex items-center justify-start gap-5 lg:justify-end lg:pr-4 lg:text-right">
+                        <span className="order-2 max-w-34 type-body-m font-semibold text-white/30 lg:order-1">{item.label}</span>
+                        <span className="order-1 type-headline-s whitespace-nowrap font-semibold text-white lg:order-2">{item.date}</span>
                       </div>
-                      <span aria-hidden="true" className="hidden md:block" />
-                      <span aria-hidden="true" className="hidden md:block" />
+                      <span aria-hidden="true" className="hidden lg:block" />
+                      <span aria-hidden="true" className="hidden lg:block" />
                     </>
                   ) : (
                     <>
-                      <span aria-hidden="true" className="hidden md:block" />
-                      <span aria-hidden="true" className="hidden md:block" />
-                      <div className="flex items-center justify-start gap-5 md:pl-4">
-                        <strong className="type-headline-m font-bold text-white">{item.date}</strong>
-                        <span className="md:max-w-34 type-body-m font-extrabold text-white/30">{item.label}</span>
+                      <span aria-hidden="true" className="hidden lg:block" />
+                      <span aria-hidden="true" className="hidden lg:block" />
+                      <div className="flex items-center justify-start gap-5 lg:pl-4">
+                        <span className="type-headline-s whitespace-nowrap font-semibold text-white">{item.date}</span>
+                        <span className="lg:max-w-34 type-label-l font-semibold text-white/30">{item.label}</span>
                       </div>
                     </>
                   )}
                 </li>
               ))
             ) : (
-              <li className="section-company-history__empty pl-7 type-body-m font-bold text-white/35 md:pl-[calc(50%+24px)]">
+              <li className="section-company-history__empty pl-7 type-body-m font-bold text-white/35 lg:pl-[calc(50%+24px)]">
                 등록된 연혁이 없습니다.
               </li>
             )}

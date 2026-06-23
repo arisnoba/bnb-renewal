@@ -2,7 +2,7 @@
 
 import type { Swiper as SwiperInstance } from 'swiper'
 
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
@@ -44,7 +44,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
   return (
     <div className="section-company-affiliates__carousel">
       <div className="mb-8 flex items-center justify-between gap-4 md:mb-10">
-        <p className="type-label-l font-bold text-white/70" id="company-affiliates">
+        <p className="type-title-l font-bold text-white/70" id="company-affiliates">
           BNB INDUSTRY NETWORK
         </p>
         <div className="flex items-center gap-2">
@@ -73,15 +73,15 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
           }}
           breakpoints={{
             768: {
-              slidesPerView: 1.4,
-              spaceBetween: 24,
+              slidesPerView: 1.05,
+              spaceBetween: 20,
             },
             1024: {
-              slidesPerView: 2.4,
+              slidesPerView: 1.2,
               spaceBetween: 24,
             },
             1280: {
-              slidesPerView: 2.4,
+              slidesPerView: 1.35,
               spaceBetween: 24,
             },
           }}
@@ -101,26 +101,26 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
 
             return (
               <SwiperSlide className="h-auto!" key={affiliate.name}>
-                <article className="section-company-affiliates__card grid h-full min-h-80 grid-rows-[160px_1fr] overflow-hidden bg-black md:min-h-92 md:grid-rows-[190px_1fr]">
+                <article className="section-company-affiliates__card grid overflow-hidden bg-black md:grid-cols-2">
                   {affiliate.imageSrc ? (
-                    <figure className="relative overflow-hidden bg-neutral-900">
+                    <figure className="relative order-1 aspect-square overflow-hidden bg-neutral-900 md:order-2 md:self-start">
                       <Image
                         alt={affiliate.imageAlt ?? affiliate.name}
                         className="size-full object-cover"
                         fill
                         loading="lazy"
-                        sizes="(max-width: 767px) 82vw, (max-width: 1279px) 36vw, 280px"
+                        sizes="(max-width: 767px) 82vw, (max-width: 1279px) 40vw, 430px"
                         src={affiliate.imageSrc}
                       />
                     </figure>
                   ) : (
-                    <div className="flex items-center justify-center bg-neutral-950 px-6 text-center">
+                    <div className="order-1 flex aspect-square items-center justify-center bg-neutral-950 px-6 text-center md:order-2 md:self-start">
                       <p className="type-title-l font-extrabold uppercase tracking-normal text-white/25">
                         {affiliate.name}
                       </p>
                     </div>
                   )}
-                  <div className="flex flex-col items-start justify-between gap-6 p-6">
+                  <div className="order-2 flex flex-col items-start justify-between gap-6 p-6 md:order-1 md:p-8 lg:p-10">
                     <div>
                       <h3 className="type-title-m font-extrabold text-white">{affiliate.name}</h3>
                       <p className="mt-4 type-body-s text-white/55">{affiliate.description}</p>
@@ -133,7 +133,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
                         target={isExternalHref ? '_blank' : undefined}
                       >
                         자세히 보기
-                        <ChevronRight aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
+                        <ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
                       </Link>
                     ) : (
                       <span className="type-caption-m font-bold text-white/30">링크 준비중</span>
