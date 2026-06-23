@@ -286,7 +286,7 @@ export default async function CompanyPage({ params }: Args) {
               />
               <PageDeco
                 className="bottom-0 left-0 -translate-x-1/2 translate-y-1/2 opacity-75"
-                icon={decoIcons[2]}
+                icon="icon-m.svg"
                 size="clamp(192px, 20vw, 256px)"
               />
               <figcaption className="sr-only">

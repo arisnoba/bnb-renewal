@@ -249,34 +249,43 @@ test('all center support menus link to the how-to-use page', () => {
   }
 })
 
-test('avenue mega menu uses the avenue one-page structure', () => {
-  const labels = labelsFor('avenue')
+test('avenue mega menu matches the art baseline structure for preparation', () => {
+  const avenueMenu = getHeaderMenu('avenue')
 
-  assert.ok(labels.includes('회사 소개'))
-  assert.ok(labels.includes('애비뉴센터 소개'))
-  assert.ok(labels.includes('제휴업체'))
-  assert.ok(labels.includes('캐스팅 센터'))
-  assert.equal(
-    getHeaderMenu('avenue')
-      .find((group) => group.key === 'casting')
-      ?.items.find((item) => item.label === '캐스팅 센터')?.href,
-    '/avenue/casting',
+  assert.deepEqual(
+    avenueMenu.map((group) => group.label),
+    ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
   )
-  assert.equal(
-    getHeaderMenu('avenue')
-      .find((group) => group.key === 'about')
-      ?.items.find((item) => item.label === '시설 안내')?.href,
-    '/avenue/facilities',
-  )
-  assert.equal(
-    getHeaderMenu('avenue')
-      .find((group) => group.key === 'education')
-      ?.items.find((item) => item.label === '강사진 소개')?.href,
-    '/avenue/teachers',
-  )
-  assert.ok(!labels.includes('커리큘럼'))
-  assert.ok(!labels.includes('온라인 상담신청'))
-  assert.ok(labels.includes('NEWS&NOTICE'))
+  assert.deepEqual(itemsForGroup('avenue', 'about'), [
+    { href: '/avenue/company', label: '회사 소개' },
+    { href: '/avenue/about', label: '센터 소개' },
+    { href: '/avenue/facilities', label: '시설 안내' },
+    { href: '/avenue/map', label: '오시는 길' },
+  ])
+  assert.deepEqual(itemsForGroup('avenue', 'education'), [
+    { href: '/avenue/grade-system', label: '등급제 교육관리시스템' },
+    { href: '/avenue/entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: '/avenue/teachers', label: '교육진 소개' },
+    { href: '/avenue/curriculum', label: '커리큘럼' },
+  ])
+  assert.deepEqual(itemsForGroup('avenue', 'casting'), [
+    { href: '/avenue/screen-appearances', label: 'BNB 출연장면' },
+    { href: '/avenue/casting-status', label: '캐스팅 출연현황' },
+    { href: '/avenue/casting', label: '캐스팅 센터' },
+    { href: '/avenue/casting-system', label: '배우 케어 시스템' },
+    { href: '/avenue#monthly-schedule', label: '촬영ㆍ오디션 스케줄' },
+  ])
+  assert.deepEqual(itemsForGroup('avenue', 'artist'), [
+    { href: '/avenue/artist-press', label: 'BNB출신 아티스트' },
+    { href: '/avenue/rookies', label: 'BNB 루키' },
+  ])
+  assert.deepEqual(itemsForGroup('avenue', 'support'), itemsForGroup('art', 'support').map((item) => ({
+    ...item,
+    href: item.href.replace('/art/', '/avenue/'),
+  })))
+  assert.ok(!labelsFor('avenue').includes('애비뉴센터 소개'))
+  assert.ok(!labelsFor('avenue').includes('제휴업체'))
+  assert.ok(!labelsFor('avenue').includes('프로필 촬영'))
 })
 
 test('center casting status menu items link to the casting status page', () => {

@@ -25,10 +25,6 @@ export function headerCenterFromPathname(pathname: string | null | undefined): C
 }
 
 export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
-  if (center === 'avenue') {
-    return avenueMenu()
-  }
-
   return [
     {
       href: centerAboutHref(center),
@@ -61,49 +57,6 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       label: '지원센터',
     },
   ].filter((group) => group.items.length > 0)
-}
-
-function avenueMenu(): HeaderMenuGroup[] {
-  return [
-    {
-      href: centerAboutHref('avenue'),
-      items: [
-        { href: companyHref('avenue'), label: '회사 소개' },
-        { href: centerAboutHref('avenue'), label: '애비뉴센터 소개' },
-        { href: '/avenue#partners', label: '제휴업체' },
-        { href: facilitiesHref('avenue'), label: '시설 안내' },
-      ],
-      key: 'about',
-      label: '배우앤배움',
-    },
-    {
-      href: teachersHref('avenue'),
-      items: [{ href: teachersHref('avenue'), label: '강사진 소개' }],
-      key: 'education',
-      label: '교육',
-    },
-    {
-      href: castingHref('avenue'),
-      items: [
-        { href: castingHref('avenue'), label: '캐스팅 센터' },
-        { href: '/avenue#portfolio', label: '프로필 촬영' },
-      ],
-      key: 'casting',
-      label: '캐스팅',
-    },
-    {
-      href: '/avenue#profiles',
-      items: [{ href: '/avenue#profiles', label: '배우 프로필' }],
-      key: 'artist',
-      label: '아티스트',
-    },
-    {
-      href: '/avenue/news',
-      items: supportItems('avenue'),
-      key: 'support',
-      label: '지원센터',
-    },
-  ]
 }
 
 function aboutItems(center: CenterSlug): HeaderMenuItem[] {
@@ -143,7 +96,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
-  if (center === 'art') {
+  if (center === 'art' || center === 'avenue') {
     return [
       { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
@@ -174,7 +127,7 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
-  if (center === 'art') {
+  if (center === 'art' || center === 'avenue') {
     return [
       { href: screenAppearancesHref(center), label: 'BNB 출연장면' },
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
@@ -215,7 +168,7 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
-  if (center === 'art') {
+  if (center === 'art' || center === 'avenue') {
     return [
       { href: `/${center}/artist-press`, label: 'BNB출신 아티스트' },
       { href: `/${center}/rookies`, label: 'BNB 루키' },
