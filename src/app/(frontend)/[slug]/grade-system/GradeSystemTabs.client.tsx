@@ -1281,14 +1281,24 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
                 className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
                 key={`${index}-${row.className}`}
               >
-                <CriteriaCell className="text-center align-top">
+                <CriteriaCell
+                  className={cn(
+                    'text-center align-top',
+                    getGradeLevelCellClassName(index),
+                  )}
+                >
                   <div className="flex flex-col items-center gap-1.5">
-                    <GradeBadge code={row.classCode}>{row.classCode}</GradeBadge>
-                    <span className="type-caption-s font-medium text-white/45">{row.level}</span>
+                    <span className="font-extrabold">{row.classCode}</span>
+                    <span className="type-caption-m font-medium opacity-70">{row.level}</span>
                   </div>
                 </CriteriaCell>
-                <CriteriaCell className="text-center align-top">
-                  <ProcessBadge process={row.process} />
+                <CriteriaCell
+                  className={cn(
+                    'text-center align-top font-extrabold text-[#0d4f94]',
+                    getProcessCellClassName(row.process),
+                  )}
+                >
+                  {row.process}
                 </CriteriaCell>
                 <CriteriaCell className="align-top text-white/55">{row.department}</CriteriaCell>
                 {data.criteriaEntryLabels.map((entry) => (
@@ -1320,9 +1330,14 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
             className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
             key={`${index}-${card.className}`}
           >
-            <header className="flex flex-wrap items-center gap-2 border-b border-[#363636] bg-[#262626] px-4 py-3">
-              <GradeBadge code={card.classCode}>{card.classCode}</GradeBadge>
-              <span className="type-label-m font-bold text-white">{card.level}</span>
+            <header
+              className={cn(
+                'flex flex-wrap items-center gap-2 border-b border-[#363636] px-4 py-3',
+                getGradeLevelCellClassName(index),
+              )}
+            >
+              <span className="type-label-m font-extrabold">{card.classCode}</span>
+              <span className="type-label-m font-bold opacity-75">{card.level}</span>
               <ProcessBadge className="ml-auto" process={card.process} />
             </header>
             <dl className="divide-y divide-[#2c2c2c] type-body-s">
@@ -1511,7 +1526,7 @@ function CriteriaCell({
   return (
     <td
       className={cn(
-        'border border-[#363636] px-3 py-4 type-body-s leading-[1.55] text-left',
+        'border border-[#363636] px-3 py-4 type-body-s leading-normal text-left',
         emphasis && 'font-medium text-white',
         className,
       )}
@@ -1588,6 +1603,14 @@ const gradeBadgeClassNames: Record<string, string> = {
   U: 'bg-[#e6f1fb] text-[#185fa5]',
 }
 
+const gradeLevelCellClassNames = [
+  'bg-brand/20 text-white',
+  'bg-brand/40 text-white',
+  'bg-brand/60 text-white',
+  'bg-brand/70 text-white',
+  'bg-brand/90 text-white',
+] as const
+
 function GradeBadge({ children, code }: { children: React.ReactNode; code: string }) {
   return (
     <span
@@ -1601,18 +1624,38 @@ function GradeBadge({ children, code }: { children: React.ReactNode; code: strin
   )
 }
 
+function getGradeLevelCellClassName(index: number) {
+  return gradeLevelCellClassNames[index] ?? gradeLevelCellClassNames[gradeLevelCellClassNames.length - 1]
+}
+
 function ProcessBadge({ className, process }: { className?: string; process: string }) {
   return (
     <span
       className={cn(
-        'inline-flex whitespace-nowrap rounded bg-[#e6f1fb] px-2 py-1 type-label-s font-bold leading-none text-[#185fa5]',
-        (process === '배움' || process === '배움과정') && 'bg-[#e1f5ee] text-[#0f6e56]',
+        'inline-flex whitespace-nowrap rounded px-2 py-1 type-label-s font-bold leading-none',
+        getProcessCellClassName(process),
         className,
       )}
     >
       {process}
     </span>
   )
+}
+
+function getProcessCellClassName(process: string) {
+  if (process === '배움' || process === '배움과정') {
+    return 'bg-orange-200/50 text-white'
+  }
+
+  if (process === '심화 과정' || process === '심화과정') {
+    return 'bg-teal-200/50 text-white'
+  }
+
+  if (process === '전문 과정' || process === '전문과정') {
+    return 'bg-sky-200/50 text-white'
+  }
+
+  return 'bg-red-300/50 text-white'
 }
 
 const criteriaTypeMeta = {
