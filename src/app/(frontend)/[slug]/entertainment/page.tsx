@@ -213,8 +213,10 @@ function AgencyLogoCard({ agency }: { agency: Agency }) {
           fill
           htmlElement={null}
           imgClassName="object-contain"
+          placeholder="empty"
           pictureClassName="relative block h-[64%] w-[88%] transition-opacity duration-200 group-hover:opacity-10 group-focus-visible:opacity-10"
           resource={logo}
+          fadeIn={true}
         />
       ) : (
         <span className="type-title-s font-bold text-neutral-900 transition-opacity duration-200 group-hover:opacity-10 group-focus-visible:opacity-10">

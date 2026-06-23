@@ -52,11 +52,22 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     pictureClassName,
     imgClassName,
     priority,
+    placeholder = 'blur',
     resource,
     size: sizeFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
+    fadeIn,
   } = props
+
+  const [isLoaded, setIsLoaded] = React.useState(false)
+  const imgRef = React.useRef<HTMLImageElement>(null)
+
+  React.useEffect(() => {
+    if (fadeIn && imgRef.current?.complete) {
+      setIsLoaded(true)
+    }
+  }, [fadeIn])
 
   let width: number | undefined
   let height: number | undefined
@@ -87,18 +98,31 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   return (
     <picture className={cn(fill && 'relative block', pictureClassName)}>
       <NextImage
+        ref={imgRef}
         alt={alt || ''}
-        className={cn(imgClassName)}
+        className={cn(
+          fadeIn && 'transition-opacity duration-300 ease-in-out',
+          fadeIn && (isLoaded ? 'opacity-100' : 'opacity-0'),
+          imgClassName
+        )}
         fill={fill}
         height={!fill ? height : undefined}
-        placeholder="blur"
-        blurDataURL={placeholderBlur}
+        placeholder={placeholder}
+        blurDataURL={placeholder === 'blur' ? placeholderBlur : undefined}
         priority={priority}
         quality={100}
         loading={loading}
         sizes={sizes}
         src={src}
         width={!fill ? width : undefined}
+        onLoad={() => {
+          if (fadeIn) {
+            setIsLoaded(true)
+          }
+          if (props.onLoad) {
+            props.onLoad()
+          }
+        }}
       />
     </picture>
   )

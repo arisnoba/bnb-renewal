@@ -13,10 +13,12 @@ export interface Props {
   onClick?: () => void
   onLoad?: () => void
   loading?: 'lazy' | 'eager'
+  placeholder?: 'blur' | 'empty'
   priority?: boolean
   ref?: Ref<HTMLImageElement | HTMLVideoElement | null>
   resource?: MediaType | string | number | null
   size?: string
   src?: StaticImageData
   videoClassName?: string
+  fadeIn?: boolean
 }
