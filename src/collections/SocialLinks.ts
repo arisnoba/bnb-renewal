@@ -264,12 +264,26 @@ export const SocialLinks: CollectionConfig = {
       },
     },
     {
+      name: 'createdAt',
+      type: 'date',
+      index: true,
+      label: '생성일',
+      admin: {
+        date: {
+          displayFormat: 'yyyy-MM-dd HH:mm',
+          pickerAppearance: 'dayAndTime',
+        },
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'imagePreview',
       type: 'ui',
       admin: {
         components: {
           Field: '@/components/payload/SocialLinkImagePreviewField#SocialLinkImagePreviewField',
         },
+        condition: (_data, siblingData) => siblingData?.snsType === 'youtube',
         position: 'sidebar',
       },
     },

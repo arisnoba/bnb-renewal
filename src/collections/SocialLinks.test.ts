@@ -11,12 +11,17 @@ type NamedField = Field & {
       Field?: unknown
     }
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => boolean
+    date?: {
+      displayFormat?: unknown
+      pickerAppearance?: unknown
+    }
     description?: unknown
     hidden?: unknown
     position?: unknown
   }
   defaultValue?: unknown
   hasMany?: unknown
+  index?: unknown
   label?: unknown
   name: string
   options?: unknown[]
@@ -75,6 +80,7 @@ test('social links use a single center and image URL fallback fields', async () 
   const externalUrl = getField(SocialLinks, 'externalUrl')
   const representativeImage = getField(SocialLinks, 'representativeImage')
   const displayStatus = getField(SocialLinks, 'displayStatus')
+  const createdAt = getField(SocialLinks, 'createdAt')
   const imagePreview = getField(SocialLinks, 'imagePreview')
   const fieldOrder = SocialLinks.fields
     .filter((field): field is NamedField => 'name' in field)
@@ -169,8 +175,26 @@ test('social links use a single center and image URL fallback fields', async () 
   assert.equal(displayStatus.defaultValue, 'published')
   assert.equal(displayStatus.admin?.position, 'sidebar')
 
+  assert.equal(createdAt.type, 'date')
+  assert.equal(createdAt.index, true)
+  assert.equal(createdAt.label, '생성일')
+  assert.equal(createdAt.admin?.position, 'sidebar')
+  assert.equal(createdAt.admin?.date?.displayFormat, 'yyyy-MM-dd HH:mm')
+  assert.equal(createdAt.admin?.date?.pickerAppearance, 'dayAndTime')
+  assert.ok(
+    fieldOrder.indexOf('displayStatus') < fieldOrder.indexOf('createdAt'),
+    '생성일은 상태 아래에 배치되어야 합니다.',
+  )
+  assert.ok(
+    fieldOrder.indexOf('createdAt') < fieldOrder.indexOf('imagePreview'),
+    '생성일은 프리뷰보다 위에 배치되어야 합니다.',
+  )
+
   assert.equal(imagePreview.type, 'ui')
   assert.equal(imagePreview.admin?.position, 'sidebar')
+  assert.equal(imagePreview.admin?.condition?.({}, {}), false)
+  assert.equal(imagePreview.admin?.condition?.({}, { snsType: 'instagram' }), false)
+  assert.equal(imagePreview.admin?.condition?.({}, { snsType: 'youtube' }), true)
   assert.equal(
     imagePreview.admin?.components?.Field,
     '@/components/payload/SocialLinkImagePreviewField#SocialLinkImagePreviewField',
