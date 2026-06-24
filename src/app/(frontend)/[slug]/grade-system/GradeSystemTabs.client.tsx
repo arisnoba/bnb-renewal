@@ -956,15 +956,15 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
   }
 
   return (
-    <section className="section-p-block-xs relative overflow-hidden bg-[#111] text-white">
+    <section className="section-p-block-base relative overflow-hidden bg-[#111] text-white">
       {activeTab === 'steps' ? (
         <>
           <PageDeco
-            className="left-0 top-[930px] hidden -translate-x-[42%] lg:block"
+            className="left-0 top-[35%] hidden translate-x-[-10vw] lg:block"
             icon={gradeSystemDecoIcons[2]}
           />
           <PageDeco
-            className="right-0 top-[2900px] hidden translate-x-[46%] lg:block"
+            className="right-0 bottom-30 hidden translate-x-[50%] lg:block"
             icon={gradeSystemDecoIcons[3]}
           />
         </>
