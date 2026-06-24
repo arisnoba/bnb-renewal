@@ -464,7 +464,7 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
                     {item.category || '교육ㆍ운영ㆍ소식'}
                   </span>
                 </span>
-                <span className="line-clamp-2 type-title-s font-semibold leading-normal md:type-headline-s">
+                <span className="line-clamp-2 type-title-s font-semibold leading-normal md:line-clamp-1 md:type-headline-s">
                   {item.title}
                 </span>
                 <time className="type-caption-l font-medium leading-[1.35] text-white/30 md:text-right">
