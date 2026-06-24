@@ -39,10 +39,15 @@ const SelectTrigger: React.FC<React.ComponentProps<typeof SelectPrimitive.Trigge
   )
 }
 
-const SelectContent: React.FC<React.ComponentProps<typeof SelectPrimitive.Content>> = ({
+type SelectContentProps = React.ComponentProps<typeof SelectPrimitive.Content> & {
+  viewportClassName?: string
+}
+
+const SelectContent: React.FC<SelectContentProps> = ({
   children,
   className,
   position = 'popper',
+  viewportClassName,
   ...props
 }) => {
   return (
@@ -64,6 +69,7 @@ const SelectContent: React.FC<React.ComponentProps<typeof SelectPrimitive.Conten
             'p-1',
             position === 'popper' &&
               'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1',
+            viewportClassName,
           )}
         >
           {children}
