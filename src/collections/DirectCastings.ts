@@ -25,6 +25,8 @@ const companyOptions = [
   { label: 'BX Model Agency', value: 'bx-model-agency' },
 ]
 
+const directCastingCompanyValues = new Set<string>(companyOptions.map((option) => option.value))
+
 const sourceCenterOptions = [
   { label: '아트센터', value: 'art' },
   { label: '키즈센터', value: 'kids' },
@@ -52,6 +54,25 @@ function hasDirectCastingCenterValue(value: unknown) {
   const values = Array.isArray(value) ? value : value ? [value] : []
 
   return values.some((item) => String(item ?? '').trim())
+}
+
+function normalizeDirectCastingCompanies(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+  const companies = values
+    .map((item) => String(item ?? '').trim())
+    .filter(Boolean)
+
+  if (companies.length === 0) {
+    throw new Error('회사를 선택해야 합니다.')
+  }
+
+  const invalidCompany = companies.find((company) => !directCastingCompanyValues.has(company))
+
+  if (invalidCompany) {
+    throw new Error(`다이렉트캐스팅에서 지원하지 않는 회사 값입니다: ${invalidCompany}`)
+  }
+
+  return Array.from(new Set(companies))
 }
 
 const nonExamAccess: Access = ({ req }) => {
@@ -146,7 +167,7 @@ const setDirectCastingSlug: CollectionBeforeValidateHook = async ({ data, origin
   }
 
   const title = String(data.title ?? originalDoc?.title ?? '').trim()
-  const company = String(data.company ?? originalDoc?.company ?? '').trim()
+  const company = normalizeDirectCastingCompanyValues(data.company ?? originalDoc?.company)[0] ?? ''
   const titleSlug = directCastingSlugify({ valueToSlugify: title })
   const companySlug = koreanSlugify({ valueToSlugify: company })
   const originalId = originalDoc?.id
@@ -197,6 +218,33 @@ function normalizeDirectCastingCenters(value: unknown) {
   return Array.from(new Set(centers))
 }
 
+function normalizeDirectCastingCompanyValues(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+
+  return Array.from(
+    new Set(
+      values
+        .map((item) => String(item ?? '').trim())
+        .filter((item) => directCastingCompanyValues.has(item)),
+    ),
+  )
+}
+
+const validateDirectCastingCompanies: Validate<unknown> = (value) => {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+  const companies = values
+    .map((item) => String(item ?? '').trim())
+    .filter(Boolean)
+
+  if (companies.length === 0) {
+    return '회사를 선택해야 합니다.'
+  }
+
+  const invalidCompany = companies.find((company) => !directCastingCompanyValues.has(company))
+
+  return invalidCompany ? `다이렉트캐스팅에서 지원하지 않는 회사 값입니다: ${invalidCompany}` : true
+}
+
 const validateDirectCastingCenters: Validate<unknown> = (value) => {
   const values = Array.isArray(value) ? value : value ? [value] : []
   const centers = values
@@ -245,7 +293,21 @@ export const DirectCastings: CollectionConfig = {
         { path: 'body', role: 'direct-castings.body-image', type: 'richText' },
       ]),
     ],
-    beforeValidate: [setDirectCastingAuthorName, normalizeDirectCastingTitle, setDirectCastingSlug],
+    beforeValidate: [
+      setDirectCastingAuthorName,
+      normalizeDirectCastingTitle,
+      ({ data }) => {
+        if (!data || typeof data.company === 'undefined') {
+          return data
+        }
+
+        return {
+          ...data,
+          company: normalizeDirectCastingCompanies(data.company),
+        }
+      },
+      setDirectCastingSlug,
+    ],
   },
   fields: [
     {
@@ -263,9 +325,12 @@ export const DirectCastings: CollectionConfig = {
               name: 'company',
               type: 'select',
               label: '회사명',
+              hasMany: true,
               options: companyOptions,
-              required: true,
+              validate: validateDirectCastingCompanies,
               admin: {
+                className: 'bnb-admin-required-field',
+                placeholder: '선택해 주세요',
                 width: '50%',
               },
             },

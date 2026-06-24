@@ -16,7 +16,10 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { getDirectCastingCompanyLabel } from './DirectCastingsArchive'
+import {
+  directCastingCompanyValues,
+  getDirectCastingCompanyLabels,
+} from './DirectCastingsArchive'
 
 export async function generateDirectCastingStaticParams() {
   try {
@@ -67,17 +70,19 @@ export async function DirectCastingDetailPage({
   }
 
   const body = hasLexicalContent(casting.body) ? casting.body : undefined
-  const companyLabel = getDirectCastingCompanyLabel(casting.company)
+  const companyValues = directCastingCompanyValues(casting.company)
+  const primaryCompany = companyValues[0]
+  const companyLabel = getDirectCastingCompanyLabels(casting.company).join(' · ')
   const adjacent = await queryAdjacentDirectCastings({
     center,
-    company: casting.company,
+    company: primaryCompany,
     slug: casting.slug,
   })
 
   return (
     <DetailPage center={center} className="page-direct-casting-detail">
       <DetailBackLink
-        href={`/${center}/direct-castings?company=${casting.company}#direct-castings-list`}
+        href={directCastingBackHref({ center, company: primaryCompany })}
         label="다이렉트 캐스팅"
         width="wide"
       />
@@ -178,7 +183,7 @@ const queryAdjacentDirectCastings = cache(
     slug,
   }: {
     center: CenterSlug
-    company: DirectCasting['company']
+    company?: ReturnType<typeof directCastingCompanyValues>[number]
     slug: string
   }) => {
     const payload = await getPayload({ config: configPromise })
@@ -194,11 +199,15 @@ const queryAdjacentDirectCastings = cache(
             contains: center,
           },
         },
-        {
-          company: {
-            equals: company,
-          },
-        },
+        ...(company
+          ? [
+              {
+                company: {
+                  contains: company,
+                },
+              },
+            ]
+          : []),
       ],
     }
     const result = await payload
@@ -230,6 +239,24 @@ const queryAdjacentDirectCastings = cache(
     }
   },
 )
+
+function directCastingBackHref({
+  center,
+  company,
+}: {
+  center: CenterSlug
+  company?: ReturnType<typeof directCastingCompanyValues>[number]
+}) {
+  const params = new URLSearchParams()
+
+  if (company) {
+    params.set('company', company)
+  }
+
+  const query = params.toString()
+
+  return `/${center}/direct-castings${query ? `?${query}` : ''}#direct-castings-list`
+}
 
 function hasLexicalContent(value: DirectCasting['body']) {
   const children = value?.root?.children

@@ -18,7 +18,15 @@ type DirectCastingsArchiveProps = {
   page?: number
 }
 
-type DirectCastingCompany = DirectCasting['company'] | 'cna-agency'
+const queryableDirectCastingCompanies = [
+  'arko-lab',
+  'bnb-casting',
+  'bx-model-agency',
+  'imground',
+] as const
+
+type QueryableDirectCastingCompany = (typeof queryableDirectCastingCompanies)[number]
+type DirectCastingCompany = QueryableDirectCastingCompany | 'cna-agency'
 
 type DirectCastingListItem = Pick<
   DirectCasting,
@@ -76,12 +84,7 @@ const directCastingCompaniesByCenter: Partial<Record<CenterSlug, readonly Direct
   kids: ['bnb-casting', 'cna-agency', 'arko-lab', 'imground', 'bx-model-agency'],
 }
 
-const queryableCompanies = new Set<DirectCasting['company']>([
-  'arko-lab',
-  'bnb-casting',
-  'bx-model-agency',
-  'imground',
-])
+const queryableCompanies = new Set<string>(queryableDirectCastingCompanies)
 
 export async function DirectCastingsArchive({
   center,
@@ -140,7 +143,7 @@ export async function DirectCastingsArchive({
               className="section-direct-castings-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
               id="direct-castings-list-title"
             >
-              작품별 크레딧과
+              작품별 엔딩 크레딧과
               <br />
               캐스팅 이력을 확인해보세요.
             </h2>
@@ -179,8 +182,14 @@ export async function DirectCastingsArchive({
   )
 }
 
-export function getDirectCastingCompanyLabel(value: DirectCasting['company'] | 'cna-agency') {
+export function getDirectCastingCompanyLabel(value: DirectCastingCompany) {
   return directCastingCompanyTabs.find((tab) => tab.value === value)?.label ?? value
+}
+
+export function getDirectCastingCompanyLabels(
+  value: DirectCasting['company'] | DirectCastingCompany | null | undefined,
+) {
+  return directCastingCompanyValues(value).map((company) => getDirectCastingCompanyLabel(company))
 }
 
 export function directCastingCompanyQueryValue(value: string) {
@@ -243,7 +252,7 @@ function DirectCastingCard({
 }) {
   const media = getThumbnailMedia(casting.thumbnailMedia)
   const projectInfo = projectInfoLines(casting.projectInfo)
-  const companyLabel = getDirectCastingCompanyLabel(casting.company)
+  const companyLabel = getDirectCastingCompanyLabels(casting.company).join(' · ')
   const href = `/${center}/direct-castings/${encodeURIComponent(casting.slug)}`
 
   return (
@@ -532,7 +541,7 @@ function directCastingsWhere({
   if (isQueryableCompany(company)) {
     filters.push({
       company: {
-        equals: company,
+        contains: company,
       },
     })
   } else if (company !== 'all') {
@@ -573,8 +582,8 @@ function getDirectCastingCompanies(center: CenterSlug) {
   return directCastingCompaniesByCenter[center] ?? defaultDirectCastingCompanies
 }
 
-function isQueryableCompany(value: 'all' | DirectCastingCompany): value is DirectCasting['company'] {
-  return queryableCompanies.has(value as DirectCasting['company'])
+function isQueryableCompany(value: 'all' | DirectCastingCompany): value is QueryableDirectCastingCompany {
+  return queryableCompanies.has(value)
 }
 
 function getThumbnailMedia(value: DirectCasting['thumbnailMedia']) {
@@ -587,6 +596,16 @@ function projectInfoLines(value: string | null | undefined) {
       ?.split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean) ?? []
+  )
+}
+
+export function directCastingCompanyValues(
+  value: DirectCasting['company'] | DirectCastingCompany | null | undefined,
+): DirectCastingCompany[] {
+  const values = Array.isArray(value) ? value : value ? [value] : []
+
+  return values.filter((company): company is DirectCastingCompany =>
+    directCastingCompanyTabs.some((tab) => tab.value === company),
   )
 }
 
