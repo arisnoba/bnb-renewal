@@ -154,7 +154,7 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
             <TimelineList days={filledMonthDays} />
           </div>
 
-          <ScheduleLegend className="mt-8 justify-start md:mt-6" />
+          <ScheduleLegend className="mt-8 justify-end lg:justify-start md:mt-6" />
         </div>
       </section>
     </main>
@@ -226,26 +226,25 @@ function CalendarEvent({ event }: { event: ScheduleListItem }) {
 function TimelineList({ days }: { days: CalendarDay[] }) {
   if (days.length === 0) {
     return (
-      <p className="section-schedule-calendar__empty border-y border-neutral-200 py-14 text-center type-body-s font-medium text-neutral-500">
-        등록된 스케줄이 없습니다.
-      </p>
+      <div className="section-schedule-calendar__empty flex flex-col items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50 py-16 text-center">
+        <p className="type-body-s font-semibold text-neutral-500">등록된 스케줄이 없습니다.</p>
+      </div>
     )
   }
 
   return (
     <div className="section-schedule-calendar__timeline flex flex-col gap-8">
       {days.map((day) => (
-        <article className="section-schedule-calendar__timeline-day" key={day.key}>
-          <div className="section-schedule-calendar__timeline-head flex items-baseline gap-2">
-            <span className="type-caption-l font-medium leading-[1.2] text-neutral-950">
-              {day.day}
-            </span>
-            <span className="type-caption-l font-medium leading-[1.2] text-neutral-400">
+        <article className="section-schedule-calendar__timeline-day flex gap-4 items-start" key={day.key}>
+          <div className="w-14 shrink-0 flex flex-col items-center py-2.5 bg-neutral-50 rounded-xl text-center border border-neutral-100">
+            <span className="type-caption-s font-bold text-neutral-400">
               {calendarWeekdays[day.date.getUTCDay()]}
             </span>
-            <span className="h-px flex-1 bg-neutral-200" aria-hidden="true" />
+            <span className="mt-0.5 type-title-m font-extrabold text-neutral-900 leading-none">
+              {day.day}
+            </span>
           </div>
-          <div className="section-schedule-calendar__timeline-events mt-4 flex flex-col gap-3 pl-4">
+          <div className="section-schedule-calendar__timeline-events flex-1 flex flex-col gap-3 min-w-0">
             {day.events.map((event) => (
               <TimelineEvent event={event} key={event.id} />
             ))}
@@ -260,20 +259,36 @@ function TimelineEvent({ event }: { event: ScheduleListItem }) {
   const meta = getEventTypeMeta(event.eventType)
 
   return (
-    <div className="section-schedule-calendar__timeline-event flex gap-3">
-      <span
-        aria-hidden="true"
-        className={[
-          'mt-0.5 w-1 shrink-0 rounded-full',
-          meta.barClassName,
-        ].join(' ')}
-      />
-      <div className="min-w-0 type-caption-l font-medium leading-[1.35]">
-        <p className="text-neutral-900">{event.title}</p>
-        <p className={meta.textClassName}>{meta.label}</p>
+    <div
+      className={[
+        'section-schedule-calendar__timeline-event flex flex-col gap-2 rounded-xl border border-neutral-100 bg-white p-4 shadow-sm',
+        getEventBorderClassName(event.eventType),
+      ].join(' ')}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span
+          className={[
+            'inline-flex items-center px-2.5 py-0.5 rounded-full type-caption-s font-bold',
+            meta.textClassName,
+            getEventBackgroundClassName(event.eventType),
+          ].join(' ')}
+        >
+          {meta.label}
+        </span>
       </div>
+      <p className="type-body-s font-medium text-neutral-800 leading-snug break-all">{event.title}</p>
     </div>
   )
+}
+
+function getEventBorderClassName(eventType: AuditionSchedule['eventType']) {
+  if (eventType === 'audition') {
+    return 'border-l-4 border-l-[#8A4FFF]'
+  }
+  if (eventType === 'shooting') {
+    return 'border-l-4 border-l-[#4D94F8]'
+  }
+  return 'border-l-4 border-l-[#20C46B]'
 }
 
 function ScheduleLegend({ className = '' }: { className?: string }) {
