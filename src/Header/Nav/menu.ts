@@ -133,7 +133,7 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
       { href: castingHref(center), label: '캐스팅 센터' },
       { href: castingSystemHref(center), label: '배우 케어 시스템' },
-      { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
+      { href: scheduleHref(center), label: '촬영ㆍ오디션 스케줄' },
     ]
   }
 
@@ -143,7 +143,7 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
       { href: castingStatusHref(center), label: '진행중인 캐스팅 출연현황' },
       { href: castingHref(center), label: '캐스팅 센터' },
       { href: castingSystemHref(center), label: '배우 케어 시스템' },
-      { href: centerHref(center, 'monthly-schedule'), label: '이달의 촬영ㆍ오디션 스케줄' },
+      { href: scheduleHref(center), label: '이달의 촬영ㆍ오디션 스케줄' },
     ]
   }
 
@@ -153,7 +153,7 @@ function castingItems(center: CenterSlug): HeaderMenuItem[] {
       { href: castingStatusHref(center), label: '캐스팅 출연현황' },
       { href: castingHref(center), label: '캐스팅 센터' },
       { href: castingSystemHref(center), label: '배우 케어 시스템' },
-      { href: centerHref(center, 'monthly-schedule'), label: '촬영ㆍ오디션 스케줄' },
+      { href: scheduleHref(center), label: '촬영ㆍ오디션 스케줄' },
     ]
   }
 
@@ -256,6 +256,10 @@ function castingHref(center: CenterSlug) {
 
 function castingSystemHref(center: CenterSlug) {
   return `/${center}/casting-system`
+}
+
+function scheduleHref(center: CenterSlug) {
+  return `/${center}/schedule`
 }
 
 function teachersHref(center: CenterSlug) {

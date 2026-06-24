@@ -84,6 +84,12 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
   assert.equal(
     getHeaderMenu('art')
+      .find((group) => group.key === 'casting')
+      ?.items.find((item) => item.label === '촬영ㆍ오디션 스케줄')?.href,
+    '/art/schedule',
+  )
+  assert.equal(
+    getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
     '/art/artist-press',
@@ -174,7 +180,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: '/highteen/casting-status', label: '진행중인 캐스팅 출연현황' },
     { href: '/highteen/casting', label: '캐스팅 센터' },
     { href: '/highteen/casting-system', label: '배우 케어 시스템' },
-    { href: '/highteen#monthly-schedule', label: '이달의 촬영ㆍ오디션 스케줄' },
+    { href: '/highteen/schedule', label: '이달의 촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'artist'), [
     { href: '/highteen/artist-press', label: 'BNB 출신 아티스트' },
@@ -213,7 +219,7 @@ test('kids mega menu matches the approved kids structure', () => {
     { href: '/kids/casting-status', label: '캐스팅 출연현황' },
     { href: '/kids/casting', label: '캐스팅 센터' },
     { href: '/kids/casting-system', label: '배우 케어 시스템' },
-    { href: '/kids#monthly-schedule', label: '촬영ㆍ오디션 스케줄' },
+    { href: '/kids/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'artist'), [
     { href: '/kids/artist-press', label: 'BNB 출신 아티스트' },
@@ -273,7 +279,7 @@ test('avenue mega menu matches the art baseline structure for preparation', () =
     { href: '/avenue/casting-status', label: '캐스팅 출연현황' },
     { href: '/avenue/casting', label: '캐스팅 센터' },
     { href: '/avenue/casting-system', label: '배우 케어 시스템' },
-    { href: '/avenue#monthly-schedule', label: '촬영ㆍ오디션 스케줄' },
+    { href: '/avenue/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'artist'), [
     { href: '/avenue/artist-press', label: 'BNB출신 아티스트' },
