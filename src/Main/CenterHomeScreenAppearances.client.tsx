@@ -267,8 +267,8 @@ function ActorThumb({
       alt=""
       className={
         size === 'small'
-          ? 'size-11 rounded-full object-cover object-top'
-          : `size-full object-cover object-top transition duration-300 ${
+          ? 'size-11 rounded-full object-cover object-center'
+          : `size-full object-cover object-center transition duration-300 ${
               isActive ? 'opacity-100 grayscale-0' : 'opacity-45 grayscale group-hover/thumb:opacity-85'
             }`
       }
