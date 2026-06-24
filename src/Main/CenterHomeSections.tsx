@@ -20,7 +20,6 @@ import type {
   Footer,
   Media,
   News,
-  Profile,
   ScreenAppearance,
   SocialLink,
 } from '@/payload-types'
@@ -34,15 +33,11 @@ import {
   CenterHomeScreenAppearances,
   type CenterHomeScreenAppearanceSlide,
 } from './CenterHomeScreenAppearances.client'
+import { CenterHomeArtistCare, type CenterHomeArtistCareItem } from './CenterHomeArtistCare.client'
 
 type CenterHomeSectionsProps = {
   center: CenterSlug
 }
-
-type HomeProfile = Pick<
-  Profile,
-  'id' | 'name' | 'englishName' | 'height' | 'profileImageMedia' | 'profileImagePath' | 'slug' | 'weight'
->
 
 type HomeNews = Pick<News, 'id' | 'category' | 'publishedAt' | 'slug' | 'title'>
 
@@ -87,14 +82,12 @@ type HomeSocialAccount = FooterSocialLink & {
 type CenterHomeData = {
   artistPress: HomeArtistPress[]
   news: HomeNews[]
-  profiles: HomeProfile[]
   screenAppearances: HomeScreenAppearance[]
   socialAccounts: HomeSocialAccount[]
   socialLinks: HomeSocialLink[]
 }
 
 const screenAppearanceLimit = 10
-const profileLimit = 5
 const artistPressLimit = 5
 const newsLimit = 5
 const socialLimit = 10
@@ -123,23 +116,71 @@ const centerTagline: Record<CenterSlug, string> = {
   kids: '아역배우의 성장을 함께합니다',
 }
 
-const fallbackCareCards = [
-  {
-    href: 'casting-system',
-    label: '배우 케어',
-    title: '캐스팅부터 현장까지',
-  },
-  {
-    href: 'profile-production',
-    label: '프로필 제작',
-    title: '배우의 첫 인상을 설계합니다',
-  },
-  {
-    href: 'teachers',
-    label: '교육진',
-    title: '현장 중심의 트레이닝',
-  },
-] as const
+const artistCareGroups = {
+  actorCare: '배우 케어 시스템',
+  membership: '멤버십 서비스',
+} as const
+
+function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
+  return [
+    {
+      category: artistCareGroups.actorCare,
+      description: '작품과 배우를 연결하는 전담 캐스팅 관리',
+      href: `/${center}/casting`,
+      imageUrl: '/assets/casting/hero-posters.png',
+      title: '캐스팅 센터',
+    },
+    {
+      category: artistCareGroups.actorCare,
+      description: '오디션과 감독 미팅까지 이어지는 캐스팅 루트',
+      href: `/${center}/direct-castings`,
+      imageUrl: '/assets/casting-system/director-meeting.png',
+      title: '다이렉트 캐스팅',
+    },
+    {
+      category: artistCareGroups.actorCare,
+      description: '현장 경험을 갖춘 강사진의 실전 트레이닝',
+      href: `/${center}/teachers`,
+      imageUrl: '/assets/casting/director-01.png',
+      title: '급이 다른 강사진',
+    },
+    {
+      category: artistCareGroups.actorCare,
+      description: '기획사 신인 배우 교육까지 이어지는 커리큘럼',
+      href: `/${center}/entertainment`,
+      imageUrl: '/assets/casting-system/agency.png',
+      title: '기획사 위탁교육',
+    },
+    {
+      category: artistCareGroups.membership,
+      description: '배우앤배움 수강생을 위한 이용 가이드',
+      href: `/${center}/how-to-use`,
+      imageUrl: '/assets/facilities/gallery_39.jpg',
+      title: '학원100%이용법',
+    },
+    {
+      category: artistCareGroups.membership,
+      description: '프로필 사진과 영상 제작을 위한 전용 스튜디오',
+      href: `/${center}/profile-production`,
+      imageUrl: '/assets/casting-system/profile.png',
+      title: '프로필.영상제작',
+    },
+    {
+      category: artistCareGroups.membership,
+      description: '수업 이후에도 이어지는 연습 공간 지원',
+      href: `/${center}/how-to-use#security`,
+      imageUrl: '/assets/facilities/gallery_80.jpg',
+      title: '24시간 연습실 개방',
+    },
+    {
+      category: artistCareGroups.membership,
+      description: '배우가 촬영에 집중할 수 있는 현장 케어',
+      href: `/${center}/casting-system#filming-support`,
+      imageUrl: '/assets/casting-system/car-support.png',
+      title: '촬영현장 지원',
+    },
+  ]
+}
 
 export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
   const data = await queryCenterHomeData(center)
@@ -147,7 +188,7 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
   return (
     <>
       <CourseSearchSection center={center} />
-      <ArtistCareSection center={center} profiles={data.profiles} />
+      <ArtistCareSection center={center} />
       <ScreenAppearancesHomeSection center={center} appearances={data.screenAppearances} />
       <ArtistPressHomeSection artistPress={data.artistPress} center={center} />
       <NewsHomeSection center={center} news={data.news} />
@@ -222,57 +263,22 @@ function CourseSearchSection({ center }: { center: CenterSlug }) {
 
 function ArtistCareSection({
   center,
-  profiles,
 }: {
   center: CenterSlug
-  profiles: HomeProfile[]
 }) {
   return (
     <section
       aria-labelledby="center-home-care-title"
-      className="section-center-home-care bg-neutral-950 px-5 py-24 text-white md:py-[120px]"
+      className="section-center-home-care overflow-hidden bg-neutral-950 py-24 text-white md:py-[120px]"
       data-center={center}
     >
-      <div className="container grid gap-14 lg:grid-cols-[360px_1fr] lg:items-end">
+      <div className="container">
         <SectionIntro
           eyebrow="ARTIST CARE"
           id="center-home-care-title"
           title={centerTagline[center]}
         />
-        <div className="section-center-home-care__cards grid gap-4 md:grid-cols-3">
-          {fallbackCareCards.map((card, index) => {
-            const profile = profiles[index]
-            const imageUrl = profileImageUrl(profile)
-
-            return (
-              <Link
-                className="group section-center-home-care-card relative flex min-h-[240px] overflow-hidden rounded-full bg-neutral-900 p-6 text-white outline-none ring-white/20 transition hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:min-h-[320px]"
-                href={`/${center}/${card.href}`}
-                key={card.href}
-              >
-                {imageUrl ? (
-                  <img
-                    alt=""
-                    className="absolute inset-0 size-full object-cover opacity-60 grayscale transition duration-300 group-hover:scale-105 group-hover:opacity-75"
-                    loading="lazy"
-                    src={imageUrl}
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.24),rgba(255,255,255,0.04)_42%,rgba(0,0,0,0.5))]" />
-                )}
-                <span className="absolute inset-0 bg-black/35" aria-hidden="true" />
-                <span className="relative mt-auto">
-                  <span className="block type-caption-l font-bold leading-[1.35] text-brand">
-                    {card.label}
-                  </span>
-                  <span className="mt-2 block type-title-s font-bold leading-normal">
-                    {profile?.name || card.title}
-                  </span>
-                </span>
-              </Link>
-            )
-          })}
-        </div>
+        <CenterHomeArtistCare items={artistCareItems(center)} />
       </div>
     </section>
   )
@@ -523,13 +529,13 @@ function SocialHomeSection({
           <div className="grid gap-3 type-title-s font-normal leading-normal text-white/50 md:justify-items-end md:type-headline-s">
             {socialAccounts.map((account) => (
               <a
-                className="inline-flex items-center gap-3 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                className="inline-flex items-center gap-2 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white rounded-lg"
                 href={account.href}
                 key={account.platform}
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <img alt="" aria-hidden="true" className="size-10" src={account.icon} />
+                <img alt="" aria-hidden="true" className="size-8" src={account.icon} />
                 <span>{socialAccountDisplayLabel(account)}</span>
               </a>
             ))}
@@ -760,14 +766,6 @@ function ButtonLink({
   )
 }
 
-function profileImageUrl(profile: HomeProfile | null | undefined) {
-  if (!profile) {
-    return ''
-  }
-
-  return mediaUrl(profile.profileImageMedia) || normalizeImageUrl(profile.profileImagePath)
-}
-
 function artistPressImageUrl(artistPress: HomeArtistPress | null | undefined) {
   if (!artistPress) {
     return ''
@@ -979,7 +977,7 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
   try {
     const payload = await getPayload({ config: configPromise })
-    const [screenAppearances, profiles, artistPress, news, socialLinks, footer] = await Promise.all([
+    const [screenAppearances, artistPress, news, socialLinks, footer] = await Promise.all([
       payload.find({
         collection: 'screen-appearances',
         depth: 2,
@@ -1015,24 +1013,6 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
             },
           ],
         } satisfies Where,
-      }),
-      payload.find({
-        collection: 'profiles',
-        depth: 1,
-        limit: profileLimit,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          englishName: true,
-          height: true,
-          name: true,
-          profileImageMedia: true,
-          profileImagePath: true,
-          slug: true,
-          weight: true,
-        },
-        sort: '-publishedAt',
-        where: centerArrayWhere(center),
       }),
       payload.find({
         collection: 'artist-press',
@@ -1091,7 +1071,6 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     return {
       artistPress: artistPress.docs as HomeArtistPress[],
       news: news.docs as HomeNews[],
-      profiles: profiles.docs as HomeProfile[],
       screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
       socialAccounts: centerSocialAccounts(footer as Footer, center),
       socialLinks: socialLinks.docs as HomeSocialLink[],
@@ -1100,7 +1079,6 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     return {
       artistPress: [],
       news: [],
-      profiles: [],
       screenAppearances: [],
       socialAccounts: [],
       socialLinks: [],
