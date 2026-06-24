@@ -93,7 +93,7 @@ type CenterHomeData = {
   socialLinks: HomeSocialLink[]
 }
 
-const screenAppearanceLimit = 7
+const screenAppearanceLimit = 10
 const profileLimit = 5
 const artistPressLimit = 5
 const newsLimit = 5
@@ -290,7 +290,7 @@ function ScreenAppearancesHomeSection({
   return (
     <section
       aria-labelledby="center-home-screen-title"
-      className="section-center-home-screen relative overflow-hidden bg-black px-5 py-24 text-white md:py-[120px]"
+      className="section-center-home-screen relative overflow-hidden bg-black py-24 text-white md:py-[120px]"
       data-center={center}
     >
       <div className="container">
@@ -724,11 +724,16 @@ function screenAppearanceSlide(
   appearance: HomeScreenAppearance,
   center: CenterSlug,
 ): CenterHomeScreenAppearanceSlide {
+  const broadcastStation = getHomeBroadcastStation(appearance.broadcastStation)
+
   return {
+    broadcastLogoAlt: broadcastStation?.stationName ? `${broadcastStation.stationName} 로고` : '',
+    broadcastLogoUrl: screenAppearanceBroadcastLogoUrl(broadcastStation),
     href: `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`,
     id: appearance.id,
     meta: screenAppearanceMeta(appearance),
-    performer: featuredPerformer(appearance),
+    performerName: featuredPerformerName(appearance),
+    performerRole: featuredPerformerRole(appearance),
     profileImageUrl: screenAppearanceProfileImageUrl(appearance),
     projectTitle: featuredTitle(appearance),
     sceneImageUrl: screenAppearanceSceneImageUrl(appearance),
@@ -743,6 +748,10 @@ function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null |
 
 function screenAppearanceProfileImageUrl(appearance: HomeScreenAppearance | null | undefined) {
   return normalizeImageUrl(appearance?.profileImagePath) || screenAppearanceImageUrl(appearance)
+}
+
+function screenAppearanceBroadcastLogoUrl(station: BroadcastStation | null | undefined) {
+  return mediaUrl(station?.logoMedia)
 }
 
 function screenAppearanceImageUrl(appearance: HomeScreenAppearance | null | undefined) {
@@ -850,10 +859,12 @@ function featuredTitle(appearance: HomeScreenAppearance | null | undefined) {
   return appearance?.projectTitle?.trim() || appearance?.title || '배우앤배움 출연장면'
 }
 
-function featuredPerformer(appearance: HomeScreenAppearance | null | undefined) {
-  return [appearance?.performerName, appearance?.className, appearance?.roleName]
-    .filter(Boolean)
-    .join(' · ') || '배우앤배움 수강생'
+function featuredPerformerName(appearance: HomeScreenAppearance | null | undefined) {
+  return appearance?.performerName?.trim() || '배우앤배움 수강생'
+}
+
+function featuredPerformerRole(appearance: HomeScreenAppearance | null | undefined) {
+  return appearance?.roleName?.trim() || ''
 }
 
 function screenAppearanceMeta(appearance: HomeScreenAppearance) {
@@ -915,7 +926,7 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     const [screenAppearances, profiles, artistPress, news, socialLinks, footer] = await Promise.all([
       payload.find({
         collection: 'screen-appearances',
-        depth: 1,
+        depth: 2,
         limit: screenAppearanceLimit,
         overrideAccess: false,
         pagination: false,

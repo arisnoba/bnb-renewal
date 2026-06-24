@@ -150,6 +150,7 @@
     "@radix-ui/react-tooltip": "^1.2.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "flubber": "^0.4.2",
     "framer-motion": "^12.40.0",
     "graphql": "^16.13.2",
     "jsdom": "^27.0.1",
