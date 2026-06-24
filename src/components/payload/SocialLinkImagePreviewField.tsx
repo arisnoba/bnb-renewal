@@ -49,34 +49,26 @@ function imageAltFromMedia(value: unknown) {
 export const SocialLinkImagePreviewField: UIFieldClientComponent = () => {
   const { alt, imageUrl, source } = useFormFields(([fields]) => {
     const representativeImage = fields.representativeImage as FieldState | undefined
-    const representativeImageUrl = fields.representativeImageUrl as FieldState | undefined
     const externalUrl = fields.externalUrl as FieldState | undefined
+    const snsType = fields.snsType as FieldState | undefined
     const title = fields.title as FieldState | undefined
+    const isYoutube = snsType?.value === 'youtube'
     const mediaUrl = imageUrlFromMedia(representativeImage?.value)
-    const manualUrl = stringValue(representativeImageUrl?.value)
     const youtubeUrl = youtubeThumbnailUrl(externalUrl?.value)
 
-    if (mediaUrl) {
-      return {
-        alt: imageAltFromMedia(representativeImage?.value) || stringValue(title?.value) || 'SNS 링크',
-        imageUrl: mediaUrl,
-        source: '업로드 이미지',
-      }
-    }
-
-    if (manualUrl) {
-      return {
-        alt: stringValue(title?.value) || 'SNS 링크',
-        imageUrl: manualUrl,
-        source: '이미지 URL',
-      }
-    }
-
-    if (youtubeUrl) {
+    if (isYoutube && youtubeUrl) {
       return {
         alt: stringValue(title?.value) || '유튜브 썸네일',
         imageUrl: youtubeUrl,
         source: '유튜브 썸네일',
+      }
+    }
+
+    if (!isYoutube && mediaUrl) {
+      return {
+        alt: imageAltFromMedia(representativeImage?.value) || stringValue(title?.value) || 'SNS 링크',
+        imageUrl: mediaUrl,
+        source: '업로드 이미지',
       }
     }
 
@@ -131,7 +123,7 @@ export const SocialLinkImagePreviewField: UIFieldClientComponent = () => {
               textAlign: 'center',
             }}
           >
-            외부 링크 또는 대표 이미지를 입력하면 이미지가 표시됩니다.
+            SNS 타입에 맞는 링크 또는 대표 이미지를 입력하면 이미지가 표시됩니다.
           </div>
         )}
       </div>

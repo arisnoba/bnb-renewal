@@ -125,6 +125,7 @@ import * as migration_20260622_170000_inquiry_public_form_options from './202606
 import * as migration_20260622_182500_footer_center_sns_urls from './20260622_182500_footer_center_sns_urls'
 import * as migration_20260623_120000_direct_casting_company_arko_lab from './20260623_120000_direct_casting_company_arko_lab'
 import * as migration_20260623_191500_direct_casting_multi_company_merge from './20260623_191500_direct_casting_multi_company_merge'
+import * as migration_20260624_120000_social_links_sns_type from './20260624_120000_social_links_sns_type'
 
 export const migrations = [
   {
@@ -761,5 +762,10 @@ export const migrations = [
     up: migration_20260623_191500_direct_casting_multi_company_merge.up,
     down: migration_20260623_191500_direct_casting_multi_company_merge.down,
     name: '20260623_191500_direct_casting_multi_company_merge',
+  },
+  {
+    up: migration_20260624_120000_social_links_sns_type.up,
+    down: migration_20260624_120000_social_links_sns_type.down,
+    name: '20260624_120000_social_links_sns_type',
   },
 ]

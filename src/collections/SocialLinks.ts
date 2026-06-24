@@ -5,17 +5,24 @@ import type {
   Validate,
 } from 'payload'
 
-import { centerOptions, displayStatusOptions, isGlobalAdminUser, userCenterValue } from './shared'
+import { adminRow, centerOptions, displayStatusOptions, isGlobalAdminUser, userCenterValue } from './shared'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
-import { youtubeThumbnailUrl } from '@/lib/youtube'
+import { extractYouTubeVideoId } from '@/lib/youtube'
 
 type SocialLinkData = {
   center?: unknown
   displayStatus?: unknown
   externalUrl?: unknown
   representativeImage?: unknown
-  representativeImageUrl?: unknown
+  snsType?: unknown
 }
+
+type SocialLinkSnsType = 'instagram' | 'youtube'
+
+const snsTypeOptions = [
+  { label: '인스타그램', value: 'instagram' },
+  { label: '유튜브', value: 'youtube' },
+]
 
 const requiredText =
   (message: string): Validate<unknown> =>
@@ -51,44 +58,45 @@ function validateHttpUrl(value: unknown, requiredMessage?: string) {
   }
 }
 
-const validateExternalUrl: Validate<unknown> = (value) => {
-  return validateHttpUrl(value, '외부 링크를 입력해야 합니다.')
+function normalizeSnsType(value: unknown): SocialLinkSnsType | '' {
+  if (value === 'instagram' || value === 'youtube') {
+    return value
+  }
+
+  return ''
+}
+
+function isYoutubeSnsType(siblingData?: SocialLinkData) {
+  return normalizeSnsType(siblingData?.snsType) === 'youtube'
+}
+
+const validateExternalUrl: Validate<unknown, unknown, SocialLinkData> = (value, { siblingData }) => {
+  const urlResult = validateHttpUrl(value, 'SNS 링크를 입력해야 합니다.')
+
+  if (urlResult !== true) {
+    return urlResult
+  }
+
+  if (isYoutubeSnsType(siblingData) && !extractYouTubeVideoId(value)) {
+    return '유효한 유튜브 링크를 입력해야 합니다.'
+  }
+
+  return true
 }
 
 const validateRepresentativeImage: Validate<unknown, unknown, SocialLinkData> = (
   value,
   { siblingData },
 ) => {
-  if (value || stringValue(siblingData?.representativeImageUrl)) {
+  if (isYoutubeSnsType(siblingData)) {
     return true
   }
 
-  if (youtubeThumbnailUrl(siblingData?.externalUrl)) {
+  if (value) {
     return true
   }
 
-  return '대표 이미지를 업로드하거나 대표 이미지 URL을 입력해야 합니다.'
-}
-
-const validateRepresentativeImageUrlPresence: Validate<unknown, unknown, SocialLinkData> = (
-  value,
-  { siblingData },
-) => {
-  const urlResult = validateHttpUrl(value)
-
-  if (urlResult !== true) {
-    return urlResult
-  }
-
-  if (siblingData?.representativeImage || stringValue(value)) {
-    return true
-  }
-
-  if (youtubeThumbnailUrl(siblingData?.externalUrl)) {
-    return true
-  }
-
-  return '대표 이미지를 업로드하거나 대표 이미지 URL을 입력해야 합니다.'
+  return '대표 이미지를 등록해야 합니다.'
 }
 
 const readAccess: Access = ({ req }) => {
@@ -152,14 +160,10 @@ const normalizeSocialLinkData: CollectionBeforeValidateHook = ({ data, operation
   }
 
   nextData.externalUrl = stringValue(nextData.externalUrl)
-  nextData.representativeImageUrl = stringValue(nextData.representativeImageUrl)
+  nextData.snsType = normalizeSnsType(nextData.snsType)
 
   if (operation === 'create' && !stringValue(nextData.displayStatus)) {
     nextData.displayStatus = 'published'
-  }
-
-  if (!nextData.representativeImage && !nextData.representativeImageUrl) {
-    nextData.representativeImageUrl = youtubeThumbnailUrl(nextData.externalUrl)
   }
 
   return nextData
@@ -181,7 +185,7 @@ export const SocialLinks: CollectionConfig = {
     defaultColumns: [
       'title',
       'center',
-      'representativeImageUrl',
+      'snsType',
       'externalUrl',
       'displayStatus',
       'createdAt',
@@ -206,22 +210,34 @@ export const SocialLinks: CollectionConfig = {
       label: '관리자 제목',
       validate: requiredText('관리자 제목을 입력해야 합니다.'),
     },
-    {
-      name: 'center',
-      type: 'select',
-      label: '센터',
-      defaultValue: ({ user }) => userCenterValue(user),
-      options: centerOptions,
-      validate: requiredValue('센터를 선택해야 합니다.'),
-    },
+    adminRow([
+      {
+        name: 'center',
+        type: 'select',
+        label: '센터 선택',
+        options: centerOptions,
+        required: true,
+        validate: requiredValue('센터를 선택해야 합니다.'),
+      },
+      {
+        name: 'snsType',
+        type: 'select',
+        label: 'SNS 타입',
+        options: snsTypeOptions,
+        required: true,
+        validate: requiredValue('SNS 타입을 선택해야 합니다.'),
+      },
+    ]),
     {
       name: 'externalUrl',
       type: 'text',
-      label: '외부 링크',
+      label: 'SNS 링크',
+      required: true,
       validate: validateExternalUrl,
       admin: {
+        condition: (_data, siblingData) => Boolean(siblingData?.snsType),
         description:
-          '클릭 시 이동할 SNS 게시물 또는 영상 URL입니다. 유튜브 영상 URL은 대표 이미지가 없을 때 썸네일 URL을 자동으로 채웁니다.',
+          '인스타그램은 게시물 URL, 유튜브는 영상 URL을 입력합니다.',
       },
     },
     {
@@ -231,18 +247,9 @@ export const SocialLinks: CollectionConfig = {
       relationTo: 'media',
       validate: validateRepresentativeImage,
       admin: {
+        condition: (_data, siblingData) => siblingData?.snsType === 'instagram',
         description:
-          '가장 안정적인 방식입니다. 업로드 이미지가 있으면 대표 이미지 URL보다 우선 노출됩니다.',
-      },
-    },
-    {
-      name: 'representativeImageUrl',
-      type: 'text',
-      label: '대표 이미지 URL',
-      validate: validateRepresentativeImageUrlPresence,
-      admin: {
-        description:
-          '이미지 파일의 직접 URL을 입력합니다. 유튜브 영상 링크는 저장 시 썸네일 URL을 자동으로 채웁니다. 인스타그램 게시물 URL에서는 이미지를 안정적으로 가져오기 어려우므로 이미지 URL을 직접 입력하거나 파일을 업로드해 주세요.',
+          '인스타그램 대표 이미지입니다.',
       },
     },
     {

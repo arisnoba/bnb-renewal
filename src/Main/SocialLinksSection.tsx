@@ -5,6 +5,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 
+import { youtubeThumbnailUrl } from '@/lib/youtube'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export const SOCIAL_LINKS_LIMIT = 20
@@ -50,6 +51,10 @@ function isMedia(value: SocialLink['representativeImage']): value is Media {
 }
 
 function socialLinkImageUrl(link: SocialLink) {
+  if (link.snsType === 'youtube') {
+    return youtubeThumbnailUrl(link.externalUrl)
+  }
+
   const media = link.representativeImage
 
   if (isMedia(media)) {
@@ -59,7 +64,7 @@ function socialLinkImageUrl(link: SocialLink) {
     )
   }
 
-  return typeof link.representativeImageUrl === 'string' ? link.representativeImageUrl.trim() : ''
+  return ''
 }
 
 function socialLinkAlt(link: SocialLink) {

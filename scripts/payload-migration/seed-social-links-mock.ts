@@ -1,8 +1,6 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
-import { youtubeThumbnailUrl } from '@/lib/youtube'
-
 const centers = [
   { label: '아트센터', value: 'art' },
   { label: '입시센터', value: 'exam' },
@@ -49,7 +47,7 @@ function mockRows() {
         center: center.value,
         displayStatus: 'published' as const,
         externalUrl,
-        representativeImageUrl: youtubeThumbnailUrl(externalUrl),
+        snsType: 'youtube' as const,
         title: `[SNS 목업] ${center.label} ${itemIndex + 1}`,
       }
     }),

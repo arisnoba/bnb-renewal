@@ -10,7 +10,9 @@ type NamedField = Field & {
     components?: {
       Field?: unknown
     }
+    condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => boolean
     description?: unknown
+    hidden?: unknown
     position?: unknown
   }
   defaultValue?: unknown
@@ -18,14 +20,31 @@ type NamedField = Field & {
   label?: unknown
   name: string
   options?: unknown[]
+  required?: unknown
   relationTo?: unknown
   validate?: (value: unknown, options: { siblingData?: Record<string, unknown> }) => unknown
 }
 
+function findNamedField(fields: Field[], fieldName: string): NamedField | undefined {
+  for (const field of fields) {
+    if ('name' in field && field.name === fieldName) {
+      return field as NamedField
+    }
+
+    if ('fields' in field && Array.isArray(field.fields)) {
+      const nestedField = findNamedField(field.fields as Field[], fieldName)
+
+      if (nestedField) {
+        return nestedField
+      }
+    }
+  }
+
+  return undefined
+}
+
 function getField(collection: CollectionConfig, fieldName: string) {
-  const field = collection.fields.find(
-    (item): item is NamedField => 'name' in item && item.name === fieldName,
-  )
+  const field = findNamedField(collection.fields, fieldName)
 
   assert.ok(field, `${collection.slug}.${fieldName} 필드가 있어야 합니다.`)
 
@@ -42,7 +61,7 @@ test('social links are configured as center-scoped SNS content', () => {
   assert.deepEqual(SocialLinks.admin?.defaultColumns, [
     'title',
     'center',
-    'representativeImageUrl',
+    'snsType',
     'externalUrl',
     'displayStatus',
     'createdAt',
@@ -52,9 +71,9 @@ test('social links are configured as center-scoped SNS content', () => {
 
 test('social links use a single center and image URL fallback fields', async () => {
   const center = getField(SocialLinks, 'center')
+  const snsType = getField(SocialLinks, 'snsType')
   const externalUrl = getField(SocialLinks, 'externalUrl')
   const representativeImage = getField(SocialLinks, 'representativeImage')
-  const representativeImageUrl = getField(SocialLinks, 'representativeImageUrl')
   const displayStatus = getField(SocialLinks, 'displayStatus')
   const imagePreview = getField(SocialLinks, 'imagePreview')
   const fieldOrder = SocialLinks.fields
@@ -62,7 +81,10 @@ test('social links use a single center and image URL fallback fields', async () 
     .map((field) => field.name)
 
   assert.equal(center.type, 'select')
+  assert.equal(center.label, '센터 선택')
+  assert.equal(center.defaultValue, undefined)
   assert.equal(center.hasMany, undefined)
+  assert.equal(center.required, true)
   assert.deepEqual(
     center.options?.map((option) =>
       option && typeof option === 'object' && 'value' in option ? option.value : undefined,
@@ -71,67 +93,77 @@ test('social links use a single center and image URL fallback fields', async () 
   )
   assert.equal(await center.validate?.('', {}), '센터를 선택해야 합니다.')
 
-  assert.ok(
-    fieldOrder.indexOf('externalUrl') < fieldOrder.indexOf('representativeImage'),
-    '외부 링크가 대표 이미지보다 먼저 배치되어야 합니다.',
+  assert.equal(snsType.type, 'select')
+  assert.equal(snsType.defaultValue, undefined)
+  assert.equal(snsType.required, true)
+  assert.deepEqual(
+    snsType.options?.map((option) =>
+      option && typeof option === 'object' && 'value' in option ? option.value : undefined,
+    ),
+    ['instagram', 'youtube'],
   )
+  assert.equal(await snsType.validate?.('', {}), 'SNS 타입을 선택해야 합니다.')
 
   assert.equal(representativeImage.type, 'upload')
   assert.equal(representativeImage.relationTo, 'media')
+  assert.equal(representativeImage.admin?.condition?.({}, {}), false)
+  assert.equal(representativeImage.admin?.condition?.({}, { snsType: 'instagram' }), true)
+  assert.equal(representativeImage.admin?.condition?.({}, { snsType: 'youtube' }), false)
   assert.equal(
     await representativeImage.validate?.(null, {
       siblingData: {
         externalUrl: 'https://www.instagram.com/p/example/',
-        representativeImageUrl: '',
+        snsType: 'instagram',
       },
     }),
-    '대표 이미지를 업로드하거나 대표 이미지 URL을 입력해야 합니다.',
+    '대표 이미지를 등록해야 합니다.',
   )
   assert.equal(
     await representativeImage.validate?.(null, {
       siblingData: {
         externalUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        representativeImageUrl: '',
+        snsType: 'youtube',
       },
     }),
     true,
   )
   assert.equal(
-    await representativeImage.validate?.(null, {
+    await representativeImage.validate?.(1, {
       siblingData: {
         externalUrl: 'https://www.instagram.com/p/example/',
-        representativeImageUrl: 'https://cdn.example.com/social.jpg',
+        snsType: 'instagram',
       },
     }),
     true,
   )
 
-  assert.equal(representativeImageUrl.type, 'text')
-  assert.equal(await representativeImageUrl.validate?.('', { siblingData: {} }), '대표 이미지를 업로드하거나 대표 이미지 URL을 입력해야 합니다.')
-  assert.equal(
-    await representativeImageUrl.validate?.('ftp://example.com/social.jpg', {
-      siblingData: {},
-    }),
-    'http:// 또는 https:// URL만 입력할 수 있습니다.',
-  )
-  assert.equal(
-    await representativeImageUrl.validate?.('', {
-      siblingData: {
-        externalUrl: 'https://youtu.be/dQw4w9WgXcQ',
-      },
-    }),
-    true,
-  )
-  assert.match(
-    String(representativeImageUrl.admin?.description ?? ''),
-    /인스타그램 게시물 URL에서는 이미지를 안정적으로 가져오기 어려우므로/,
-  )
-
-  assert.equal(await externalUrl.validate?.('', {}), '외부 링크를 입력해야 합니다.')
+  assert.equal(await externalUrl.validate?.('', {}), 'SNS 링크를 입력해야 합니다.')
+  assert.equal(externalUrl.required, true)
+  assert.equal(externalUrl.admin?.condition?.({}, {}), false)
+  assert.equal(externalUrl.admin?.condition?.({}, { snsType: 'instagram' }), true)
+  assert.equal(externalUrl.admin?.condition?.({}, { snsType: 'youtube' }), true)
   assert.equal(await externalUrl.validate?.('/instagram', {}), 'http:// 또는 https:// URL만 입력할 수 있습니다.')
   assert.equal(await externalUrl.validate?.('ftp://example.com', {}), 'http:// 또는 https:// URL만 입력할 수 있습니다.')
-  assert.equal(await externalUrl.validate?.('https://www.instagram.com/baewoo', {}), true)
-  assert.equal(await externalUrl.validate?.('http://www.youtube.com/@baewoo', {}), true)
+  assert.equal(
+    await externalUrl.validate?.('https://www.instagram.com/baewoo', {
+      siblingData: { snsType: 'instagram' },
+    }),
+    true,
+  )
+  assert.equal(
+    await externalUrl.validate?.('http://www.youtube.com/@baewoo', {
+      siblingData: { snsType: 'youtube' },
+    }),
+    '유효한 유튜브 링크를 입력해야 합니다.',
+  )
+  assert.equal(
+    await externalUrl.validate?.('https://www.youtube.com/watch?v=dQw4w9WgXcQ', {
+      siblingData: { snsType: 'youtube' },
+    }),
+    true,
+  )
+
+  assert.equal(fieldOrder.includes('externalUrl'), true)
 
   assert.equal(displayStatus.type, 'select')
   assert.equal(displayStatus.defaultValue, 'published')
@@ -145,7 +177,7 @@ test('social links use a single center and image URL fallback fields', async () 
   )
 })
 
-test('social links auto-fill YouTube thumbnail URL before validation', async () => {
+test('social links normalize explicit SNS type before validation', async () => {
   const hook = SocialLinks.hooks?.beforeValidate?.[0]
 
   assert.ok(hook, 'beforeValidate hook이 있어야 합니다.')
@@ -156,7 +188,7 @@ test('social links auto-fill YouTube thumbnail URL before validation', async () 
     data: {
       center: 'art',
       externalUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      representativeImageUrl: '',
+      snsType: 'youtube',
     },
     global: null,
     operation: 'create',
@@ -166,9 +198,29 @@ test('social links auto-fill YouTube thumbnail URL before validation', async () 
     },
   } as never)
 
-  assert.equal(
-    normalized?.representativeImageUrl,
-    'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-  )
+  assert.equal(normalized?.snsType, 'youtube')
   assert.equal(normalized?.displayStatus, 'published')
+})
+
+test('social links do not infer missing SNS type before validation', async () => {
+  const hook = SocialLinks.hooks?.beforeValidate?.[0]
+
+  assert.ok(hook, 'beforeValidate hook이 있어야 합니다.')
+
+  const normalized = await hook({
+    collection: SocialLinks,
+    context: {},
+    data: {
+      center: 'art',
+      externalUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    },
+    global: null,
+    operation: 'create',
+    originalDoc: null,
+    req: {
+      user: null,
+    },
+  } as never)
+
+  assert.equal(normalized?.snsType, '')
 })

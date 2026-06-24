@@ -73,17 +73,34 @@ test('social links render image anchors to external URLs', () => {
   assert.match(html, /alt="인스타그램 이미지"/)
 })
 
-test('social links render representative image URL when upload media is empty', () => {
+test('social links render YouTube thumbnail from link when representative image is empty', () => {
   const html = renderToStaticMarkup(
     <SocialLinksList
       links={[
         socialLink({
+          externalUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
           representativeImage: null,
-          representativeImageUrl: 'https://cdn.example.com/social.jpg',
+          snsType: 'youtube',
         }),
       ]}
     />,
   )
 
-  assert.match(html, /src="https:\/\/cdn\.example\.com\/social\.jpg"/)
+  assert.match(html, /href="https:\/\/www\.youtube\.com\/watch\?v=dQw4w9WgXcQ"/)
+  assert.match(html, /src="https:\/\/img\.youtube\.com\/vi\/dQw4w9WgXcQ\/hqdefault\.jpg"/)
+})
+
+test('social links do not render instagram items without representative image', () => {
+  const html = renderToStaticMarkup(
+    <SocialLinksList
+      links={[
+        socialLink({
+          representativeImage: null,
+          snsType: 'instagram',
+        }),
+      ]}
+    />,
+  )
+
+  assert.equal(html, '')
 })

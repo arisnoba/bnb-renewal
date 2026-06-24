@@ -13,7 +13,7 @@ import {
 import { Marquee } from '@/components/ui/marquee'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
-import { extractYouTubeVideoId } from '@/lib/youtube'
+import { extractYouTubeVideoId, youtubeThumbnailUrl } from '@/lib/youtube'
 import type {
   ArtistPress,
   BroadcastStation,
@@ -70,7 +70,7 @@ type HomeScreenAppearance = Pick<
 
 type HomeSocialLink = Pick<
   SocialLink,
-  'id' | 'externalUrl' | 'representativeImage' | 'representativeImageUrl' | 'title'
+  'id' | 'externalUrl' | 'representativeImage' | 'title'
 >
 
 type SocialPlatform = 'instagram' | 'youtube'
@@ -759,7 +759,7 @@ function screenAppearanceImageUrl(appearance: HomeScreenAppearance | null | unde
 }
 
 function socialImageUrl(link: HomeSocialLink) {
-  return socialMediaUrl(link.representativeImage) || normalizeImageUrl(link.representativeImageUrl)
+  return socialMediaUrl(link.representativeImage) || youtubeThumbnailUrl(link.externalUrl)
 }
 
 function socialPlatform(value: string | null | undefined): SocialPlatform {
