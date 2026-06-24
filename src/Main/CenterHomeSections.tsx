@@ -14,13 +14,26 @@ import { Marquee } from '@/components/ui/marquee'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
 import { extractYouTubeVideoId } from '@/lib/youtube'
-import type { ArtistPress, Footer, Media, News, Profile, ScreenAppearance, SocialLink } from '@/payload-types'
+import type {
+  ArtistPress,
+  BroadcastStation,
+  Footer,
+  Media,
+  News,
+  Profile,
+  ScreenAppearance,
+  SocialLink,
+} from '@/payload-types'
 import {
   getArtistPressThumbnailMedia,
   getArtistPressUrl,
 } from '@/utilities/artistPressFallbacks'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
+import {
+  CenterHomeScreenAppearances,
+  type CenterHomeScreenAppearanceSlide,
+} from './CenterHomeScreenAppearances.client'
 
 type CenterHomeSectionsProps = {
   center: CenterSlug
@@ -42,8 +55,11 @@ type HomeScreenAppearance = Pick<
   ScreenAppearance,
   | 'id'
   | 'appearanceType'
+  | 'bodyImages'
+  | 'broadcastStation'
   | 'className'
   | 'performerName'
+  | 'profileImagePath'
   | 'projectTitle'
   | 'publishedAt'
   | 'roleName'
@@ -269,9 +285,7 @@ function ScreenAppearancesHomeSection({
   appearances: HomeScreenAppearance[]
   center: CenterSlug
 }) {
-  const featured = appearances[0]
-  const featuredImage = screenAppearanceImageUrl(featured)
-  const thumbnails = appearances.slice(1)
+  const slides = appearances.map((appearance) => screenAppearanceSlide(appearance, center))
 
   return (
     <section
@@ -279,7 +293,6 @@ function ScreenAppearancesHomeSection({
       className="section-center-home-screen relative overflow-hidden bg-black px-5 py-24 text-white md:py-[120px]"
       data-center={center}
     >
-      <div className="pointer-events-none absolute -right-18 top-12 hidden h-64 w-64 bg-brand md:block" />
       <div className="container">
         <SectionIntro
           align="center"
@@ -287,70 +300,11 @@ function ScreenAppearancesHomeSection({
           id="center-home-screen-title"
           title="이달의 드라마&광고 출연장면"
         />
-        <div className="section-center-home-screen__stage mx-auto mt-14 grid max-w-[880px] gap-8">
-          <Link
-            className="group section-center-home-screen-feature relative block overflow-hidden rounded-t-full bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-            href={
-              featured
-                ? `/${center}/screen-appearances/${encodeURIComponent(featured.slug)}`
-                : `/${center}/screen-appearances`
-            }
-          >
-            {featuredImage ? (
-              <img
-                alt=""
-                className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.03]"
-                loading="lazy"
-                src={featuredImage}
-              />
-            ) : (
-              <img
-                alt=""
-                className="aspect-[16/9] w-full object-cover opacity-70"
-                loading="lazy"
-                src={centerHeroImage[center]}
-              />
-            )}
-            <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-            <span className="absolute bottom-6 left-6 right-6">
-              <span className="block type-label-s font-bold leading-[1.2] text-brand">
-                {appearanceTypeLabel(featured?.appearanceType)}
-              </span>
-              <span className="mt-2 block type-headline-s font-bold leading-[1.25]">
-                {featuredTitle(featured)}
-              </span>
-              <span className="mt-1 block type-caption-l font-medium leading-[1.35] text-neutral-300">
-                {featuredPerformer(featured)}
-              </span>
-            </span>
-          </Link>
-
-          <div className="section-center-home-screen__thumbs grid grid-cols-3 gap-3 md:grid-cols-6">
-            {thumbnails.map((item) => {
-              const imageUrl = screenAppearanceImageUrl(item)
-
-              return (
-                <Link
-                  aria-label={`${featuredTitle(item)} 상세 보기`}
-                  className="group block overflow-hidden bg-neutral-900 outline-none ring-white/20 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                  href={`/${center}/screen-appearances/${encodeURIComponent(item.slug)}`}
-                  key={item.id}
-                >
-                  {imageUrl ? (
-                    <img
-                      alt=""
-                      className="aspect-square w-full object-cover opacity-55 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
-                      loading="lazy"
-                      src={imageUrl}
-                    />
-                  ) : (
-                    <div className="aspect-square bg-neutral-800" />
-                  )}
-                </Link>
-              )
-            })}
-          </div>
-        </div>
+        <CenterHomeScreenAppearances
+          fallbackHref={`/${center}/screen-appearances`}
+          fallbackImageUrl={centerHeroImage[center]}
+          items={slides}
+        />
       </div>
     </section>
   )
@@ -766,6 +720,31 @@ function artistPressImageUrl(artistPress: HomeArtistPress | null | undefined) {
   return mediaUrl(getArtistPressThumbnailMedia(artistPress))
 }
 
+function screenAppearanceSlide(
+  appearance: HomeScreenAppearance,
+  center: CenterSlug,
+): CenterHomeScreenAppearanceSlide {
+  return {
+    href: `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`,
+    id: appearance.id,
+    meta: screenAppearanceMeta(appearance),
+    performer: featuredPerformer(appearance),
+    profileImageUrl: screenAppearanceProfileImageUrl(appearance),
+    projectTitle: featuredTitle(appearance),
+    sceneImageUrl: screenAppearanceSceneImageUrl(appearance),
+  }
+}
+
+function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null | undefined) {
+  const bodyImage = appearance?.bodyImages?.find((item) => item?.image && typeof item.image === 'object')?.image
+
+  return mediaUrl(bodyImage as Media | undefined) || screenAppearanceImageUrl(appearance)
+}
+
+function screenAppearanceProfileImageUrl(appearance: HomeScreenAppearance | null | undefined) {
+  return normalizeImageUrl(appearance?.profileImagePath) || screenAppearanceImageUrl(appearance)
+}
+
 function screenAppearanceImageUrl(appearance: HomeScreenAppearance | null | undefined) {
   return normalizeImageUrl(appearance?.thumbnailPath)
 }
@@ -874,19 +853,32 @@ function featuredTitle(appearance: HomeScreenAppearance | null | undefined) {
 function featuredPerformer(appearance: HomeScreenAppearance | null | undefined) {
   return [appearance?.performerName, appearance?.className, appearance?.roleName]
     .filter(Boolean)
-    .join(' · ')
+    .join(' · ') || '배우앤배움 수강생'
 }
 
-function appearanceTypeLabel(value: HomeScreenAppearance['appearanceType'] | undefined) {
+function screenAppearanceMeta(appearance: HomeScreenAppearance) {
+  const station = getHomeBroadcastStation(appearance.broadcastStation)
+  const stationName = station?.stationName?.trim()
+
+  return [stationName, screenAppearanceTypeText(appearance.appearanceType)]
+    .filter(Boolean)
+    .join(' ')
+}
+
+function screenAppearanceTypeText(value: HomeScreenAppearance['appearanceType'] | undefined) {
   if (value === 'commercial') {
-    return 'COMMERCIAL'
+    return '광고 출연장면'
   }
 
   if (value === 'movie') {
-    return 'MOVIE'
+    return '영화 출연장면'
   }
 
-  return 'DRAMA'
+  return '드라마 출연장면'
+}
+
+function getHomeBroadcastStation(value: HomeScreenAppearance['broadcastStation']) {
+  return value && typeof value === 'object' ? (value as BroadcastStation) : null
 }
 
 function newsTypeLabel(value: string | null | undefined) {
@@ -923,14 +915,17 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     const [screenAppearances, profiles, artistPress, news, socialLinks, footer] = await Promise.all([
       payload.find({
         collection: 'screen-appearances',
-        depth: 0,
+        depth: 1,
         limit: screenAppearanceLimit,
         overrideAccess: false,
         pagination: false,
         select: {
           appearanceType: true,
+          bodyImages: true,
+          broadcastStation: true,
           className: true,
           performerName: true,
+          profileImagePath: true,
           projectTitle: true,
           publishedAt: true,
           roleName: true,
