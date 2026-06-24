@@ -30,68 +30,6 @@
   }
 }
 
-.section-main-banner {
-  --section-main-banner-marquee-height: 140px;
-  --section-main-banner-brand-block-height: #{fluid-clamp(220px, 400px, 1058px, 1923px)};
-  --section-main-banner-brand-block-width: #{fluid-clamp(132px, 238px, 1065px, 1919px)};
-  --section-main-banner-brand-ring-border: #{fluid-clamp(76px, 142px, 1027px, 1919px)};
-  --section-main-banner-brand-ring-size: #{fluid-clamp(260px, 560px)};
-  --section-main-banner-content-bottom-offset: #{fluid-clamp(72px, 110px, 878px, 1341px)};
-  --section-main-banner-content-gap: #{fluid-clamp(28px, 92px, 560px, 1840px)};
-  --section-main-banner-copy-bottom-offset: #{fluid-clamp(92px, 132px, 836px, 1200px)};
-  --section-main-banner-description-size: #{fluid-clamp(15px, 18px)};
-  --section-main-banner-title-size: #{fluid-clamp(44px, 68px)};
-  --section-main-banner-title-size-mobile: #{fluid-clamp(36px, 48px, 300px, 400px)};
-}
-
-.section-main-banner__overlay {
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.76) 0%, rgba(0, 0, 0, 0.48) 48%, rgba(0, 0, 0, 0.2) 100%),
-    rgba(0, 0, 0, 0.22);
-}
-
-.section-main-banner__brand-block {
-  &::after {
-    background: rgba(0, 0, 0, 0.82);
-    content: '';
-    height: fluid-clamp(72px, 110px, 1263px, 1930px);
-    left: 0;
-    position: absolute;
-    top: 36%;
-    width: 39%;
-  }
-}
-
-.section-main-banner__profile-set {
-  animation: section-main-banner-marquee 34s linear infinite;
-}
-
-.section-main-banner__profile-marquee[data-marquee='false'] {
-  .section-main-banner__profile-track {
-    justify-content: center;
-    min-width: 100%;
-    width: 100%;
-  }
-
-  .section-main-banner__profile-set {
-    animation: none;
-    padding-inline: 20px;
-  }
-}
-
-.section-main-banner__profile-marquee:hover .section-main-banner__profile-set {
-  animation-play-state: paused;
-}
-
-.section-main-banner__profile-body h3,
-.section-main-banner__profile-body p {
-  margin: 0;
-}
-
-.section-main-banner__link-marquee {
-  min-height: auto;
-}
-
 @keyframes section-main-banner-marquee {
   from {
     transform: translateX(0);
@@ -102,28 +40,14 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .section-main-banner__profile-set {
-    animation: none;
-  }
-}
-
 @media (max-width: 980px) {
   .main-banner-swiper .swiper-pagination {
     bottom: fluid-clamp(168px, 228px, 700px, 950px);
-  }
-
-  .section-main-banner {
-    --section-main-banner-marquee-height: 128px;
   }
 }
 
 @media (max-width: 640px) {
   .main-banner-swiper .swiper-pagination {
-    bottom: 150px;
-  }
-
-  .section-main-banner {
-    --section-main-banner-marquee-height: 120px;
+    bottom: 170px;
   }
 }

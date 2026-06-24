@@ -4,11 +4,21 @@ import type { Media } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
 
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import type { Swiper as SwiperInstance } from 'swiper'
 import { Autoplay, Pagination } from 'swiper/modules'
-import { useEffect, useRef, useState } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
+import { AnimatedCounter } from '@/components/ui/animated-counter'
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { cn } from '@/utilities/ui'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
@@ -66,6 +76,41 @@ type MainBannerSliderProps = {
 }
 
 export const DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY = 5000
+const scheduleLinkCenters = new Set<CenterSlug>(['art', 'avenue', 'highteen', 'kids'])
+const statisticGroupLinks: Record<string, string> = {
+  이달의주조연: 'audition-casting',
+  이달의조단역: 'casting-confirmed',
+}
+
+type MainBannerStyle = CSSProperties & {
+  '--section-main-banner-content-bottom-offset': string
+  '--section-main-banner-content-gap': string
+  '--section-main-banner-copy-bottom-offset': string
+  '--section-main-banner-description-size': string
+  '--section-main-banner-title-size': string
+  '--section-main-banner-title-size-mobile': string
+}
+
+function fluidClamp(minSize: number, maxSize: number, minVw = 375, maxVw = 1640, baseFontSize = 16) {
+  const slope = (maxSize - minSize) / (maxVw - minVw)
+  const intercept = minSize - slope * minVw
+
+  return `clamp(${minSize / baseFontSize}rem, calc(${intercept / baseFontSize}rem + ${slope * 100}vw), ${maxSize / baseFontSize}rem)`
+}
+
+const mainBannerStyle: MainBannerStyle = {
+  '--section-main-banner-content-bottom-offset': fluidClamp(72, 110, 878, 1341),
+  '--section-main-banner-content-gap': fluidClamp(28, 92, 560, 1840),
+  '--section-main-banner-copy-bottom-offset': fluidClamp(92, 132, 836, 1200),
+  '--section-main-banner-description-size': fluidClamp(15, 18),
+  '--section-main-banner-title-size': fluidClamp(44, 68),
+  '--section-main-banner-title-size-mobile': fluidClamp(36, 48, 300, 400),
+}
+
+const mainBannerOverlayStyle: CSSProperties = {
+  background:
+    'linear-gradient(90deg, rgba(0, 0, 0, 0.76) 0%, rgba(0, 0, 0, 0.48) 48%, rgba(0, 0, 0, 0.2) 100%), rgba(0, 0, 0, 0.22)',
+}
 
 export function shouldProfileSetMarquee(profileSetWidth: number, containerWidth: number) {
   if (
@@ -111,6 +156,46 @@ function isCardItem(item: MainBannerMarqueeItem): item is MainBannerCardItem {
   return item.type === 'card'
 }
 
+function statisticGroupHref(title: string, center?: CenterSlug) {
+  const category = statisticGroupLinks[title.replace(/[·\s]/g, '')]
+
+  if (!category) {
+    return undefined
+  }
+
+  return `/${center ?? 'art'}/news?category=${category}`
+}
+
+function useElementVisibility(elementRef: RefObject<HTMLElement | null>) {
+  const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    const element = elementRef.current
+
+    if (!element || typeof IntersectionObserver === 'undefined') {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      {
+        rootMargin: '160px 0px',
+        threshold: 0.05,
+      },
+    )
+
+    observer.observe(element)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [elementRef])
+
+  return isVisible
+}
+
 function BannerVisual({ banner }: { banner: MainBannerSlide }) {
   const desktopImage = banner.desktopImage
   const mobileImage = banner.mobileImage || desktopImage
@@ -121,7 +206,7 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
   const desktopVideoUrl = mediaUrl(desktopVideo)
   const mobileVideoUrl = mediaUrl(mobileVideo)
   const alt = mediaAlt(mobileImage || desktopImage, banner.title || '메인 배너')
-  const videoClassName = 'section-main-banner__media absolute inset-0 h-full w-full object-cover'
+  const videoClassName = 'section-main-banner__media absolute inset-0 z-1 h-full w-full object-cover'
 
   if (desktopVideoUrl || mobileVideoUrl) {
     return (
@@ -159,7 +244,7 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
       {mobileImageUrl && <source media="(max-width: 767px)" srcSet={mobileImageUrl} />}
       <img
         alt={alt}
-        className="section-main-banner__media absolute inset-0 h-full w-full object-cover"
+        className="section-main-banner__media absolute inset-0 z-1 h-full w-full object-cover"
         loading="eager"
         src={desktopImageUrl || mobileImageUrl}
       />
@@ -167,51 +252,45 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
   )
 }
 
-function formatCount(value: number) {
-  return new Intl.NumberFormat('ko-KR').format(value)
-}
-
-function BannerStatisticsPanel({ statistics }: { statistics: MainBannerStatistics }) {
+function BannerStatisticsPanel({
+  center,
+  statistics,
+}: {
+  center?: CenterSlug
+  statistics: MainBannerStatistics
+}) {
   return (
     <aside
       aria-label="센터 주요 통계"
       className={cn(
-        'section-main-banner__stats relative z-10 self-end overflow-hidden rounded-2xl',
-        'border border-white/10 bg-black/60 shadow-[0_22px_44px_rgba(0,0,0,0.36)]',
-        'max-[980px]:hidden',
+        'section-main-banner__stats pointer-events-auto self-end overflow-hidden',
+        'bg-black/30 ring-1 ring-inset ring-white/10 backdrop-blur-[10px] rounded-3xl',
       )}
     >
-      <div className="section-main-banner__stat-total flex min-h-[74px] items-center justify-between border-b border-white/10 px-6 py-[18px]">
-        <span className="text-[16px] font-black">누적작품수</span>
-        <strong className="text-[26px] font-black leading-none">
-          {formatCount(statistics.totalWorkCount)}
+      <div className="section-main-banner__stat-total flex items-center justify-between border-b border-white/10 px-6 py-5">
+        <span className="text-[16px] font-black">누적 작품수</span>
+        <strong className="text-[24px] font-black leading-[1.2]">
+          <AnimatedCounter duration={1.4} startOnMount value={statistics.totalWorkCount} />
         </strong>
       </div>
+      <BannerScheduleStatRow center={center} />
       {statistics.groups.map((group) => (
         <div
-          className="section-main-banner__stat-group grid gap-3.5 border-b border-white/10 px-6 pb-6 pt-5 last:border-b-0"
+          className="section-main-banner__stat-group border-b border-white/10 last:border-b-0"
           key={group.title}
         >
-          <div className="section-main-banner__stat-group-head flex items-center gap-2.5">
-            <span className="text-[16px] font-black">{group.title}</span>
-            <Plus
-              aria-hidden="true"
-              className="rounded-full bg-white p-[3px] text-[#111]"
-              size={18}
-              strokeWidth={3}
-            />
-          </div>
-          <div className="section-main-banner__stat-items grid grid-cols-2 gap-1">
+          <BannerStatisticGroupHead center={center} group={group} />
+          <div className="section-main-banner__stat-items grid grid-cols-2 gap-1 px-6 pb-6">
             {group.items.map((item) => (
               <div
-                className="section-main-banner__stat-item grid min-h-16 items-center gap-[5px] rounded-md border border-white/10 px-2 py-2.5 text-center"
+                className="section-main-banner__stat-item grid items-center gap-1 border border-white/10 px-2 py-3 text-center"
                 key={item.label}
               >
-                <span className="text-[13px] font-bold leading-[1.35] text-white/60">
+                <span className="text-[14px] font-bold leading-[1.35] text-white/40">
                   {item.label}
                 </span>
-                <strong className="text-[15px] font-black leading-none">
-                  {formatCount(item.value)}명
+                <strong className="text-[14px] font-black leading-[1.2]">
+                  <AnimatedCounter duration={1.15} startOnMount value={item.value} />명
                 </strong>
               </div>
             ))}
@@ -222,71 +301,291 @@ function BannerStatisticsPanel({ statistics }: { statistics: MainBannerStatistic
   )
 }
 
+function BannerStatisticGroupHead({
+  center,
+  group,
+}: {
+  center?: CenterSlug
+  group: MainBannerStatisticGroup
+}) {
+  const href = statisticGroupHref(group.title, center)
+  const content = (
+    <>
+      <span className="text-base font-bold">{group.title}</span>
+      <ChevronRight
+        aria-hidden="true"
+        className="size-[18px] shrink-0 text-white"
+        size={18}
+        strokeWidth={2.4}
+      />
+    </>
+  )
+  const className =
+    'section-main-banner__stat-group-head flex items-center justify-between gap-3 px-6 pb-4 pt-6 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
+
+  if (!href) {
+    return <div className={className}>{content}</div>
+  }
+
+  return (
+    <Link className={cn(className, 'cursor-pointer')} href={href}>
+      {content}
+    </Link>
+  )
+}
+
+function BannerScheduleStatRow({ center }: { center?: CenterSlug }) {
+  const content = (
+    <>
+      <span className="text-base font-black leading-[1.2]">이달의 스케줄</span>
+      <ChevronRight aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={2.4} />
+    </>
+  )
+  const className =
+    'section-main-banner__schedule-link flex h-[74px] items-center justify-between border-b border-white/10 px-6 py-6 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
+
+  if (!center || !scheduleLinkCenters.has(center)) {
+    return <div className={className}>{content}</div>
+  }
+
+  return (
+    <Link className={className} href={`/${center}/schedule`}>
+      {content}
+    </Link>
+  )
+}
+
+function BannerStatisticsLayer({
+  center,
+  statistics,
+}: {
+  center?: CenterSlug
+  statistics: MainBannerStatistics
+}) {
+  return (
+    <div className="section-main-banner__stats-layer pointer-events-none absolute inset-0 z-3 max-[768.98px]:hidden">
+      <div
+        className={cn(
+          'container grid min-h-svh items-end',
+          'grid-cols-[minmax(0,1fr)_minmax(240px,260px)]',
+          'gap-[var(--section-main-banner-content-gap)]',
+          'pb-[calc(var(--section-main-banner-marquee-height)+var(--section-main-banner-content-bottom-offset))]',
+          'pt-[calc(var(--admin-bar-height,0px)+120px)]',
+        )}
+      >
+        <div aria-hidden="true" />
+        <BannerStatisticsPanel center={center} statistics={statistics} />
+      </div>
+    </div>
+  )
+}
+
+function BannerMobileStatisticsPanel({
+  center,
+  statistics,
+}: {
+  center?: CenterSlug
+  statistics: MainBannerStatistics
+}) {
+  return (
+    <aside
+      aria-label="센터 주요 통계"
+      className="section-main-banner__mobile-stats relative z-3 bg-[#111] text-white min-[769px]:hidden"
+    >
+      <div className="section-main-banner__mobile-stat-row flex h-[78px] w-full items-start">
+        <div className="section-main-banner__mobile-stat-total flex h-full min-w-0 flex-1 items-center justify-between border-b border-white/10 px-5 py-7">
+          <span className="text-[14px] font-bold leading-normal">누적작품수</span>
+          <strong className="text-[20px] font-extrabold leading-[1.2]">
+            <AnimatedCounter duration={1.4} startOnMount value={statistics.totalWorkCount} />
+          </strong>
+        </div>
+        <BannerMobileScheduleCell center={center} />
+      </div>
+      {statistics.groups.map((group) => (
+        <div
+          className="section-main-banner__mobile-stat-row flex h-[78px] w-full items-center border-b border-white/10"
+          key={group.title}
+        >
+          <BannerMobileStatisticGroupTitle center={center} group={group} />
+          <div className="section-main-banner__mobile-stat-items flex h-full min-w-0 flex-1 items-center gap-1 text-[12px] font-bold">
+            {group.items.map((item) => (
+              <div
+                className="section-main-banner__mobile-stat-item flex h-[59px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 px-0 py-3 text-center"
+                key={item.label}
+              >
+                <span className="leading-[1.2] text-white/40">{item.label}</span>
+                <strong className="leading-[1.4] text-white">
+                  <AnimatedCounter duration={1.15} startOnMount value={item.value} />명
+                </strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </aside>
+  )
+}
+
+function BannerMobileStatisticGroupTitle({
+  center,
+  group,
+}: {
+  center?: CenterSlug
+  group: MainBannerStatisticGroup
+}) {
+  const href = statisticGroupHref(group.title, center)
+  const content = (
+    <>
+      <span>{group.title}</span>
+      <ChevronRight aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={2.4} />
+    </>
+  )
+  const className =
+    'section-main-banner__mobile-stat-group-title flex h-full min-w-0 flex-1 items-center gap-4 px-5 text-[14px] font-bold leading-normal text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
+
+  if (!href) {
+    return <div className={className}>{content}</div>
+  }
+
+  return (
+    <Link className={cn(className, 'cursor-pointer')} href={href}>
+      {content}
+    </Link>
+  )
+}
+
+function BannerMobileScheduleCell({ center }: { center?: CenterSlug }) {
+  const content = (
+    <>
+      <span>이달의 스케줄</span>
+      <ChevronRight aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={2.4} />
+    </>
+  )
+  const className =
+    'section-main-banner__mobile-schedule flex h-full min-w-0 flex-1 items-center justify-between border-b border-l border-white/10 px-5 py-2.5 text-[14px] font-bold leading-normal text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
+
+  if (!center || !scheduleLinkCenters.has(center)) {
+    return <div className={className}>{content}</div>
+  }
+
+  return (
+    <Link className={className} href={`/${center}/schedule`}>
+      {content}
+    </Link>
+  )
+}
+
+function MainBannerFrame({
+  center,
+  children,
+  frameRef,
+  isVisible,
+  marqueeItems,
+  statistics,
+}: {
+  center?: CenterSlug
+  children: ReactNode
+  frameRef: RefObject<HTMLDivElement | null>
+  isVisible: boolean
+  marqueeItems?: MainBannerMarqueeItem[]
+  statistics?: MainBannerStatistics | null
+}) {
+  const currentMarqueeItems = marqueeItems ?? []
+  const hasMarqueeItems = currentMarqueeItems.length > 0
+
+  return (
+    <div
+      className={cn(
+        'section-main-banner-shell relative bg-[#111] text-white',
+        '[--section-main-banner-marquee-height:140px]',
+        'max-[980px]:[--section-main-banner-marquee-height:128px]',
+        'max-[640px]:[--section-main-banner-marquee-height:120px]',
+      )}
+      data-center={center ?? 'art'}
+      data-visible={isVisible ? 'true' : 'false'}
+      ref={frameRef}
+      style={mainBannerStyle}
+    >
+      <div className="section-main-banner__hero-stack relative min-h-svh overflow-hidden">
+        <div className="section-main-banner__kv-layer relative z-1">{children}</div>
+        {hasMarqueeItems && <BannerMarquee isActive={isVisible} items={currentMarqueeItems} />}
+        {statistics && <BannerStatisticsLayer center={center} statistics={statistics} />}
+      </div>
+      {statistics && <BannerMobileStatisticsPanel center={center} statistics={statistics} />}
+    </div>
+  )
+}
+
+function BannerDecoLayer({ center }: { center?: CenterSlug }) {
+  const decoIcons = getPageDecoIcons(3, `main-banner-${center ?? 'art'}`)
+
+  return (
+    <div
+      aria-hidden="true"
+      className="section-main-banner__deco-layer pointer-events-none absolute inset-x-0 top-0 z-2 h-full overflow-hidden"
+    >
+      <PageDeco
+        className="section-main-banner__deco section-main-banner__deco--top-left left-0 top-0 opacity-95 -translate-x-1/3 -translate-y-1/3 max-w-105 max-h-105"
+        icon={decoIcons[2]}
+        size="34vw"
+      />
+      <PageDeco
+        className="section-main-banner__deco section-main-banner__deco--bottom-right right-0 bottom-4 translate-x-1/3 opacity-90 max-w-105 max-h-105"
+        icon={decoIcons[0]}
+        size="34vw"
+      />
+    </div>
+  )
+}
+
 function BannerSlide({
   banner,
   center,
   isSingle = false,
-  statistics,
 }: {
   banner: MainBannerSlide
   center?: CenterSlug
   isSingle?: boolean
-  statistics?: MainBannerStatistics | null
 }) {
   const title = String(banner.title ?? '').trim()
   const broadcaster = String(banner.broadcaster ?? '').trim()
   const description = String(banner.description ?? '').trim()
-  const marqueeItems = banner.marqueeItems ?? []
 
   return (
     <section
       data-center={center}
       className={cn(
-        'section-main-banner relative isolate min-h-svh overflow-hidden bg-[#111] text-white',
+        'section-main-banner relative min-h-svh overflow-hidden bg-[#111] text-white',
         isSingle ? 'w-full' : 'h-full',
       )}
     >
       <BannerVisual banner={banner} />
-      <div className="section-main-banner__overlay absolute inset-0 z-1" />
       <div
-        className={cn(
-          'section-main-banner__brand-block absolute left-0 top-0 z-2',
-          'h-[var(--section-main-banner-brand-block-height)]',
-          'w-[var(--section-main-banner-brand-block-width)] bg-brand',
-          'max-[980px]:opacity-[0.86]',
-        )}
-        aria-hidden="true"
+        className="section-main-banner__overlay absolute inset-0 z-1"
+        style={mainBannerOverlayStyle}
       />
+      <BannerDecoLayer center={center} />
       <div
         className={cn(
-          'section-main-banner__brand-ring absolute bottom-[-4%] right-[-3%] z-2',
-          'size-[var(--section-main-banner-brand-ring-size)] rounded-full',
-          'border-[length:var(--section-main-banner-brand-ring-border)] border-brand',
-          'max-[980px]:right-[-18%] max-[980px]:opacity-[0.72]',
-        )}
-        aria-hidden="true"
-      />
-      <div
-        className={cn(
-          'container section-main-banner__content relative z-10 grid min-h-svh items-end',
+          'container section-main-banner__content relative z-3 grid min-h-svh items-end',
           'grid-cols-[minmax(0,1fr)_minmax(240px,260px)]',
-          'gap-[var(--section-main-banner-content-gap)]',
+          'gap-(--section-main-banner-content-gap)',
           'pb-[calc(var(--section-main-banner-marquee-height)+var(--section-main-banner-content-bottom-offset))]',
-          'pt-[calc(var(--admin-bar-height,0px)+120px)]',
-          'max-[980px]:content-end max-[980px]:grid-cols-1',
-          'max-[980px]:pb-[calc(var(--section-main-banner-marquee-height)+84px)]',
-          'max-[980px]:pt-[calc(var(--admin-bar-height,0px)+100px)]',
+          'pt-[calc(var(--admin-bar-height,0)+120px)]',
+          'max-[768.98px]:content-end max-[768.98px]:grid-cols-1',
+          'max-[768.98px]:pb-[calc(var(--section-main-banner-marquee-height)+84px)]',
+          'max-[768.98px]:pt-[calc(var(--admin-bar-height,0)+100px)]',
           'max-[640px]:pb-[calc(var(--section-main-banner-marquee-height)+64px)]',
         )}
       >
-        <div className="section-main-banner__copy max-w-[520px] max-[980px]:max-w-[620px] min-[981px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
+        <div className="section-main-banner__copy max-w-50vw max-[768.98px]:max-w-[620px] min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
           {broadcaster && (
             <p
               className={cn(
                 'section-main-banner__badge mb-[22px] inline-flex min-h-8 items-center',
                 'rounded-full bg-[#78a8ff] px-[13px] py-[5px]',
                 'text-[22px] font-black leading-none text-[#050505]',
-                'max-[640px]:min-h-7 max-[640px]:text-[16px]',
+                'max-[640px]:min-h-7 max-[640px]:text-base',
               )}
             >
               {broadcaster}
@@ -313,22 +612,20 @@ function BannerSlide({
             </p>
           )}
         </div>
-        {statistics && <BannerStatisticsPanel statistics={statistics} />}
       </div>
-      {marqueeItems.length > 0 && <BannerMarquee items={marqueeItems} />}
     </section>
   )
 }
 
-function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
+function BannerMarquee({ isActive, items }: { isActive: boolean; items: MainBannerMarqueeItem[] }) {
   const cardItems = items.filter(isCardItem)
 
   if (cardItems.length > 0) {
-    return <BannerContentCards items={cardItems} />
+    return <BannerContentCards isActive={isActive} items={cardItems} />
   }
 
   return (
-    <div className="section-main-banner__link-marquee absolute inset-x-0 bottom-0 z-20 overflow-hidden border-t border-white/10 bg-black/35 text-white backdrop-blur-md">
+    <div className="section-main-banner__link-marquee absolute inset-x-0 bottom-0 z-3 min-h-[auto] overflow-hidden border-t border-white/10 bg-black/35 text-white backdrop-blur-md">
       <div className="container overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="section-main-banner__link-track flex min-w-full w-max gap-2">
           {items.map((item, index) => (
@@ -352,10 +649,11 @@ function BannerMarquee({ items }: { items: MainBannerMarqueeItem[] }) {
   )
 }
 
-function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
+function BannerContentCards({ isActive, items }: { isActive: boolean; items: MainBannerCardItem[] }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const setRef = useRef<HTMLDivElement | null>(null)
   const [shouldMarquee, setShouldMarquee] = useState(false)
+  const shouldAnimate = isActive && shouldMarquee
   const cardSets = shouldMarquee ? [items, items] : [items]
 
   useEffect(() => {
@@ -392,20 +690,34 @@ function BannerContentCards({ items }: { items: MainBannerCardItem[] }) {
   return (
     <div
       className={cn(
-        'section-main-banner__profile-marquee absolute inset-x-0 bottom-0 z-20',
+        'section-main-banner__profile-marquee absolute inset-x-0 bottom-0 z-3',
         'min-h-[var(--section-main-banner-marquee-height)] overflow-hidden',
         'border-t border-white/10 bg-black/35 text-white backdrop-blur-md',
         'data-[marquee=false]:overflow-x-auto data-[marquee=false]:[scrollbar-width:none]',
         'data-[marquee=false]:[&::-webkit-scrollbar]:hidden',
+        'hover:[&_.section-main-banner__profile-set]:[animation-play-state:paused]',
       )}
+      data-active={isActive ? 'true' : 'false'}
       data-marquee={shouldMarquee ? 'true' : 'false'}
       ref={containerRef}
     >
-      <div className="section-main-banner__profile-track flex w-max py-5">
+      <div
+        className={cn(
+          'section-main-banner__profile-track flex py-5',
+          shouldMarquee ? 'w-max' : 'min-w-full w-full justify-center',
+        )}
+      >
         {cardSets.map((set, setIndex) => (
           <div
             aria-hidden={setIndex === 1 ? 'true' : undefined}
-            className="section-main-banner__profile-set flex min-w-max gap-6 pl-5 max-[640px]:gap-4"
+            className={cn(
+              'section-main-banner__profile-set flex min-w-max gap-6',
+              shouldMarquee ? 'pl-5' : 'px-5',
+              shouldAnimate
+                ? 'animate-[section-main-banner-marquee_34s_linear_infinite]'
+                : 'animate-none',
+              'motion-reduce:animate-none max-[640px]:gap-4',
+            )}
             key={setIndex}
             ref={setIndex === 0 ? setRef : undefined}
           >
@@ -495,37 +807,91 @@ export function MainBannerSlider({
   center,
   statistics,
 }: MainBannerSliderProps) {
+  const frameRef = useRef<HTMLDivElement | null>(null)
+  const swiperRef = useRef<SwiperInstance | null>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const activeBanner = banners[activeIndex] ?? banners[0]
+  const isFrameVisible = useElementVisibility(frameRef)
+
+  useEffect(() => {
+    const swiper = swiperRef.current
+
+    if (!swiper?.autoplay) {
+      return
+    }
+
+    if (autoplayEnabled && isFrameVisible) {
+      swiper.autoplay.start()
+      return
+    }
+
+    swiper.autoplay.stop()
+  }, [autoplayEnabled, isFrameVisible])
+
   if (banners.length === 0) {
     return null
   }
 
   if (banners.length === 1) {
-    return <BannerSlide banner={banners[0]} center={center} isSingle statistics={statistics} />
+    return (
+      <MainBannerFrame
+        center={center}
+        frameRef={frameRef}
+        isVisible={isFrameVisible}
+        marqueeItems={banners[0].marqueeItems ?? []}
+        statistics={statistics}
+      >
+        <BannerSlide banner={banners[0]} center={center} isSingle />
+      </MainBannerFrame>
+    )
   }
 
   return (
-    <Swiper
-      autoplay={
-        autoplayEnabled
-          ? {
-              delay: normalizedAutoplayDelay(autoplayDelay),
-              disableOnInteraction: false,
-            }
-          : false
-      }
-      className="main-banner-swiper"
-      loop
-      modules={[Autoplay, Pagination]}
-      pagination={{
-        clickable: true,
-      }}
-      slidesPerView={1}
+    <MainBannerFrame
+      center={center}
+      frameRef={frameRef}
+      isVisible={isFrameVisible}
+      marqueeItems={activeBanner?.marqueeItems ?? []}
+      statistics={statistics}
     >
-      {banners.map((banner, index) => (
-        <SwiperSlide key={`${banner.title ?? 'banner'}-${index}`}>
-          <BannerSlide banner={banner} center={center} statistics={statistics} />
-        </SwiperSlide>
-      ))}
-    </Swiper>
+      <Swiper
+        autoplay={
+          autoplayEnabled
+            ? {
+                delay: normalizedAutoplayDelay(autoplayDelay),
+                disableOnInteraction: false,
+              }
+            : false
+        }
+        className="main-banner-swiper"
+        loop
+        modules={[Autoplay, Pagination]}
+        onRealIndexChange={(swiper) => {
+          setActiveIndex(swiper.realIndex)
+        }}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper
+
+          if (autoplayEnabled && isFrameVisible) {
+            swiper.autoplay.start()
+            return
+          }
+
+          if (swiper.autoplay) {
+            swiper.autoplay.stop()
+          }
+        }}
+        pagination={{
+          clickable: true,
+        }}
+        slidesPerView={1}
+      >
+        {banners.map((banner, index) => (
+          <SwiperSlide key={`${banner.title ?? 'banner'}-${index}`}>
+            <BannerSlide banner={banner} center={center} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </MainBannerFrame>
   )
 }

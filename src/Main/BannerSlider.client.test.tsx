@@ -97,6 +97,8 @@ test('main banner profile cards start centered without duplicate marquee set', (
   })
 
   assert.match(html, /data-marquee="false"/)
+  assert.match(html, /section-main-banner__profile-track[^"]*justify-center/)
+  assert.match(html, /section-main-banner__profile-set[^"]*px-5/)
   assert.doesNotMatch(html, /aria-hidden="true" class="section-main-banner__profile-set"/)
 })
 

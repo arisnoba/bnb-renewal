@@ -2,7 +2,7 @@
 import configPromise from '@payload-config'
 import { ChevronDown, ChevronRight, Info, Search } from 'lucide-react'
 import Link from 'next/link'
-import { cache } from 'react'
+import { cache, type ReactNode } from 'react'
 import { getPayload, type Where } from 'payload'
 
 import {
@@ -167,12 +167,12 @@ function CourseSearchSection({ center }: { center: CenterSlug }) {
   return (
     <section
       aria-labelledby="center-home-course-title"
-      className="section-center-home-course border-b-2 border-neutral-900 bg-black px-5 py-14 text-white md:py-[60px]"
+      className="section-center-home-course border-b-2 border-neutral-900 bg-black py-14 text-white md:py-[60px]"
       data-center={center}
     >
       <div className="container">
         <h2
-          className="section-center-home-course__title text-center type-headline-s font-extrabold leading-normal"
+          className="section-center-home-course__title text-center type-headline-s font-bold leading-normal"
           id="center-home-course-title"
         >
           BNB 강의검색
@@ -205,7 +205,7 @@ function CourseSearchSection({ center }: { center: CenterSlug }) {
             <Search aria-hidden="true" className="size-5" strokeWidth={2.2} />
           </Link>
         </div>
-        <div className="section-center-home-course__meta mt-4 flex flex-col gap-3 type-body-m font-medium leading-normal text-neutral-500 md:flex-row md:items-center md:justify-between">
+        <div className="section-center-home-course__meta mt-4 flex flex-col gap-2 type-body-m font-medium leading-normal text-neutral-500 md:flex-row md:items-center md:justify-between">
           <span className="inline-flex items-center gap-2">
             적용기간(2개월단위로 갱신)
             <Info aria-hidden="true" className="size-4" strokeWidth={2} />
@@ -322,16 +322,18 @@ function ArtistPressHomeSection({
   return (
     <section
       aria-labelledby="center-home-artist-press-title"
-      className="section-center-home-artist-press bg-neutral-950 px-5 py-24 text-white md:py-[120px]"
+      className="section-center-home-artist-press bg-neutral-950 section-p-block-base text-white"
       data-center={center}
     >
-      <div className="container grid gap-12 lg:grid-cols-[260px_1fr] lg:items-start">
-        <SectionIntro
-          eyebrow="BNB ARTIST"
-          id="center-home-artist-press-title"
-          title="BNB 출신 아티스트"
-        />
-        <div className="section-center-home-artist-press__grid grid gap-3 md:grid-cols-4">
+      <div className="container grid gap-12 lg:grid-cols-12 lg:items-start">
+        <div className="lg:col-span-4">
+          <SectionIntro
+            eyebrow="BNB ARTIST"
+            id="center-home-artist-press-title"
+            title={'BNB 출신\n아티스트'}
+          />
+        </div>
+        <div className="section-center-home-artist-press__grid grid gap-3 md:grid-cols-4 lg:col-span-8">
           <ArtistPressFeaturedCard artistPress={featured} center={center} />
           {rest.slice(0, 3).map((item) => (
             <ArtistPressMiniCard artistPress={item} center={center} key={item.id} />
@@ -434,17 +436,17 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
   return (
     <section
       aria-labelledby="center-home-news-title"
-      className="section-center-home-news bg-black px-5 py-24 text-white md:py-[120px]"
+      className="section-center-home-news bg-black section-p-block-base text-white"
       data-center={center}
     >
-      <div className="container grid gap-12 lg:grid-cols-[260px_1fr]">
-        <div>
-          <SectionIntro eyebrow="NEWS & NOTICE" id="center-home-news-title" title="배우앤배움 이달의 소식" />
+      <div className="container grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <SectionIntro eyebrow="NEWS & NOTICE" id="center-home-news-title" title={'배우앤배움\n이달의 소식'} />
           <ButtonLink className="mt-8" href={`/${center}/news`}>
             전체보기
           </ButtonLink>
         </div>
-        <div className="section-center-home-news__list">
+        <div className="section-center-home-news__list lg:col-span-8">
           {news.length === 0 ? (
             <p className="border-y border-white/15 py-10 type-title-s font-semibold text-neutral-400">
               등록된 소식이 없습니다.
@@ -452,22 +454,22 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
           ) : (
             news.map((item) => (
               <Link
-                className="section-center-home-news-item grid gap-3 border-b border-white/15 py-7 text-white transition hover:text-brand md:grid-cols-[180px_1fr_96px] md:items-center"
+                className="section-center-home-news-item grid gap-6 border-b border-white/15 py-7 text-white transition hover:text-brand md:grid-cols-[180px_1fr_96px] md:items-center"
                 href={getNewsUrl(item, center)}
                 key={item.id}
               >
                 <span>
-                  <span className="block type-label-s font-bold leading-[1.2] text-brand">
+                  <span className="block type-title-s font-bold leading-[1.2] text-brand">
                     {newsTypeLabel(item.category)}
                   </span>
-                  <span className="mt-2 block type-caption-l font-bold leading-[1.35] text-neutral-300">
+                  <span className="mt-2 block type-title-s font-bold leading-[1.35] text-neutral-300">
                     {item.category || '교육ㆍ운영ㆍ소식'}
                   </span>
                 </span>
-                <span className="line-clamp-2 type-title-s font-semibold leading-normal md:line-clamp-1 md:type-headline-s">
+                <span className="line-clamp-2 type-headline-s font-semibold leading-normal md:line-clamp-1 md:type-headline-s">
                   {item.title}
                 </span>
-                <time className="type-caption-l font-medium leading-[1.35] text-white/30 md:text-right">
+                <time className="type-label-l font-medium leading-[1.35] text-white/30 md:text-right">
                   {formatDate(item.publishedAt)}
                 </time>
               </Link>
@@ -501,7 +503,7 @@ function SocialHomeSection({
   return (
     <section
       aria-labelledby="center-home-social-title"
-      className="section-center-home-social relative overflow-hidden bg-neutral-950 py-24 text-white md:py-[120px]"
+      className="section-center-home-social relative overflow-hidden bg-neutral-950 text-white section-p-block-base"
       data-center={center}
     >
       <div className="container">
@@ -604,15 +606,15 @@ function HomeCtaSection({ center }: { center: CenterSlug }) {
   return (
     <section className="section-center-home-cta grid bg-black text-white md:grid-cols-2" data-center={center}>
       <HomeCtaCard
-        description="5평, 8평, 12평부터 촬영 공간까지 배우의 시작을 위한 환경"
+        description={'5개 센터, 1200평의\n배우 훈련에 최적화 설계된 스튜디오'}
         href={`/${center}/facilities`}
         image={centerBuildingImage[center]}
         title="Training"
       />
       <HomeCtaCard
-        description="배우앤배움 아티스트를 위한 특별한 제휴 서비스"
+        description={'배우엔배움 아티스트만 이용 가능한\n멤버십 서비스'}
         href={`/${center}/starcard`}
-        image="/assets/common/starcard.png"
+        media={<StarcardCtaInlineImage />}
         title="Star Card"
       />
     </section>
@@ -623,30 +625,35 @@ function HomeCtaCard({
   description,
   href,
   image,
+  media,
   title,
 }: {
   description: string
   href: string
-  image: string
+  image?: string
+  media?: ReactNode
   title: string
 }) {
   return (
     <Link
-      className="group section-center-home-cta-card relative flex min-h-[360px] items-center justify-center overflow-hidden px-5 text-center outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-inset"
+      className="group section-center-home-cta-card relative flex h-[270px] items-center justify-center overflow-hidden px-5 text-center outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-inset md:min-h-[540px]"
       href={href}
     >
-      <img
-        alt=""
-        className="absolute inset-0 size-full object-cover opacity-65 transition duration-500 group-hover:scale-[1.03]"
-        loading="lazy"
-        src={image}
-      />
+      {media ??
+        (image ? (
+          <img
+            alt=""
+            className="absolute inset-0 size-full object-cover opacity-65 transition duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+            src={image}
+          />
+        ) : null)}
       <span className="absolute inset-0 bg-black/45" />
       <span className="relative">
-        <span className="block type-headline-s font-extrabold leading-[1.2] md:type-headline-l">
+        <span className="block type-headline-s font-extrabold leading-[1.2] md:type-headline-xl">
           {title}
         </span>
-        <span className="mt-4 block type-body-s font-semibold leading-normal text-white/80">
+        <span className="mt-4 block whitespace-pre-line type-body-l font-semibold leading-normal text-white/80">
           {description}
         </span>
         <span className="mx-auto mt-7 inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-3 type-label-s font-bold leading-[1.2]">
@@ -655,6 +662,44 @@ function HomeCtaCard({
         </span>
       </span>
     </Link>
+  )
+}
+
+function StarcardCtaInlineImage() {
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute inset-0 block overflow-hidden transition duration-500 group-hover:scale-[1.03]"
+      style={{
+        backgroundImage:
+          'linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%), linear-gradient(-12.5deg, rgb(143, 37, 107) 0%, rgb(215, 74, 75) 50%, rgb(248, 111, 54) 100%), linear-gradient(90deg, rgb(250, 66, 66) 0%, rgb(250, 66, 66) 100%)',
+      }}
+    >
+      <svg
+        className="absolute inset-0 size-full"
+        fill="none"
+        focusable="false"
+        preserveAspectRatio="none"
+        viewBox="0 0 960 541"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M480 0L0 135.25V405.75L480 541L960 405.75V135.25L480 0Z" fill="url(#home-starcard-cta-ci)" />
+        <path d="M480 0L0 135.25V405.75L480 541L960 405.75V135.25L480 0Z" fill="black" fillOpacity="0.2" />
+        <defs>
+          <linearGradient
+            gradientUnits="userSpaceOnUse"
+            id="home-starcard-cta-ci"
+            x1="960"
+            x2="0"
+            y1="270.5"
+            y2="270.5"
+          >
+            <stop stopColor="rgb(240, 164, 60)" />
+            <stop offset="1" stopColor="rgb(222, 35, 89)" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </span>
   )
 }
 
