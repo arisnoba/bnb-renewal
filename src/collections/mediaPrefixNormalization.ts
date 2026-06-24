@@ -20,6 +20,12 @@ type MediaDoc = {
 }
 
 const freshUploadWindowMs = 24 * 60 * 60 * 1000
+const unassignedUploadPrefixes = [
+  'media',
+  'media/assets',
+  'media/uploads',
+  'media/screen-appearances/images',
+]
 
 export function normalizeUploadedMediaPrefixes(
   references: MediaReferencePath[],
@@ -98,11 +104,15 @@ async function normalizeMediaPrefix({
   const expectedPrefix = path.posix.join(rolePrefix, documentId)
   const currentPrefix = normalizePrefix(media.prefix)
 
-  if (currentPrefix === expectedPrefix || !isFreshUpload(media)) {
+  if (currentPrefix === expectedPrefix) {
     return
   }
 
   if (!isNewUploadPrefix({ currentPrefix, mediaId, rolePrefix })) {
+    return
+  }
+
+  if (!isFreshUpload(media) && !isUnassignedUploadPrefix({ currentPrefix, mediaId })) {
     return
   }
 
@@ -172,7 +182,7 @@ function isFreshUpload(media: MediaDoc) {
   return Date.now() - createdAt <= freshUploadWindowMs
 }
 
-function isNewUploadPrefix({
+export function isNewUploadPrefix({
   currentPrefix,
   mediaId,
   rolePrefix,
@@ -181,13 +191,22 @@ function isNewUploadPrefix({
   mediaId: string
   rolePrefix: string
 }) {
-  return (
-    currentPrefix === 'media' ||
-    currentPrefix === path.posix.join('media', mediaId) ||
-    currentPrefix === rolePrefix ||
-    currentPrefix === path.posix.join(rolePrefix, mediaId) ||
-    currentPrefix === 'media/screen-appearances/images' ||
-    currentPrefix === path.posix.join('media/screen-appearances/images', mediaId)
+  if (currentPrefix === rolePrefix || currentPrefix === path.posix.join(rolePrefix, mediaId)) {
+    return true
+  }
+
+  return isUnassignedUploadPrefix({ currentPrefix, mediaId })
+}
+
+function isUnassignedUploadPrefix({
+  currentPrefix,
+  mediaId,
+}: {
+  currentPrefix: string
+  mediaId: string
+}) {
+  return unassignedUploadPrefixes.some(
+    (prefix) => currentPrefix === prefix || currentPrefix === path.posix.join(prefix, mediaId),
   )
 }
 
