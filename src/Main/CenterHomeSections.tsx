@@ -333,13 +333,13 @@ function ArtistPressHomeSection({
             title={'BNB 출신\n아티스트'}
           />
         </div>
-        <div className="section-center-home-artist-press__grid grid gap-3 md:grid-cols-4 lg:col-span-8">
+        <div className="section-center-home-artist-press__grid grid grid-cols-2 gap-3 md:grid-cols-4 lg:col-span-8">
           <ArtistPressFeaturedCard artistPress={featured} center={center} />
           {rest.slice(0, 3).map((item) => (
             <ArtistPressMiniCard artistPress={item} center={center} key={item.id} />
           ))}
           <Link
-            className="section-center-home-artist-press__more flex min-h-[160px] flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:min-h-[184px]"
+            className="section-center-home-artist-press__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
             href={`/${center}/artist-press`}
           >
             <span className="type-title-s font-extrabold leading-normal">BNB ARTIST</span>
@@ -365,32 +365,36 @@ function ArtistPressFeaturedCard({
 
   return (
     <Link
-      className="group section-center-home-artist-press-featured overflow-hidden bg-white text-neutral-950 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:col-span-2 md:row-span-2"
+      className="group section-center-home-artist-press-featured col-span-2 row-span-2 overflow-hidden bg-white text-neutral-950 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
       href={artistPress ? getArtistPressUrl(artistPress, center) : `/${center}/artist-press`}
     >
       {imageUrl ? (
         <img
           alt=""
-          className="aspect-[4/3] w-full object-cover object-top transition duration-300 group-hover:scale-[1.03]"
+          className="aspect-4/3 w-full object-cover object-top ease-out transition duration-300 group-hover:scale-[1.03]"
           loading="lazy"
           src={imageUrl}
         />
       ) : (
         <img
           alt=""
-          className="aspect-[4/3] w-full object-cover"
+          className="aspect-4/3 w-full object-cover"
           loading="lazy"
           src="/assets/artist-press/hero.png"
         />
       )}
-      <div className="p-5">
-        <p className="type-label-s font-bold leading-[1.2] text-brand">ACTOR</p>
-        <h3 className="mt-2 type-title-l font-extrabold leading-[1.4]">
-          {artistPress?.actorName || centers[center]}
+      <div className="p-5 bg-white z-10 relative">
+        {/* <p className="type-label-s font-bold leading-[1.2] text-brand">ACTOR</p> */}
+        <h3 className="mt-2 flex items-center gap-1.5 type-title-l font-extrabold leading-[1.4]">
+          <span>{artistPress?.actorName || centers[center]}</span>
+          {artistPress?.generation ? (
+            <span className="shrink-0 rounded-full bg-brand px-3 py-1 type-label-s font-bold leading-none text-white">
+              {artistPress.generation}
+            </span>
+          ) : null}
         </h3>
-        <p className="mt-2 type-caption-l font-medium leading-[1.35] text-neutral-500">
-          {[artistPress?.generation, artistPress?.title].filter(Boolean).join(' · ') ||
-            '배우앤배움 출신 아티스트'}
+        <p className="mt-2 type-title-m font-medium leading-[1.35] text-neutral-500">
+          {artistPress?.title || '배우앤배움 출신 아티스트'}
         </p>
       </div>
     </Link>
@@ -408,24 +412,31 @@ function ArtistPressMiniCard({
 
   return (
     <Link
-      className="group section-center-home-artist-press-mini relative min-h-[184px] overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
+      className="group section-center-home-artist-press-mini relative aspect-square overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:aspect-auto md:min-h-[184px]"
       href={getArtistPressUrl(artistPress, center)}
     >
       {imageUrl ? (
         <img
           alt=""
-          className="absolute inset-0 size-full object-cover object-top opacity-75 transition duration-300 group-hover:scale-105"
+          className="absolute inset-0 size-full object-cover object-top opacity-75 transition ease-out duration-300 group-hover:scale-105"
           loading="lazy"
           src={imageUrl}
         />
       ) : null}
-      <span className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
+      <span className="absolute inset-0 bg-linear-to-t from-black/70 to-black/10" />
       <span className="absolute bottom-4 left-4 right-4">
-        <span className="block type-title-s font-bold leading-normal text-white">
-          {artistPress.actorName}
+        <span className="flex items-center gap-2 type-title-s font-bold leading-normal text-white">
+          <span className="min-w-0 truncate">{artistPress.actorName}</span>
+          {artistPress.generation ? (
+            <span className="shrink-0 rounded-full border border-white px-2.5 py-1 type-label-s font-bold leading-none text-white">
+              {artistPress.generation}
+            </span>
+          ) : null}
         </span>
-        <span className="mt-1 block type-caption-l font-medium leading-[1.35] text-neutral-300">
-          {artistPress.generation || artistPress.title}
+        <span className="block max-h-0 overflow-hidden opacity-0 transition-all duration-500 ease-out group-hover:mt-2 group-hover:max-h-[2.7em] group-hover:opacity-100 group-focus-visible:mt-2 group-focus-visible:max-h-[2.7em] group-focus-visible:opacity-100">
+          <span className="line-clamp-2 translate-y-3 text-sm font-medium leading-[1.35] text-neutral-300 transition duration-500 ease-out group-hover:translate-y-0 group-focus-visible:translate-y-0">
+            {artistPress.title}
+          </span>
         </span>
       </span>
     </Link>

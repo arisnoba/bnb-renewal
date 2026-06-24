@@ -283,7 +283,7 @@ function BannerStatisticsPanel({
           <div className="section-main-banner__stat-items grid grid-cols-2 gap-1 px-6 pb-6">
             {group.items.map((item) => (
               <div
-                className="section-main-banner__stat-item grid items-center gap-1 border border-white/10 px-2 py-3 text-center"
+                className="section-main-banner__stat-item grid items-center gap-1 border border-white/10 px-2 py-3 text-center rounded-sm"
                 key={item.label}
               >
                 <span className="text-[14px] font-bold leading-[1.35] text-white/40">
@@ -578,7 +578,7 @@ function BannerSlide({
           'max-[640px]:pb-[calc(var(--section-main-banner-marquee-height)+64px)]',
         )}
       >
-        <div className="section-main-banner__copy max-w-50vw max-[768.98px]:max-w-[620px] min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
+        <div className="section-main-banner__copy max-w-50vw max-[768.98px]:mb-6 max-[768.98px]:max-w-[620px] max-[640px]:mb-5 min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
           {broadcaster && (
             <p
               className={cn(
