@@ -25,16 +25,28 @@ type CenterHomeScreenAppearancesProps = {
   items: CenterHomeScreenAppearanceSlide[]
 }
 
-const maskStyle: CSSProperties = {
-  WebkitMaskImage: 'url(/assets/common/mask-01.svg)',
-  WebkitMaskPosition: 'center',
-  WebkitMaskRepeat: 'no-repeat',
-  WebkitMaskSize: '100% 100%',
-  maskImage: 'url(/assets/common/mask-01.svg)',
-  maskPosition: 'center',
-  maskRepeat: 'no-repeat',
-  maskSize: '100% 100%',
+const screenMaskAssets = [
+  '/assets/common/mask-01.svg',
+  '/assets/common/mask-02.svg',
+  '/assets/common/mask-03.svg',
+  '/assets/common/mask-04.svg',
+] as const
+
+function maskViewportStyle(maskUrl: (typeof screenMaskAssets)[number]): CSSProperties {
+  return {
+    WebkitMaskImage: `url(${maskUrl})`,
+    WebkitMaskPosition: 'center',
+    WebkitMaskRepeat: 'no-repeat',
+    WebkitMaskSize: '100% 100%',
+    maskImage: `url(${maskUrl})`,
+    maskPosition: 'center',
+    maskRepeat: 'no-repeat',
+    maskSize: '100% 100%',
+  }
 }
+
+const initialMaskUrl = screenMaskAssets[0]
+const initialMaskViewportStyle = maskViewportStyle(initialMaskUrl)
 
 export function CenterHomeScreenAppearances({
   fallbackHref,
@@ -61,13 +73,17 @@ export function CenterHomeScreenAppearances({
 
   return (
     <div className="section-center-home-screen__stage mx-auto mt-14 max-w-[1120px] md:mt-[72px]">
-      <div className="relative">
+      <div
+        className="section-center-home-screen__mask-viewport relative aspect-[16/9] overflow-hidden bg-neutral-900"
+        data-mask-src={initialMaskUrl}
+        style={initialMaskViewportStyle}
+      >
         <Swiper
           a11y={{
             nextSlideMessage: '다음 출연장면',
             prevSlideMessage: '이전 출연장면',
           }}
-          className="section-center-home-screen__main-swiper"
+          className="section-center-home-screen__main-swiper size-full"
           keyboard={{ enabled: shouldSlide }}
           modules={[A11y, Keyboard]}
           onResize={(swiper) => setActiveSlide(swiper.realIndex)}
@@ -79,9 +95,8 @@ export function CenterHomeScreenAppearances({
             <SwiperSlide key={item.id}>
               <Link
                 aria-label={`${item.projectTitle} 출연장면 상세 보기`}
-                className="group section-center-home-screen-feature relative block aspect-[16/9] overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                className="group section-center-home-screen-feature relative block size-full overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 href={item.href}
-                style={maskStyle}
               >
                 <Image
                   alt=""
