@@ -20,6 +20,20 @@ const image = {
   url: '/media/banner.jpg',
 } as Media
 
+const mobileImage = {
+  ...image,
+  id: 2,
+  alt: '모바일 배너 이미지',
+  url: '/media/banner-mobile.jpg',
+} as Media
+
+const desktopVideo = {
+  ...image,
+  id: 3,
+  alt: '데스크톱 배너 영상',
+  url: '/media/banner-desktop.mp4',
+} as Media
+
 function render(slide: MainBannerSlide) {
   return renderToStaticMarkup(<MainBannerSlider banners={[slide]} />)
 }
@@ -125,4 +139,16 @@ test('main banner skips marquee links when linked content is empty', () => {
   })
 
   assert.doesNotMatch(html, /href=/)
+})
+
+test('main banner video uses viewport-specific image posters', () => {
+  const html = render({
+    desktopImage: image,
+    desktopVideo,
+    mobileImage,
+    title: '메인 배너',
+  })
+
+  assert.match(html, /poster="\/media\/banner\.jpg\?2026-01-01T00%3A00%3A00\.000Z"/)
+  assert.match(html, /poster="\/media\/banner-mobile\.jpg\?2026-01-01T00%3A00%3A00\.000Z"/)
 })

@@ -24,14 +24,18 @@ type CompanyAffiliateCarouselProps = {
 }
 
 export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouselProps) {
+  const shouldLoop = affiliates.length > 2
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null)
   const [isBeginning, setIsBeginning] = useState(true)
   const [isEnd, setIsEnd] = useState(false)
 
-  const updateState = useCallback((instance: SwiperInstance) => {
-    setIsBeginning(instance.isBeginning)
-    setIsEnd(instance.isEnd)
-  }, [])
+  const updateState = useCallback(
+    (instance: SwiperInstance) => {
+      setIsBeginning(shouldLoop ? false : instance.isBeginning)
+      setIsEnd(shouldLoop ? false : instance.isEnd)
+    },
+    [shouldLoop],
+  )
 
   const handleSwiper = useCallback(
     (instance: SwiperInstance) => {
@@ -95,6 +99,8 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
           keyboard={{
             enabled: true,
           }}
+          loop={shouldLoop}
+          loopAdditionalSlides={2}
           modules={[A11y, Autoplay, Keyboard]}
           onResize={updateState}
           onSlideChange={updateState}

@@ -121,20 +121,36 @@ function BannerVisual({ banner }: { banner: MainBannerSlide }) {
   const desktopVideoUrl = mediaUrl(desktopVideo)
   const mobileVideoUrl = mediaUrl(mobileVideo)
   const alt = mediaAlt(mobileImage || desktopImage, banner.title || '메인 배너')
+  const videoClassName = 'section-main-banner__media absolute inset-0 h-full w-full object-cover'
 
   if (desktopVideoUrl || mobileVideoUrl) {
     return (
-      <video
-        autoPlay
-        className="section-main-banner__media absolute inset-0 h-full w-full object-cover"
-        loop
-        muted
-        playsInline
-        poster={mobileImageUrl || desktopImageUrl || undefined}
-      >
-        {mobileVideoUrl && <source media="(max-width: 767px)" src={mobileVideoUrl} />}
-        {desktopVideoUrl && <source src={desktopVideoUrl} />}
-      </video>
+      <>
+        {mobileVideoUrl && (
+          <video
+            autoPlay
+            className={cn(videoClassName, desktopVideoUrl && 'min-[768px]:hidden')}
+            loop
+            muted
+            playsInline
+            poster={mobileImageUrl || desktopImageUrl || undefined}
+          >
+            <source src={mobileVideoUrl} />
+          </video>
+        )}
+        {desktopVideoUrl && (
+          <video
+            autoPlay
+            className={cn(videoClassName, mobileVideoUrl && 'max-[767px]:hidden')}
+            loop
+            muted
+            playsInline
+            poster={desktopImageUrl || mobileImageUrl || undefined}
+          >
+            <source src={desktopVideoUrl} />
+          </video>
+        )}
+      </>
     )
   }
 
