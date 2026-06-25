@@ -116,7 +116,7 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {
       connectionString: databaseURL,
-      max: process.env.VERCEL === '1' ? 1 : undefined,
+      max: process.env.VERCEL === '1' ? 3 : undefined,
     },
   }),
   editor: defaultLexical,
