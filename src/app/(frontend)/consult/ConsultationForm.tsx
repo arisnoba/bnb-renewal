@@ -842,7 +842,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           role={submitError ? 'alert' : undefined}
         >
           {submitError ??
-            '방문예약 일정을 체크 후, 확인차 연락드립니다.'}
+            '방문 예약 일정을 체크 후, 확인차 연락드립니다.'}
         </p>
         <Button className="h-12 px-8 type-label-l" disabled={isSubmitting} type="submit">
           {isSubmitting ? '접수 중' : '상담 신청 접수'}
