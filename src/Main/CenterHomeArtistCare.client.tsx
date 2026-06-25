@@ -28,7 +28,7 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
 
   return (
     <div className="section-center-home-care__stage mt-10 md:mt-0">
-      <div className="section-center-home-care__controls mb-8 flex justify-start gap-5 md:-mt-16 md:mb-16 md:justify-end">
+      <div className="section-center-home-care__controls hidden mb-8 justify-start gap-5 md:flex md:-mt-16 md:mb-16 md:justify-end">
         <ArtistCareControl ariaLabel="이전 배우 케어 보기" onClick={() => swiper?.slidePrev()}>
           <ChevronLeft aria-hidden="true" className="size-6" strokeWidth={2} />
         </ArtistCareControl>
@@ -52,7 +52,7 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
         modules={[A11y, Keyboard]}
         onSwiper={setSwiper}
         slidesPerView="auto"
-        spaceBetween={16}
+        spaceBetween={20}
       >
         {items.map((item, index) => {
           const isExpanded = index === hoverIndex
@@ -75,7 +75,7 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
               >
                 <Image
                   alt=""
-                  className="absolute inset-0 size-full object-cover opacity-70 grayscale transition duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/care:scale-[1.04] data-[expanded=true]:opacity-30 data-[expanded=true]:grayscale-0"
+                  className="absolute inset-0 size-full object-cover opacity-70 transition duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] data-[expanded=true]:opacity-90"
                   data-expanded={isExpanded}
                   fill
                   loading={index < 3 ? 'eager' : 'lazy'}
@@ -122,7 +122,7 @@ function ArtistCareControl({
   return (
     <button
       aria-label={ariaLabel}
-      className="section-center-home-care__control flex size-16 items-center justify-center rounded-full border border-white/20 text-white transition hover:border-white/45 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+      className="section-center-home-care__control flex size-16 items-center justify-center rounded-full border border-white/20 text-white transition hover:border-white/45 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       onClick={onClick}
       type="button"
     >

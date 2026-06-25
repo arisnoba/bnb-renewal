@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { assertCenter, centers, getCenterLabel } from '@/lib/centers'
+import { getCurriculumPeriodMonths } from '@/lib/curriculumSearch'
 
 import {
   CurriculumArchive,
@@ -60,7 +61,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     }
   }
 
-  const periodMonths = center === 'highteen' ? 4 : 2
+  const periodMonths = getCurriculumPeriodMonths(center)
 
   return {
     description: `${getCenterLabel(center)}의 ${periodMonths}개월 단위 클래스별 커리큘럼 안내`,

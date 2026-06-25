@@ -267,13 +267,8 @@ function BannerStatisticsPanel({
         'bg-black/30 ring-1 ring-inset ring-white/10 backdrop-blur-[10px] rounded-3xl',
       )}
     >
-      <div className="section-main-banner__stat-total flex items-center justify-between border-b border-white/10 px-6 py-5">
-        <span className="text-[16px] font-black">누적 작품수</span>
-        <strong className="text-[24px] font-black leading-[1.2]">
-          <AnimatedCounter duration={1.4} startOnMount value={statistics.totalWorkCount} />
-        </strong>
-      </div>
-      <BannerScheduleStatRow center={center} />
+      <BannerTotalStatCell value={statistics.totalWorkCount} variant="desktop" />
+      <BannerScheduleStatRow center={center} variant="desktop" />
       {statistics.groups.map((group) => (
         <div
           className="section-main-banner__stat-group border-b border-white/10 last:border-b-0"
@@ -301,27 +296,72 @@ function BannerStatisticsPanel({
   )
 }
 
+function BannerTotalStatCell({
+  value,
+  variant,
+}: {
+  value: number
+  variant: 'desktop' | 'mobile'
+}) {
+  const isMobile = variant === 'mobile'
+
+  return (
+    <div
+      className={cn(
+        'section-main-banner__stat-total flex items-center justify-between border-b border-white/10',
+        isMobile ? 'min-w-0 flex-1 px-5 py-4' : 'px-6 py-5',
+      )}
+    >
+      <span
+        className={cn(
+          isMobile ? 'text-[14px] font-bold leading-normal' : 'text-[16px] font-black',
+        )}
+      >
+        {isMobile ? '누적작품수' : '누적 작품수'}
+      </span>
+      <strong
+        className={cn(
+          'leading-[1.2]',
+          isMobile ? 'text-[20px] font-extrabold' : 'text-[24px] font-black',
+        )}
+      >
+        <AnimatedCounter duration={1.4} startOnMount value={value} />
+      </strong>
+    </div>
+  )
+}
+
 function BannerStatisticGroupHead({
   center,
   group,
+  variant = 'desktop',
 }: {
   center?: CenterSlug
   group: MainBannerStatisticGroup
+  variant?: 'desktop' | 'mobile'
 }) {
   const href = statisticGroupHref(group.title, center)
+  const isMobile = variant === 'mobile'
   const content = (
     <>
-      <span className="text-base font-bold">{group.title}</span>
+      <span
+        className={cn(
+          isMobile ? 'text-[14px] font-bold leading-normal' : 'text-base font-bold',
+        )}
+      >
+        {group.title}
+      </span>
       <ChevronRight
         aria-hidden="true"
-        className="size-[18px] shrink-0 text-white"
-        size={18}
+        className={cn('shrink-0 text-white', isMobile ? 'size-3.5' : 'size-[18px]')}
         strokeWidth={2.4}
       />
     </>
   )
-  const className =
-    'section-main-banner__stat-group-head flex items-center justify-between gap-3 px-6 pb-4 pt-6 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
+  const className = cn(
+    'section-main-banner__stat-group-head flex items-center justify-between text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70',
+    isMobile ? 'w-full gap-3' : 'gap-3 px-6 pb-4 pt-6',
+  )
 
   if (!href) {
     return <div className={className}>{content}</div>
@@ -334,15 +374,36 @@ function BannerStatisticGroupHead({
   )
 }
 
-function BannerScheduleStatRow({ center }: { center?: CenterSlug }) {
+function BannerScheduleStatRow({
+  center,
+  variant = 'desktop',
+}: {
+  center?: CenterSlug
+  variant?: 'desktop' | 'mobile'
+}) {
+  const isMobile = variant === 'mobile'
   const content = (
     <>
-      <span className="text-base font-black leading-[1.2]">이달의 스케줄</span>
-      <ChevronRight aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={2.4} />
+      <span
+        className={cn(
+          isMobile
+            ? 'text-[14px] font-bold leading-normal'
+            : 'text-base font-black leading-[1.2]',
+        )}
+      >
+        이달의 스케줄
+      </span>
+      <ChevronRight
+        aria-hidden="true"
+        className={cn('shrink-0', isMobile ? 'size-3.5' : 'size-[18px]')}
+        strokeWidth={2.4}
+      />
     </>
   )
-  const className =
-    'section-main-banner__schedule-link flex h-[74px] items-center justify-between border-b border-white/10 px-6 py-6 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
+  const className = cn(
+    'section-main-banner__schedule-link flex items-center justify-between border-b border-white/10 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70',
+    isMobile ? 'min-w-0 flex-1 border-l px-5 py-4' : 'h-[74px] px-6 py-6',
+  )
 
   if (!center || !scheduleLinkCenters.has(center)) {
     return <div className={className}>{content}</div>
@@ -392,86 +453,37 @@ function BannerMobileStatisticsPanel({
       aria-label="센터 주요 통계"
       className="section-main-banner__mobile-stats relative z-3 bg-[#111] text-white min-[769px]:hidden"
     >
-      <div className="section-main-banner__mobile-stat-row flex h-[78px] w-full items-start">
-        <div className="section-main-banner__mobile-stat-total flex h-full min-w-0 flex-1 items-center justify-between border-b border-white/10 px-5 py-7">
-          <span className="text-[14px] font-bold leading-normal">누적작품수</span>
-          <strong className="text-[20px] font-extrabold leading-[1.2]">
-            <AnimatedCounter duration={1.4} startOnMount value={statistics.totalWorkCount} />
-          </strong>
-        </div>
-        <BannerMobileScheduleCell center={center} />
+      <div className="section-main-banner__mobile-stat-row flex w-full items-stretch">
+        <BannerTotalStatCell value={statistics.totalWorkCount} variant="mobile" />
+        <BannerScheduleStatRow center={center} variant="mobile" />
       </div>
-      {statistics.groups.map((group) => (
-        <div
-          className="section-main-banner__mobile-stat-row flex h-[78px] w-full items-center border-b border-white/10"
-          key={group.title}
-        >
-          <BannerMobileStatisticGroupTitle center={center} group={group} />
-          <div className="section-main-banner__mobile-stat-items flex h-full min-w-0 flex-1 items-center gap-1 text-[12px] font-bold">
-            {group.items.map((item) => (
-              <div
-                className="section-main-banner__mobile-stat-item flex h-[59px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 px-0 py-3 text-center"
-                key={item.label}
-              >
-                <span className="leading-[1.2] text-white/40">{item.label}</span>
-                <strong className="leading-[1.4] text-white">
-                  <AnimatedCounter duration={1.15} startOnMount value={item.value} />명
-                </strong>
-              </div>
-            ))}
+      <div className="section-main-banner__mobile-stat-groups flex w-full items-stretch">
+        {statistics.groups.map((group, index) => (
+          <div
+            className={cn(
+              'section-main-banner__mobile-stat-group flex min-w-0 flex-1 flex-col gap-4 border-b border-white/10 px-5 py-4',
+              index > 0 && 'border-l',
+            )}
+            key={group.title}
+          >
+            <BannerStatisticGroupHead center={center} group={group} variant="mobile" />
+            <div className="section-main-banner__mobile-stat-items flex w-full flex-col gap-1 text-[14px] font-normal leading-normal">
+              {group.items.map((item) => (
+                <div
+                  className="section-main-banner__mobile-stat-item flex w-full items-center justify-between rounded-lg"
+                  key={item.label}
+                >
+                  <span className="min-w-0 pr-2 text-white/40">{item.label}</span>
+                  <strong className="shrink-0 font-normal text-white">
+                    <AnimatedCounter duration={1.15} startOnMount value={item.value} />명
+                  </strong>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </aside>
-  )
-}
-
-function BannerMobileStatisticGroupTitle({
-  center,
-  group,
-}: {
-  center?: CenterSlug
-  group: MainBannerStatisticGroup
-}) {
-  const href = statisticGroupHref(group.title, center)
-  const content = (
-    <>
-      <span>{group.title}</span>
-      <ChevronRight aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={2.4} />
-    </>
-  )
-  const className =
-    'section-main-banner__mobile-stat-group-title flex h-full min-w-0 flex-1 items-center gap-4 px-5 text-[14px] font-bold leading-normal text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
-
-  if (!href) {
-    return <div className={className}>{content}</div>
-  }
-
-  return (
-    <Link className={cn(className, 'cursor-pointer')} href={href}>
-      {content}
-    </Link>
-  )
-}
-
-function BannerMobileScheduleCell({ center }: { center?: CenterSlug }) {
-  const content = (
-    <>
-      <span>이달의 스케줄</span>
-      <ChevronRight aria-hidden="true" className="size-3.5 shrink-0" strokeWidth={2.4} />
-    </>
-  )
-  const className =
-    'section-main-banner__mobile-schedule flex h-full min-w-0 flex-1 items-center justify-between border-b border-l border-white/10 px-5 py-2.5 text-[14px] font-bold leading-normal text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70'
-
-  if (!center || !scheduleLinkCenters.has(center)) {
-    return <div className={className}>{content}</div>
-  }
-
-  return (
-    <Link className={className} href={`/${center}/schedule`}>
-      {content}
-    </Link>
   )
 }
 

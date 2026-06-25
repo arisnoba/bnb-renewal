@@ -1,22 +1,23 @@
 import configPromise from '@payload-config'
-import { ChevronRight, Info, Search } from 'lucide-react'
+import { ChevronRight, Info } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 
+import { CurriculumSearchForm } from '@/components/CurriculumSearchForm.client'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { CenterSlug } from '@/lib/centers'
+import { curriculumClassOptionsByCenter, type CurriculumCenter } from '@/lib/curriculumOptions'
 import {
-  curriculumClassOptionsByCenter,
-  type CurriculumCenter,
-} from '@/lib/curriculumOptions'
+  buildCurriculumSearchFields,
+  type CurriculumPeriod,
+  getCurriculumEducationDays,
+  getCurriculumPeriodMonths,
+  getTimeGroup,
+  normalizeTime,
+  resolveCurrentCurriculumPeriod,
+} from '@/lib/curriculumSearch'
 import type { Curriculum, Teacher } from '@/payload-types'
-import { FilterSelect } from './FilterSelect.client'
 
 type CurriculumArchiveProps = {
   center: SearchableCurriculumCenter
@@ -39,27 +40,9 @@ type CurriculumCardItem = {
   topic: string
 }
 
-const educationDayFields = [
-  ['educationDayMonday', '월'],
-  ['educationDayTuesday', '화'],
-  ['educationDayWednesday', '수'],
-  ['educationDayThursday', '목'],
-  ['educationDayFriday', '금'],
-  ['educationDaySaturday', '토'],
-  ['educationDaySunday', '일'],
-] as const
-
 type SearchableCurriculumCenter = Extract<CurriculumCenter, 'art' | 'highteen'>
 
-const curriculumCenters = new Set<SearchableCurriculumCenter>([
-  'art',
-  'highteen',
-])
-
-const curriculumPeriodMonthsByCenter: Record<SearchableCurriculumCenter, 2 | 4> = {
-  art: 2,
-  highteen: 4,
-}
+const curriculumCenters = new Set<SearchableCurriculumCenter>(['art', 'highteen'])
 
 export function isCurriculumCenter(center: CenterSlug): center is SearchableCurriculumCenter {
   return curriculumCenters.has(center as SearchableCurriculumCenter)
@@ -68,14 +51,17 @@ export function isCurriculumCenter(center: CenterSlug): center is SearchableCurr
 export async function CurriculumArchive({ center, filters }: CurriculumArchiveProps) {
   const [curriculums, queryFailed] = await queryCurriculums(center)
   const classOptions = curriculumClassOptionsByCenter[center]
-  const lessonCountOptions = buildLessonCountOptions(curriculums)
-  const timeOptions = buildTimeOptions(curriculums)
+  const searchFields = buildCurriculumSearchFields({
+    classOptions,
+    curriculums,
+    defaults: filters,
+  })
   const visibleItems = curriculums
     .filter((curriculum) => matchesFilters(curriculum, filters))
     .sort((left, right) => curriculumSort(left, right, center))
     .map(toCurriculumCardItem)
   const period = resolveCurrentCurriculumPeriod(center)
-  const periodMonths = curriculumPeriodMonthsByCenter[center]
+  const periodMonths = getCurriculumPeriodMonths(center)
   const decoIcons = getPageDecoIcons(4, `curriculum-${center}`)
   const hasActiveFilters = Boolean(filters.className || filters.lessonCount || filters.time)
 
@@ -92,10 +78,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
           style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
         />
         <div aria-hidden="true" className="absolute inset-0 bg-black/70" />
-        <PageDeco
-          className="-left-20 top-[36%] max-md:hidden! md:-left-28"
-          icon={decoIcons[0]}
-        />
+        <PageDeco className="-left-20 top-[36%] max-md:hidden! md:-left-28" icon={decoIcons[0]} />
         <PageDeco
           className="right-[-72px] top-[12%] max-md:hidden! md:right-[-104px]"
           icon={decoIcons[1]}
@@ -117,73 +100,17 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
       >
         <div className="container grid gap-6 lg:grid-cols-[177px_minmax(0,1fr)] lg:items-center">
           <div className="section-curriculum-search__heading">
-            <h2
-              className="type-title-l font-extrabold leading-[1.3]"
-              id="curriculum-search-title"
-            >
+            <h2 className="type-title-l font-extrabold leading-[1.3]" id="curriculum-search-title">
               강의검색
             </h2>
-            <p className="mt-1 inline-flex items-center gap-1 type-caption-m font-medium text-white/45">
-              적용기간({periodMonths}개월단위로 갱신)
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      aria-label="적용기간 안내"
-                      className="inline-grid size-5 place-items-center rounded-full text-white/60 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-                      type="button"
-                    >
-                      <Info aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    className="bg-brand text-sm leading-normal"
-                    arrowClassName="fill-brand"
-                  >
-                    기간 : {period.start} ~ {period.end}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </p>
+            <CurriculumPeriodTooltip period={period} periodMonths={periodMonths} />
           </div>
 
-          <form
+          <CurriculumSearchForm
             action={`/${center}/curriculum`}
-            className="section-curriculum-search__form grid gap-2 md:grid-cols-4"
-          >
-            <FilterSelect
-              defaultValue={filters.className}
-              key={`className-${filters.className ?? ''}`}
-              label="클래스(등급)"
-              name="className"
-              options={classOptions.map((option) => ({
-                label: option.label,
-                value: option.value,
-              }))}
-            />
-            <FilterSelect
-              defaultValue={filters.lessonCount}
-              key={`lessonCount-${filters.lessonCount ?? ''}`}
-              label="교육횟수"
-              name="lessonCount"
-              options={lessonCountOptions}
-            />
-            <FilterSelect
-              defaultValue={filters.time}
-              key={`time-${filters.time ?? ''}`}
-              label="시간대별 Class"
-              name="time"
-              options={timeOptions}
-            />
-            <button
-              className="section-curriculum-search__submit min-h-16 inline-flex items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 cursor-pointer"
-              type="submit"
-            >
-              강의검색
-              <Search aria-hidden="true" className="size-4" strokeWidth={2.4} />
-            </button>
-          </form>
+            fields={searchFields}
+            variant="curriculumArchive"
+          />
         </div>
       </section>
 
@@ -216,7 +143,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
             </div>
           )}
 
-          <CurriculumNotice period={period} />
+          <CurriculumNotice period={period} periodMonths={periodMonths} />
         </div>
       </section>
     </main>
@@ -241,9 +168,7 @@ function CurriculumCard({
         >
           {classMark(item.className)}
         </span>
-        <p className="type-label-m font-bold leading-[1.2] text-neutral-800">
-          {item.className}
-        </p>
+        <p className="type-label-m font-bold leading-[1.2] text-neutral-800">{item.className}</p>
       </header>
 
       <div className="section-curriculum-card__body flex flex-1 flex-col justify-between pt-9">
@@ -256,9 +181,7 @@ function CurriculumCard({
               {item.topic}
             </Link>
           </h3>
-          <p className="mt-3 type-body-m font-medium text-neutral-500">
-            {item.teacherName}
-          </p>
+          <p className="mt-3 type-body-m font-medium text-neutral-500">{item.teacherName}</p>
         </div>
 
         <div className="section-curriculum-card__meta mt-8 flex flex-wrap items-center justify-between gap-3">
@@ -289,11 +212,17 @@ function CurriculumCard({
   )
 }
 
-function CurriculumNotice({ period }: { period: CurriculumPeriod }) {
+function CurriculumNotice({
+  period,
+  periodMonths,
+}: {
+  period: CurriculumPeriod
+  periodMonths: number
+}) {
   return (
     <ul className="section-curriculum-list__notice mt-12 list-disc space-y-1 pl-5 type-body-s leading-[1.6] text-neutral-500 md:mt-16">
       <li>
-        커리큘럼은 &lt;2개월 단위&gt;로 갱신되며,
+        커리큘럼은 &lt;{periodMonths}개월 단위&gt;로 갱신되며,
         {` 다음 커리큘럼은 ${period.nextUpdate} 새롭게 업데이트 됩니다.`}
       </li>
       <li>
@@ -305,7 +234,9 @@ function CurriculumNotice({ period }: { period: CurriculumPeriod }) {
   )
 }
 
-async function queryCurriculums(center: SearchableCurriculumCenter): Promise<[Curriculum[], boolean]> {
+async function queryCurriculums(
+  center: SearchableCurriculumCenter,
+): Promise<[Curriculum[], boolean]> {
   const payload = await getPayload({ config: configPromise })
   const where: Where = {
     centers: {
@@ -337,7 +268,10 @@ function matchesFilters(curriculum: Curriculum, filters: CurriculumFilters) {
     return false
   }
 
-  if (filters.lessonCount && !matchesLessonCount(getEducationDays(curriculum).length, filters.lessonCount)) {
+  if (
+    filters.lessonCount &&
+    !matchesLessonCount(getCurriculumEducationDays(curriculum).length, filters.lessonCount)
+  ) {
     return false
   }
 
@@ -372,78 +306,13 @@ function toCurriculumCardItem(curriculum: Curriculum): CurriculumCardItem {
 
   return {
     className: curriculum.className ?? '클래스 미정',
-    days: getEducationDays(curriculum),
+    days: getCurriculumEducationDays(curriculum),
     id: curriculum.id,
     slug: curriculum.slug,
     startTime: normalizeTime(curriculum.educationStartTime),
     teacherName: teacher?.name ? `배우 ${teacher.name}` : '교육진 미정',
     topic: firstLesson?.topic ?? curriculum.title ?? '강의 주제 미정',
   }
-}
-
-function getEducationDays(curriculum: Curriculum) {
-  return educationDayFields
-    .filter(([field]) => curriculum[field] === true)
-    .map(([, label]) => label)
-}
-
-function buildLessonCountOptions(curriculums: Curriculum[]) {
-  const counts = Array.from(
-    new Set(
-      curriculums
-        .map((curriculum) => getEducationDays(curriculum).length)
-        .filter((count) => count > 0),
-    ),
-  ).sort((left, right) => left - right)
-
-  return counts.map((count) => ({
-    label: `주 ${count}회`,
-    value: String(count),
-  }))
-}
-
-function buildTimeOptions(curriculums: Curriculum[]) {
-  const startTimes = Array.from(
-    new Set(
-      curriculums
-        .map((curriculum) => normalizeTime(curriculum.educationStartTime))
-        .filter((time): time is string => Boolean(time)),
-    ),
-  ).sort((left, right) => left.localeCompare(right))
-
-  return startTimes.map((time) => ({
-    label: `${time} 시작`,
-    value: time,
-  }))
-}
-
-function normalizeTime(value: string | null | undefined) {
-  if (!value) {
-    return null
-  }
-
-  const match = value.match(/\d{1,2}:\d{2}/)
-
-  return match?.[0] ?? value
-}
-
-function getTimeGroup(value: string | null | undefined) {
-  const time = normalizeTime(value)
-  const hour = time ? Number(time.split(':')[0]) : Number.NaN
-
-  if (Number.isNaN(hour)) {
-    return undefined
-  }
-
-  if (hour < 12) {
-    return 'morning'
-  }
-
-  if (hour < 18) {
-    return 'afternoon'
-  }
-
-  return 'evening'
 }
 
 function curriculumSort(left: Curriculum, right: Curriculum, center: SearchableCurriculumCenter) {
@@ -480,59 +349,30 @@ function classMark(label: string) {
   return label.slice(0, 2)
 }
 
-type CurriculumPeriod = {
-  end: string
-  nextUpdate: string
-  start: string
-}
-
-function resolveCurrentCurriculumPeriod(
-  center: SearchableCurriculumCenter,
-  now = new Date(),
-): CurriculumPeriod {
-  const periodMonths = curriculumPeriodMonthsByCenter[center]
-  const { month, year } = getKoreaDateParts(now)
-  const startMonth = Math.floor((month - 1) / periodMonths) * periodMonths
-  const start = new Date(year, startMonth, 1)
-
-  const end = new Date(start)
-  end.setMonth(end.getMonth() + periodMonths)
-  end.setDate(end.getDate() - 1)
-
-  const nextUpdate = new Date(end)
-  nextUpdate.setDate(nextUpdate.getDate() + 1)
-
-  return {
-    end: formatDate(end),
-    nextUpdate: formatKoreanDate(nextUpdate),
-    start: formatDate(start),
-  }
-}
-
-function getKoreaDateParts(date: Date) {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    day: '2-digit',
-    month: '2-digit',
-    timeZone: 'Asia/Seoul',
-    year: 'numeric',
-  }).formatToParts(date)
-
-  const valueByType = Object.fromEntries(parts.map((part) => [part.type, part.value]))
-
-  return {
-    month: Number(valueByType.month),
-    year: Number(valueByType.year),
-  }
-}
-
-function formatDate(date: Date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-
-  return `${year}.${month}.${day}`
-}
-
-function formatKoreanDate(date: Date) {
-  return `${date.getFullYear()}년 ${String(date.getMonth() + 1).padStart(2, '0')}월 ${String(date.getDate()).padStart(2, '0')}일`
+function CurriculumPeriodTooltip({
+  period,
+  periodMonths,
+}: {
+  period: CurriculumPeriod
+  periodMonths: number
+}) {
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            aria-label={`강의 갱신 기간 안내: ${period.start}부터 ${period.end}까지`}
+            className="mt-1 inline-flex items-center gap-.5 text-sm font-medium text-white/45 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            type="button"
+          >
+            강의 갱신 : {periodMonths}개월
+            <Info aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-brand text-sm leading-normal" arrowClassName="fill-brand">
+          기간 : {period.start} ~ {period.end}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }

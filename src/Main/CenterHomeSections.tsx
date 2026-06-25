@@ -1,32 +1,39 @@
 /* eslint-disable @next/next/no-img-element -- Home cards use mixed Payload/R2/local URLs already normalized by getMediaUrl. */
 import configPromise from '@payload-config'
-import { ChevronDown, ChevronRight, Info, Search } from 'lucide-react'
+import { ChevronRight, Info } from 'lucide-react'
 import Link from 'next/link'
 import { cache, type ReactNode } from 'react'
 import { getPayload, type Where } from 'payload'
 
+import { CurriculumSearchForm } from '@/components/CurriculumSearchForm.client'
 import {
   footerCenterInfoForCenter,
   footerSocialLinks,
   type FooterSocialLink,
 } from '@/Footer/centerInfo'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Marquee } from '@/components/ui/marquee'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { curriculumClassOptionsByCenter, type CurriculumCenter } from '@/lib/curriculumOptions'
+import {
+  buildCurriculumSearchFields,
+  getCurriculumPeriodMonths,
+  resolveCurrentCurriculumPeriod,
+  type CurriculumPeriod,
+} from '@/lib/curriculumSearch'
 import { extractYouTubeVideoId, youtubeThumbnailUrl } from '@/lib/youtube'
 import type {
   ArtistPress,
   BroadcastStation,
+  Curriculum,
   Footer,
   Media,
   News,
   ScreenAppearance,
   SocialLink,
 } from '@/payload-types'
-import {
-  getArtistPressThumbnailMedia,
-  getArtistPressUrl,
-} from '@/utilities/artistPressFallbacks'
+import { getArtistPressThumbnailMedia, getArtistPressUrl } from '@/utilities/artistPressFallbacks'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
 import {
@@ -63,10 +70,21 @@ type HomeScreenAppearance = Pick<
   | 'title'
 >
 
-type HomeSocialLink = Pick<
-  SocialLink,
-  'id' | 'externalUrl' | 'representativeImage' | 'title'
+type HomeCurriculum = Pick<
+  Curriculum,
+  | 'educationDayFriday'
+  | 'educationDayMonday'
+  | 'educationDaySaturday'
+  | 'educationDaySunday'
+  | 'educationDayThursday'
+  | 'educationDayTuesday'
+  | 'educationDayWednesday'
+  | 'educationStartTime'
 >
+
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
+
+type HomeSocialLink = Pick<SocialLink, 'id' | 'externalUrl' | 'representativeImage' | 'title'>
 
 type SocialPlatform = 'instagram' | 'youtube'
 
@@ -81,6 +99,7 @@ type HomeSocialAccount = FooterSocialLink & {
 
 type CenterHomeData = {
   artistPress: HomeArtistPress[]
+  curriculums: HomeCurriculum[]
   news: HomeNews[]
   screenAppearances: HomeScreenAppearance[]
   socialAccounts: HomeSocialAccount[]
@@ -109,11 +128,11 @@ const centerBuildingImage: Record<CenterSlug, string> = {
 }
 
 const centerTagline: Record<CenterSlug, string> = {
-  art: '배우의 여정, 함께합니다',
-  avenue: '새로운 무대의 가능성을 연결합니다',
-  exam: '합격의 여정, 함께합니다',
-  highteen: '하이틴 배우의 시작을 함께합니다',
-  kids: '아역배우의 성장을 함께합니다',
+  art: '배우의 여정, \n함께합니다',
+  avenue: '새로운 무대의 \n가능성을 연결합니다',
+  exam: '합격의 여정, \n함께합니다',
+  highteen: '하이틴 배우의 \n시작을 함께합니다',
+  kids: '아역배우의 \n성장을 함께합니다',
 }
 
 const artistCareGroups = {
@@ -187,28 +206,40 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
 
   return (
     <>
-      <CourseSearchSection center={center} />
+      <CourseSearchSection center={center} curriculums={data.curriculums} />
       <ArtistCareSection center={center} />
       <ScreenAppearancesHomeSection center={center} appearances={data.screenAppearances} />
       <ArtistPressHomeSection artistPress={data.artistPress} center={center} />
       <NewsHomeSection center={center} news={data.news} />
-      <SocialHomeSection center={center} links={data.socialLinks} socialAccounts={data.socialAccounts} />
+      <SocialHomeSection
+        center={center}
+        links={data.socialLinks}
+        socialAccounts={data.socialAccounts}
+      />
       <HomeCtaSection center={center} />
     </>
   )
 }
 
-function CourseSearchSection({ center }: { center: CenterSlug }) {
-  const items = [
-    ['클래스(등급)', '선택하세요'],
-    ['교육횟수', '선택하세요'],
-    ['시간대별 Class', '선택하세요'],
-  ] as const
+function CourseSearchSection({
+  center,
+  curriculums,
+}: {
+  center: CenterSlug
+  curriculums: HomeCurriculum[]
+}) {
+  const searchFields = buildCurriculumSearchFields({
+    classOptions: curriculumClassOptionsForCenter(center),
+    curriculums,
+  })
+  const periodMonths = getCurriculumPeriodMonths(center)
+  const period = resolveCurrentCurriculumPeriod(center)
+  const gradeSystemHref = gradeSystemHrefForCenter(center)
 
   return (
     <section
       aria-labelledby="center-home-course-title"
-      className="section-center-home-course border-b-2 border-neutral-900 bg-black py-14 text-white md:py-[60px]"
+      className="section-center-home-course border-b-2 border-neutral-900 bg-black pt-9 pb-10 text-white md:pt-12 md:pb-15"
       data-center={center}
     >
       <div className="container">
@@ -218,54 +249,98 @@ function CourseSearchSection({ center }: { center: CenterSlug }) {
         >
           BNB 강의검색
         </h2>
-        <div className="section-center-home-course__panel mt-8 grid gap-3 lg:grid-cols-[1fr_228px]">
-          <div className="section-center-home-course__filters grid gap-1 md:grid-cols-3">
-            {items.map(([label, value]) => (
-              <button
-                className="section-center-home-course__filter flex min-h-[82px] items-center justify-between bg-neutral-900 px-5 py-4 text-left transition hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:min-h-[90px]"
-                key={label}
-                type="button"
-              >
-                <span className="min-w-0">
-                  <span className="block type-body-s font-medium leading-[1.6] text-neutral-400">
-                    {label}
-                  </span>
-                  <span className="mt-1 block type-body-m font-medium leading-normal text-white">
-                    {value}
-                  </span>
-                </span>
-                <ChevronDown aria-hidden="true" className="size-5 shrink-0" strokeWidth={2} />
-              </button>
-            ))}
-          </div>
-          <Link
-            className="section-center-home-course__submit flex min-h-[72px] items-center justify-between bg-brand px-6 py-5 type-title-m font-bold leading-[1.4] text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:min-h-[90px]"
-            href={`/${center}/curriculum`}
-          >
-            <span>강의검색</span>
-            <Search aria-hidden="true" className="size-5" strokeWidth={2.2} />
-          </Link>
-        </div>
+        <CurriculumSearchForm
+          action={`/${center}/curriculum`}
+          fields={searchFields}
+          variant="centerHome"
+        />
         <div className="section-center-home-course__meta mt-4 flex flex-col gap-2 type-body-m font-medium leading-normal text-neutral-500 md:flex-row md:items-center md:justify-between">
-          <span className="inline-flex items-center gap-2">
-            적용기간(2개월단위로 갱신)
-            <Info aria-hidden="true" className="size-4" strokeWidth={2} />
-          </span>
-          <span className="inline-flex items-center gap-2">
-            등급기준
-            <Info aria-hidden="true" className="size-4" strokeWidth={2} />
-          </span>
+          <CurriculumPeriodTooltip
+            className="hover:text-white"
+            iconClassName="size-4"
+            period={period}
+            periodMonths={periodMonths}
+          />
+          {gradeSystemHref ? (
+            <Link
+              className="inline-flex items-center gap-2 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              href={gradeSystemHref}
+            >
+              등급기준
+              <Info aria-hidden="true" className="size-4" strokeWidth={2} />
+            </Link>
+          ) : (
+            <span
+              aria-disabled="true"
+              className="inline-flex cursor-default items-center gap-1 text-neutral-700"
+            >
+              등급기준
+              <Info aria-hidden="true" className="size-4" strokeWidth={2} />
+            </span>
+          )}
         </div>
       </div>
     </section>
   )
 }
 
-function ArtistCareSection({
-  center,
+function CurriculumPeriodTooltip({
+  className,
+  iconClassName,
+  period,
+  periodMonths,
 }: {
-  center: CenterSlug
+  className: string
+  iconClassName: string
+  period: CurriculumPeriod
+  periodMonths: number
 }) {
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            aria-label={`강의 갱신 기간 안내: ${period.start}부터 ${period.end}까지`}
+            className={`inline-flex items-center gap-1 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${className}`}
+            type="button"
+          >
+            강의 갱신 : {periodMonths}개월
+            <Info aria-hidden="true" className={iconClassName} strokeWidth={2} />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-brand text-sm leading-normal" arrowClassName="fill-brand">
+          기간 : {period.start} ~ {period.end}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+
+function gradeSystemHrefForCenter(center: CenterSlug) {
+  if (!isGradeSystemCenter(center)) {
+    return null
+  }
+
+  return `/${center}/grade-system`
+}
+
+function isGradeSystemCenter(center: CenterSlug): center is GradeSystemCenter {
+  return center === 'art' || center === 'highteen' || center === 'kids'
+}
+
+function curriculumClassOptionsForCenter(center: CenterSlug) {
+  if (!isCurriculumOptionCenter(center)) {
+    return []
+  }
+
+  return curriculumClassOptionsByCenter[center]
+}
+
+function isCurriculumOptionCenter(center: CenterSlug): center is CurriculumCenter {
+  return center in curriculumClassOptionsByCenter
+}
+
+function ArtistCareSection({ center }: { center: CenterSlug }) {
   return (
     <section
       aria-labelledby="center-home-care-title"
@@ -458,7 +533,11 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
     >
       <div className="container grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <SectionIntro eyebrow="NEWS & NOTICE" id="center-home-news-title" title={'배우앤배움\n이달의 소식'} />
+          <SectionIntro
+            eyebrow="NEWS & NOTICE"
+            id="center-home-news-title"
+            title={'배우앤배움\n이달의 소식'}
+          />
           <ButtonLink className="mt-8" href={`/${center}/news`}>
             전체보기
           </ButtonLink>
@@ -525,7 +604,11 @@ function SocialHomeSection({
     >
       <div className="container">
         <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-          <SectionIntro eyebrow="CASTING & SOCIAL" id="center-home-social-title" title={'지금, 배우들이\n만들어가는 순간'} />
+          <SectionIntro
+            eyebrow="CASTING & SOCIAL"
+            id="center-home-social-title"
+            title={'지금, 배우들이\n만들어가는 순간'}
+          />
           <div className="grid gap-3 type-title-s font-normal leading-normal text-white/50 md:justify-items-end md:type-headline-s">
             {socialAccounts.map((account) => (
               <a
@@ -594,9 +677,7 @@ function SocialMarqueeCard({
     <a
       aria-label={title}
       className={`group/social-card relative block shrink-0 overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 ${
-        isYoutube
-          ? 'aspect-video w-[min(82vw,384px)]'
-          : 'aspect-[4/5] w-[min(76vw,304px)]'
+        isYoutube ? 'aspect-video w-[min(82vw,384px)]' : 'aspect-[4/5] w-[min(76vw,304px)]'
       }`}
       href={href}
       rel="noopener noreferrer"
@@ -621,7 +702,10 @@ function SocialMarqueeCard({
 
 function HomeCtaSection({ center }: { center: CenterSlug }) {
   return (
-    <section className="section-center-home-cta grid bg-black text-white md:grid-cols-2" data-center={center}>
+    <section
+      className="section-center-home-cta grid bg-black text-white md:grid-cols-2"
+      data-center={center}
+    >
       <HomeCtaCard
         description={'5개 센터, 1200평의\n배우 훈련에 최적화 설계된 스튜디오'}
         href={`/${center}/facilities`}
@@ -653,7 +737,7 @@ function HomeCtaCard({
 }) {
   return (
     <Link
-      className="group section-center-home-cta-card relative flex h-[270px] items-center justify-center overflow-hidden px-5 text-center outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-inset md:min-h-[540px]"
+      className="group section-center-home-cta-card relative flex h-[270px] items-center justify-center overflow-hidden px-5 text-center outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-inset lg:min-h-[540px]"
       href={href}
     >
       {media ??
@@ -700,8 +784,15 @@ function StarcardCtaInlineImage() {
         viewBox="0 0 960 541"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M480 0L0 135.25V405.75L480 541L960 405.75V135.25L480 0Z" fill="url(#home-starcard-cta-ci)" />
-        <path d="M480 0L0 135.25V405.75L480 541L960 405.75V135.25L480 0Z" fill="black" fillOpacity="0.2" />
+        <path
+          d="M480 0L0 135.25V405.75L480 541L960 405.75V135.25L480 0Z"
+          fill="url(#home-starcard-cta-ci)"
+        />
+        <path
+          d="M480 0L0 135.25V405.75L480 541L960 405.75V135.25L480 0Z"
+          fill="black"
+          fillOpacity="0.2"
+        />
         <defs>
           <linearGradient
             gradientUnits="userSpaceOnUse"
@@ -795,7 +886,9 @@ function screenAppearanceSlide(
 }
 
 function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  const bodyImage = appearance?.bodyImages?.find((item) => item?.image && typeof item.image === 'object')?.image
+  const bodyImage = appearance?.bodyImages?.find(
+    (item) => item?.image && typeof item.image === 'object',
+  )?.image
 
   return mediaUrl(bodyImage as Media | undefined) || screenAppearanceImageUrl(appearance)
 }
@@ -879,7 +972,8 @@ function mediaUrl(value: number | null | Media | undefined) {
   }
 
   const media = value as Media
-  const url = media.sizes?.medium?.url || media.url || (media.filename ? `/media/${media.filename}` : '')
+  const url =
+    media.sizes?.medium?.url || media.url || (media.filename ? `/media/${media.filename}` : '')
 
   return getMediaUrl(url, media.updatedAt)
 }
@@ -890,7 +984,8 @@ function socialMediaUrl(value: number | null | Media | undefined) {
   }
 
   const media = value as Media
-  const url = media.url || media.sizes?.medium?.url || (media.filename ? `/media/${media.filename}` : '')
+  const url =
+    media.url || media.sizes?.medium?.url || (media.filename ? `/media/${media.filename}` : '')
 
   return getMediaUrl(url, media.updatedAt)
 }
@@ -977,99 +1072,125 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
   try {
     const payload = await getPayload({ config: configPromise })
-    const [screenAppearances, artistPress, news, socialLinks, footer] = await Promise.all([
-      payload.find({
-        collection: 'screen-appearances',
-        depth: 2,
-        limit: screenAppearanceLimit,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          appearanceType: true,
-          bodyImages: true,
-          broadcastStation: true,
-          className: true,
-          performerName: true,
-          profileImagePath: true,
-          projectTitle: true,
-          publishedAt: true,
-          roleName: true,
-          slug: true,
-          thumbnailPath: true,
-          title: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
+    const [screenAppearances, artistPress, news, socialLinks, footer, curriculums] =
+      await Promise.all([
+        payload.find({
+          collection: 'screen-appearances',
+          depth: 2,
+          limit: screenAppearanceLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            appearanceType: true,
+            bodyImages: true,
+            broadcastStation: true,
+            className: true,
+            performerName: true,
+            profileImagePath: true,
+            projectTitle: true,
+            publishedAt: true,
+            roleName: true,
+            slug: true,
+            thumbnailPath: true,
+            title: true,
+          },
+          sort: '-publishedAt',
+          where: {
+            and: [
+              {
+                displayStatus: {
+                  equals: 'published',
+                },
               },
+              {
+                centers: {
+                  equals: center,
+                },
+              },
+            ],
+          } satisfies Where,
+        }),
+        payload.find({
+          collection: 'artist-press',
+          depth: 1,
+          limit: artistPressLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            actorName: true,
+            generation: true,
+            publishedAt: true,
+            slug: true,
+            thumbnailMedia: true,
+            title: true,
+          },
+          sort: '-publishedAt',
+          where: centerArrayWhere(center),
+        }),
+        payload.find({
+          collection: 'news',
+          depth: 0,
+          limit: newsLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            category: true,
+            publishedAt: true,
+            slug: true,
+            title: true,
+          },
+          sort: '-publishedAt',
+          where: centerArrayWhere(center),
+        }),
+        payload.find({
+          collection: 'social-links',
+          depth: 1,
+          limit: socialLimit,
+          overrideAccess: false,
+          pagination: false,
+          sort: '-createdAt',
+          where: {
+            center: {
+              equals: center,
             },
-            {
+            displayStatus: {
+              equals: 'published',
+            },
+          },
+        }),
+        payload.findGlobal({
+          slug: 'footer',
+          depth: 0,
+        }),
+        payload
+          .find({
+            collection: 'curriculums',
+            depth: 0,
+            limit: 200,
+            overrideAccess: false,
+            pagination: false,
+            select: {
+              educationDayFriday: true,
+              educationDayMonday: true,
+              educationDaySaturday: true,
+              educationDaySunday: true,
+              educationDayThursday: true,
+              educationDayTuesday: true,
+              educationDayWednesday: true,
+              educationStartTime: true,
+            },
+            where: {
               centers: {
                 equals: center,
               },
-            },
-          ],
-        } satisfies Where,
-      }),
-      payload.find({
-        collection: 'artist-press',
-        depth: 1,
-        limit: artistPressLimit,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          actorName: true,
-          generation: true,
-          publishedAt: true,
-          slug: true,
-          thumbnailMedia: true,
-          title: true,
-        },
-        sort: '-publishedAt',
-        where: centerArrayWhere(center),
-      }),
-      payload.find({
-        collection: 'news',
-        depth: 0,
-        limit: newsLimit,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          category: true,
-          publishedAt: true,
-          slug: true,
-          title: true,
-        },
-        sort: '-publishedAt',
-        where: centerArrayWhere(center),
-      }),
-      payload.find({
-        collection: 'social-links',
-        depth: 1,
-        limit: socialLimit,
-        overrideAccess: false,
-        pagination: false,
-        sort: '-createdAt',
-        where: {
-          center: {
-            equals: center,
-          },
-          displayStatus: {
-            equals: 'published',
-          },
-        },
-      }),
-      payload.findGlobal({
-        slug: 'footer',
-        depth: 0,
-      }),
-    ])
+            } satisfies Where,
+          })
+          .catch(() => ({ docs: [] })),
+      ])
 
     return {
       artistPress: artistPress.docs as HomeArtistPress[],
+      curriculums: curriculums.docs as HomeCurriculum[],
       news: news.docs as HomeNews[],
       screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
       socialAccounts: centerSocialAccounts(footer as Footer, center),
@@ -1078,6 +1199,7 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
   } catch {
     return {
       artistPress: [],
+      curriculums: [],
       news: [],
       screenAppearances: [],
       socialAccounts: [],
