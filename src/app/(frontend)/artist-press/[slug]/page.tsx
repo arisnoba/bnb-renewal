@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
 import RichText from '@/components/RichText'
+import type { CenterSlug } from '@/lib/centers'
 import type { ArtistPress } from '@/payload-types'
 import {
   generateArtistPressMeta,
@@ -9,6 +10,7 @@ import {
   getArtistPressThumbnailMedia,
   hasArtistPressLexicalContent,
 } from '@/utilities/artistPressFallbacks'
+import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -66,7 +68,7 @@ export async function ArtistPressDetailPage({
   center,
   slug,
 }: {
-  center?: string
+  center?: CenterSlug
   slug: string
 }) {
   const artistPress = await queryArtistPressBySlug({ slug }).catch(() => null)
@@ -165,7 +167,7 @@ const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
 })
 
 const queryAdjacentArtistPress = cache(
-  async ({ center, slug }: { center?: string; slug: string }) => {
+  async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
     const payload = await getPayload({ config: configPromise })
     const result = await payload
       .find({
@@ -178,33 +180,7 @@ const queryAdjacentArtistPress = cache(
           slug: true,
         },
         sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            ...(center
-              ? [
-                  {
-                    or: [
-                      {
-                        centers: {
-                          contains: center,
-                        },
-                      },
-                      {
-                        centers: {
-                          contains: 'all',
-                        },
-                      },
-                    ],
-                  },
-                ]
-              : []),
-          ],
-        },
+        where: publishedArtistPressWhere(center),
       })
       .catch(() => ({ docs: [] }))
 

@@ -17,8 +17,9 @@ import {
   getArtistPressThumbnailMedia,
   getArtistPressUrl,
 } from '@/utilities/artistPressFallbacks'
+import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import configPromise from '@payload-config'
-import { getPayload, type Where } from 'payload'
+import { getPayload } from 'payload'
 
 const ITEMS_PER_PAGE = 16
 
@@ -31,29 +32,7 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
   const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
   const decoIcons = getPageDecoIcons(3, `artist-press-${center}`)
-  const where: Where = {
-    and: [
-      {
-        displayStatus: {
-          equals: 'published',
-        },
-      },
-      {
-        or: [
-          {
-            centers: {
-              contains: center,
-            },
-          },
-          {
-            centers: {
-              contains: 'all',
-            },
-          },
-        ],
-      },
-    ],
-  }
+  const where = publishedArtistPressWhere(center)
 
   const artistPress = await payload
     .find({

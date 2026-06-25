@@ -34,6 +34,7 @@ import type {
   SocialLink,
 } from '@/payload-types'
 import { getArtistPressThumbnailMedia, getArtistPressUrl } from '@/utilities/artistPressFallbacks'
+import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
 import {
@@ -1125,7 +1126,7 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
             title: true,
           },
           sort: '-publishedAt',
-          where: centerArrayWhere(center),
+          where: publishedArtistPressWhere(center),
         }),
         payload.find({
           collection: 'news',
