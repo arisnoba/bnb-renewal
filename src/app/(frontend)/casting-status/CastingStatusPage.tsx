@@ -75,7 +75,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
         <div className="container">
           <PageIntro
             className="section-casting-status-list__head mb-16 md:mb-20"
-            description={'ARKO Lab 에이전시와 사전협의 없는\n무단도용 및 복제, 배포를 금합니다.'}
+            description="ARKO Lab 에이전시와 사전협의 없는 무단 도용 및 복제, 배포를 금합니다."
             descriptionClassName="section-casting-status-list__description"
             eyebrow="캐스팅 출연현황"
             eyebrowClassName="section-casting-status-list__eyebrow"

@@ -100,7 +100,7 @@ export function CastingStatusYearSwiper({
       setHasNextYearPage(data.hasNextYearPage)
       setNextYearOffset(data.nextYearOffset)
     } catch {
-      setYearErrorMessage('다음 연도 목록을 불러오지 못했습니다.')
+      setYearErrorMessage('다음 목록을 불러오지 못했습니다.')
     } finally {
       isLoadingYearsRef.current = false
       setIsLoadingYears(false)
@@ -158,7 +158,7 @@ export function CastingStatusYearSwiper({
                 strokeWidth={2.2}
               />
               <p className="type-title-s font-extrabold leading-[1.35] md:type-title-m">
-                다음 연도 불러오는 중
+                다음 불러오는 중
               </p>
             </div>
           ) : yearErrorMessage ? (
