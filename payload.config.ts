@@ -42,12 +42,16 @@ import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
 import { Inquiries } from './src/collections/Inquiries'
-import { resolvePayloadDatabaseURL } from './src/lib/payloadDatabaseURL'
+import {
+  resolvePayloadDatabasePoolMax,
+  resolvePayloadDatabaseURL,
+} from './src/lib/payloadDatabaseURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 const databaseURL = resolvePayloadDatabaseURL()
+const databasePoolMax = resolvePayloadDatabasePoolMax()
 
 export default buildConfig({
   admin: {
@@ -116,7 +120,7 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {
       connectionString: databaseURL,
-      max: process.env.VERCEL === '1' ? 3 : undefined,
+      max: databasePoolMax,
     },
   }),
   editor: defaultLexical,

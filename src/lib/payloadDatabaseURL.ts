@@ -24,3 +24,25 @@ export function resolvePayloadDatabaseURL(env: Env = process.env) {
     ? (pooledURL ?? directURL ?? localDatabaseURL)
     : (directURL ?? pooledURL ?? localDatabaseURL)
 }
+
+export function resolvePayloadDatabasePoolMax(env: Env = process.env) {
+  const configured = parsePositiveInteger(
+    firstValue(env.PAYLOAD_DATABASE_POOL_MAX, env.PAYLOAD_DB_POOL_MAX),
+  )
+
+  if (configured) {
+    return configured
+  }
+
+  return env.VERCEL === '1' ? 3 : undefined
+}
+
+function parsePositiveInteger(value: string | undefined) {
+  if (!value) {
+    return undefined
+  }
+
+  const parsed = Number(value)
+
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined
+}
