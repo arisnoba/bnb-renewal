@@ -291,19 +291,17 @@ function CurriculumCard({
 
 function CurriculumNotice({ period }: { period: CurriculumPeriod }) {
   return (
-    <div className="section-curriculum-list__notice mt-12 type-body-s leading-[1.6] text-neutral-500 md:mt-16">
-      <p>
-        · 커리큘럼은 &lt;2개월 단위&gt;로 갱신되며,
+    <ul className="section-curriculum-list__notice mt-12 list-disc space-y-1 pl-5 type-body-s leading-[1.6] text-neutral-500 md:mt-16">
+      <li>
+        커리큘럼은 &lt;2개월 단위&gt;로 갱신되며,
         {` 다음 커리큘럼은 ${period.nextUpdate} 새롭게 업데이트 됩니다.`}
-      </p>
-      <p>
-        · 모든 커리큘럼은 같은 레벨의 클래스라도 각 선생님의 특성에 따라 디테일한
+      </li>
+      <li>
+        모든 커리큘럼은 같은 레벨의 클래스라도 각 선생님의 특성에 따라 디테일한
         차이가 있습니다. 신규학생은 각반의 커리큘럼을 반드시 확인하시기 바랍니다.
-      </p>
-      <p>
-        · 적용기간 : {period.start} ~ {period.end}
-      </p>
-    </div>
+      </li>
+      <li>적용기간 : {period.start} ~ {period.end}</li>
+    </ul>
   )
 }
 
