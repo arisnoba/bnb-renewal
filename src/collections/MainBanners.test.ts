@@ -5,6 +5,7 @@ import type { CollectionConfig, Field, Tab } from 'payload'
 
 import {
   MainBanners,
+  mainBannerCenterPaths,
   mainBannerOrderField,
   mainBannerOrderIncludes,
   mainBannerOrderWithout,
@@ -172,6 +173,12 @@ test('main banners can sync into center-specific order arrays without duplicates
   assert.deepEqual(mainBannerOrderWithout([...rows], 7), [{ banner: 3 }, { banner: 9 }])
 })
 
+test('main banner center paths include current and previous centers once', () => {
+  assert.deepEqual(mainBannerCenterPaths('highteen'), ['/highteen'])
+  assert.deepEqual(mainBannerCenterPaths('highteen', 'kids'), ['/highteen', '/kids'])
+  assert.deepEqual(mainBannerCenterPaths('highteen', 'highteen'), ['/highteen'])
+})
+
 test('main banner save prepends new banner to its center order', async () => {
   const syncOrder = MainBanners.hooks?.afterChange?.[0] as (args: Record<string, unknown>) => unknown
   const req = {
@@ -187,6 +194,9 @@ test('main banner save prepends new banner to its center order', async () => {
     doc: { center: 'exam', id: 7 },
     operation: 'create',
     req: {
+      context: {
+        disableRevalidate: true,
+      },
       ...req,
       payload: {
         findGlobal: async ({ req: operationReq }: { req?: unknown }) => {

@@ -6,6 +6,7 @@ import type {
   Validate,
   Where,
 } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 import type { MainBanner } from '@/payload-types'
 
@@ -19,6 +20,7 @@ type MainBannerData = {
 }
 
 type MainBannerOrderField = `${CenterValue}Banners`
+type RevalidatePath = (originalPath: string, type?: 'layout' | 'page') => void
 type MainBannerOrderRow = {
   banner?: ({ id?: unknown } & Record<string, unknown>) | number | string | null
   id?: string | null
@@ -256,6 +258,40 @@ export function mainBannerOrderWithout(
   return (rows ?? []).filter((row) => bannerId(row.banner) !== targetId)
 }
 
+export function mainBannerCenterPaths(
+  center: CenterValue,
+  previousCenter?: CenterValue,
+) {
+  return Array.from(
+    new Set(
+      [center, previousCenter]
+        .filter((value): value is CenterValue => Boolean(value))
+        .map((value) => `/${value}`),
+    ),
+  )
+}
+
+function revalidateMainBannerCenterPaths({
+  center,
+  previousCenter,
+  revalidate = revalidatePath,
+  req,
+}: {
+  center: CenterValue
+  previousCenter?: CenterValue
+  revalidate?: RevalidatePath
+  req: Parameters<CollectionAfterChangeHook<MainBanner>>[0]['req']
+}) {
+  if (req.context.disableRevalidate) {
+    return
+  }
+
+  for (const path of mainBannerCenterPaths(center, previousCenter)) {
+    req.payload.logger.info(`Revalidating main banner path ${path}`)
+    revalidate(path, 'page')
+  }
+}
+
 const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
   doc,
   operation,
@@ -281,6 +317,8 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
   const alreadyOrdered = mainBannerOrderIncludes(currentRows, doc.id)
 
   if (!shouldMoveFromPreviousCenter && alreadyOrdered && operation !== 'create') {
+    revalidateMainBannerCenterPaths({ center, previousCenter, req })
+
     return doc
   }
 
@@ -304,6 +342,8 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
     overrideAccess: true,
     req,
   })
+
+  revalidateMainBannerCenterPaths({ center, previousCenter, req })
 
   return doc
 }
