@@ -1,4 +1,4 @@
-import type { Field, GlobalConfig, Validate } from 'payload'
+import type { Field, GlobalBeforeValidateHook, GlobalConfig, Validate } from 'payload'
 
 import { centerOptions, type CenterValue } from '@/collections/shared'
 
@@ -23,6 +23,53 @@ const positiveNumber =
 const centerLabelByValue = Object.fromEntries(
   centerOptions.map((option) => [option.value, option.label]),
 ) as Record<CenterValue, string>
+
+type MainBannerOrderRow = {
+  banner?: unknown
+}
+
+type MainBannerOrderData = Record<string, unknown>
+
+const bannerOrderFieldNames = centerOptions.map(
+  (option) => `${option.value}Banners`,
+)
+
+function hasBannerValue(row: unknown) {
+  if (!row || typeof row !== 'object') {
+    return false
+  }
+
+  return Boolean((row as MainBannerOrderRow).banner)
+}
+
+export function normalizeMainBannerOrderData(
+  data: MainBannerOrderData = {},
+  originalDoc: MainBannerOrderData = {},
+) {
+  const nextData = { ...data }
+
+  for (const fieldName of bannerOrderFieldNames) {
+    const value = Array.isArray(data[fieldName])
+      ? data[fieldName]
+      : originalDoc[fieldName]
+
+    if (!Array.isArray(value)) {
+      continue
+    }
+
+    const normalizedRows = value.filter(hasBannerValue)
+
+    if (Array.isArray(data[fieldName]) || normalizedRows.length !== value.length) {
+      nextData[fieldName] = normalizedRows
+    }
+  }
+
+  return nextData
+}
+
+const normalizeMainGlobalData: GlobalBeforeValidateHook = ({ data, originalDoc }) => {
+  return normalizeMainBannerOrderData(data, originalDoc)
+}
 
 function centerBannerOrderField(center: CenterValue): Field {
   const label = `${centerLabelByValue[center]} 배너 순서`
@@ -94,6 +141,9 @@ export const Main: GlobalConfig = {
   },
   admin: {
     group: '메인설정',
+  },
+  hooks: {
+    beforeValidate: [normalizeMainGlobalData],
   },
   fields: [
     {

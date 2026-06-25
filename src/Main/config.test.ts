@@ -3,7 +3,7 @@ import test from 'node:test'
 
 import type { Field, GlobalConfig, Tab } from 'payload'
 
-import { Main } from './config'
+import { Main, normalizeMainBannerOrderData } from './config'
 import {
   mainBannerOrderBannerId,
   mainBannerOrderBannerTitle,
@@ -123,4 +123,28 @@ test('main banner order row label helpers resolve relationship titles and ids', 
   assert.equal(mainBannerOrderBannerId(4), '4')
   assert.equal(mainBannerOrderBannerId({ id: 5, title: '배너' }), '5')
   assert.equal(mainBannerOrderBannerId({ relationTo: 'main-banners', value: { id: 6 } }), '6')
+})
+
+test('main global removes empty banner order rows before validation', () => {
+  assert.deepEqual(
+    normalizeMainBannerOrderData(
+      {
+        highteenBanners: [{ banner: 7 }],
+      },
+      {
+        kidsBanners: [
+          { banner: 3 },
+          { id: 'empty-row' },
+          { banner: { id: 5, title: '기존 키즈 배너' } },
+        ],
+      },
+    ),
+    {
+      highteenBanners: [{ banner: 7 }],
+      kidsBanners: [
+        { banner: 3 },
+        { banner: { id: 5, title: '기존 키즈 배너' } },
+      ],
+    },
+  )
 })
