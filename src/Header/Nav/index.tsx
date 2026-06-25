@@ -71,13 +71,15 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         <nav aria-label="주요 메뉴" className="site-header__nav">
           {menuGroups.map((group) => (
             <div className="site-header__desktop-item" key={group.key}>
-              <Link
+              <button
+                aria-expanded={isMegaOpen}
+                aria-haspopup="true"
                 className="site-header__nav-link"
-                href={group.href}
                 onFocus={() => setIsMegaOpen(true)}
+                type="button"
               >
                 {group.label}
-              </Link>
+              </button>
               <div className="site-header__desktop-submenu-frame">
                 <ul className="site-header__desktop-submenu">
                   {group.items.map((item) => (
@@ -242,13 +244,9 @@ function MobileMenu({
                   <ChevronLeft aria-hidden="true" size={20} strokeWidth={2.4} />
                   <span>전체 메뉴</span>
                 </button>
-                <Link
-                  className="site-header__mobile-detail-title"
-                  href={activeGroup.href}
-                  onClick={onLinkClick}
-                >
+                <div className="site-header__mobile-detail-title">
                   {activeGroup.label}
-                </Link>
+                </div>
                 <ul className="site-header__mobile-detail-list">
                   {activeGroup.items.map((item) => (
                     <li key={`${activeGroup.key}-${item.href}-${item.label}`}>

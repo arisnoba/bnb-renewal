@@ -120,16 +120,13 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: '/exam/map', label: '오시는 길' },
   ])
   assert.deepEqual(groupLabels, ['배우앤배움', '교육', '합격현황', '합격자소개', '지원센터'])
-  assert.deepEqual(
-    menu.map((group) => [group.key, group.href]),
-    [
-      ['about', '/exam/about'],
-      ['education', '/exam/management'],
-      ['casting', '/exam/university-results'],
-      ['artist', '/exam/passed-reviews'],
-      ['support', '/exam/news'],
-    ],
-  )
+  assert.deepEqual(menu.map((group) => [group.key, 'href' in group]), [
+    ['about', false],
+    ['education', false],
+    ['casting', false],
+    ['artist', false],
+    ['support', false],
+  ])
   assert.deepEqual(itemsForGroup('exam', 'education'), [
     { href: '/exam/management', label: '입시 매니지먼트' },
     { href: '/exam/special-system', label: '특별한 시스템' },

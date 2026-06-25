@@ -8,7 +8,6 @@ export type HeaderMenuItem = {
 }
 
 export type HeaderMenuGroup = {
-  href: string
   items: HeaderMenuItem[]
   key: string
   label: string
@@ -27,31 +26,26 @@ export function headerCenterFromPathname(pathname: string | null | undefined): C
 export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
   return [
     {
-      href: centerAboutHref(center),
       items: aboutItems(center),
       key: 'about',
       label: '배우앤배움',
     },
     {
-      href: center === 'exam' ? `/${center}/management` : centerHref(center, 'education'),
       items: educationItems(center),
       key: 'education',
       label: '교육',
     },
     {
-      href: center === 'exam' ? universityResultsHref(center) : centerHref(center, 'casting'),
       items: castingItems(center),
       key: 'casting',
       label: center === 'exam' ? '합격현황' : '캐스팅',
     },
     {
-      href: center === 'exam' ? examPassedReviewsHref(center) : centerHref(center, 'management'),
       items: artistItems(center),
       key: 'artist',
       label: center === 'exam' ? '합격자소개' : '아티스트',
     },
     {
-      href: `/${center}/news`,
       items: supportItems(center),
       key: 'support',
       label: '지원센터',
@@ -107,7 +101,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 
   return [
     {
-      href: center === 'highteen' ? `/${center}/grade-system` : centerHref(center, 'grade-system'),
+      href: `/${center}/grade-system`,
       label: '등급제 교육관리시스템',
     },
     { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
@@ -200,10 +194,6 @@ function supportItems(center: CenterSlug): HeaderMenuItem[] {
     { href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' },
     { href: `/${center}/faq`, label: '자주하는 질문' },
   ]
-}
-
-function centerHref(center: CenterSlug, anchor: string) {
-  return `/${center}#${anchor}`
 }
 
 function companyHref(center: CenterSlug) {

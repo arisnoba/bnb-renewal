@@ -145,8 +145,13 @@
 }
 
 .site-header__nav-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
   color: currentColor;
+  cursor: pointer;
   display: inline-flex;
+  font: inherit;
   font-size: 16px;
   font-weight: 600;
   align-items: center;
@@ -161,6 +166,12 @@
 
   &:hover {
     opacity: 0.72;
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid currentColor;
+    outline-offset: -10px;
   }
 }
 
