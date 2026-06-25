@@ -42,16 +42,12 @@ import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
 import { Inquiries } from './src/collections/Inquiries'
+import { resolvePayloadDatabaseURL } from './src/lib/payloadDatabaseURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const databaseURL =
-  process.env.DATABASE_URL_UNPOOLED ??
-  process.env.POSTGRES_URL_NON_POOLING ??
-  process.env.DATABASE_URL ??
-  process.env.POSTGRES_URL ??
-  'postgres://postgres:postgres@127.0.0.1:5432/bnb_renewal'
+const databaseURL = resolvePayloadDatabaseURL()
 
 export default buildConfig({
   admin: {
@@ -120,6 +116,7 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, './src/migrations'),
     pool: {
       connectionString: databaseURL,
+      max: process.env.VERCEL === '1' ? 1 : undefined,
     },
   }),
   editor: defaultLexical,
