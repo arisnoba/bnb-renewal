@@ -176,11 +176,11 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: '/highteen/special-lecture', label: '하이틴센터 특강' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'casting'), [
-    { href: '/highteen/screen-appearances', label: '드라마ㆍ광고 출연장면' },
-    { href: '/highteen/casting-status', label: '진행중인 캐스팅 출연현황' },
+    { href: '/highteen/screen-appearances', label: 'BNB 출연장면' },
+    { href: '/highteen/casting-status', label: '캐스팅 출연현황' },
     { href: '/highteen/casting', label: '캐스팅 센터' },
     { href: '/highteen/casting-system', label: '배우 케어 시스템' },
-    { href: '/highteen/schedule', label: '이달의 촬영ㆍ오디션 스케줄' },
+    { href: '/highteen/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'artist'), [
     { href: '/highteen/artist-press', label: 'BNB 출신 아티스트' },
