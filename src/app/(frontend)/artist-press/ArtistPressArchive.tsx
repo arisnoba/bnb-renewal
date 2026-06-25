@@ -20,6 +20,7 @@ import {
 } from '@/utilities/artistPressFallbacks'
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
 const ITEMS_PER_PAGE = 16
@@ -30,36 +31,9 @@ type ArtistPressArchiveProps = {
 }
 
 export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiveProps) {
-  const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
   const decoIcons = getPageDecoIcons(3, `artist-press-${center}`)
-  const where = publishedArtistPressWhere(center)
-
-  const artistPress = await payload
-    .find({
-      collection: 'artist-press',
-      depth: 1,
-      limit: ITEMS_PER_PAGE,
-      overrideAccess: false,
-      page: currentPage,
-      select: {
-        actorName: true,
-        agencyLogoMedia: true,
-        generation: true,
-        meta: true,
-        publishedAt: true,
-        slug: true,
-        thumbnailMedia: true,
-        title: true,
-      },
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page: 1,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const artistPress = await getCachedArtistPressPage(center, currentPage)
 
   const totalPages = Math.max(artistPress.totalPages || 1, 1)
 
@@ -144,6 +118,44 @@ export function artistPressArchiveMetadata(): Metadata {
   return {
     title: '출신 아티스트',
   }
+}
+
+function getCachedArtistPressPage(center: CenterSlug, page: number) {
+  return unstable_cache(() => queryArtistPressPage(center, page), ['frontend-artist-press', center, String(page)], {
+    revalidate: 600,
+    tags: [`frontend_artist_press_${center}`],
+  })()
+}
+
+async function queryArtistPressPage(center: CenterSlug, page: number) {
+  const payload = await getPayload({ config: configPromise })
+  const where = publishedArtistPressWhere(center)
+
+  return payload
+    .find({
+      collection: 'artist-press',
+      depth: 1,
+      limit: ITEMS_PER_PAGE,
+      overrideAccess: false,
+      page,
+      select: {
+        actorName: true,
+        agencyLogoMedia: true,
+        generation: true,
+        meta: true,
+        publishedAt: true,
+        slug: true,
+        thumbnailMedia: true,
+        title: true,
+      },
+      where,
+    })
+    .catch(() => ({
+      docs: [],
+      page: 1,
+      totalDocs: 0,
+      totalPages: 0,
+    }))
 }
 
 function ArtistPressCard({

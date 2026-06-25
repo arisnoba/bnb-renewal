@@ -1,14 +1,13 @@
 import type { Footer as FooterData } from '@/payload-types'
 
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import React from 'react'
 
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { FooterAddress } from './Address.client'
+import { FooterCenterLinks } from './CenterLinks.client'
 import { FooterLogo } from './FooterLogo.client'
 import { FooterSocialLinks } from './SocialLinks.client'
-import { centerSlugFromPathname } from './centerInfo'
 
 const fallbackFamilySites = [
   { href: '/art', label: 'ART CENTER', name: '아트센터' },
@@ -43,19 +42,6 @@ export async function Footer() {
   const footer = await getFooterData()
   const familySites = familySitesFromFooter(footer)
   const centerInfos = footer?.centerInfos ?? []
-  const pathname = (await headers()).get('x-pathname')
-  const center = centerSlugFromPathname(pathname) ?? 'art'
-  const consultHref = `/${center}/consult`
-  const customerLinks = [
-    { href: 'tel:15779929', label: '대표전화', value: '1577-9929' },
-    { href: consultHref, label: 'CS센터 운영안내' },
-    { href: `/${center}/map`, label: '오시는 길' },
-  ]
-  const consultationLinks = [
-    { href: `/${center}/admission`, label: '입학안내' },
-    { href: consultHref, label: '상담신청' },
-    { href: `/${center}/faq`, label: '자주 묻는 질문' },
-  ]
   const copyrightYear = new Date().getFullYear()
 
   return (
@@ -68,26 +54,7 @@ export async function Footer() {
             시작되는 곳
           </p>
           <div className="grid gap-8 sm:grid-cols-2 lg:gap-5">
-            <FooterLinkGroup title="고객 안내 센터">
-              <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
-                {customerLinks.map((item) => (
-                  <li key={item.label}>
-                    <Link
-                      className="flex flex-wrap items-center gap-3 whitespace-nowrap text-xl font-medium leading-[1.2] text-[#666] transition-colors hover:text-white"
-                      href={item.href}
-                    >
-                      <span>{item.label}</span>
-                      {item.value ? (
-                        <span className="font-semibold leading-none text-white">{item.value}</span>
-                      ) : null}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </FooterLinkGroup>
-            <FooterLinkGroup title="온라인 상담 신청">
-              <FooterTextLinks links={consultationLinks} size="large" />
-            </FooterLinkGroup>
+            <FooterCenterLinks />
           </div>
         </div>
 
@@ -95,7 +62,7 @@ export async function Footer() {
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-6">
           <div className="order-2 flex flex-col items-start gap-6 lg:order-1 lg:min-h-[234px] lg:justify-between">
-            <FooterLogo initialCenter={center} />
+            <FooterLogo initialCenter="art" />
 
             <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
               <Link className="text-[#666] transition-colors hover:text-white" href="/terms">
@@ -106,7 +73,7 @@ export async function Footer() {
               </Link>
             </nav>
 
-            <FooterAddress centerInfos={centerInfos} initialPathname={pathname} />
+            <FooterAddress centerInfos={centerInfos} initialPathname={null} />
 
             <p className="text-sm leading-[1.2] tracking-normal text-white/40">
               ©{copyrightYear} BNB INDUSTRY. All rights reserved.
@@ -118,7 +85,7 @@ export async function Footer() {
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
             <FooterLinkGroup title="SOCIAL">
-              <FooterSocialLinks centerInfos={centerInfos} initialPathname={pathname} />
+              <FooterSocialLinks centerInfos={centerInfos} initialPathname={null} />
             </FooterLinkGroup>
           </div>
         </div>

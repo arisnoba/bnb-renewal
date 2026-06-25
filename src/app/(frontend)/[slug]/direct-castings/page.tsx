@@ -17,7 +17,6 @@ type Args = {
 
 const directCastingCenters: readonly CenterSlug[] = ['art', 'avenue', 'highteen', 'kids']
 
-export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export function generateStaticParams() {

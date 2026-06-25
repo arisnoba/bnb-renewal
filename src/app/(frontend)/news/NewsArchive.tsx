@@ -10,6 +10,7 @@ import type { CenterSlug } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { getPayload, type Where } from 'payload'
 import Link from 'next/link'
 import React from 'react'
@@ -100,48 +101,16 @@ export async function NewsArchive({
     </>
   ),
 }: NewsArchiveProps) {
-  const payload = await getPayload({ config: configPromise })
   const newsCategories = getNewsCategoriesForCenter(center)
   const category =
     getCategoryByKey(activeCategory, newsCategories) ??
     normalizeCategory(activeCategory, newsCategories)
   const currentPage = Math.max(1, page)
-  const baseWhere: Where = {
-    and: [
-      {
-        displayStatus: {
-          equals: 'published',
-        },
-      },
-      {
-        or: [
-          {
-            centers: {
-              contains: center,
-            },
-          },
-          {
-            centers: {
-              contains: 'all',
-            },
-          },
-        ],
-      },
-    ],
-  }
-
-  const news = category
-    ? await findCategorizedNews({
-        category,
-        page: currentPage,
-        payload,
-        where: baseWhere,
-      })
-    : await findNewsPage({
-        page: currentPage,
-        payload,
-        where: baseWhere,
-      })
+  const news = await getCachedNewsArchivePage({
+    categoryKey: category?.key ?? null,
+    center,
+    page: currentPage,
+  })
   const totalPages = Math.max(news.totalPages || 1, 1)
   const categoryItems = [
     {
@@ -206,6 +175,75 @@ export async function NewsArchive({
       </section>
     </main>
   )
+}
+
+function getCachedNewsArchivePage({
+  categoryKey,
+  center,
+  page,
+}: {
+  categoryKey: string | null
+  center: string
+  page: number
+}) {
+  return unstable_cache(
+    () => queryNewsArchivePage({ categoryKey, center, page }),
+    ['frontend-news', center, categoryKey ?? 'all', String(page)],
+    {
+      revalidate: 600,
+      tags: [`frontend_news_${center}`],
+    },
+  )()
+}
+
+async function queryNewsArchivePage({
+  categoryKey,
+  center,
+  page,
+}: {
+  categoryKey: string | null
+  center: string
+  page: number
+}) {
+  const payload = await getPayload({ config: configPromise })
+  const newsCategories = getNewsCategoriesForCenter(center)
+  const category = categoryKey ? getCategoryByKey(categoryKey, newsCategories) : null
+  const baseWhere: Where = {
+    and: [
+      {
+        displayStatus: {
+          equals: 'published',
+        },
+      },
+      {
+        or: [
+          {
+            centers: {
+              contains: center,
+            },
+          },
+          {
+            centers: {
+              contains: 'all',
+            },
+          },
+        ],
+      },
+    ],
+  }
+
+  return category
+    ? await findCategorizedNews({
+        category,
+        page,
+        payload,
+        where: baseWhere,
+      })
+    : await findNewsPage({
+        page,
+        payload,
+        where: baseWhere,
+      })
 }
 
 function NewsCard({

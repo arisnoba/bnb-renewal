@@ -10,6 +10,7 @@ import type { CenterSlug } from '@/lib/centers'
 import type { DirectCasting, Media as PayloadMedia } from '@/payload-types'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 
@@ -92,21 +93,13 @@ export async function DirectCastingsArchive({
   company,
   page = 1,
 }: DirectCastingsArchiveProps) {
-  const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
   const activeCompany = parseDirectCastingCompany(center, company)
-  const where = directCastingsWhere({ center, company: activeCompany })
-  const [castings, heroImages] = await Promise.all([
-    findDirectCastingsPage({
-      page: currentPage,
-      payload,
-      where,
-    }),
-    findHeroImages({
-      center,
-      payload,
-    }),
-  ])
+  const { castings, heroImages } = await getCachedDirectCastingsArchive({
+    center,
+    company: activeCompany,
+    page: currentPage,
+  })
   const totalPages = Math.max(castings.totalPages || 1, 1)
   const safePage = Math.min(castings.page || currentPage, totalPages)
 
@@ -299,6 +292,54 @@ function DirectCastingCard({
       </div>
     </Link>
   )
+}
+
+function getCachedDirectCastingsArchive({
+  center,
+  company,
+  page,
+}: {
+  center: CenterSlug
+  company: 'all' | DirectCastingCompany
+  page: number
+}) {
+  return unstable_cache(
+    () => queryDirectCastingsArchive({ center, company, page }),
+    ['frontend-direct-castings', center, company, String(page)],
+    {
+      revalidate: 600,
+      tags: [`frontend_direct_castings_${center}`],
+    },
+  )()
+}
+
+async function queryDirectCastingsArchive({
+  center,
+  company,
+  page,
+}: {
+  center: CenterSlug
+  company: 'all' | DirectCastingCompany
+  page: number
+}) {
+  const payload = await getPayload({ config: configPromise })
+  const where = directCastingsWhere({ center, company })
+  const [castings, heroImages] = await Promise.all([
+    findDirectCastingsPage({
+      page,
+      payload,
+      where,
+    }),
+    findHeroImages({
+      center,
+      payload,
+    }),
+  ])
+
+  return {
+    castings,
+    heroImages,
+  }
 }
 
 function DirectCastingsHero({ images }: { images: DirectCastingHeroImage[] }) {

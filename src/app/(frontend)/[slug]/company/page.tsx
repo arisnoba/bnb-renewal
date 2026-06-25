@@ -27,7 +27,7 @@ type HistoryItem = {
 
 const centerSlugs = Object.keys(centers) as CenterSlug[]
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
 
 const affiliates: CompanyAffiliate[] = [
   {

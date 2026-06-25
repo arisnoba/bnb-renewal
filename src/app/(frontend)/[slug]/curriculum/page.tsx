@@ -23,7 +23,6 @@ type CurriculumSearchParams = Partial<
   Record<keyof CurriculumFilters | 'tab', string | string[] | undefined>
 >
 
-export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export function generateStaticParams() {

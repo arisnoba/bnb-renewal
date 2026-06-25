@@ -10,6 +10,7 @@ import type { ExamPassedReview, ExamSchoolLogo, Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload, type Payload, type Where } from 'payload'
@@ -40,12 +41,8 @@ const examPassedReviewSelect = {
 } as const
 
 export async function ExamPassedReviewsPage({ page = 1 }: ExamPassedReviewsPageProps) {
-  const payload = await getPayload({ config: configPromise })
   const decoIcons = getPageDecoIcons(3, 'exam-passed-reviews')
-  const reviewsPage = await findExamPassedReviewsPage({
-    page,
-    payload,
-  })
+  const reviewsPage = await getCachedExamPassedReviewsPage(page)
   const safePage = Math.min(reviewsPage.page || page, Math.max(reviewsPage.totalPages, 1))
 
   return (
@@ -135,6 +132,26 @@ export async function ExamPassedReviewsPage({ page = 1 }: ExamPassedReviewsPageP
       </section>
     </main>
   )
+}
+
+function getCachedExamPassedReviewsPage(page: number) {
+  return unstable_cache(
+    () => queryExamPassedReviewsPage(page),
+    ['frontend-exam-passed-reviews', String(page)],
+    {
+      revalidate: 600,
+      tags: ['frontend_exam_passed_reviews'],
+    },
+  )()
+}
+
+async function queryExamPassedReviewsPage(page: number) {
+  const payload = await getPayload({ config: configPromise })
+
+  return findExamPassedReviewsPage({
+    page,
+    payload,
+  })
 }
 
 async function findExamPassedReviewsPage({

@@ -29,7 +29,6 @@ type SpecialLectureListItem = Pick<
 
 const ITEMS_PER_PAGE = 16
 
-export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export function generateStaticParams() {

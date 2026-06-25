@@ -8,34 +8,23 @@ import { CookieBanner } from '@/components/legal/CookieBanner'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { draftMode, headers } from 'next/headers'
 import { FrontendChrome } from './FrontendChrome.client'
 
 import './globals.css'
 import '@/styles/style.scss'
 import { getServerSideURL } from '@/utilities/getURL'
 
-export const dynamic = 'force-dynamic'
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { isEnabled } = await draftMode()
-  const pathname = (await headers()).get('x-pathname')
-  const isGatePage = pathname === '/'
-
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
-        <AdminBar
-          adminBarProps={{
-            preview: isEnabled,
-          }}
-        />
+        <AdminBar />
 
-        <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={isGatePage}>
+        <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={false}>
           {children}
         </FrontendChrome>
         <CookieBanner />

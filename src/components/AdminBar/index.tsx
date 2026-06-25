@@ -25,6 +25,7 @@ export const AdminBar: React.FC<{
   const [show, setShow] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const preview = Boolean(adminBarProps?.preview) || hasPreviewCookie()
 
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
     setShow(Boolean(user?.id))
@@ -95,6 +96,7 @@ export const AdminBar: React.FC<{
               router.refresh()
             })
           }}
+          preview={preview}
           style={{
             backgroundColor: 'transparent',
             padding: 0,
@@ -105,4 +107,18 @@ export const AdminBar: React.FC<{
       </div>
     </div>
   )
+}
+
+function hasPreviewCookie() {
+  if (typeof document === 'undefined') {
+    return false
+  }
+
+  return document.cookie
+    .split(';')
+    .some((cookie) => {
+      const name = cookie.trim().split('=')[0]
+
+      return name === '__prerender_bypass' || name === '__next_preview_data'
+    })
 }

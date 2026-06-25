@@ -10,7 +10,7 @@ import { CenterHomeSections } from '@/Main/CenterHomeSections'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type { Main, MainStatistic } from '@/payload-types'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
 
 export async function generateStaticParams() {
   return Object.keys(centers).map((slug) => ({ slug }))

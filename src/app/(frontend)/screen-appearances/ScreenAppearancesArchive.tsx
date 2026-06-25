@@ -16,6 +16,7 @@ import type {
 } from '@/payload-types'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
@@ -64,34 +65,9 @@ export async function ScreenAppearancesArchive({
   center,
   page = 1,
 }: ScreenAppearancesArchiveProps) {
-  const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
   const decoIcons = getPageDecoIcons(3, `screen-appearances-${center}`)
-  const where: Where = {
-    and: [
-      {
-        displayStatus: {
-          equals: 'published',
-        },
-      },
-      {
-        centers: {
-          equals: center,
-        },
-      },
-    ],
-  }
-  const [appearances, heroImages] = await Promise.all([
-    findScreenAppearancesPage({
-      page: currentPage,
-      payload,
-      where,
-    }),
-    findHeroImages({
-      payload,
-      where,
-    }),
-  ])
+  const { appearances, heroImages } = await getCachedScreenAppearancesArchive(center, currentPage)
   const totalPages = Math.max(appearances.totalPages || 1, 1)
   const safePage = Math.min(appearances.page || currentPage, totalPages)
 
@@ -167,6 +143,51 @@ export async function ScreenAppearancesArchive({
       </section>
     </main>
   )
+}
+
+function getCachedScreenAppearancesArchive(center: CenterSlug, page: number) {
+  return unstable_cache(
+    () => queryScreenAppearancesArchive(center, page),
+    ['frontend-screen-appearances', center, String(page)],
+    {
+      revalidate: 600,
+      tags: [`frontend_screen_appearances_${center}`],
+    },
+  )()
+}
+
+async function queryScreenAppearancesArchive(center: CenterSlug, page: number) {
+  const payload = await getPayload({ config: configPromise })
+  const where: Where = {
+    and: [
+      {
+        displayStatus: {
+          equals: 'published',
+        },
+      },
+      {
+        centers: {
+          equals: center,
+        },
+      },
+    ],
+  }
+  const [appearances, heroImages] = await Promise.all([
+    findScreenAppearancesPage({
+      page,
+      payload,
+      where,
+    }),
+    findHeroImages({
+      payload,
+      where,
+    }),
+  ])
+
+  return {
+    appearances,
+    heroImages,
+  }
 }
 
 type ScreenAppearanceHeroImage = {

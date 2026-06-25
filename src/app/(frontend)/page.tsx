@@ -4,8 +4,6 @@ import ImageGallery, {
   type ImageGalleryItem,
 } from '@/components/ui/image-gallery'
 
-export const dynamic = 'force-dynamic'
-
 const gateCenters: ImageGalleryItem[] = [
   {
     label: 'ART CENTER',

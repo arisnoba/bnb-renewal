@@ -10,6 +10,7 @@ import { youtubeThumbnailUrl } from '@/lib/youtube'
 import type { ExamPassedVideo } from '@/payload-types'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight, CirclePlay } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload, type Payload, type Where } from 'payload'
@@ -36,12 +37,8 @@ const examPassedVideoSelect = {
 } as const
 
 export async function ExamPassedVideosPage({ page = 1 }: ExamPassedVideosPageProps) {
-  const payload = await getPayload({ config: configPromise })
   const decoIcons = getPageDecoIcons(3, 'exam-passed-videos')
-  const videosPage = await findExamPassedVideosPage({
-    page,
-    payload,
-  })
+  const videosPage = await getCachedExamPassedVideosPage(page)
   const safePage = Math.min(videosPage.page || page, Math.max(videosPage.totalPages, 1))
 
   return (
@@ -128,6 +125,26 @@ export async function ExamPassedVideosPage({ page = 1 }: ExamPassedVideosPagePro
       </section>
     </main>
   )
+}
+
+function getCachedExamPassedVideosPage(page: number) {
+  return unstable_cache(
+    () => queryExamPassedVideosPage(page),
+    ['frontend-exam-passed-videos', String(page)],
+    {
+      revalidate: 600,
+      tags: ['frontend_exam_passed_videos'],
+    },
+  )()
+}
+
+async function queryExamPassedVideosPage(page: number) {
+  const payload = await getPayload({ config: configPromise })
+
+  return findExamPassedVideosPage({
+    page,
+    payload,
+  })
 }
 
 async function findExamPassedVideosPage({

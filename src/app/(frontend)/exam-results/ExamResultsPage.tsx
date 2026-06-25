@@ -10,6 +10,7 @@ import type { ExamResult } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload, type Payload, type Where } from 'payload'
@@ -74,14 +75,9 @@ const pageConfigByType = {
 } satisfies Record<ExamResultType, ExamResultPageConfig>
 
 export async function ExamResultsPage({ page = 1, resultType }: ExamResultPageProps) {
-  const payload = await getPayload({ config: configPromise })
   const config = pageConfigByType[resultType]
   const decoIcons = getPageDecoIcons(3, `exam-results-${resultType}`)
-  const resultsPage = await findExamResultsPage({
-    page,
-    payload,
-    resultType,
-  })
+  const resultsPage = await getCachedExamResultsPage({ page, resultType })
   const safePage = Math.min(resultsPage.page || page, Math.max(resultsPage.totalPages, 1))
 
   return (
@@ -169,6 +165,39 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
       </section>
     </main>
   )
+}
+
+function getCachedExamResultsPage({
+  page,
+  resultType,
+}: {
+  page: number
+  resultType: ExamResultType
+}) {
+  return unstable_cache(
+    () => queryExamResultsPage({ page, resultType }),
+    ['frontend-exam-results', resultType, String(page)],
+    {
+      revalidate: 600,
+      tags: [`frontend_exam_results_${resultType}`],
+    },
+  )()
+}
+
+async function queryExamResultsPage({
+  page,
+  resultType,
+}: {
+  page: number
+  resultType: ExamResultType
+}) {
+  const payload = await getPayload({ config: configPromise })
+
+  return findExamResultsPage({
+    page,
+    payload,
+    resultType,
+  })
 }
 
 async function findExamResultsPage({

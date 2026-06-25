@@ -3,7 +3,6 @@ import ExamPassedReviewsRoute, {
   generateStaticParams,
 } from '../exam-passed-reviews/page'
 
-export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 export { generateMetadata, generateStaticParams }

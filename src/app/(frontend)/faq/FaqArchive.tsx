@@ -1,4 +1,5 @@
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { getPayload, type Where } from 'payload'
 import Link from 'next/link'
 import React from 'react'
@@ -47,7 +48,7 @@ export type FaqDisplayItem = {
 
 export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
   const requestedCategory = normalizeCategory(activeCategory)
-  const faqs = await queryFaqs(center)
+  const faqs = await getCachedFaqs(center)
   const displayFaqs = faqs
     .map((faq) => faqDisplayForCenter(faq, center))
     .filter((item): item is FaqDisplayItem => Boolean(item))
@@ -103,6 +104,13 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
       </main>
     </>
   )
+}
+
+function getCachedFaqs(center: CenterSlug) {
+  return unstable_cache(() => queryFaqs(center), ['frontend-faqs', center], {
+    revalidate: 600,
+    tags: [`frontend_faqs_${center}`],
+  })()
 }
 
 async function queryFaqs(center: CenterSlug) {
