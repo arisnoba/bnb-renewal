@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter, centers } from '@/lib/centers'
 
@@ -66,20 +67,15 @@ export default async function FacilitiesPage({ params }: Args) {
         className="section-facilities-gallery relative overflow-hidden py-16 md:py-30"
       >
         <div className="container relative mb-14 md:mb-24">
-          <header className="section-facilities-gallery__head">
-            <p className="type-label-l font-bold text-brand">시설안내</p>
-            <h2
-              className="mt-10 type-display-m font-bold leading-[1.35] text-white md:type-display-l"
-              id="facilities-gallery-title"
-            >
-              배우가 디자인 되는 곳
-              <br />
-              배우앤배움 아트센터 강남 사옥
-            </h2>
-            <p className="mt-10 max-w-280 type-body-m leading-normal text-white/70">
-              배우앤배움 아트센터는 배우 훈련에 최적화된 스튜디오로 설계한 ‘공간 디자이너 김종구’의 작품입니다.
-            </p>
-          </header>
+          <PageIntro
+            as="h2"
+            className="section-facilities-gallery__head page-heading--dark"
+            description="배우앤배움 아트센터는 배우 훈련에 최적화된 스튜디오로 설계한 ‘공간 디자이너 김종구’의 작품입니다."
+            descriptionClassName="[--page-desc-line-height:1.5] [--page-desc-max-width:1120px]"
+            eyebrow="시설안내"
+            id="facilities-gallery-title"
+            title={'배우가 디자인 되는 곳\n배우앤배움 아트센터 강남 사옥'}
+          />
         </div>
         <div className="section-facilities-gallery__stage relative">
           <PageDeco className="hidden -right-28 top-[-25%] opacity-100 md:block" icon={decoIcons[2]} size="360px" />

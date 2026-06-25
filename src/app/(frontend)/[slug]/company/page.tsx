@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { centers, type CenterSlug, assertCenter } from '@/lib/centers'
 import type { History } from '@/payload-types'
@@ -327,14 +328,13 @@ export default async function CompanyPage({ params }: Args) {
           size="clamp(256px, 24vw, 320px)"
         />
         <div className="container relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          <header className="section-company-history__head col-span-1">
-            <p className="type-title-l font-extrabold uppercase text-brand">History</p>
-            <h2 className="mt-7 type-display-l font-bold text-white" id="company-history-title">
-              새로운 가능성을
-              <br />
-              만들어온 시간
-            </h2>
-          </header>
+          <PageIntro
+            as="h2"
+            className="section-company-history__head col-span-1 page-heading--dark"
+            eyebrow="History"
+            id="company-history-title"
+            title={'새로운 가능성을\n만들어온 시간'}
+          />
           <ol className="section-company-history__list relative flex flex-col lg:col-span-2">
             <span
               aria-hidden="true"

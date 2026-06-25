@@ -123,7 +123,7 @@ function EntertainmentEducationSection({
   return (
     <section
       aria-labelledby="entertainment-title"
-      className="section-entertainment section-p-block-base text-white"
+      className="section-entertainment section-p-t-base text-white"
     >
       <div className="container">
         <div className="section-entertainment__header">
@@ -247,29 +247,27 @@ function TrustActorEducationSystem({
   return (
     <section
       aria-labelledby="trust-actor-system-title"
-      className="section-trust-actor-system mt-24 md:mt-32"
+      className="section-trust-actor-system section-p-block-base text-white"
     >
-      <div className="section-trust-actor-system__header">
-        <p className="type-title-l font-bold leading-[1.4] text-brand">위탁연기자 교육시스템</p>
-        <h2
-          className="mt-8 type-display-l font-bold leading-[1.35] tracking-normal text-white md:mt-10"
-          id="trust-actor-system-title"
-        >
-          배우의 성장은 체계적인
-          <br />
-          관리에서 시작됩니다.
-        </h2>
-        <div className="mt-8 max-w-[960px] type-body-m leading-normal text-white/60 md:mt-10">
-          <p>
-            {centerName}의 위탁 교육연기자는 ‘활동준비 대상자’와 ‘현장투입 대상자’로
-            분류되어 관리되고 있습니다.
-          </p>
-          <p>
-            활동준비자의 경우 교육팀에서 관리하며, 현장투입자의 경우 교육팀과 캐스팅팀이
-            함께 연기자를 관리하고 있습니다.
-          </p>
-        </div>
-      </div>
+      <PageIntro
+        as="h2"
+        className="section-trust-actor-system__header page-heading--dark"
+        description={(
+          <>
+            <p>
+              {centerName}의 위탁 교육연기자는 ‘활동준비 대상자’와 ‘현장투입 대상자’로
+              분류되어 관리되고 있습니다.
+            </p>
+            <p>
+              활동준비자의 경우 교육팀에서 관리하며, 현장투입자의 경우 교육팀과 캐스팅팀이
+              함께 연기자를 관리하고 있습니다.
+            </p>
+          </>
+        )}
+        eyebrow="위탁연기자 교육시스템"
+        id="trust-actor-system-title"
+        title={'배우의 성장은 체계적인\n관리에서 시작됩니다.'}
+      />
 
       <div className="section-trust-actor-system__list mt-[60px] flex flex-col">
         {educationSystemCards(center, centerName).map((card) => (

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
+import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { getCenterLabel } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
@@ -34,12 +35,12 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
     <main className="page page-light page-admission page-top-offset" data-center={center}>
       <section className="section-admission-intro section-p-block-sm bg-white">
         <div className="container">
-          <header className="section-admission-intro__header">
-            <p className="type-label-m font-bold text-brand">{centerLabel}</p>
-            <h1 className="mt-4 type-headline-xl font-extrabold leading-tight text-neutral-950">
-              입학안내
-            </h1>
-          </header>
+          <PageIntro
+            as="h1"
+            className="section-admission-intro__header"
+            eyebrow={centerLabel}
+            title="입학안내"
+          />
 
           <nav
             aria-label="입학안내 섹션 이동"

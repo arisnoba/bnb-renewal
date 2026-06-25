@@ -92,8 +92,8 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
             className="section-artist-press-hero__title page-hero-label"
           >
             <span className="block text-brand">아티스트</span>
-            <span className="block">BNB출신</span>
-            <span className="block">아티스트</span>
+            <span className="block">BNB</span>
+            <span className="block">출신 아티스트</span>
           </div>
         </div>
       </section>
