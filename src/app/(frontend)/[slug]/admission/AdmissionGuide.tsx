@@ -14,16 +14,19 @@ import type { CenterSlug } from '@/lib/centers'
 import { getCenterLabel } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
+import { FloatingDock } from '../../_components/FloatingDock.client'
 import { getAdmissionContent } from './admissionContent'
 import type { ContentTable, ProcedureStep, TableRow } from './admissionContent'
 import { SmoothAnchorLink } from './SmoothAnchorLink.client'
 
 const navItems = [
-  { href: '#procedure', label: '입학절차' },
-  { href: '#tuition', label: '수강료/장학제도' },
-  { href: '#leave-completion', label: '휴학/복학/수료' },
-  { href: '#refund', label: '환불정책' },
+  { href: '#procedure', label: '입학절차', shortLabel: '입학' },
+  { href: '#tuition', label: '수강료/장학제도', shortLabel: '수강료' },
+  { href: '#leave-completion', label: '휴학/복학/수료', shortLabel: '휴복학' },
+  { href: '#refund', label: '환불정책', shortLabel: '환불' },
 ] as const
+
+const navSectionIds = navItems.map((item) => item.href.slice(1))
 
 const procedureIcons = [Phone, School, ClipboardList, CreditCard, UserCheck]
 
@@ -120,6 +123,14 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
           </div>
         </div>
       </section>
+
+      <FloatingDock
+        ariaLabel="입학안내 빠른 섹션 이동"
+        className="section-admission__dock"
+        items={navItems}
+        sectionIds={navSectionIds}
+        showAfterSelector=".section-admission-intro__nav"
+      />
     </main>
   )
 }

@@ -28,6 +28,8 @@ import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
+import { FloatingDock } from '../../_components/FloatingDock.client'
+
 type TabKey = 'steps' | 'criteria' | 'cohorts'
 type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
 type CriteriaEntryKey = 'experience' | 'inHouse' | 'major' | 'transfer'
@@ -102,10 +104,12 @@ type GradeSystemContent = {
 }
 
 const tabs = [
-  { key: 'steps', label: '단계별 교육' },
-  { key: 'criteria', label: '등급 · 심사 기준' },
-  { key: 'cohorts', label: '기수 안내' },
-] satisfies Array<{ key: TabKey; label: string }>
+  { href: '#steps', key: 'steps', label: '단계별 교육' },
+  { href: '#criteria', key: 'criteria', label: '등급 · 심사 기준' },
+  { href: '#cohorts', key: 'cohorts', label: '기수 안내' },
+] satisfies Array<{ href: `#${TabKey}`; key: TabKey; label: string }>
+
+const tabSectionIds = tabs.map((tab) => tab.key)
 
 const gradeAssetBase = '/assets/art/grade-system'
 const gradeSystemDecoIcons = getPageDecoIcons(4, 'grade-system')
@@ -794,7 +798,7 @@ const gradeSystemContent = {
     stepClasses: artStepClasses,
     stepsDescriptionLines: [
       'I am Ready to Undertake the Dedication of Acting.',
-      '각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.',
+      '각 클래스의 세부 교육내용은 커리큘럼에서 검색하시기 바랍니다.',
     ],
     stepsCenterName: '아트센터',
     stepsTitleLines: [
@@ -831,7 +835,7 @@ const gradeSystemContent = {
     stepClasses: highteenStepClasses,
     stepsDescriptionLines: [
       'I am Ready to Undertake the Dedication of Acting.',
-      '각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.',
+      '각 클래스의 세부 교육내용은 커리큘럼에서 검색하시기 바랍니다.',
     ],
     stepsCenterName: '하이틴센터',
     stepsTitleLines: [
@@ -907,6 +911,16 @@ function cohortPeriod(year: number, half: CohortHalf) {
     : `${year}-07-01 ~ ${year}-12-31`
 }
 
+function getPageTopOffset() {
+  const value = window
+    .getComputedStyle(document.documentElement)
+    .getPropertyValue('--page-top-offset')
+
+  const parsed = Number.parseFloat(value)
+
+  return Number.isFinite(parsed) ? parsed : 84
+}
+
 function buildCohorts(startYear: number, date = new Date()): CohortRow[] {
   const { month, year } = currentKoreaYearMonth(date)
   const currentHalf: CohortHalf = month <= 6 ? '상반기' : '하반기'
@@ -933,74 +947,134 @@ function buildCohorts(startYear: number, date = new Date()): CohortRow[] {
 
 export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
   const data = gradeSystemContent[center]
-  const [activeTab, setActiveTab] = useState<TabKey>('steps')
+  const [activeSection, setActiveSection] = useState<TabKey>('steps')
 
   useEffect(() => {
-    function syncHashTab() {
-      const hashTab = window.location.hash.replace('#', '') as TabKey
+    let frameId = 0
 
-      if (tabs.some((tab) => tab.key === hashTab)) {
-        setActiveTab(hashTab)
+    function updateActiveSection() {
+      frameId = 0
+
+      const pageTopOffset = getPageTopOffset()
+      const activationY = pageTopOffset + window.innerHeight * 0.24
+      let nextActiveSection: TabKey = 'steps'
+
+      for (const tab of tabs) {
+        const element = document.getElementById(tab.key)
+
+        if (!element) {
+          continue
+        }
+
+        if (element.getBoundingClientRect().top <= activationY) {
+          nextActiveSection = tab.key
+        } else {
+          break
+        }
       }
+
+      setActiveSection(nextActiveSection)
     }
 
-    syncHashTab()
-    window.addEventListener('hashchange', syncHashTab)
+    function scheduleUpdate() {
+      if (frameId !== 0) {
+        return
+      }
 
-    return () => window.removeEventListener('hashchange', syncHashTab)
+      frameId = window.requestAnimationFrame(updateActiveSection)
+    }
+
+    updateActiveSection()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    window.addEventListener('hashchange', scheduleUpdate)
+
+    return () => {
+      if (frameId !== 0) {
+        window.cancelAnimationFrame(frameId)
+      }
+
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      window.removeEventListener('hashchange', scheduleUpdate)
+    }
   }, [])
 
-  function selectTab(tab: TabKey) {
-    setActiveTab(tab)
-    window.history.replaceState(null, '', `#${tab}`)
-  }
-
   return (
-    <section className="section-p-block-base relative overflow-hidden bg-[#111] text-white">
-      {activeTab === 'steps' ? (
-        <>
-          <PageDeco
-            className="left-0 top-[35%] hidden translate-x-[-10vw] lg:block"
-            icon={gradeSystemDecoIcons[2]}
-          />
-          <PageDeco
-            className="right-0 bottom-30 hidden translate-x-[50%] lg:block"
-            icon={gradeSystemDecoIcons[3]}
-          />
-        </>
-      ) : null}
-      <div className="container relative">
-        <nav aria-label="등급제 교육관리시스템" className="mb-16 border-b border-white/10">
+    <section className="relative overflow-hidden text-white">
+      <PageDeco
+        className="left-0 top-[35%] hidden translate-x-[-10vw] lg:block"
+        icon={gradeSystemDecoIcons[2]}
+      />
+      <PageDeco
+        className="right-0 bottom-30 hidden translate-x-[50%] lg:block"
+        icon={gradeSystemDecoIcons[3]}
+      />
+      <div className="container relative section-p-t-base">
+        <nav
+          aria-label="등급제 교육관리시스템 섹션 이동"
+          className="section-grade-system__nav mb-16 border-b border-white/10"
+        >
           <div className="flex min-w-0 gap-8 overflow-x-auto md:gap-20">
             {tabs.map((tab) => {
-              const isActive = activeTab === tab.key
+              const isActive = activeSection === tab.key
 
               return (
-                <button
-                  aria-selected={isActive}
+                <a
+                  aria-current={isActive ? 'true' : undefined}
                   className={cn(
-                    'relative h-14 shrink-0 type-label-l font-bold leading-none text-white/35 transition-colors hover:text-white',
+                    'relative flex h-14 shrink-0 items-center type-label-l font-bold leading-none text-white/35 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950',
                     isActive && 'text-brand',
                   )}
+                  href={tab.href}
                   key={tab.key}
-                  onClick={() => selectTab(tab.key)}
-                  role="tab"
-                  type="button"
                 >
                   {tab.label}
                   {isActive ? (
                     <span className="absolute inset-x-0 bottom-0 h-[3px] bg-brand" />
                   ) : null}
-                </button>
+                </a>
               )
             })}
           </div>
         </nav>
 
-        {activeTab === 'steps' ? <StepsPanel center={center} data={data} /> : null}
-        {activeTab === 'criteria' ? <CriteriaPanel data={data} /> : null}
-        {activeTab === 'cohorts' ? <CohortsPanel data={data} /> : null}
       </div>
+
+      <div className="relative">
+        <section
+          className="section-grade-system-steps section-p-block-base scroll-mt-[calc(var(--page-top-offset))]"
+          id="steps"
+        >
+          <div className="container relative">
+            <StepsPanel center={center} data={data} />
+          </div>
+        </section>
+        <section
+          className="section-grade-system-criteria section-p-block-base scroll-mt-[calc(var(--page-top-offset))] border-y border-white/10 bg-neutral-950"
+          id="criteria"
+        >
+          <div className="container relative">
+            <CriteriaPanel data={data} />
+          </div>
+        </section>
+        <section
+          className="section-grade-system-cohorts section-p-block-base scroll-mt-[calc(var(--page-top-offset))]"
+          id="cohorts"
+        >
+          <div className="container relative">
+            <CohortsPanel data={data} />
+          </div>
+        </section>
+      </div>
+      <FloatingDock
+        ariaLabel="등급제 교육관리시스템 빠른 섹션 이동"
+        className="section-grade-system__dock"
+        items={tabs}
+        sectionIds={tabSectionIds}
+        showAfterSelector=".section-grade-system__nav"
+        tone="dark"
+      />
     </section>
   )
 }
@@ -1012,7 +1086,7 @@ function StepsPanel({ center, data }: { center: GradeSystemCenter; data: GradeSy
   ]
   const descriptionLines = data.stepsDescriptionLines ?? [
     'I am Ready to Undertake the Dedication of Acting.',
-    '각 클래스의 세부 교육내용은 이달의 커리큘럼에서 검색하시기 바랍니다.',
+    '각 클래스의 세부 교육내용은 커리큘럼에서 검색하시기 바랍니다.',
   ]
 
   return (
@@ -1687,7 +1761,7 @@ function CohortsPanel({ data }: { data: GradeSystemContent }) {
   const latestCohort = cohorts[0]
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-8">
       <section className="max-w-190">
         <h2 className="type-headline-xl font-extrabold leading-[1.3]">기수 안내</h2>
         <p className="mt-7 type-body-m leading-[1.85] text-white/50">
@@ -1696,7 +1770,7 @@ function CohortsPanel({ data }: { data: GradeSystemContent }) {
       </section>
 
       <CohortTable cohorts={cohorts} />
-      <p className="type-caption-m leading-[1.7] text-white/35">
+      <p className="text-sm leading-normal text-white/35">
         상반기 기수는 1월부터 6월 30일까지, 하반기 기수는 7월부터 12월 31일까지 산정됩니다.
       </p>
     </div>
