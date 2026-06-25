@@ -99,10 +99,12 @@ export async function ScreenAppearanceDetailPage({
   ].filter((item) => item.value)
   const careerGroups = getCareerGroups(appearance)
   const adjacent = await queryAdjacentScreenAppearances({ center, slug: appearance.slug })
+  const backHref = `/${center}/screen-appearances`
+  const backLabel = 'BNB 출연장면'
 
   return (
     <DetailPage center={center} className="page-screen-appearances-detail">
-      <DetailBackLink href={`/${center}/screen-appearances`} label="BNB 출연장면" width="wide" />
+      <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
         <DetailHeader
@@ -213,6 +215,8 @@ export async function ScreenAppearanceDetailPage({
       </DetailContainer>
 
       <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
         nextHref={adjacent.nextHref}
         nextLabel={adjacent.nextLabel}
         previousHref={adjacent.previousHref}

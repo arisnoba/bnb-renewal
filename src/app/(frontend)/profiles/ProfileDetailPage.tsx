@@ -89,11 +89,12 @@ export async function ProfileDetailPage({
   ].filter((item): item is ProfileImageItem => Boolean(item))
   const [primaryImage, ...thumbnailImages] = profileImages
   const backHref = center ? `/${center}/rookies` : '/profiles'
+  const backLabel = center ? 'BNB 루키' : '프로필'
   const adjacent = await queryAdjacentProfiles({ center, slug: profile.slug })
 
   return (
     <DetailPage center={center}>
-      <DetailBackLink href={backHref} label={center ? 'BNB 루키' : '프로필'} width="wide" />
+      <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
         <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
@@ -183,6 +184,8 @@ export async function ProfileDetailPage({
       </DetailContainer>
 
       <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
         nextHref={adjacent.nextHref}
         previousHref={adjacent.previousHref}
         width="wide"

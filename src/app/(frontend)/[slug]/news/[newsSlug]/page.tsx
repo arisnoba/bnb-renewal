@@ -46,10 +46,12 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
   const description = getNewsDescription(news)
   const body = hasLexicalContent(news.body) ? news.body : undefined
   const adjacent = await queryAdjacentNews({ center, slug: news.slug })
+  const backHref = `/${center}/news`
+  const backLabel = 'NEWS&NOTICE'
 
   return (
     <DetailPage center={center}>
-      <DetailBackLink href={`/${center}/news`} label="NEWS&NOTICE" />
+      <DetailBackLink href={backHref} label={backLabel} />
 
       <DetailContainer>
         <DetailHeader
@@ -80,7 +82,12 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
         ) : null}
       </DetailContainer>
 
-      <DetailPager nextHref={adjacent.nextHref} previousHref={adjacent.previousHref} />
+      <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
+        nextHref={adjacent.nextHref}
+        previousHref={adjacent.previousHref}
+      />
     </DetailPage>
   )
 }

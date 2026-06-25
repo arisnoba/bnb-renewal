@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 
 import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
+import { FloatingDock } from './FloatingDock.client'
 
 type DetailWidth = 'narrow' | 'wide'
 
@@ -117,6 +118,8 @@ export function DetailHeader({
 }
 
 type DetailPagerProps = {
+  listHref?: string
+  listLabel?: string
   nextHref?: string | null
   nextLabel?: string
   previousHref?: string | null
@@ -125,6 +128,8 @@ type DetailPagerProps = {
 }
 
 export function DetailPager({
+  listHref,
+  listLabel = '목록',
   nextHref,
   nextLabel = '다음 글',
   previousHref,
@@ -132,15 +137,46 @@ export function DetailPager({
   width = 'narrow',
 }: DetailPagerProps) {
   return (
-    <DetailContainer className="mt-16" width={width}>
-      <nav
-        aria-label="상세 페이지 이동"
-        className="flex min-h-22 items-center justify-between gap-6 border-t-2 border-foreground py-8"
-      >
-        <DetailPagerLink direction="previous" href={previousHref} label={previousLabel} />
-        <DetailPagerLink direction="next" href={nextHref} label={nextLabel} />
-      </nav>
-    </DetailContainer>
+    <>
+      <DetailContainer className="mt-16" width={width}>
+        <nav
+          aria-label="상세 페이지 하단 이동"
+          className="flex min-h-22 items-center justify-between gap-6 border-t-2 border-foreground py-8"
+        >
+          <DetailPagerLink direction="previous" href={previousHref} label={previousLabel} />
+          <DetailPagerLink direction="next" href={nextHref} label={nextLabel} />
+        </nav>
+      </DetailContainer>
+      <div aria-hidden="true" className="h-24 md:h-28" />
+      <FloatingDock
+        ariaLabel="상세 페이지 빠른 이동"
+        className="section-detail__dock"
+        items={[
+          {
+            ariaLabel: `이전 글: ${previousLabel}`,
+            href: previousHref,
+            kind: 'previous',
+            label: previousLabel,
+            shortLabel: '이전',
+          },
+          {
+            ariaLabel: `${listLabel} 목록`,
+            href: listHref,
+            kind: 'list',
+            label: listLabel,
+            shortLabel: '목록',
+          },
+          {
+            ariaLabel: `다음 글: ${nextLabel}`,
+            href: nextHref,
+            kind: 'next',
+            label: nextLabel,
+            shortLabel: '다음',
+          },
+        ]}
+        showIcons
+      />
+    </>
   )
 }
 

@@ -81,10 +81,11 @@ export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
   const interviews = getInterviews(review)
   const body = hasLexicalContent(review.body) ? review.body : null
   const adjacent = await queryAdjacentExamPassedReviews(review.slug)
+  const backLabel = '수강생 합격후기'
 
   return (
     <DetailPage center={center} className="page-exam-passed-review-detail">
-      <DetailBackLink href={pathPrefix} label="수강생 합격후기" width="wide" />
+      <DetailBackLink href={pathPrefix} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
         <header className="section-exam-passed-review-detail__header mb-10 md:mb-16">
@@ -156,6 +157,8 @@ export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
       </DetailContainer>
 
       <DetailPager
+        listHref={pathPrefix}
+        listLabel={backLabel}
         nextHref={adjacent.nextHref}
         nextLabel="다음 글"
         previousHref={adjacent.previousHref}

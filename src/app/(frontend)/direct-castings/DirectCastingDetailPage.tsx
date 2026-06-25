@@ -73,6 +73,8 @@ export async function DirectCastingDetailPage({
   const companyValues = directCastingCompanyValues(casting.company)
   const primaryCompany = companyValues[0]
   const companyLabel = getDirectCastingCompanyLabels(casting.company).join(' · ')
+  const backHref = directCastingBackHref({ center, company: primaryCompany })
+  const backLabel = '다이렉트 캐스팅'
   const adjacent = await queryAdjacentDirectCastings({
     center,
     company: primaryCompany,
@@ -81,11 +83,7 @@ export async function DirectCastingDetailPage({
 
   return (
     <DetailPage center={center} className="page-direct-casting-detail">
-      <DetailBackLink
-        href={directCastingBackHref({ center, company: primaryCompany })}
-        label="다이렉트 캐스팅"
-        width="wide"
-      />
+      <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
         <DetailHeader
@@ -112,6 +110,8 @@ export async function DirectCastingDetailPage({
       </DetailContainer>
 
       <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
         nextHref={adjacent.nextHref}
         nextLabel={adjacent.nextLabel}
         previousHref={adjacent.previousHref}

@@ -91,6 +91,8 @@ export async function TeacherDetailPage({
     .filter((work) => work.title || work.description || work.posterMedia || work.posterPath)
     .slice(0, 8)
   const adjacent = await queryAdjacentTeachers({ center, slug: teacher.slug })
+  const backHref = `/${center}/teachers`
+  const backLabel = '교육진 소개'
 
   return (
     <DetailPage
@@ -108,7 +110,7 @@ export async function TeacherDetailPage({
         icon={decoIcons[1]}
       />
 
-      <DetailBackLink href={`/${center}/teachers`} label="교육진 소개" width="wide" />
+      <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
         <div className="section-teacher-detail__profile grid gap-5 lg:grid-cols-2 lg:items-start">
@@ -164,6 +166,8 @@ export async function TeacherDetailPage({
       </DetailContainer>
 
       <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
         nextHref={adjacent.nextHref}
         nextLabel={adjacent.nextLabel}
         previousHref={adjacent.previousHref}

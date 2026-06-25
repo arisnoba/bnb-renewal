@@ -82,10 +82,12 @@ export async function ArtistPressDetailPage({
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
   const eyebrow = [artistPress.actorName, artistPress.generation].filter(Boolean).join(' ')
   const adjacent = await queryAdjacentArtistPress({ center, slug: artistPress.slug })
+  const backHref = center ? `/${center}/artist-press` : '/artist-press'
+  const backLabel = 'BNB출신 아티스트'
 
   return (
     <DetailPage center={center}>
-      <DetailBackLink href={center ? `/${center}/artist-press` : '/artist-press'} label="BNB출신 아티스트" />
+      <DetailBackLink href={backHref} label={backLabel} />
 
       <DetailContainer>
         <DetailHeader
@@ -116,7 +118,12 @@ export async function ArtistPressDetailPage({
         ) : null}
       </DetailContainer>
 
-      <DetailPager nextHref={adjacent.nextHref} previousHref={adjacent.previousHref} />
+      <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
+        nextHref={adjacent.nextHref}
+        previousHref={adjacent.previousHref}
+      />
     </DetailPage>
   )
 }

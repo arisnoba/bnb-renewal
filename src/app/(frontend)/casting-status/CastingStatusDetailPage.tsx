@@ -78,14 +78,12 @@ export async function CastingStatusDetailPage({
   ].filter((item) => normalizeText(item.value))
   const castMembers = normalizeCastMembers(casting.castMembers)
   const adjacent = await queryAdjacentCastingStatus({ center, slug: casting.slug })
+  const backHref = `/${center}/casting-status`
+  const backLabel = '진행중인 캐스팅 출연현황'
 
   return (
     <DetailPage center={center} className="page-casting-status-detail">
-      <DetailBackLink
-        href={`/${center}/casting-status`}
-        label="진행중인 캐스팅 출연현황"
-        width="wide"
-      />
+      <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
         <header className="section-casting-status-detail__header mb-10 flex flex-col gap-4 md:mb-14 md:flex-row md:items-center md:justify-between">
@@ -178,6 +176,8 @@ export async function CastingStatusDetailPage({
       </DetailContainer>
 
       <DetailPager
+        listHref={backHref}
+        listLabel={backLabel}
         nextHref={adjacent.nextHref}
         nextLabel={adjacent.nextLabel}
         previousHref={adjacent.previousHref}
