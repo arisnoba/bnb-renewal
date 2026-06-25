@@ -186,7 +186,7 @@ function getCastingSystemItems(center: CenterSlug): CastingSystemItem[] {
     },
     {
       description: [
-        `현재 배우앤배움에 연기교육을 위탁 중인 60여 곳의 중·대형 엔터테인먼트사에서 배우앤배움의 기획사 연계 시스템에 참여하고 있으며, 배우앤배움 ${centerName}는 배우앤배움 ENM과 협력 관계로 있는 모든 중·대형 엔터테인먼트사에 배우앤배움 수강생들을 소개하고 있습니다. 특히 매해 10월에 열리는 배우앤배움 [프리미엄 매니지먼트 오디션]은 이미 많은 매니저들에게 정평이 나 있는 오디션으로 연기자와 엔터사간의 실제적인 매니지먼트 소속계약으로 이어져 오고 있습니다. 또한, 상시적인 엔터테인먼트 개별 오디션을 통해 많은 수강생들이 안정적인 매니지먼트 계약기회를 제공받고, 진행되는 계약사항 역시 사단법인 한국연예매니지먼트협회와 배움앤배움 법무팀의 중재를 통해 안전하게 체결되고 있습니다.`,
+        `현재 배우앤배움에 연기교육을 위탁 중인 60여 곳의 중·대형 엔터테인먼트사에서 배우앤배움의 기획사 연계 시스템에 참여하고 있으며, 배우앤배움 ${centerName}는 배우앤배움 EnM과 협력 관계로 있는 모든 중·대형 엔터테인먼트사에 배우앤배움 수강생들을 소개하고 있습니다. 특히 매해 10월에 열리는 배우앤배움 [프리미엄 매니지먼트 오디션]은 이미 많은 매니저들에게 정평이 나 있는 오디션으로 연기자와 엔터사간의 실제적인 매니지먼트 소속계약으로 이어져 오고 있습니다. 또한, 상시적인 엔터테인먼트 개별 오디션을 통해 많은 수강생들이 안정적인 매니지먼트 계약기회를 제공받고, 진행되는 계약사항 역시 사단법인 한국연예매니지먼트협회와 배움앤배움 법무팀의 중재를 통해 안전하게 체결되고 있습니다.`,
       ],
       englishTitle: "Pre-Management Service",
       id: "agency",
@@ -253,7 +253,7 @@ export default async function CastingSystemPage({ params }: Args) {
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
           <h1
-            className="section-casting-system-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+            className="section-casting-system-hero__title page-title"
             id="casting-system-hero-title"
           >
             <span className="block text-brand">캐스팅</span>

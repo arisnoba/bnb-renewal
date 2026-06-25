@@ -59,7 +59,7 @@ export default async function CenterMapPage({ params }: Args) {
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
-          <h1 className="page-title font-['Pyeojin_Gothic','Pretendard',sans-serif]">
+          <h1 className="page-title">
             <span className="block text-brand">배우앤배움</span>
             <span className="block">오시는 길</span>
           </h1>

@@ -142,7 +142,7 @@
 .section-artist-press-card__image {
   object-fit: cover;
   object-position: center top;
-  transition: transform 260ms ease;
+  transition: transform 260ms ease-out;
 }
 
 .section-artist-press-card:hover .section-artist-press-card__image {

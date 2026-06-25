@@ -113,7 +113,7 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
               배우앤배움이 배출한<br className='hidden sm:block' /> 선배 연기자들의 다양한 소식입니다.
             </h2>
             <p className="section-artist-press-list__description type-body-m leading-normal">
-              배우앤배움은 수강생의 데뷔이전부터 활동하고 있는 현재까지 각 배우의 액팅코치로서 지속적인 모니터링 및 연기지도를 하고 있습니다.
+              배우앤배움은 수강생의 데뷔 이전부터 활동하고 있는 현재까지 각 배우의 액팅 코치로서 지속적인 모니터링 및 연기지도를 하고 있습니다.
             </p>
           </header>
 
