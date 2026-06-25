@@ -174,7 +174,12 @@ test('main banners can sync into center-specific order arrays without duplicates
 
 test('main banner save prepends new banner to its center order', async () => {
   const syncOrder = MainBanners.hooks?.afterChange?.[0] as (args: Record<string, unknown>) => unknown
+  const req = {
+    transactionID: 'test-transaction',
+  }
   let updatedData: unknown
+  let findGlobalReq: unknown
+  let updateGlobalReq: unknown
 
   assert.equal(typeof syncOrder, 'function')
 
@@ -182,12 +187,18 @@ test('main banner save prepends new banner to its center order', async () => {
     doc: { center: 'exam', id: 7 },
     operation: 'create',
     req: {
+      ...req,
       payload: {
-        findGlobal: async () => ({
-          examBanners: [{ banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
-        }),
-        updateGlobal: async ({ data }: { data: unknown }) => {
+        findGlobal: async ({ req: operationReq }: { req?: unknown }) => {
+          findGlobalReq = operationReq
+
+          return {
+            examBanners: [{ banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
+          }
+        },
+        updateGlobal: async ({ data, req: operationReq }: { data: unknown; req?: unknown }) => {
           updatedData = data
+          updateGlobalReq = operationReq
         },
       },
     },
@@ -196,6 +207,14 @@ test('main banner save prepends new banner to its center order', async () => {
   assert.deepEqual(updatedData, {
     examBanners: [{ banner: 7 }, { banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
   })
+  assert.equal(
+    (findGlobalReq as { transactionID?: unknown })?.transactionID,
+    req.transactionID,
+  )
+  assert.equal(
+    (updateGlobalReq as { transactionID?: unknown })?.transactionID,
+    req.transactionID,
+  )
 })
 
 test('main banners expose center at the top of linked content tab', async () => {

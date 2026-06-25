@@ -273,6 +273,7 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
     slug: 'main',
     depth: 0,
     overrideAccess: true,
+    req,
   })) as unknown as MainBannerOrderData
   const centerOrderField = mainBannerOrderField(center)
   const currentRows = main[centerOrderField]
@@ -301,6 +302,7 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
     data,
     depth: 0,
     overrideAccess: true,
+    req,
   })
 
   return doc
