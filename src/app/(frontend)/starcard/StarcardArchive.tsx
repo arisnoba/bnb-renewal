@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 import React from 'react'
 
+import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import type { Media as MediaType, StarCard } from '@/payload-types'
 
@@ -24,19 +25,14 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
         <div className="container">
           <header className="section-starcard-list__head grid gap-12 lg:grid-cols-[minmax(0,620px)_1fr] lg:items-start">
             <div>
-              <p className="section-starcard-list__eyebrow page-eyebrow">
-                스타카드 멤버쉽서비스
-              </p>
-              <h1 className="section-starcard-list__title page-title">
-                배우앤배움 스타카드
-              </h1>
-              <p className="section-starcard-list__description page-desc">
-                배우앤배움 스타카드는 수강생들의 편의를 위해 헬스, 뷰티, 병원,
-                레스토랑 등 배우앤배움과 제휴를 맺은 다양한 편의시설의 할인 또는
-                추가혜택을 누리실 수 있는 배우앤배움 멤버쉽 서비스입니다.
-                스타카드는 수강생의 이름, 사용기한, 고유번호가 개별적으로 부여되며,
-                배우앤배움 아트센터의 수강기간동안 무제한으로 사용이 가능합니다.
-              </p>
+              <PageIntro
+                description="배우앤배움 스타카드는 수강생들의 편의를 위해 헬스, 뷰티, 병원, 레스토랑 등 배우앤배움과 제휴를 맺은 다양한 편의시설의 할인 또는 추가혜택을 누리실 수 있는 배우앤배움 멤버쉽 서비스입니다. 스타카드는 수강생의 이름, 사용기한, 고유번호가 개별적으로 부여되며, 배우앤배움 아트센터의 수강기간동안 무제한으로 사용이 가능합니다."
+                descriptionClassName="section-starcard-list__description"
+                eyebrow="스타카드 멤버쉽서비스"
+                eyebrowClassName="section-starcard-list__eyebrow"
+                title="배우앤배움 스타카드"
+                titleClassName="section-starcard-list__title"
+              />
               <div className="section-starcard-list__actions mt-10 flex flex-wrap gap-2">
                 <Link
                   className="section-starcard-list__partnership-link inline-flex h-[43px] items-center justify-center rounded-full bg-foreground px-5 type-label-m font-bold leading-none text-background transition-colors hover:bg-brand hover:text-white"

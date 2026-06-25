@@ -1,4 +1,5 @@
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
   PaginationContent,
@@ -78,13 +79,13 @@ export async function ExamPassedReviewsPage({ page = 1 }: ExamPassedReviewsPageP
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
           <div className="section-exam-passed-reviews-hero__title-wrap">
-            <h1
-              className="section-exam-passed-reviews-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+            <div
+              className="section-exam-passed-reviews-hero__title page-hero-label"
               id="exam-passed-reviews-hero-title"
             >
               <span className="block text-brand">합격자소개</span>
               <span className="block">수강생 합격후기</span>
-            </h1>
+            </div>
           </div>
         </div>
       </section>
@@ -95,22 +96,21 @@ export async function ExamPassedReviewsPage({ page = 1 }: ExamPassedReviewsPageP
         id={listAnchorId}
       >
         <div className="container">
-          <header className="section-exam-passed-reviews-list__head mb-16 md:mb-20">
-            <p className="section-exam-passed-reviews-list__eyebrow mb-8 type-title-l font-bold leading-[1.4] text-brand md:mb-10">
-              수강생 합격후기
-            </p>
-            <h2
-              className="section-exam-passed-reviews-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-              id="exam-passed-reviews-list-title"
-            >
-              <span className="block">배우를 향한 꿈을 현실로 만들어낸</span>
-              <span className="block">합격생들의 진솔한 이야기를 만나보세요.</span>
-            </h2>
-            <div className="section-exam-passed-reviews-list__description mt-6 type-body-m font-medium text-neutral-500 md:mt-8">
-              <p>배우앤배움 입시센터 합격생들이 직접 작성한 합격후기입니다.</p>
-              <p>대입 연극영화과 입시를 준비하는 모든 수강생들에게 도움이 되길 바랍니다.</p>
-            </div>
-          </header>
+          <PageIntro
+            className="section-exam-passed-reviews-list__head mb-16 md:mb-20"
+            description={(
+              <>
+                <p>배우앤배움 입시센터 합격생들이 직접 작성한 합격후기입니다.</p>
+                <p>대입 연극영화과 입시를 준비하는 모든 수강생들에게 도움이 되길 바랍니다.</p>
+              </>
+            )}
+            descriptionClassName="section-exam-passed-reviews-list__description"
+            eyebrow="수강생 합격후기"
+            eyebrowClassName="section-exam-passed-reviews-list__eyebrow"
+            id="exam-passed-reviews-list-title"
+            title={'배우를 향한 꿈을 현실로 만들어낸\n합격생들의 진솔한 이야기를 만나보세요.'}
+            titleClassName="section-exam-passed-reviews-list__title"
+          />
 
           {reviewsPage.docs.length > 0 ? (
             <>

@@ -7,6 +7,7 @@ import { getPayload, type Where } from 'payload'
 import React from 'react'
 
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import { extractYouTubeVideoId, youtubeThumbnailUrl, youtubeWatchUrl } from '@/lib/youtube'
@@ -82,14 +83,14 @@ export default async function HighteenSpecialLecturePage({
         <div aria-hidden="true" className="absolute inset-0 bg-black/65" />
         <HeroDeco />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-special-lecture-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-special-lecture-hero__title page-hero-label"
             id="special-lecture-hero-title"
           >
             <span className="block text-brand">교육</span>
             <span className="block">하이틴센터</span>
             <span className="block">특강</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -98,23 +99,21 @@ export default async function HighteenSpecialLecturePage({
         className="section-special-lecture-list section-p-block-base text-white"
       >
         <div className="container">
-          <header className="section-special-lecture-list__head mb-14 md:mb-20">
-            <p className="section-special-lecture-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              하이틴센터 특강
-            </p>
-            <h2
-              className="section-special-lecture-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-              id="special-lecture-list-title"
-            >
-              배우의 성장을 위한
-              <br />
-              특별한 만남
-            </h2>
-            <div className="section-special-lecture-list__description mt-6 type-body-m leading-[1.6] text-white/60 md:mt-8">
-              <p>배우앤배움에서 직접 촬영한 영상입니다.</p>
-              <p>영상 제작은 배우앤배움의 자회사 BnB Media에서 주관하고 있습니다.</p>
-            </div>
-          </header>
+          <PageIntro
+            className="section-special-lecture-list__head page-heading--dark mb-14 md:mb-20"
+            description={(
+              <>
+                <p>배우앤배움에서 직접 촬영한 영상입니다.</p>
+                <p>영상 제작은 배우앤배움의 자회사 BnB Media에서 주관하고 있습니다.</p>
+              </>
+            )}
+            descriptionClassName="section-special-lecture-list__description"
+            eyebrow="하이틴센터 특강"
+            eyebrowClassName="section-special-lecture-list__eyebrow"
+            id="special-lecture-list-title"
+            title={'배우의 성장을 위한\n특별한 만남'}
+            titleClassName="section-special-lecture-list__title"
+          />
 
           {lectures.docs.length === 0 ? (
             <p className="section-special-lecture-list__empty border-y border-white/15 py-18 text-center type-title-s font-semibold text-white/50">

@@ -3,6 +3,7 @@ import { getPayload, type Where } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
+import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { getCenterLabel } from '@/lib/centers'
 import type { Faq } from '@/payload-types'
@@ -69,19 +70,10 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
       <main className="page page-light page-faq page-top-offset" data-center={center}>
         <section className="section-faq-list section-p-block-base" aria-labelledby="faq-list-title">
           <div className="container-sm">
-            <div className="section-faq-list__head page-heading">
-              <p className="section-faq-list__eyebrow page-eyebrow type-title-l font-bold leading-[1.4]">
-                자주하는 질문
-              </p>
-              <h1
-                id="faq-list-title"
-                className="section-faq-list__title page-title type-display-l font-extrabold leading-[1.35]"
-              >
-                배우앤배움 FAQ입니다.
-                <br />
-                궁금한 내용을 확인해보세요.
-              </h1>
-              <div className="section-faq-list__description page-desc">
+            <PageIntro
+              className="section-faq-list__head"
+              description={(
+                <>
                 {/* <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p> */}
                 <p className="type-body-m leading-normal">
                   더 궁금한 점이 있으시면 <Link href={`/${center}/consult`} className="text-brand hover:underline">
@@ -89,8 +81,15 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
                   </Link>
                   바랍니다.
                 </p>
-              </div>
-            </div>
+                </>
+              )}
+              descriptionClassName="section-faq-list__description"
+              eyebrow="자주하는 질문"
+              eyebrowClassName="section-faq-list__eyebrow"
+              id="faq-list-title"
+              title={'배우앤배움 FAQ입니다.\n궁금한 내용을 확인해보세요.'}
+              titleClassName="section-faq-list__title"
+            />
 
             <FaqArchiveClient
               activeCategory={category}

@@ -1,4 +1,5 @@
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import {
   Pagination,
@@ -112,13 +113,13 @@ export async function ScreenAppearancesArchive({
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
+          <div
             id="screen-appearances-hero-title"
-            className="section-screen-appearances-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+            className="section-screen-appearances-hero__title page-hero-label"
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">BNB 출연장면</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -128,22 +129,16 @@ export async function ScreenAppearancesArchive({
         id={listAnchorId}
       >
         <div className="container">
-          <header className="section-screen-appearances-list__head mb-14 md:mb-20">
-            <p className="section-screen-appearances-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              BNB 출연장면
-            </p>
-            <h2
-              id="screen-appearances-list-title"
-              className="section-screen-appearances-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-            >
-              배우앤배움 수강생들의
-              <br />
-              드라마 · 영화 · 광고 촬영장면을 만나보세요.
-            </h2>
-            <p className="section-screen-appearances-list__description mt-6 type-body-m leading-[1.6] text-neutral-500 md:mt-8">
-              배우들에 관한 개인정보는 해당 법률의 규정에 따라 보호받고 있습니다.
-            </p>
-          </header>
+          <PageIntro
+            className="section-screen-appearances-list__head mb-14 md:mb-20"
+            description="배우들에 관한 개인정보는 해당 법률의 규정에 따라 보호받고 있습니다."
+            descriptionClassName="section-screen-appearances-list__description"
+            eyebrow="BNB 출연장면"
+            eyebrowClassName="section-screen-appearances-list__eyebrow"
+            id="screen-appearances-list-title"
+            title={'배우앤배움 수강생들의\n드라마 · 영화 · 광고 촬영장면을 만나보세요.'}
+            titleClassName="section-screen-appearances-list__title"
+          />
 
           {appearances.docs.length === 0 ? (
             <p className="section-screen-appearances-list__empty border-y border-neutral-200 py-18 text-center type-title-s font-semibold text-neutral-500">

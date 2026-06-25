@@ -198,7 +198,7 @@ export default async function CompanyPage({ params }: Args) {
           size="clamp(288px, 26vw, 360px)"
         />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">
-          <h1 className="section-company-hero__title type-display-l font-extrabold text-white md:type-display-xl" id="company-hero-title">
+          <h1 className="section-company-hero__title page-hero-label" id="company-hero-title">
             <span className="block text-brand">배우앤배움</span>
             <span className="block">회사소개</span>
           </h1>

@@ -12,6 +12,10 @@
   --page-title-line-height: 1.35;
   --page-title-margin-top: 0;
   --page-title-margin-bottom: 0;
+  --page-hero-label-color: #fff;
+  --page-hero-label-font-size: #{fluid-clamp(42px, 60px, 850px, 1200px)};
+  --page-hero-label-font-weight: 800;
+  --page-hero-label-line-height: 1.2;
   --page-desc-color: var(--muted-foreground);
   --page-desc-font-size: 16px;
   --page-desc-font-weight: 500;
@@ -20,9 +24,23 @@
   --page-desc-max-width: 620px;
 }
 
+.page.page-light {
+  --page-title-color: #222;
+  --page-desc-color: #666;
+}
+
 .page-heading {
   display: flex;
   flex-direction: column;
+}
+
+.page-heading--dark {
+  --page-title-color: #fff;
+  --page-desc-color: rgb(255 255 255 / 60%);
+}
+
+.page-heading--eyebrow-muted {
+  --page-eyebrow-color: rgb(255 255 255 / 50%);
 }
 
 .page-eyebrow {
@@ -41,10 +59,23 @@
   line-height: var(--page-title-line-height);
   margin: var(--page-title-margin-top) 0 var(--page-title-margin-bottom);
   text-wrap: balance;
+  white-space: pre-line;
   word-break: keep-all;
   & + .page-desc {
     margin-top: var(--page-desc-margin-top);
   }
+}
+
+.page-hero-label {
+  color: var(--page-hero-label-color);
+  font-size: var(--page-hero-label-font-size);
+  font-weight: var(--page-hero-label-font-weight);
+  letter-spacing: 0;
+  line-height: var(--page-hero-label-line-height);
+  margin: 0;
+  text-wrap: balance;
+  white-space: pre-line;
+  word-break: keep-all;
 }
 
 .page-desc {
@@ -53,6 +84,7 @@
   // font-weight: var(--page-desc-font-weight);
   line-height: var(--page-desc-line-height);
   max-width: var(--page-desc-max-width);
+  white-space: pre-line;
   word-break: keep-all;
 }
 
@@ -72,35 +104,22 @@
 
 .page-hero-dark {
   --page-eyebrow-color: rgb(255 255 255 / 75%);
+  --page-hero-label-color: #fff;
   --page-title-color: #fff;
   --page-desc-color: rgb(255 255 255 / 80%);
 }
 
 .page-consult .page-hero-dark {
-  --page-title-font-size: #{fluid-clamp(48px, 72px, 828px, 1241px)};
-  --page-title-font-weight: 600;
-  --page-title-line-height: 1.05;
   --page-desc-font-size: #{fluid-clamp(16px, 18px, 1143px, 1286px)};
   --page-desc-line-height: 1.75;
   --page-desc-margin-top: 24px;
-}
-
-.page-grade-system,
-.map-page {
-  --page-title-color: #fff;
-  --page-title-font-size: #{fluid-clamp(44px, 64px, 880px, 1280px)};
-  --page-title-font-weight: 800;
-  --page-title-line-height: 1.15;
-}
-
-.page-grade-system {
-  --page-title-line-height: 1.12;
 }
 
 @media (max-width: 767px) {
   .page {
     --page-eyebrow-font-size: 16px;
     --page-title-font-size: 34px;
+    --page-hero-label-font-size: 42px;
     --page-desc-font-size: 15px;
   }
 }

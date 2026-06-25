@@ -23,11 +23,11 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
     locations.find((location) => location.slug === selectedCenter) ?? locations[0]!
 
   return (
-    <section className="container section-p-block-base" >
+    <section aria-labelledby="map-content-title" className="container section-p-block-base">
       <div className="mb-[60px] flex flex-col gap-10">
-        <div>
-          <p className="mb-10 type-title-l font-bold leading-[1.4] text-brand">오시는 길</p>
-          <h2 className="type-display-l font-bold leading-tight tracking-normal md:leading-[1.35]">
+        <div className="page-heading page-heading--dark">
+          <p className="page-eyebrow">오시는 길</p>
+          <h1 className="page-title" id="map-content-title">
             배우의 가능성이 완성되는 공간
             <br />
             <WordRotate
@@ -42,7 +42,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
               }}
               words={locations.map((location) => location.name)}
             />
-          </h2>
+          </h1>
         </div>
 
         <nav aria-label="센터 선택" className="flex flex-wrap gap-2" data-center={selectedCenter}>

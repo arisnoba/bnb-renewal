@@ -1,6 +1,7 @@
 import type { CenterSlug } from '@/lib/centers'
 import type { AuditionSchedule } from '@/payload-types'
 
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { getCenterLabel } from '@/lib/centers'
 import configPromise from '@payload-config'
@@ -108,13 +109,13 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-schedule-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-schedule-hero__title page-hero-label"
             id="schedule-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">촬영ㆍ오디션 스케줄</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -123,19 +124,14 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
         className="section-schedule-calendar section-p-block-base bg-white text-neutral-900"
       >
         <div className="container">
-          <header className="section-schedule-calendar__head mb-10 md:mb-16">
-            <p className="section-schedule-calendar__eyebrow mb-6 type-title-s font-bold leading-[1.4] text-brand md:mb-8">
-              이달의 촬영ㆍ오디션 스케줄
-            </p>
-            <h2
-              className="section-schedule-calendar__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-              id="schedule-calendar-title"
-            >
-              배우앤배움 {centerLabel}의 촬영 및
-              <br />
-              오디션 스케줄을 한눈에 보실 수 있습니다.
-            </h2>
-          </header>
+          <PageIntro
+            className="section-schedule-calendar__head mb-10 md:mb-16"
+            eyebrow="이달의 촬영ㆍ오디션 스케줄"
+            eyebrowClassName="section-schedule-calendar__eyebrow"
+            id="schedule-calendar-title"
+            title={`배우앤배움 ${centerLabel}의 촬영 및\n오디션 스케줄을 한눈에 보실 수 있습니다.`}
+            titleClassName="section-schedule-calendar__title"
+          />
 
           <MonthNavigator
             center={center}

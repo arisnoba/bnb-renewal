@@ -154,7 +154,7 @@ export default async function CastingPage({ params }: Args) {
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
           <h1
-            className="section-casting-hero__title text-[52px] font-extrabold leading-[1.2] text-white md:text-[60px]"
+            className="section-casting-hero__title page-hero-label"
             id="casting-hero-title"
           >
             <span className="block text-brand">캐스팅</span>

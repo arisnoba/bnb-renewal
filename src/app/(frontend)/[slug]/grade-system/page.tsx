@@ -86,7 +86,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
           icon={center === 'kids' ? 'icon-ae.svg' : decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1 className="page-title">
+          <h1 className="page-hero-label">
             <span className="block whitespace-nowrap text-brand">교육</span>
             <span className="block">등급제</span>
             <span className="block">교육관리시스템</span>

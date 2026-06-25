@@ -4,6 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import {
   Pagination,
@@ -132,36 +133,28 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
           icon={decoIcons[2]}
         />
         <div className="section-rookies-hero__content">
-          <p className="section-rookies-hero__eyebrow type-display-xl font-extrabold leading-[1.2]">
-            아티스트
-          </p>
-          <h1
+          <div
             id="rookies-hero-title"
-            className="section-rookies-hero__title type-display-xl font-extrabold leading-[1.2]"
+            className="section-rookies-hero__title page-hero-label"
           >
-            BNB 루키
-          </h1>
+            <span className="block text-brand">아티스트</span>
+            <span className="block">BNB 루키</span>
+          </div>
         </div>
       </section>
 
       <section className="section-rookies-list" aria-labelledby="rookies-list-title">
         <div className="section-rookies-list__container">
-          <header className="section-rookies-list__head">
-            <p className="section-rookies-list__eyebrow type-title-l font-bold leading-[1.4]">
-              BNB 루키
-            </p>
-            <h2
-              id="rookies-list-title"
-              className="section-rookies-list__title type-display-l font-bold leading-[1.35]"
-            >
-              배우의 가능성은 준비에서 시작되지만,
-              <br />
-              결국은 더 좋은 기회를 만나는 순간 완성됩니다.
-            </h2>
-            <p className="section-rookies-list__description type-body-m leading-normal">
-              배우앤배움 EnM 매니지먼트팀은 수강생 한 명 한 명이 더 나은 작품과 소속사를 만날 수 있도록 체계적인 매니지먼트와 연결을 지원합니다.
-            </p>
-          </header>
+          <PageIntro
+            className="section-rookies-list__head"
+            description="배우앤배움 EnM 매니지먼트팀은 수강생 한 명 한 명이 더 나은 작품과 소속사를 만날 수 있도록 체계적인 매니지먼트와 연결을 지원합니다."
+            descriptionClassName="section-rookies-list__description"
+            eyebrow="BNB 루키"
+            eyebrowClassName="section-rookies-list__eyebrow"
+            id="rookies-list-title"
+            title={'배우의 가능성은 준비에서 시작되지만,\n결국은 더 좋은 기회를 만나는 순간 완성됩니다.'}
+            titleClassName="section-rookies-list__title"
+          />
 
           <div className="section-rookies-list__content">
             <FilterChips

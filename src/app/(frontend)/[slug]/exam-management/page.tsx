@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter, getCenterLabel } from '@/lib/centers'
 
@@ -142,13 +143,13 @@ export default async function ExamManagementPage({ params }: Args) {
           icon={decoIcons[1]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-exam-management-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-exam-management-hero__title page-hero-label"
             id="exam-management-hero-title"
           >
             <span className="block text-brand">교육</span>
             <span className="block">입시 매니지먼트</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -158,13 +159,12 @@ export default async function ExamManagementPage({ params }: Args) {
       >
         <div className="container grid items-start gap-12 overflow-visible lg:grid-cols-3">
           <aside className="section-exam-management-list__aside lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:self-start">
-            <h2
-              className="section-exam-management-list__title type-display-m font-semibold md:type-display-l"
+            <PageIntro
+              className="page-heading--dark"
               id="exam-management-list-title"
-            >
-              입시 설계부터
-              <br className="hidden md:block" /> 실전 대응까지
-            </h2>
+              title={'입시 설계부터\n실전 대응까지'}
+              titleClassName="section-exam-management-list__title"
+            />
 
             <ExamManagementIndex
               items={examManagementItems.map(({ id, title }) => ({

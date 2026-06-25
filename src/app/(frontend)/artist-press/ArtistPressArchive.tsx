@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import {
   Pagination,
@@ -86,36 +87,29 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
           icon={decoIcons[2]}
         />
         <div className="section-artist-press-hero__content">
-          <p className="section-artist-press-hero__eyebrow type-display-xl font-extrabold leading-[1.2]">
-            아티스트
-          </p>
-          <h1
+          <div
             id="artist-press-hero-title"
-            className="section-artist-press-hero__title type-display-xl font-extrabold leading-[1.2]"
+            className="section-artist-press-hero__title page-hero-label"
           >
-            BNB출신
-            <br />
-            아티스트
-          </h1>
+            <span className="block text-brand">아티스트</span>
+            <span className="block">BNB출신</span>
+            <span className="block">아티스트</span>
+          </div>
         </div>
       </section>
 
       <section className="section-artist-press-list" aria-labelledby="artist-press-list-title">
         <div className="section-artist-press-list__container">
-          <header className="section-artist-press-list__head">
-            <p className="section-artist-press-list__eyebrow type-title-l font-bold leading-[1.4]">
-              BNB출신 아티스트
-            </p>
-            <h2
-              id="artist-press-list-title"
-              className="section-artist-press-list__title type-display-l font-bold leading-[1.35]"
-            >
-              배우앤배움이 배출한<br className='hidden sm:block' /> 선배 연기자들의 다양한 소식입니다.
-            </h2>
-            <p className="section-artist-press-list__description type-body-m leading-normal">
-              배우앤배움은 수강생의 데뷔 이전부터 활동하고 있는 현재까지 각 배우의 액팅 코치로서 지속적인 모니터링 및 연기지도를 하고 있습니다.
-            </p>
-          </header>
+          <PageIntro
+            className="section-artist-press-list__head"
+            description="배우앤배움은 수강생의 데뷔 이전부터 활동하고 있는 현재까지 각 배우의 액팅 코치로서 지속적인 모니터링 및 연기지도를 하고 있습니다."
+            descriptionClassName="section-artist-press-list__description"
+            eyebrow="BNB출신 아티스트"
+            eyebrowClassName="section-artist-press-list__eyebrow"
+            id="artist-press-list-title"
+            title={'배우앤배움이 배출한\n선배 연기자들의 다양한 소식입니다.'}
+            titleClassName="section-artist-press-list__title"
+          />
 
           {artistPress.docs.length === 0 ? (
             <p className="section-artist-press-list__empty type-title-s font-semibold">

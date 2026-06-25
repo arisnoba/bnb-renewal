@@ -1,4 +1,5 @@
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
   PaginationContent,
@@ -119,13 +120,13 @@ export async function DirectCastingsArchive({
         <DirectCastingsHero images={heroImages} />
         <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
         <div className="container relative z-10 flex min-h-[520px] items-end pb-18 pt-32 md:min-h-[760px] md:pb-[120px]">
-          <h1
-            className="section-direct-castings-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-direct-castings-hero__title page-hero-label"
             id="direct-castings-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">다이렉트 캐스팅</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -135,19 +136,14 @@ export async function DirectCastingsArchive({
         id={listAnchorId}
       >
         <div className="container">
-          <header className="section-direct-castings-list__head mb-12 md:mb-16">
-            <p className="section-direct-castings-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              DIRECT CASTING
-            </p>
-            <h2
-              className="section-direct-castings-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-              id="direct-castings-list-title"
-            >
-              작품별 엔딩 크레딧과
-              <br />
-              캐스팅 이력을 확인해보세요.
-            </h2>
-          </header>
+          <PageIntro
+            className="section-direct-castings-list__head mb-12 md:mb-16"
+            eyebrow="DIRECT CASTING"
+            eyebrowClassName="section-direct-castings-list__eyebrow"
+            id="direct-castings-list-title"
+            title={'작품별 엔딩 크레딧과\n캐스팅 이력을 확인해보세요.'}
+            titleClassName="section-direct-castings-list__title"
+          />
 
           <DirectCastingTabs activeCompany={activeCompany} center={center} />
 

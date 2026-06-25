@@ -1,4 +1,5 @@
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
   PaginationContent,
@@ -114,13 +115,13 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
           <div className="section-exam-results-hero__title-wrap">
-            <h1
-              className="section-exam-results-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+            <div
+              className="section-exam-results-hero__title page-hero-label"
               id="exam-results-hero-title"
             >
               <span className="block text-brand">합격현황</span>
               <span className="block">{config.heroTitle}</span>
-            </h1>
+            </div>
           </div>
         </div>
       </section>
@@ -131,26 +132,18 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
         id={listAnchorId}
       >
         <div className="container">
-          <header className="section-exam-results-list__head mb-16 md:mb-20">
-            <p className="section-exam-results-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              {config.eyebrow}
-            </p>
-            <h2
-              className="section-exam-results-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-              id="exam-results-list-title"
-            >
-              {config.title.split('\n').map((line) => (
-                <span className="block" key={line}>
-                  {line}
-                </span>
-              ))}
-            </h2>
-            <div className="section-exam-results-list__description mt-6 type-body-m font-medium leading-[1.6] text-neutral-500 md:mt-8">
-              {config.description.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-          </header>
+          <PageIntro
+            className="section-exam-results-list__head mb-16 md:mb-20"
+            description={config.description.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+            descriptionClassName="section-exam-results-list__description"
+            eyebrow={config.eyebrow}
+            eyebrowClassName="section-exam-results-list__eyebrow"
+            id="exam-results-list-title"
+            title={config.title}
+            titleClassName="section-exam-results-list__title"
+          />
 
           {resultsPage.docs.length > 0 ? (
             <>

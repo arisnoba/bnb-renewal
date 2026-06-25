@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { PageIntro } from '@/components/PageIntro'
 import { assertCenter, centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
 
 type Args = {
@@ -224,21 +225,21 @@ export default async function CenterHowToUsePage({ params }: Args) {
         aria-labelledby="how-to-use-title"
       >
         <div className="container">
-          <header className="section-how-to-use__head mb-13 md:mb-20">
-            <h1 className="page-eyebrow">학원100%이용법</h1>
-            <h2 id="how-to-use-title" className="page-title">
-              배우앤배움 {centerName} 곳곳에 숨어있는
-              <br className="hidden md:block" />
-              프리미엄 서비스를 만나보세요.
-            </h2>
-            <p className="page-desc">
-              <span className="font-bold text-foreground">
-                배우앤배움 곳곳에 숨어있는 프리미엄 서비스
-              </span>
-              <br />
-              학원 100%이용법을 통해 배우앤배움의 다양한 혜택을 최대한 활용해보세요.
-            </p>
-          </header>
+          <PageIntro
+            className="section-how-to-use__head mb-13 md:mb-20"
+            description={(
+              <p>
+                <span className="font-bold text-foreground">
+                  배우앤배움 곳곳에 숨어있는 프리미엄 서비스
+                </span>
+                <br />
+                학원 100%이용법을 통해 배우앤배움의 다양한 혜택을 최대한 활용해보세요.
+              </p>
+            )}
+            eyebrow="학원100%이용법"
+            id="how-to-use-title"
+            title={`배우앤배움 ${centerName} 곳곳에 숨어있는\n프리미엄 서비스를 만나보세요.`}
+          />
 
           <div className="section-how-to-use__grid grid gap-px border border-neutral-200 bg-neutral-200 md:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => {

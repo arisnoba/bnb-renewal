@@ -8,6 +8,7 @@ import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { assertCenter, centers, type CenterSlug } from '@/lib/centers'
 import type { Agency } from '@/payload-types'
@@ -98,11 +99,11 @@ function EntertainmentHero() {
         className="absolute bottom-[-64px] right-[-52px] size-[190px] border-[58px] border-brand md:bottom-[-78px] md:right-[-70px] md:size-[260px] md:border-[78px]"
       />
       <div className="container relative flex min-h-[520px] items-end pb-[72px] pt-[calc(var(--admin-bar-height,0px)+118px)] md:min-h-[740px] md:pb-[126px] md:pt-[calc(var(--admin-bar-height,0px)+144px)]">
-        <h1 className="page-title">
+        <div className="page-hero-label">
           <span className="block text-brand">교육</span>
           <span className="block">엔터테인먼트</span>
           <span className="block">위탁교육</span>
-        </h1>
+        </div>
       </div>
     </section>
   )
@@ -126,16 +127,10 @@ function EntertainmentEducationSection({
     >
       <div className="container">
         <div className="section-entertainment__header">
-          <p className="type-title-l font-bold leading-[1.4] text-brand">엔터테인먼트 파트너</p>
-          <h2
-            className="mt-8 type-display-l font-bold leading-[1.35] tracking-normal text-white md:mt-10"
-            id="entertainment-title"
-          >
-            IRUDA 위탁교육 시스템입니다.
-            <br />
-            현장 경험으로 배우의 성장을 만듭니다.
-          </h2>
-          <div className="mt-8 type-body-m leading-normal text-white/60 md:mt-10">
+          <PageIntro
+            className="page-heading--dark"
+            description={(
+              <>
             <p>
               {centerName}는 국내 56여 곳 엔터테인먼트의 연기교육 파트너사로서 2010년
               개원부터 지금까지 해당 기획사의 소속 배우들을 위탁받아 교육하고 있습니다.
@@ -144,7 +139,12 @@ function EntertainmentEducationSection({
               교육했던 연기자들의 수많은 오디션과 작품 경험을 통해 수강생들에게 경험적,
               질적 우수성을 제공하고 있습니다.
             </p>
-          </div>
+              </>
+            )}
+            eyebrow="엔터테인먼트 파트너"
+            id="entertainment-title"
+            title={'IRUDA 위탁교육 시스템입니다.\n현장 경험으로 배우의 성장을 만듭니다.'}
+          />
         </div>
 
         {agencies.length > 0 ? (

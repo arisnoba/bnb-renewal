@@ -1,4 +1,5 @@
 import { Media } from '@/components/Media/Renderer'
+import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
   PaginationContent,
@@ -159,17 +160,14 @@ export async function NewsArchive({
     <main className="page page-light page-news-archive page-top-offset" data-center={center}>
       <section className="section-news-list section-p-block-base" aria-labelledby="news-list-title">
         <div className="section-news-list__container">
-          <header className="section-news-list__head page-heading">
-            <p className="section-news-list__eyebrow page-eyebrow type-title-l font-extrabold leading-[1.4]">
-              NEWS&amp;NOTICE
-            </p>
-            <h1
-              id="news-list-title"
-              className="section-news-list__title page-title type-display-l font-extrabold leading-[1.35] max-sm:leading-[1.28]"
-            >
-              {title}
-            </h1>
-          </header>
+          <PageIntro
+            className="section-news-list__head"
+            eyebrow="NEWS&NOTICE"
+            eyebrowClassName="section-news-list__eyebrow"
+            id="news-list-title"
+            title={title}
+            titleClassName="section-news-list__title"
+          />
 
           <FilterChips
             ariaLabel="뉴스 분류"

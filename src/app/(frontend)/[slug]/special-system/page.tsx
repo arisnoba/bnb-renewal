@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter, getCenterLabel } from '@/lib/centers'
 
@@ -129,13 +130,13 @@ export default async function SpecialSystemPage({ params }: Args) {
           icon={decoIcons[1]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-special-system-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-special-system-hero__title page-hero-label"
             id="special-system-hero-title"
           >
             <span className="block text-brand">교육</span>
             <span className="block">특별한 시스템</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -145,13 +146,12 @@ export default async function SpecialSystemPage({ params }: Args) {
       >
         <div className="container grid items-start gap-12 overflow-visible lg:grid-cols-3">
           <aside className="section-special-system-list__aside lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:self-start">
-            <h2
-              className="section-special-system-list__title type-display-m font-semibold md:type-display-l"
+            <PageIntro
+              className="page-heading--dark"
               id="special-system-list-title"
-            >
-              실기시험의 완성은
-              <br className="hidden md:block" /> 디테일입니다.
-            </h2>
+              title={'실기시험의 완성은\n디테일입니다.'}
+              titleClassName="section-special-system-list__title"
+            />
 
             <SpecialSystemIndex
               items={specialSystemItems.map(({ id, title }) => ({

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import Image from "next/image";
 
+import { PageIntro } from "@/components/PageIntro";
 import { getPageDecoIcons, PageDeco } from "@/components/PageDeco";
 import {
   assertCenter,
@@ -270,13 +271,13 @@ export default async function ProfileProductionPage({ params }: Args) {
           icon={decoIcons[1]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-profile-production-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-profile-production-hero__title page-hero-label"
             id="profile-production-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">배우 케어 시스템</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -286,13 +287,11 @@ export default async function ProfileProductionPage({ params }: Args) {
       >
         <div className="container grid items-start gap-12 overflow-visible lg:grid-cols-3">
           <aside className="section-profile-production-list__aside lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:self-start">
-            <h2
-              className="section-profile-production-list__title type-display-m font-semibold md:type-display-l"
+            <PageIntro
               id="profile-production-list-title"
-            >
-              프로필 제작
-              <br className="hidden md:block" /> 절차 안내
-            </h2>
+              title={'프로필 제작\n절차 안내'}
+              titleClassName="section-profile-production-list__title"
+            />
 
             <ProfileProductionIndex
               items={profileProductionItems.map(({ id, title }) => ({

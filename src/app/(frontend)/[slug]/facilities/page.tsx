@@ -51,7 +51,7 @@ export default async function FacilitiesPage({ params }: Args) {
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">
           <header className="section-facilities-hero__head">
             <h1
-              className="section-facilities-hero__title type-display-l font-extrabold leading-[1.2] md:type-display-xl"
+              className="section-facilities-hero__title page-hero-label"
               id="facilities-title"
             >
               <span className="block text-brand">배우앤배움</span>

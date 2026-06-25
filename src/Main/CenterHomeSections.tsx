@@ -6,6 +6,7 @@ import { cache, type ReactNode } from 'react'
 import { getPayload, type Where } from 'payload'
 
 import { CurriculumSearchForm } from '@/components/CurriculumSearchForm.client'
+import { PageIntro } from '@/components/PageIntro'
 import {
   footerCenterInfoForCenter,
   footerSocialLinks,
@@ -824,17 +825,16 @@ function SectionIntro({
   title: string
 }) {
   return (
-    <header className={align === 'center' ? 'text-center' : ''}>
-      <p className="section-center-home__eyebrow type-title-m font-semibold leading-[1.4] text-white/50">
-        {eyebrow}
-      </p>
-      <h2
-        className="section-center-home__title mt-6 whitespace-pre-line type-display-l font-semibold leading-[1.25] text-white md:type-display-l"
-        id={id}
-      >
-        {title}
-      </h2>
-    </header>
+    <PageIntro
+      align={align}
+      as="h2"
+      className="section-center-home__intro page-heading--dark page-heading--eyebrow-muted"
+      eyebrow={eyebrow}
+      eyebrowClassName="section-center-home__eyebrow"
+      id={id}
+      title={title}
+      titleClassName="section-center-home__title"
+    />
   )
 }
 

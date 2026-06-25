@@ -1,3 +1,4 @@
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import configPromise from '@payload-config'
@@ -80,13 +81,13 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
           icon={decoIcons[1]}
         />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
+          <div
             id="teachers-hero-title"
-            className="page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+            className="page-hero-label"
           >
             <span className="block text-brand">교육</span>
             <span className="block">교육진 소개</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -100,24 +101,16 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
         />
 
         <div className="container relative z-10 max-w-[1120px]">
-          <header className="section-teachers-list__head mb-16 md:mb-[100px]">
-            <p className="section-teachers-list__eyebrow type-title-s mb-8 font-bold leading-[1.4] text-brand md:mb-10">
-              교육진 소개
-            </p>
-            <h2
-              id="teachers-list-title"
-              className="section-teachers-list__title type-display-m font-extrabold leading-[1.35] text-white md:type-display-l"
-            >
-              훌륭한 스승을 만나는 것이
-              <br />
-              배움의 첫 시작입니다.
-            </h2>
-            <p className="section-teachers-list__description mt-8 type-body-m leading-[1.7] text-white/50 md:mt-10">
-              배우앤배움의 모든 교육진은 현재 드라마, 영화 등
-              <br className="hidden md:block" />
-              메이저채널에서 작품활동을 하시는 배우분들로 구성되어 있습니다.
-            </p>
-          </header>
+          <PageIntro
+            className="section-teachers-list__head page-heading--dark mb-16 md:mb-[100px]"
+            description={'배우앤배움의 모든 교육진은 현재 드라마, 영화 등\n메이저채널에서 작품활동을 하시는 배우분들로 구성되어 있습니다.'}
+            descriptionClassName="section-teachers-list__description"
+            eyebrow="교육진 소개"
+            eyebrowClassName="section-teachers-list__eyebrow"
+            id="teachers-list-title"
+            title={'훌륭한 스승을 만나는 것이\n배움의 첫 시작입니다.'}
+            titleClassName="section-teachers-list__title"
+          />
 
           {teachers.docs.length === 0 ? (
             <p className="section-teachers-list__empty border-y border-white/10 py-18 text-center type-title-s font-semibold text-white/50">

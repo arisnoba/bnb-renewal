@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import Image from 'next/image'
 import { ExternalLink, Headphones } from 'lucide-react'
 
+import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
 import { ConsultationForm } from './ConsultationForm'
@@ -45,11 +46,11 @@ const contactCards = [
 const infoItems = [
   {
     title: '상담신청자 개별연락',
-    value: 'CS상담센터에서 상담신청자의 방문예약 일정을 체크 후, 확인차 연락드립니다.',
+    value: 'CS 상담 센터에서 상담 신청자의 방문 예약 일정을 체크 후, 확인차 연락드립니다.',
   },
   {
     title: '당일 상담 희망자',
-    value: '당일 상담을 원하시면 반드시 CS상담센터에 전화 후, 상담일정을 확인하시기 바랍니다.',
+    value: '당일 상담을 원하시면 반드시 CS 상담 센터에 전화 후, 상담 일정을 확인하시기 바랍니다.',
   },
 ]
 
@@ -71,19 +72,12 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
         className="section-consult-hero section-p-block-sm bg-background"
       >
         <div className="container-sm">
-          <div className="section-consult-hero__heading page-heading">
-            <p className="page-eyebrow type-title-l font-bold leading-normal text-brand">
-              온라인 상담
-            </p>
-            <h1
-              className="page-title type-display-l font-extrabold leading-[1.35] text-foreground"
-              id="consult-hero-title"
-            >
-              {centerName}와 함께할
-              <br />
-              당신의 이야기를 기다립니다.
-            </h1>
-          </div>
+          <PageIntro
+            className="section-consult-hero__heading"
+            eyebrow="온라인 상담"
+            id="consult-hero-title"
+            title={`${centerName}와 함께할\n당신의 이야기를 기다립니다.`}
+          />
 
           <div className="section-consult-hero__cards mt-12 grid border border-border md:grid-cols-2">
             {contactCards.map((item, index) => (

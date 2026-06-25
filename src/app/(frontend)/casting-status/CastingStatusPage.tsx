@@ -1,3 +1,4 @@
+import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import configPromise from '@payload-config'
@@ -55,15 +56,15 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-casting-status-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+          <div
+            className="section-casting-status-hero__title page-hero-label"
             id="casting-status-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">
               출연현황
             </span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -72,26 +73,16 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
         className="section-casting-status-list section-p-block-base bg-white text-neutral-900"
       >
         <div className="container">
-          <header className="section-casting-status-list__head mb-16 md:mb-20">
-            <p className="section-casting-status-list__eyebrow mb-8 type-title-s font-bold leading-[1.4] text-brand md:mb-10">
-              캐스팅 출연현황
-            </p>
-            <h2
-              className="section-casting-status-list__title type-display-m font-extrabold leading-[1.35] md:type-display-l"
-              id="casting-status-list-title"
-            >
-              <span className="block md:inline">배우앤배움 수강생들의</span>{' '}
-              <span className="block md:inline">출연 작품은</span>
-              <br className="hidden md:block" />
-              <span className="block md:inline">ARKO Lab의 단독 캐스팅으로</span>{' '}
-              <span className="block md:inline">이어지고 있습니다.</span>
-            </h2>
-            <p className="section-casting-status-list__description mt-6 type-body-m leading-[1.6] text-neutral-500 md:mt-8">
-              ARKO Lab 에이전시와 사전협의 없는
-              <br className="md:hidden" />
-              무단도용 및 복제, 배포를 금합니다.
-            </p>
-          </header>
+          <PageIntro
+            className="section-casting-status-list__head mb-16 md:mb-20"
+            description={'ARKO Lab 에이전시와 사전협의 없는\n무단도용 및 복제, 배포를 금합니다.'}
+            descriptionClassName="section-casting-status-list__description"
+            eyebrow="캐스팅 출연현황"
+            eyebrowClassName="section-casting-status-list__eyebrow"
+            id="casting-status-list-title"
+            title={'배우앤배움 수강생들의 출연 작품은\nARKO Lab의 단독 캐스팅으로 이어지고 있습니다.'}
+            titleClassName="section-casting-status-list__title"
+          />
 
           {pageData.groups.length > 0 ? (
             <CastingStatusYearSwiper

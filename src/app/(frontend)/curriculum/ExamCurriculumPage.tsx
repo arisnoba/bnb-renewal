@@ -258,7 +258,7 @@ export function ExamCurriculumPage({ tab }: ExamCurriculumPageProps) {
 
         <div className="container relative z-10 flex min-h-140 items-end pb-20 md:min-h-200 md:pb-35">
           <h1
-            className="section-exam-curriculum-hero__title type-display-l font-bold leading-[1.2] text-white md:type-display-xl"
+            className="section-exam-curriculum-hero__title page-hero-label"
             id="exam-curriculum-hero-title"
           >
             <span className="block text-brand">교육</span>

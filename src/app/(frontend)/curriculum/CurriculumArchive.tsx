@@ -85,7 +85,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
           <h1
-            className="section-curriculum-hero__title page-title type-display-l font-extrabold leading-[1.2] text-white md:type-display-xl"
+            className="section-curriculum-hero__title page-hero-label"
             id="curriculum-hero-title"
           >
             <span className="block text-brand">교육</span>

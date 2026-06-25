@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { PageIntro } from "@/components/PageIntro";
 import { getPageDecoIcons, PageDeco } from "@/components/PageDeco";
 import {
   assertCenter,
@@ -252,13 +253,13 @@ export default async function CastingSystemPage({ params }: Args) {
           icon={decoIcons[1]}
         />
         <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
-          <h1
-            className="section-casting-system-hero__title page-title"
+          <div
+            className="section-casting-system-hero__title page-hero-label"
             id="casting-system-hero-title"
           >
             <span className="block text-brand">캐스팅</span>
             <span className="block">배우 케어 시스템</span>
-          </h1>
+          </div>
         </div>
       </section>
 
@@ -268,13 +269,11 @@ export default async function CastingSystemPage({ params }: Args) {
       >
         <div className="container grid items-start gap-12 lg:grid-cols-3">
           <aside className="section-casting-system-list__aside lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:self-start">
-            <h2
-              className="section-casting-system-list__title type-display-m font-semibold md:type-display-l"
+            <PageIntro
               id="casting-system-list-title"
-            >
-              수강생의 준비부터
-              <br className="hidden md:block" /> 현장 관리까지
-            </h2>
+              title={'수강생의 준비부터\n현장 관리까지'}
+              titleClassName="section-casting-system-list__title"
+            />
 
             <CastingSystemIndex
               items={castingSystemItems.map(({ id, title }) => ({ id, title }))}

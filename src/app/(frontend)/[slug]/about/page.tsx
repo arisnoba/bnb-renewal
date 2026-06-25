@@ -180,7 +180,7 @@ export default async function CenterAboutPage({ params }: Args) {
         <PageDeco className="-right-20 bottom-[-8%] md:-right-28" icon={decoIcons[1]} />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">
           <h1
-            className="section-center-about-hero__title type-display-xl font-extrabold leading-[1.2]"
+            className="section-center-about-hero__title page-hero-label"
             id="center-about-hero-title"
           >
             <span className="block text-brand">배우앤배움</span>
