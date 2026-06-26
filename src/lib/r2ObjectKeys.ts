@@ -29,6 +29,7 @@ export const R2_MEDIA_PREFIX_BY_ROLE = {
   'social-links.image': 'media/social-links/images',
   'star-cards.image': 'media/star-cards/images',
   'teacher-files.image': 'media/teacher-files/images',
+  'teachers.gallery-image': 'media/teachers/gallery-images',
   'teachers.profile-image': 'media/teachers/profile-images',
   'teachers.representative-work-poster': 'media/teachers/representative-work-posters',
 } as const
@@ -64,6 +65,7 @@ const R2_MEDIA_FILENAME_BASE_BY_ROLE: Record<R2MediaRole, string> = {
   'social-links.image': 'social-link-image',
   'star-cards.image': 'star-card-image',
   'teacher-files.image': 'teacher-file-image',
+  'teachers.gallery-image': 'teacher-gallery-image',
   'teachers.profile-image': 'teacher-profile-image',
   'teachers.representative-work-poster': 'teacher-representative-work-poster',
 }
