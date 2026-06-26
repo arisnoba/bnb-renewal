@@ -9,6 +9,7 @@ import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { FrontendChrome } from './FrontendChrome.client'
+import { NavigationTopLoader } from './NavigationTopLoader.client'
 
 import './globals.css'
 import '@/styles/style.scss'
@@ -22,6 +23,7 @@ export default async function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
+        <NavigationTopLoader />
         <AdminBar />
 
         <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={false}>

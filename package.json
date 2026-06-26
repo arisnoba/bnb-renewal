@@ -158,6 +158,7 @@
     "motion": "^12.40.0",
     "next": "^16.2.3",
     "next-sitemap": "^4.2.3",
+    "nextjs-toploader": "^3.9.17",
     "payload": "^3.85.0",
     "pg": "^8.20.0",
     "prism-react-renderer": "^2.4.1",
