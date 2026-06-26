@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/pagination'
 import type { ExamResult } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { unstable_cache } from 'next/cache'
@@ -306,7 +307,7 @@ function ExamResultCard({
 }
 
 function normalizeImageUrl(value: string | null | undefined) {
-  const trimmed = normalizeText(value)
+  const trimmed = publishedImageSrc(value)
 
   if (!trimmed) {
     return ''

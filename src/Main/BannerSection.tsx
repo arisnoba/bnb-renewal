@@ -1,5 +1,6 @@
 import type { ExamPassedReview, Main, MainBanner, MainStatistic, Profile } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
 import {
   DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
@@ -164,11 +165,11 @@ function mainBannerProfileHref(profile: Profile, center: CenterSlug) {
 }
 
 function mainBannerProfileImage(profile: Profile) {
-  return profile.profileImageMedia || textValue(profile.profileImagePath) || null
+  return profile.profileImageMedia || publishedImageSrc(textValue(profile.profileImagePath)) || null
 }
 
 function mainBannerExamReviewImage(review: ExamPassedReview) {
-  return textValue(review.studentImagePath) || null
+  return publishedImageSrc(textValue(review.studentImagePath)) || null
 }
 
 export function mainBannerMarqueeItems(

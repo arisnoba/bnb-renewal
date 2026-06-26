@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
 import type { Profile } from '@/payload-types'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 
@@ -207,7 +208,7 @@ function RookieCard({
 }) {
   const media = profile.profileImageMedia
   const hasMediaImage = media && typeof media === 'object'
-  const legacyImagePath = profile.profileImagePath || undefined
+  const legacyImagePath = publishedImageSrc(profile.profileImagePath) || undefined
   const profileMeta = [profile.height, profile.weight].filter(Boolean).join(', ')
 
   return (

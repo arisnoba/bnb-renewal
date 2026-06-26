@@ -1,6 +1,7 @@
 import type { CenterSlug } from '@/lib/centers'
 import type { CastingAppearance } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import type { Payload, Where } from 'payload'
 
 import type { CastingStatusPosterItem, CastingStatusYearGroup } from './CastingStatusYearSwiper.client'
@@ -251,7 +252,7 @@ function normalizeText(value: string | null | undefined) {
 }
 
 function normalizeImageUrl(value: string | null | undefined) {
-  const trimmed = normalizeText(value)
+  const trimmed = publishedImageSrc(value)
 
   if (!trimmed) {
     return ''

@@ -5,6 +5,7 @@ import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -83,7 +84,7 @@ export async function TeacherDetailPage({
       teacher.photoImage5,
       teacher.photoImage6,
     ]
-      .map(publishedLegacyImageSrc)
+      .map(publishedImageSrc)
       .filter((src): src is string => Boolean(src))
       .map((src) => ({ src, type: 'legacy' as const })),
   ].filter((item): item is TeacherImageItem => Boolean(item))
@@ -306,7 +307,7 @@ function teacherCenterSlugs(teacher: Teacher) {
 function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
   const media = work.posterMedia
   const hasPosterMedia = media && typeof media === 'object'
-  const posterSrc = publishedLegacyImageSrc(work.posterPath)
+  const posterSrc = publishedImageSrc(work.posterPath)
 
   return (
     <article className="section-teacher-detail__work">
@@ -340,18 +341,4 @@ function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
       )}
     </article>
   )
-}
-
-function publishedLegacyImageSrc(value: string | null | undefined) {
-  const trimmed = value?.trim()
-
-  if (!trimmed) {
-    return ''
-  }
-
-  if (process.env.VERCEL === '1' && trimmed.startsWith('/legacy/')) {
-    return ''
-  }
-
-  return trimmed
 }

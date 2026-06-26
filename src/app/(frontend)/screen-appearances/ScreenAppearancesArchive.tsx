@@ -23,6 +23,7 @@ import { getPayload, type Where } from 'payload'
 import React from 'react'
 
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
 type ScreenAppearancesArchiveProps = {
   center: CenterSlug
@@ -666,13 +667,9 @@ function formatDate(value: string | null | undefined) {
 }
 
 function normalizeImageUrl(value: string | null | undefined) {
-  const trimmed = value?.trim()
+  const trimmed = publishedImageSrc(value)
 
   if (!trimmed) {
-    return ''
-  }
-
-  if (trimmed.startsWith('/legacy/') && process.env.VERCEL === '1') {
     return ''
   }
 

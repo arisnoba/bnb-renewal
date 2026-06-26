@@ -4,6 +4,7 @@ import { Media } from '@/components/Media/Renderer'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
@@ -70,7 +71,7 @@ export async function ProfileDetailPage({
   }
 
   const image = profile.profileImageMedia
-  const legacyImagePath = profile.profileImagePath || undefined
+  const legacyImagePath = publishedImageSrc(profile.profileImagePath) || undefined
   const hasMediaImage = image && typeof image === 'object'
   const careerItems = profile.careerItems ?? []
   const profileImages = [
@@ -84,6 +85,7 @@ export async function ProfileDetailPage({
       profile.photoImage5,
       profile.photoImage6,
     ]
+      .map(publishedImageSrc)
       .filter((src): src is string => Boolean(src))
       .map((src) => ({ src, type: 'legacy' as const })),
   ].filter((item): item is ProfileImageItem => Boolean(item))

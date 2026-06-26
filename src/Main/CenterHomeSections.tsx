@@ -37,6 +37,7 @@ import type {
 import { getArtistPressThumbnailMedia, getArtistPressUrl } from '@/utilities/artistPressFallbacks'
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
 import {
   CenterHomeScreenAppearances,
@@ -1000,13 +1001,9 @@ function socialMediaUrl(value: number | null | Media | undefined) {
 }
 
 function normalizeImageUrl(value: string | null | undefined) {
-  const trimmed = value?.trim()
+  const trimmed = publishedImageSrc(value)
 
   if (!trimmed) {
-    return ''
-  }
-
-  if (process.env.VERCEL === '1' && trimmed.startsWith('/legacy/')) {
     return ''
   }
 
