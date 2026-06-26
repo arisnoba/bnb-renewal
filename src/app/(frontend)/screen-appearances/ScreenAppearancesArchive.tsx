@@ -238,7 +238,7 @@ function ScreenAppearanceCard({
     .filter(Boolean)
     .join(' · ')
   const screenImage = getScreenImage(appearance)
-  const thumbnailUrl = normalizeImageUrl(appearance.thumbnailPath)
+  const thumbnailUrl = screenImage ? '' : normalizeImageUrl(appearance.thumbnailPath)
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
   const airDate = formatDate(appearance.airDateLabel)
@@ -477,11 +477,12 @@ async function findHeroImages({
   const result = await payload
     .find({
       collection: 'screen-appearances',
-      depth: 0,
+      depth: 1,
       limit: heroImageLimit,
       overrideAccess: false,
       pagination: false,
       select: {
+        bodyImages: true,
         id: true,
         thumbnailPath: true,
       },
@@ -494,8 +495,8 @@ async function findHeroImages({
 
   return result.docs
     .map((appearance) => {
-      const item = appearance as Pick<ScreenAppearance, 'id' | 'thumbnailPath'>
-      const src = normalizeImageUrl(item.thumbnailPath)
+      const item = appearance as Pick<ScreenAppearance, 'bodyImages' | 'id' | 'thumbnailPath'>
+      const src = screenAppearanceImageUrl(item)
 
       if (!src) {
         return null
@@ -592,6 +593,16 @@ function getScreenImage(
   return image && typeof image === 'object' ? image : null
 }
 
+function mediaResourceUrl(resource: PayloadMedia | null | undefined) {
+  return resource?.url ? getMediaUrl(resource.url, resource.updatedAt) : ''
+}
+
+function screenAppearanceImageUrl(
+  appearance: Pick<ScreenAppearance, 'bodyImages' | 'thumbnailPath'> | ScreenAppearanceListItem,
+) {
+  return mediaResourceUrl(getScreenImage(appearance)) || normalizeImageUrl(appearance.thumbnailPath)
+}
+
 function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
   if (value === 'commercial') {
     return '광고 출연장면'
@@ -658,6 +669,10 @@ function normalizeImageUrl(value: string | null | undefined) {
   const trimmed = value?.trim()
 
   if (!trimmed) {
+    return ''
+  }
+
+  if (trimmed.startsWith('/legacy/') && process.env.VERCEL === '1') {
     return ''
   }
 
