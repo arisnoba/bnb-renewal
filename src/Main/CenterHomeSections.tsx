@@ -887,15 +887,23 @@ function screenAppearanceSlide(
 }
 
 function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null | undefined) {
+  return screenAppearanceBodyImageUrl(appearance) || screenAppearanceImageUrl(appearance)
+}
+
+function screenAppearanceBodyImageUrl(appearance: HomeScreenAppearance | null | undefined) {
   const bodyImage = appearance?.bodyImages?.find(
     (item) => item?.image && typeof item.image === 'object',
   )?.image
 
-  return mediaUrl(bodyImage as Media | undefined) || screenAppearanceImageUrl(appearance)
+  return mediaUrl(bodyImage as Media | undefined)
 }
 
 function screenAppearanceProfileImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return normalizeImageUrl(appearance?.profileImagePath) || screenAppearanceImageUrl(appearance)
+  return (
+    normalizeImageUrl(appearance?.profileImagePath) ||
+    screenAppearanceBodyImageUrl(appearance) ||
+    screenAppearanceImageUrl(appearance)
+  )
 }
 
 function screenAppearanceBroadcastLogoUrl(station: BroadcastStation | null | undefined) {
@@ -995,6 +1003,10 @@ function normalizeImageUrl(value: string | null | undefined) {
   const trimmed = value?.trim()
 
   if (!trimmed) {
+    return ''
+  }
+
+  if (process.env.VERCEL === '1' && trimmed.startsWith('/legacy/')) {
     return ''
   }
 
