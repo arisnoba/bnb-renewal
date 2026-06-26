@@ -83,6 +83,7 @@ export async function TeacherDetailPage({
       teacher.photoImage5,
       teacher.photoImage6,
     ]
+      .map(publishedLegacyImageSrc)
       .filter((src): src is string => Boolean(src))
       .map((src) => ({ src, type: 'legacy' as const })),
   ].filter((item): item is TeacherImageItem => Boolean(item))
@@ -305,10 +306,11 @@ function teacherCenterSlugs(teacher: Teacher) {
 function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
   const media = work.posterMedia
   const hasPosterMedia = media && typeof media === 'object'
+  const posterSrc = publishedLegacyImageSrc(work.posterPath)
 
   return (
     <article className="section-teacher-detail__work">
-      <div className="aspect-[129.5/176] overflow-hidden rounded-[6px] bg-white">
+      <div className="aspect-[129.5/176] overflow-hidden rounded-[6px] bg-white/10">
         {hasPosterMedia ? (
           <Media
             alt={work.title || ''}
@@ -318,12 +320,12 @@ function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
             resource={media}
             size="130px"
           />
-        ) : work.posterPath ? (
+        ) : posterSrc ? (
           <Image
             alt={work.title || ''}
             className="size-full object-cover"
             height={352}
-            src={work.posterPath}
+            src={posterSrc}
             width={259}
           />
         ) : null}
@@ -338,4 +340,18 @@ function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {
       )}
     </article>
   )
+}
+
+function publishedLegacyImageSrc(value: string | null | undefined) {
+  const trimmed = value?.trim()
+
+  if (!trimmed) {
+    return ''
+  }
+
+  if (process.env.VERCEL === '1' && trimmed.startsWith('/legacy/')) {
+    return ''
+  }
+
+  return trimmed
 }
