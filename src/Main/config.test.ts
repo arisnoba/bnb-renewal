@@ -3,7 +3,7 @@ import test from 'node:test'
 
 import type { Field, GlobalConfig, Tab } from 'payload'
 
-import { Main, normalizeMainBannerOrderData } from './config'
+import { Main, mainCenterPaths, normalizeMainBannerOrderData } from './config'
 import {
   mainBannerOrderBannerId,
   mainBannerOrderBannerTitle,
@@ -69,6 +69,7 @@ test('main global exposes center-specific banner order arrays', async () => {
   assert.equal(Main.slug, 'main')
   assert.equal(Main.label, '배너 설정')
   assert.equal(Main.admin?.group, '메인설정')
+  assert.equal(Main.hooks?.afterChange?.length, 1)
 
   for (const [tabLabel, fieldName] of [
     ['아트센터', 'artBanners'],
@@ -109,6 +110,10 @@ test('main global exposes center-specific banner order arrays', async () => {
     assert.equal(banner.relationTo, 'main-banners')
     assert.equal(await banner.validate?.(null, {}), '배너를 선택해야 합니다.')
   }
+})
+
+test('main global revalidates center home paths', () => {
+  assert.deepEqual(mainCenterPaths(), ['/art', '/exam', '/kids', '/highteen', '/avenue'])
 })
 
 test('main banner order row label helpers resolve relationship titles and ids', () => {

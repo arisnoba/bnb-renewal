@@ -1,4 +1,11 @@
-import type { Field, GlobalBeforeValidateHook, GlobalConfig, Validate } from 'payload'
+import type {
+  Field,
+  GlobalAfterChangeHook,
+  GlobalBeforeValidateHook,
+  GlobalConfig,
+  Validate,
+} from 'payload'
+import { revalidatePath } from 'next/cache'
 
 import { centerOptions, type CenterValue } from '@/collections/shared'
 
@@ -69,6 +76,23 @@ export function normalizeMainBannerOrderData(
 
 const normalizeMainGlobalData: GlobalBeforeValidateHook = ({ data, originalDoc }) => {
   return normalizeMainBannerOrderData(data, originalDoc)
+}
+
+export function mainCenterPaths() {
+  return centerOptions.map((option) => `/${option.value}`)
+}
+
+export const revalidateMainCenterPaths: GlobalAfterChangeHook = ({ doc, req }) => {
+  if (req.context.disableRevalidate) {
+    return doc
+  }
+
+  for (const path of mainCenterPaths()) {
+    req.payload.logger.info(`Revalidating main path ${path}`)
+    revalidatePath(path, 'page')
+  }
+
+  return doc
 }
 
 function centerBannerOrderField(center: CenterValue): Field {
@@ -143,6 +167,7 @@ export const Main: GlobalConfig = {
     group: '메인설정',
   },
   hooks: {
+    afterChange: [revalidateMainCenterPaths],
     beforeValidate: [normalizeMainGlobalData],
   },
   fields: [

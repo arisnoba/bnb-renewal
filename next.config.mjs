@@ -41,18 +41,23 @@ const remotePatterns = [
 ].filter(Boolean)
 
 const limitVercelStaticGenerationConcurrency = process.env.VERCEL === '1'
+const experimentalConfig = {
+  staleTimes: {
+    dynamic: 0,
+    static: 30,
+  },
+  ...(limitVercelStaticGenerationConcurrency
+    ? {
+        cpus: 1,
+        staticGenerationMaxConcurrency: 1,
+        staticGenerationMinPagesPerWorker: 1000,
+      }
+    : {}),
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  ...(limitVercelStaticGenerationConcurrency
-    ? {
-        experimental: {
-          cpus: 1,
-          staticGenerationMaxConcurrency: 1,
-          staticGenerationMinPagesPerWorker: 1000,
-        },
-      }
-    : {}),
+  experimental: experimentalConfig,
   images: {
     localPatterns: [
       {
