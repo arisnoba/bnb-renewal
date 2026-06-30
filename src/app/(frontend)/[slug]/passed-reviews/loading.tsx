@@ -1,5 +1,5 @@
-import { GenericArchiveLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
+import { ExamPassedReviewsLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
 
 export default function Loading() {
-  return <GenericArchiveLoadingSkeleton pageClassName="page-passed-reviews" />
+  return <ExamPassedReviewsLoadingSkeleton />
 }

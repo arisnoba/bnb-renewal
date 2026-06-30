@@ -1,3 +1,9 @@
+import {
+  getExamPassedHeroImage,
+  getExamResultsHeroImage,
+  PageHeroImage,
+} from '@/app/(frontend)/_components/PageHeroImage'
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { cn } from '@/utilities/ui'
 
 type SkeletonTone = 'dark' | 'light'
@@ -70,6 +76,29 @@ function CardSkeleton({ mediaRatio = 'aspect-4/3' }: { mediaRatio?: string }) {
         <SkeletonBlock className="h-4 w-24" />
         <SkeletonBlock className="h-6 w-full" />
         <SkeletonBlock className="h-4 w-4/5" />
+      </div>
+    </div>
+  )
+}
+
+function ExamResultCardSkeleton() {
+  return (
+    <div className="min-w-0 overflow-hidden rounded-xl border border-neutral-300 bg-white">
+      <SkeletonBlock className="aspect-270/268 w-full rounded-none" />
+      <div className="p-5">
+        <SkeletonBlock className="h-5 w-4/5" />
+      </div>
+    </div>
+  )
+}
+
+function ExamPassedReviewCardSkeleton() {
+  return (
+    <div className="min-w-0 overflow-hidden rounded-xl border border-neutral-200 bg-white">
+      <SkeletonBlock className="aspect-[67/62] w-full rounded-none" />
+      <div className="space-y-3 p-5">
+        <SkeletonBlock className="h-4 w-4/5" />
+        <SkeletonBlock className="h-5 w-2/3" />
       </div>
     </div>
   )
@@ -154,6 +183,108 @@ export function HeroArchiveLoadingSkeleton({
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: cardCount }).map((_, index) => (
               <CardSkeleton key={index} mediaRatio={kind === 'direct-castings' ? 'aspect-3/4' : 'aspect-4/3'} />
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+export function ExamResultsLoadingSkeleton({
+  resultType,
+}: {
+  resultType: 'arts_high_school' | 'university'
+}) {
+  const decoIcons = getPageDecoIcons(3, `exam-results-loading-${resultType}`)
+
+  return (
+    <main aria-busy="true" className="page page-light page-exam-results" data-center="exam">
+      <LoadingLabel />
+      <section
+        aria-label="합격현황 상단 콘텐츠 로딩"
+        className="section-exam-results-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        data-page-tone="dark"
+      >
+        <PageHeroImage image={getExamResultsHeroImage()} className="opacity-60" />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <PageDeco
+          className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"
+          icon={decoIcons[0]}
+        />
+        <PageDeco
+          className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
+          icon={decoIcons[1]}
+        />
+        <PageDeco
+          className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
+          icon={decoIcons[2]}
+        />
+        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+          <div className="space-y-4">
+            <SkeletonBlock className="h-10 w-36" tone="dark" />
+            <SkeletonBlock className="h-16 w-[min(72vw,420px)]" tone="dark" />
+          </div>
+        </div>
+      </section>
+
+      <section className="section-exam-results-list section-p-block-base bg-white text-neutral-900">
+        <div className="container">
+          <div className="mb-16 md:mb-20">
+            <PageIntroSkeleton />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <ExamResultCardSkeleton key={index} />
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+export function ExamPassedReviewsLoadingSkeleton() {
+  const decoIcons = getPageDecoIcons(3, 'exam-passed-reviews-loading')
+
+  return (
+    <main aria-busy="true" className="page page-light page-exam-passed-reviews" data-center="exam">
+      <LoadingLabel />
+      <section
+        aria-label="합격후기 상단 콘텐츠 로딩"
+        className="section-exam-passed-reviews-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        data-page-tone="dark"
+      >
+        <PageHeroImage image={getExamPassedHeroImage()} className="opacity-60" />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <PageDeco
+          className="-left-20 top-[36%] max-md:!hidden md:block md:-left-72 2xl:-left-39"
+          icon={decoIcons[0]}
+        />
+        <PageDeco
+          className="right-[-72px] top-[16%] max-md:!hidden md:block md:right-[-104px]"
+          icon={decoIcons[1]}
+        />
+        <PageDeco
+          className="right-[16%] bottom-[-8%] max-md:!hidden md:block"
+          icon={decoIcons[2]}
+        />
+        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+          <div className="space-y-4">
+            <SkeletonBlock className="h-10 w-36" tone="dark" />
+            <SkeletonBlock className="h-16 w-[min(72vw,460px)]" tone="dark" />
+          </div>
+        </div>
+      </section>
+
+      <section className="section-exam-passed-reviews-list section-p-block-base bg-white text-neutral-900">
+        <div className="container">
+          <div className="mb-16 md:mb-20">
+            <PageIntroSkeleton />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <ExamPassedReviewCardSkeleton key={index} />
             ))}
           </div>
         </div>

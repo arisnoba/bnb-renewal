@@ -12,7 +12,7 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
   if (!url) return ''
 
   const normalizedUrl =
-    process.env.NODE_ENV !== 'production' ? localPublicMediaUrl(url) : url
+    process.env.NODE_ENV !== 'production' ? localPublicMediaUrl(url) : productionPublicMediaUrl(url)
 
   if (cacheTag && cacheTag !== '') {
     cacheTag = encodeURIComponent(cacheTag)
@@ -40,5 +40,31 @@ function localPublicMediaUrl(url: string) {
     return filename ? `/media/${filename}` : url
   } catch {
     return url
+  }
+}
+
+function productionPublicMediaUrl(url: string) {
+  const objectKey = localMediaObjectKey(url)
+
+  if (!objectKey) {
+    return url
+  }
+
+  const publicBaseUrl = process.env.R2_PUBLIC_BASE_URL?.trim().replace(/\/+$/, '')
+
+  return publicBaseUrl ? `${publicBaseUrl}/${objectKey}` : url
+}
+
+function localMediaObjectKey(url: string) {
+  if (!url.startsWith('/media/')) {
+    return ''
+  }
+
+  try {
+    const parsed = new URL(url, 'http://local.test')
+
+    return `${parsed.pathname.replace(/^\/+/, '')}${parsed.search}`
+  } catch {
+    return ''
   }
 }

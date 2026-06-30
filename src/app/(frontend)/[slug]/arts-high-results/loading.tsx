@@ -1,5 +1,5 @@
-import { GenericArchiveLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
+import { ExamResultsLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
 
 export default function Loading() {
-  return <GenericArchiveLoadingSkeleton pageClassName="page-arts-high-results" cardCount={12} />
+  return <ExamResultsLoadingSkeleton resultType="arts_high_school" />
 }
