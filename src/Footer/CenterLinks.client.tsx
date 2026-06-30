@@ -32,6 +32,7 @@ export function FooterCenterLinks({ initialCenter = 'art' }: { initialCenter?: C
               <Link
                 className="flex flex-wrap items-center gap-3 whitespace-nowrap text-xl font-medium leading-[1.2] text-[#666] transition-colors hover:text-white"
                 href={item.href}
+                prefetch={false}
               >
                 <span>{item.label}</span>
                 {item.value ? (
@@ -82,7 +83,11 @@ function FooterTextLinks({
     <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
       {links.map((link) => (
         <li key={link.label}>
-          <Link className={`${className} whitespace-nowrap transition-colors hover:text-white`} href={link.href}>
+          <Link
+            className={`${className} whitespace-nowrap transition-colors hover:text-white`}
+            href={link.href}
+            prefetch={false}
+          >
             {link.label}
           </Link>
         </li>

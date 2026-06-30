@@ -65,10 +65,10 @@ export async function Footer() {
             <FooterLogo initialCenter="art" />
 
             <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
-              <Link className="text-[#666] transition-colors hover:text-white" href="/terms">
+              <Link className="text-[#666] transition-colors hover:text-white" href="/terms" prefetch={false}>
                 이용약관
               </Link>
-              <Link className="font-medium text-[#999] transition-colors hover:text-white" href="/privacy">
+              <Link className="font-medium text-[#999] transition-colors hover:text-white" href="/privacy" prefetch={false}>
                 개인정보처리방침
               </Link>
             </nav>
@@ -127,7 +127,11 @@ function FooterTextLinks({
     <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
       {links.map((link) => (
         <li key={link.label}>
-          <Link className={`${className} whitespace-nowrap transition-colors hover:text-white`} href={link.href}>
+          <Link
+            className={`${className} whitespace-nowrap transition-colors hover:text-white`}
+            href={link.href}
+            prefetch={false}
+          >
             {link.label}
           </Link>
         </li>

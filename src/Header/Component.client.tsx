@@ -68,7 +68,7 @@ export const HeaderClient: React.FC = () => {
       data-scrolled={isScrolled ? 'true' : undefined}
     >
       <div className="container-fluid site-header__inner">
-        <Link className="site-header__logo" href={`/${center}`}>
+        <Link className="site-header__logo" href={`/${center}`} prefetch={false}>
           <Logo loading="eager" priority="high" {...centerLogo} />
         </Link>
         <HeaderNav onMegaOpenChange={setIsMegaOpen} />

@@ -16,7 +16,7 @@ export function FooterLogo({ initialCenter }: { initialCenter: CenterSlug }) {
   const logo = centerLogoFor(center)
 
   return (
-    <Link aria-label={`${logo.alt} 홈`} href={`/${center}`}>
+    <Link aria-label={`${logo.alt} 홈`} href={`/${center}`} prefetch={false}>
       <Image alt="" height={logo.height} priority src={logo.src} width={logo.width} />
     </Link>
   )

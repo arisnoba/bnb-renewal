@@ -88,6 +88,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
                         className="site-header__submenu-link"
                         href={item.href}
                         onClick={() => setIsMegaOpen(false)}
+                        prefetch={false}
                       >
                         {item.label}
                       </Link>
@@ -100,13 +101,13 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         </nav>
       </div>
       <div className="site-header__actions">
-        <Link className="site-header__consult" href={consultHref}>
+        <Link className="site-header__consult" href={consultHref} prefetch={false}>
           온라인상담
         </Link>
         <HeaderCenterSelect currentCenter={center} />
       </div>
       <div className="site-header__mobile-actions">
-        <Link className="site-header__mobile-consult" href={consultHref}>
+        <Link className="site-header__mobile-consult" href={consultHref} prefetch={false}>
           상담
         </Link>
         <button
@@ -230,7 +231,12 @@ function MobileMenu({
                 <ChevronRight aria-hidden="true" size={24} strokeWidth={2.4} />
               </button>
             ))}
-            <Link className="site-header__mobile-root-link" href={consultHref} onClick={onLinkClick}>
+            <Link
+              className="site-header__mobile-root-link"
+              href={consultHref}
+              onClick={onLinkClick}
+              prefetch={false}
+            >
               온라인상담
             </Link>
           </nav>
@@ -254,6 +260,7 @@ function MobileMenu({
                         className="site-header__mobile-detail-link"
                         href={item.href}
                         onClick={onLinkClick}
+                        prefetch={false}
                       >
                         {item.label}
                       </Link>
