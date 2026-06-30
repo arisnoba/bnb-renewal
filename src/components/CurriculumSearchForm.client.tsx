@@ -15,14 +15,14 @@ const variantClasses = {
   centerHome: {
     emptyLabel: '선택하세요',
     field:
-      'section-center-home-course__filter relative block min-h-[82px] cursor-pointer bg-neutral-900 px-5 py-4 transition hover:bg-neutral-800 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand md:min-h-[90px]',
+      'section-center-home-course__filter relative block min-h-[82px] cursor-pointer bg-neutral-900 px-5 py-4 transition hover:bg-neutral-800 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand',
     fieldGroup: 'section-center-home-course__filters grid gap-1 md:grid-cols-3',
     form: 'section-center-home-course__panel mt-8 grid gap-3 lg:grid-cols-[1fr_228px]',
     icon: 'right-5 text-white',
     label: 'type-body-s font-medium leading-normal text-neutral-400',
     submitIcon: 'size-5',
     submit:
-      'section-center-home-course__submit flex min-h-[72px] items-center justify-between bg-brand px-6 py-5 type-title-m font-bold leading-[1.4] text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:min-h-[90px]',
+      'section-center-home-course__submit flex min-h-[72px] items-center justify-between bg-brand px-6 py-5 type-title-m font-bold leading-[1.4] text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
     value: 'mt-1 type-body-m font-medium leading-normal text-white',
   },
   curriculumArchive: {
