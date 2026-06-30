@@ -32,7 +32,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
           {profile.image ? (
             <Image
               alt={`${profile.name} ${profile.role} 프로필`}
-              className="size-full object-cover object-top"
+              className="size-full object-cover object-center"
               fill
               loading="eager"
               sizes="(max-width: 639px) calc((100vw - 56px) / 2), (max-width: 1023px) calc((100vw - 72px) / 3), 268px"
@@ -92,7 +92,7 @@ export function CastingProfileCard({ profile }: { profile: CastingProfile }) {
               {profile.image ? (
                 <Image
                   alt={`${profile.name} ${profile.role} 프로필`}
-                  className="size-full object-cover object-top"
+                  className="size-full object-cover object-center"
                   fill
                   sizes="220px"
                   src={profile.image}

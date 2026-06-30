@@ -577,7 +577,7 @@ function ArtistPressMiniCard({
       {imageUrl ? (
         <img
           alt=""
-          className="absolute inset-0 size-full object-cover object-top opacity-75 transition ease-out duration-300 group-hover:scale-105"
+          className="absolute inset-0 size-full object-cover object-center opacity-75 transition ease-out duration-300 group-hover:scale-105"
           loading="lazy"
           src={imageUrl}
         />
@@ -619,7 +619,7 @@ function ExamPassedReviewFeaturedCard({ review }: { review?: HomeExamPassedRevie
         {imageUrl ? (
           <img
             alt=""
-            className="size-full object-cover object-top transition duration-300 ease-out group-hover:scale-[1.03]"
+            className="size-full object-cover object-center transition duration-300 ease-out group-hover:scale-[1.03]"
             loading="lazy"
             src={imageUrl}
           />
@@ -657,7 +657,7 @@ function ExamPassedReviewMiniCard({ review }: { review: HomeExamPassedReview }) 
       {imageUrl ? (
         <img
           alt=""
-          className="absolute inset-0 size-full object-cover object-top opacity-80 transition duration-300 ease-out group-hover:scale-105"
+          className="absolute inset-0 size-full object-cover object-center opacity-80 transition duration-300 ease-out group-hover:scale-105"
           loading="lazy"
           src={imageUrl}
         />

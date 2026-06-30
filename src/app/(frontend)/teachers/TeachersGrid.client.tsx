@@ -81,7 +81,7 @@ function TeacherCard({
               fadeIn={true}
               fill
               htmlElement={null}
-              imgClassName="size-full object-cover object-top grayscale transition duration-300 group-hover:scale-105"
+              imgClassName="size-full object-cover object-center grayscale transition duration-300 group-hover:scale-105"
               loading="lazy"
               placeholder="empty"
               pictureClassName="block size-full opacity-55 transition duration-300 group-hover:opacity-85"

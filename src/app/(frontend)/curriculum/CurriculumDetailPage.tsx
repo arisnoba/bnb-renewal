@@ -357,7 +357,7 @@ function TeacherBrief({
             <Media
               fill
               htmlElement={null}
-              imgClassName="size-full object-cover object-top grayscale"
+              imgClassName="size-full object-cover object-center grayscale"
               pictureClassName="block size-full"
               resource={image}
               size="156px"

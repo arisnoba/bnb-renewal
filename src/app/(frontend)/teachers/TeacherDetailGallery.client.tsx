@@ -53,7 +53,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
                 <TeacherGalleryImage
                   alt={index === 0 ? teacherName : `${teacherName} 이미지 ${index + 1}`}
                   image={image}
-                  imgClassName="size-full object-cover object-top"
+                  imgClassName="size-full object-cover object-center"
                   pictureClassName="block size-full"
                   priority={index === 0}
                   size="(max-width: 1023px) 100vw, 550px"
@@ -93,7 +93,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
                   <TeacherGalleryImage
                     alt=""
                     image={image}
-                    imgClassName="size-full object-cover object-top"
+                    imgClassName="size-full object-cover object-center"
                     pictureClassName="block size-full"
                     size="100px"
                   />

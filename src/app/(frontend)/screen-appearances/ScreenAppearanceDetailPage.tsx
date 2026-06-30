@@ -339,7 +339,7 @@ function ProfileAvatar({ performer }: { performer: PerformerInfo }) {
         <Media
           fill
           htmlElement={null}
-          imgClassName="size-full object-cover object-top"
+          imgClassName="size-full object-cover object-center"
           pictureClassName="block size-full"
           resource={performer.profileImageMedia}
           size="56px"
