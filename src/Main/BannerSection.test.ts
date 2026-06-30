@@ -208,14 +208,14 @@ test('main banner rewrites exam review media paths to R2 URLs in production', ()
   })
 })
 
-test('main banner statistics hide total work count for exam center', () => {
+test('main banner statistics are disabled for exam center', () => {
   const statistics = {
     artTotalWorkCount: 10,
     examTotalWorkCount: 20,
   } as MainStatistic
 
   assert.equal(mainBannerStatistics(statistics, 'art')?.totalWorkCount, 10)
-  assert.equal(mainBannerStatistics(statistics, 'exam')?.totalWorkCount, null)
+  assert.equal(mainBannerStatistics(statistics, 'exam'), null)
 })
 
 test('main banner autoplay settings use center-specific main values', () => {

@@ -295,7 +295,7 @@ export function mainBannerStatistics(
   statistics: MainStatistic | null | undefined,
   center: CenterSlug,
 ): MainBannerStatistics | null {
-  if (!statistics) {
+  if (!statistics || center === 'exam') {
     return null
   }
 
@@ -304,8 +304,7 @@ export function mainBannerStatistics(
       statisticGroup(statistics[centerMonthlyLeadSupportingField[center]], '이달의 주·조연'),
       statisticGroup(statistics[centerMonthlyMinorExtraField[center]], '이달의 조·단역'),
     ],
-    totalWorkCount:
-      center === 'exam' ? null : numericValue(statistics[centerTotalWorkCountField[center]]),
+    totalWorkCount: numericValue(statistics[centerTotalWorkCountField[center]]),
   }
 }
 

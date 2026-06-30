@@ -64,7 +64,7 @@ export type MainBannerStatisticGroup = {
 
 export type MainBannerStatistics = {
   groups: MainBannerStatisticGroup[]
-  totalWorkCount: number | null
+  totalWorkCount: number
 }
 
 type MainBannerSliderProps = {
@@ -267,9 +267,7 @@ function BannerStatisticsPanel({
         'bg-black/30 ring-1 ring-inset ring-white/10 backdrop-blur-[10px] rounded-3xl',
       )}
     >
-      {statistics.totalWorkCount !== null && (
-        <BannerTotalStatCell value={statistics.totalWorkCount} variant="desktop" />
-      )}
+      <BannerTotalStatCell value={statistics.totalWorkCount} variant="desktop" />
       <BannerScheduleStatRow center={center} variant="desktop" />
       {statistics.groups.map((group) => (
         <div
@@ -378,11 +376,9 @@ function BannerStatisticGroupHead({
 
 function BannerScheduleStatRow({
   center,
-  hasLeadingCell = false,
   variant = 'desktop',
 }: {
   center?: CenterSlug
-  hasLeadingCell?: boolean
   variant?: 'desktop' | 'mobile'
 }) {
   const isMobile = variant === 'mobile'
@@ -406,9 +402,7 @@ function BannerScheduleStatRow({
   )
   const className = cn(
     'section-main-banner__schedule-link flex items-center justify-between border-b border-white/10 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70',
-    isMobile
-      ? cn('min-w-0 flex-1 px-5 py-4', hasLeadingCell && 'border-l')
-      : 'h-[74px] px-6 py-6',
+    isMobile ? 'min-w-0 flex-1 border-l px-5 py-4' : 'h-[74px] px-6 py-6',
   )
 
   if (!center || !scheduleLinkCenters.has(center)) {
@@ -454,17 +448,14 @@ function BannerMobileStatisticsPanel({
   center?: CenterSlug
   statistics: MainBannerStatistics
 }) {
-  const totalWorkCount = statistics.totalWorkCount
-  const showTotalWorkCount = totalWorkCount !== null
-
   return (
     <aside
       aria-label="센터 주요 통계"
       className="section-main-banner__mobile-stats relative z-3 bg-[#111] text-white min-[769px]:hidden"
     >
       <div className="section-main-banner__mobile-stat-row flex w-full items-stretch">
-        {showTotalWorkCount && <BannerTotalStatCell value={totalWorkCount} variant="mobile" />}
-        <BannerScheduleStatRow center={center} hasLeadingCell={showTotalWorkCount} variant="mobile" />
+        <BannerTotalStatCell value={statistics.totalWorkCount} variant="mobile" />
+        <BannerScheduleStatRow center={center} variant="mobile" />
       </div>
       <div className="section-main-banner__mobile-stat-groups flex w-full items-stretch">
         {statistics.groups.map((group, index) => (
