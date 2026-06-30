@@ -276,8 +276,9 @@ redirects: [
 |---|-------------|-----|------|------|
 | 2-1 | 입시 매니지먼트 | `/exam/management` | static | |
 | 2-2 | 특별한 시스템 | `/exam#special-system` | static | 레거시 `new_sys02` 계열 |
-| 2-3 | 교육진 소개 | `/exam/teachers` | dynamic | 강사 목록·상세 |
-| 2-4 | 커리큘럼 | `/exam#curriculum` | static | 입시반/재입시반/편입반/예비 입시반/예고 입시반을 통합 노출 |
+| 2-3 | 엔터테인먼트 위탁교육 | `/exam/entertainment` | dynamic | |
+| 2-4 | 교육진 소개 | `/exam/teachers` | dynamic | 강사 목록·상세 |
+| 2-5 | 커리큘럼 | `/exam#curriculum` | static | 입시반/재입시반/편입반/예비 입시반/예고 입시반을 통합 노출 |
 
 ### 합격현황
 

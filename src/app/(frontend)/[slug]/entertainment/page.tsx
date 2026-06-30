@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import configPromise from '@payload-config'
 import { ChevronRight, Megaphone } from 'lucide-react'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
@@ -20,7 +19,7 @@ type Args = {
   }>
 }
 
-type EntertainmentCenter = Exclude<CenterSlug, 'exam'>
+type EntertainmentCenter = CenterSlug
 
 const TRUST_EDUCATION_STARTED_YEAR = 2010
 
@@ -33,6 +32,10 @@ const entertainmentMetadata = {
     description: '배우앤배움 애비뉴센터 엔터테인먼트 위탁교육 안내',
     title: '엔터테인먼트 위탁교육',
   },
+  exam: {
+    description: '배우앤배움 입시센터 엔터테인먼트 위탁교육 안내',
+    title: '엔터테인먼트 위탁교육',
+  },
   highteen: {
     description: '배우앤배움 하이틴센터 엔터테인먼트 위탁교육 안내',
     title: '엔터테인먼트 위탁교육',
@@ -43,10 +46,6 @@ const entertainmentMetadata = {
   },
 } satisfies Record<EntertainmentCenter, Metadata>
 
-function isEntertainmentCenter(center: CenterSlug): center is EntertainmentCenter {
-  return center !== 'exam'
-}
-
 export function generateStaticParams() {
   return Object.keys(entertainmentMetadata).map((slug) => ({ slug }))
 }
@@ -55,22 +54,12 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   const center = assertCenter(slug)
 
-  if (!isEntertainmentCenter(center)) {
-    return {
-      title: '페이지를 찾을 수 없습니다',
-    }
-  }
-
   return entertainmentMetadata[center]
 }
 
 export default async function EntertainmentEducationPage({ params }: Args) {
   const { slug } = await params
   const center = assertCenter(slug)
-
-  if (!isEntertainmentCenter(center)) {
-    notFound()
-  }
 
   const agencies = await queryAgencies(center)
 

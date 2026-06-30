@@ -130,6 +130,7 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   assert.deepEqual(itemsForGroup('exam', 'education'), [
     { href: '/exam/management', label: '입시 매니지먼트' },
     { href: '/exam/special-system', label: '특별한 시스템' },
+    { href: '/exam/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: '/exam/teachers', label: '교육진 소개' },
     { href: '/exam/curriculum', label: '커리큘럼' },
   ])
