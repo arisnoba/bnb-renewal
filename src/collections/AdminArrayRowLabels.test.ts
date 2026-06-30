@@ -528,3 +528,18 @@ test("highteen special class menu is hidden outside highteen managers", () => {
   assert.equal(hidden({ user: { role: "manager", center: "highteen" } } as never), false);
   assert.equal(hidden({ user: { role: "admin", center: "art" } } as never), false);
 });
+
+test("artist press menu is hidden outside art managers", () => {
+  const hidden = ArtistPress.admin?.hidden;
+
+  assert.equal(typeof hidden, "function");
+
+  if (typeof hidden !== "function") {
+    return;
+  }
+
+  assert.equal(hidden({ user: { role: "manager", center: "art" } } as never), false);
+  assert.equal(hidden({ user: { role: "manager", center: "exam" } } as never), true);
+  assert.equal(hidden({ user: { role: "manager", center: "kids" } } as never), true);
+  assert.equal(hidden({ user: { role: "admin", center: "exam" } } as never), false);
+});

@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig } from 'payload'
+import type { Access, CollectionBeforeValidateHook, CollectionConfig, FieldAccess } from 'payload'
 
 import { globalAdminOnly } from './access'
 import { centerOptions, isGlobalAdminUser } from './shared'
@@ -25,6 +25,55 @@ const readUsers: Access = ({ req }) => {
   }
 }
 
+const updateUsers: Access = ({ req }) => {
+  if (isGlobalAdminUser(req.user)) {
+    return true
+  }
+
+  if (!req.user?.id) {
+    return false
+  }
+
+  return {
+    id: {
+      equals: req.user.id,
+    },
+  }
+}
+
+const globalAdminFieldUpdateOnly: FieldAccess = ({ req }) => isGlobalAdminUser(req.user)
+
+const normalizeUserPermissionLevel: CollectionBeforeValidateHook = ({
+  data,
+  originalDoc,
+  req,
+}) => {
+  if (!data) {
+    return data
+  }
+
+  const nextData = { ...data }
+
+  if (req.user && !isGlobalAdminUser(req.user)) {
+    nextData.role = originalDoc?.role ?? req.user.role
+    nextData.center = originalDoc?.center ?? req.user.center
+    nextData.permissionLevel = originalDoc?.permissionLevel ?? req.user.permissionLevel
+  }
+
+  const role = nextData.role
+
+  if (role && role in rolePermissionLevels) {
+    return {
+      ...nextData,
+      role,
+      permissionLevel:
+        rolePermissionLevels[role as keyof typeof rolePermissionLevels],
+    }
+  }
+
+  return nextData
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
   labels: {
@@ -34,37 +83,18 @@ export const Users: CollectionConfig = {
   admin: {
     defaultColumns: ['email', 'role', 'center', 'updatedAt'],
     group: '관리자',
-    hidden: ({ user }) => !isGlobalAdminUser(user),
+    hidden: ({ user }) => !user,
     useAsTitle: 'email',
   },
   access: {
     create: globalAdminOnly,
     delete: globalAdminOnly,
     read: readUsers,
-    update: globalAdminOnly,
+    update: updateUsers,
   },
   auth: true,
   hooks: {
-    beforeValidate: [
-      ({ data }) => {
-        if (!data) {
-          return data
-        }
-
-        const role = data.role
-
-        if (role && role in rolePermissionLevels) {
-          return {
-            ...data,
-            role,
-            permissionLevel:
-              rolePermissionLevels[role as keyof typeof rolePermissionLevels],
-          }
-        }
-
-        return data
-      },
-    ],
+    beforeValidate: [normalizeUserPermissionLevel],
   },
   fields: [
     {
@@ -75,6 +105,9 @@ export const Users: CollectionConfig = {
     {
       name: 'role',
       type: 'select',
+      access: {
+        update: globalAdminFieldUpdateOnly,
+      },
       admin: {
         description:
           '최고관리자=100, 센터 통합 매니저=80, 센터매니저=50 으로 적용됩니다.',
@@ -90,6 +123,9 @@ export const Users: CollectionConfig = {
     {
       name: 'permissionLevel',
       type: 'number',
+      access: {
+        update: globalAdminFieldUpdateOnly,
+      },
       admin: {
         hidden: true,
         readOnly: true,
@@ -100,6 +136,9 @@ export const Users: CollectionConfig = {
     {
       name: 'center',
       type: 'select',
+      access: {
+        update: globalAdminFieldUpdateOnly,
+      },
       defaultValue: 'art',
       options: centerOptions,
       required: true,

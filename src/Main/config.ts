@@ -1,13 +1,15 @@
 import type {
+  FieldAccess,
   Field,
   GlobalAfterChangeHook,
+  GlobalBeforeChangeHook,
   GlobalBeforeValidateHook,
   GlobalConfig,
   Validate,
 } from 'payload'
 import { revalidatePath } from 'next/cache'
 
-import { centerOptions, type CenterValue } from '@/collections/shared'
+import { centerOptions, type CenterValue, isGlobalAdminUser, userCenterValue } from '@/collections/shared'
 
 const defaultAutoplayDelay = 5000
 
@@ -40,6 +42,16 @@ type MainBannerOrderData = Record<string, unknown>
 const bannerOrderFieldNames = centerOptions.map(
   (option) => `${option.value}Banners`,
 )
+
+const canUpdateCenter =
+  (center: CenterValue): FieldAccess =>
+  ({ req }) => {
+    return isGlobalAdminUser(req.user) || userCenterValue(req.user) === center
+  }
+
+function canViewCenterTab(user: unknown, center: CenterValue) {
+  return isGlobalAdminUser(user) || userCenterValue(user) === center
+}
 
 function hasBannerValue(row: unknown) {
   if (!row || typeof row !== 'object') {
@@ -78,6 +90,38 @@ const normalizeMainGlobalData: GlobalBeforeValidateHook = ({ data, originalDoc }
   return normalizeMainBannerOrderData(data, originalDoc)
 }
 
+export const restrictCenterMainUpdates: GlobalBeforeChangeHook = ({
+  data,
+  originalDoc,
+  req,
+}) => {
+  if (!req.user || isGlobalAdminUser(req.user)) {
+    return data
+  }
+
+  const allowedCenter = userCenterValue(req.user)
+
+  if (!allowedCenter) {
+    return originalDoc ?? data
+  }
+
+  const nextData = { ...data }
+
+  for (const option of centerOptions) {
+    const center = option.value
+
+    if (center === allowedCenter) {
+      continue
+    }
+
+    nextData[`${center}BannerAutoplay`] = originalDoc?.[`${center}BannerAutoplay`]
+    nextData[`${center}BannerAutoplayDelay`] = originalDoc?.[`${center}BannerAutoplayDelay`]
+    nextData[`${center}Banners`] = originalDoc?.[`${center}Banners`]
+  }
+
+  return nextData
+}
+
 export function mainCenterPaths() {
   return centerOptions.map((option) => `/${option.value}`)
 }
@@ -101,6 +145,9 @@ function centerBannerOrderField(center: CenterValue): Field {
   return {
     name: `${center}Banners`,
     type: 'array',
+    access: {
+      update: canUpdateCenter(center),
+    },
     label,
     labels: {
       plural: label,
@@ -135,12 +182,18 @@ function centerBannerSettingFields(center: CenterValue): Field[] {
     {
       name: `${center}BannerAutoplay`,
       type: 'checkbox',
+      access: {
+        update: canUpdateCenter(center),
+      },
       label: '오토플레이',
       defaultValue: true,
     },
     {
       name: `${center}BannerAutoplayDelay`,
       type: 'number',
+      access: {
+        update: canUpdateCenter(center),
+      },
       label: '전환속도(ms)',
       defaultValue: defaultAutoplayDelay,
       admin: {
@@ -168,12 +221,16 @@ export const Main: GlobalConfig = {
   },
   hooks: {
     afterChange: [revalidateMainCenterPaths],
+    beforeChange: [restrictCenterMainUpdates],
     beforeValidate: [normalizeMainGlobalData],
   },
   fields: [
     {
       type: 'tabs',
       tabs: centerOptions.map((option) => ({
+        admin: {
+          condition: (_data, _siblingData, { user }) => canViewCenterTab(user, option.value),
+        },
         label: option.label,
         fields: [
           ...centerBannerSettingFields(option.value),

@@ -66,6 +66,7 @@ test('main statistics are configured as one settings global with center-specific
   assert.equal(MainStatistics.slug, 'main-statistics')
   assert.equal(MainStatistics.label, '통계 설정')
   assert.equal(MainStatistics.admin?.group, '메인설정')
+  assert.deepEqual(MainStatistics.versions, { max: 15 })
 
   for (const [tabLabel, center] of [
     ['아트센터', 'art'],
@@ -102,6 +103,24 @@ test('main statistics are configured as one settings global with center-specific
       assert.equal(await field.validate?.(''), '0 이상의 정수로 입력해야 합니다.')
     }
   }
+})
+
+test('main statistics center tabs open only the manager center for center managers', () => {
+  const artTab = getTab(MainStatistics, '아트센터')
+  const highteenTab = getTab(MainStatistics, '하이틴센터')
+
+  assert.equal(
+    artTab.admin?.condition?.({}, {}, { user: { role: 'manager', center: 'art' } } as never),
+    true,
+  )
+  assert.equal(
+    highteenTab.admin?.condition?.({}, {}, { user: { role: 'manager', center: 'art' } } as never),
+    false,
+  )
+  assert.equal(
+    highteenTab.admin?.condition?.({}, {}, { user: { role: 'admin', center: 'art' } } as never),
+    true,
+  )
 })
 
 test('main statistics preserve other center values for center managers', () => {

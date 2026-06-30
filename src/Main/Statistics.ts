@@ -45,6 +45,10 @@ const canUpdateCenter =
     return isGlobalAdminUser(req.user) || userCenterValue(req.user) === center
   }
 
+function canViewCenterTab(user: unknown, center: CenterValue) {
+  return isGlobalAdminUser(user) || userCenterValue(user) === center
+}
+
 function centerStatisticKeys(center: CenterValue): CenterStatisticKeys {
   return {
     monthlyLeadSupporting: `${center}MonthlyLeadSupporting`,
@@ -174,9 +178,15 @@ export const MainStatistics: GlobalConfig = {
     {
       type: 'tabs',
       tabs: centerOptions.map((option) => ({
+        admin: {
+          condition: (_data, _siblingData, { user }) => canViewCenterTab(user, option.value),
+        },
         label: centerLabelByValue[option.value],
         fields: centerStatisticFields(option.value),
       })),
     },
   ],
+  versions: {
+    max: 15,
+  },
 }

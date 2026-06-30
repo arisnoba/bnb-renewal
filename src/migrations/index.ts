@@ -127,6 +127,7 @@ import * as migration_20260623_120000_direct_casting_company_arko_lab from './20
 import * as migration_20260623_191500_direct_casting_multi_company_merge from './20260623_191500_direct_casting_multi_company_merge'
 import * as migration_20260624_120000_social_links_sns_type from './20260624_120000_social_links_sns_type'
 import * as migration_20260624_130000_media_uploads_prefix from './20260624_130000_media_uploads_prefix'
+import * as migration_20260630_191800_admin_center_history_access from './20260630_191800_admin_center_history_access'
 
 export const migrations = [
   {
@@ -773,5 +774,10 @@ export const migrations = [
     up: migration_20260624_130000_media_uploads_prefix.up,
     down: migration_20260624_130000_media_uploads_prefix.down,
     name: '20260624_130000_media_uploads_prefix',
+  },
+  {
+    up: migration_20260630_191800_admin_center_history_access.up,
+    down: migration_20260630_191800_admin_center_history_access.down,
+    name: '20260630_191800_admin_center_history_access',
   },
 ]

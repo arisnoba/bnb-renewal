@@ -3,7 +3,12 @@ import test from 'node:test'
 
 import type { Field, GlobalConfig, Tab } from 'payload'
 
-import { Main, mainCenterPaths, normalizeMainBannerOrderData } from './config'
+import {
+  Main,
+  mainCenterPaths,
+  normalizeMainBannerOrderData,
+  restrictCenterMainUpdates,
+} from './config'
 import {
   mainBannerOrderBannerId,
   mainBannerOrderBannerTitle,
@@ -16,8 +21,16 @@ type NamedField = Field & {
       Field?: unknown
       RowLabel?: unknown
     }
+    condition?: (
+      data: Record<string, unknown>,
+      siblingData: Record<string, unknown>,
+      options: { user?: unknown },
+    ) => unknown
     description?: unknown
     initCollapsed?: boolean
+  }
+  access?: {
+    update?: (args: { req: { user?: unknown } }) => boolean | Promise<boolean>
   }
   defaultValue?: unknown
   fields?: Field[]
@@ -86,9 +99,13 @@ test('main global exposes center-specific banner order arrays', async () => {
     const autoplayDelay = namedFields[1]
     const field = getTabField(Main, tabLabel, fieldName)
     const banner = getNestedField(field, 'banner')
+    const center = fieldName.replace('Banners', '')
 
     assert.equal(autoplay.name, fieldName.replace('Banners', 'BannerAutoplay'))
     assert.equal(autoplay.type, 'checkbox')
+    assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'manager', center } } }), true)
+    assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'manager', center: 'exam' } } }), center === 'exam')
+    assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'admin', center: 'exam' } } }), true)
     assert.equal(autoplay.label, '오토플레이')
     assert.equal(autoplay.defaultValue, true)
     assert.equal(autoplayDelay.name, fieldName.replace('Banners', 'BannerAutoplayDelay'))
@@ -104,12 +121,33 @@ test('main global exposes center-specific banner order arrays', async () => {
       '전환속도는 0보다 큰 숫자로 입력해야 합니다.',
     )
     assert.equal(field.type, 'array')
+    assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center } } }), true)
+    assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center: 'exam' } } }), center === 'exam')
+    assert.equal(await field.access?.update?.({ req: { user: { role: 'admin', center: 'exam' } } }), true)
     assert.equal(field.admin?.initCollapsed, true)
     assert.equal(field.admin?.components?.RowLabel, '@/Main/RowLabel#MainBannerOrderRowLabel')
     assert.equal(banner.type, 'relationship')
     assert.equal(banner.relationTo, 'main-banners')
     assert.equal(await banner.validate?.(null, {}), '배너를 선택해야 합니다.')
   }
+})
+
+test('main global center tabs open only the manager center for center managers', () => {
+  const artTab = getTab(Main, '아트센터')
+  const examTab = getTab(Main, '입시센터')
+
+  assert.equal(
+    artTab.admin?.condition?.({}, {}, { user: { role: 'manager', center: 'art' } } as never),
+    true,
+  )
+  assert.equal(
+    examTab.admin?.condition?.({}, {}, { user: { role: 'manager', center: 'art' } } as never),
+    false,
+  )
+  assert.equal(
+    examTab.admin?.condition?.({}, {}, { user: { role: 'admin', center: 'art' } } as never),
+    true,
+  )
 })
 
 test('main global revalidates center home paths', () => {
@@ -152,4 +190,40 @@ test('main global removes empty banner order rows before validation', () => {
       ],
     },
   )
+})
+
+test('main global preserves other center values for center managers', () => {
+  const data = restrictCenterMainUpdates({
+    context: {},
+    data: {
+      artBannerAutoplay: false,
+      artBannerAutoplayDelay: 7000,
+      artBanners: [{ banner: 11 }],
+      examBannerAutoplay: false,
+      examBannerAutoplayDelay: 3000,
+      examBanners: [{ banner: 22 }],
+    },
+    global: Main as never,
+    originalDoc: {
+      artBannerAutoplay: true,
+      artBannerAutoplayDelay: 5000,
+      artBanners: [{ banner: 1 }],
+      examBannerAutoplay: true,
+      examBannerAutoplayDelay: 6000,
+      examBanners: [{ banner: 2 }],
+    },
+    req: {
+      user: {
+        center: 'exam',
+        role: 'manager',
+      },
+    },
+  } as never) as Record<string, unknown>
+
+  assert.equal(data.artBannerAutoplay, true)
+  assert.equal(data.artBannerAutoplayDelay, 5000)
+  assert.deepEqual(data.artBanners, [{ banner: 1 }])
+  assert.equal(data.examBannerAutoplay, false)
+  assert.equal(data.examBannerAutoplayDelay, 3000)
+  assert.deepEqual(data.examBanners, [{ banner: 22 }])
 })

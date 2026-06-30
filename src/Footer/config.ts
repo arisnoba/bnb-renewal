@@ -110,4 +110,7 @@ export const Footer: GlobalConfig = {
   hooks: {
     afterChange: [revalidateFooter],
   },
+  versions: {
+    max: 15,
+  },
 }

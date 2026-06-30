@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
+import { Footer } from './config'
 import {
   centerSlugFromPathname,
   footerAddressLines,
@@ -9,6 +10,10 @@ import {
   footerSocialLinksForPathname,
   type FooterCenterInfo,
 } from './centerInfo'
+
+test('footer center info global keeps edit history', () => {
+  assert.deepEqual(Footer.versions, { max: 15 })
+})
 
 const centerInfos: FooterCenterInfo[] = [
   {
@@ -58,17 +63,17 @@ test('footerSocialLinksForPathname renders selected center sns links', () => {
   assert.deepEqual(footerSocialLinksForPathname(centerInfos, '/exam'), [
     {
       href: 'https://www.youtube.com/@bnb-exam',
-      icon: '/assets/footer/icon-youtube.png',
+      icon: '/assets/footer/icon-youtube.svg',
       label: 'Youtube',
     },
     {
       href: 'https://blog.naver.com/bnb_exam',
-      icon: '/assets/footer/icon-naver-blog.png',
+      icon: '/assets/footer/icon-naver-blog.svg',
       label: 'Naver Blog',
     },
     {
       href: 'https://www.instagram.com/bnb_exam',
-      icon: '/assets/footer/icon-instagram.png',
+      icon: '/assets/footer/icon-instagram.svg',
       label: 'Instagram',
     },
   ])

@@ -29,9 +29,11 @@ import {
   centerScopedBeforeValidate,
   centersField,
   displayStatusOptions,
+  isGlobalAdminUser,
   publishedAtField,
   sidebarFields,
   slugField,
+  userCenterValue,
 } from "./shared";
 import { seoTitleField } from "./seoFields";
 
@@ -47,6 +49,10 @@ const revalidateArtistPressAfterDelete = createCenterRevalidationAfterDelete({
 
 const validateArtistPressAgency: Validate<unknown> = (value) => {
   return value ? true : "소속사를 선택해야 합니다.";
+};
+
+const isArtistPressAdminMenuHidden = ({ user }: { user?: unknown }) => {
+  return !isGlobalAdminUser(user) && userCenterValue(user) !== "art";
 };
 
 const artistPressBodyEditor = lexicalEditor({
@@ -81,6 +87,7 @@ export const ArtistPress: CollectionConfig = {
       "updatedAt",
     ],
     group: "아티스트",
+    hidden: isArtistPressAdminMenuHidden,
     useAsTitle: "title",
   },
   defaultSort: "-publishedAt",
