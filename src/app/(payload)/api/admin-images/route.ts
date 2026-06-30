@@ -5,7 +5,7 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 
 import { getPayloadClient } from "@/lib/payload";
-import { deleteR2Object, getR2ObjectKey, uploadR2Object } from "@/lib/r2";
+import { deleteR2Object, getR2ObjectKey, getR2PublicUrl, uploadR2Object } from "@/lib/r2";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const LOCAL_UPLOAD_ROOT = path.resolve(
@@ -91,6 +91,31 @@ function getLocalFilePath(publicPath: string) {
   }
 
   return filePath;
+}
+
+function previewObjectKey(value: unknown) {
+  const key = typeof value === "string" ? value.trim().replace(/^\/+/, "") : "";
+
+  if (!key.startsWith("media/") || key.includes("..") || key.includes("\\")) {
+    return "";
+  }
+
+  return key
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+}
+
+export function GET(request: Request) {
+  const url = new URL(request.url);
+  const objectKey = previewObjectKey(url.searchParams.get("key"));
+
+  if (!objectKey) {
+    return jsonError("미리보기 이미지 경로가 올바르지 않습니다.", 400);
+  }
+
+  return NextResponse.redirect(getR2PublicUrl(objectKey), 302);
 }
 
 export async function POST(request: Request) {

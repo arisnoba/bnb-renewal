@@ -31,6 +31,25 @@ function stripLegacyTeacherPrefix(path: string) {
 		.replace(/^legacy\/teachers\//, '');
 }
 
+function mediaObjectKeySrc(path: string) {
+	const normalized = path.replace(/^\/+/, '');
+
+	if (!normalized.startsWith('media/')) {
+		return '';
+	}
+
+	const segments = normalized.split('/').filter(Boolean);
+	const filename = segments.pop();
+
+	if (!filename) {
+		return '';
+	}
+
+	segments.push(filename);
+
+	return `/api/admin-images?key=${encodeURIComponent(segments.join('/'))}`;
+}
+
 export function getTeacherImageSrc(value: unknown, context: TeacherImageContext) {
 	const trimmed = stringValue(value);
 
@@ -40,6 +59,12 @@ export function getTeacherImageSrc(value: unknown, context: TeacherImageContext)
 
 	if (/^(https?:)?\/\//.test(trimmed)) {
 		return trimmed;
+	}
+
+	const mediaSrc = mediaObjectKeySrc(trimmed);
+
+	if (mediaSrc) {
+		return mediaSrc;
 	}
 
 	if (rootHandledPrefixes.some((prefix) => trimmed.startsWith(prefix))) {
