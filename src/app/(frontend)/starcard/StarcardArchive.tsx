@@ -51,7 +51,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
               </div>
             </div>
 
-            <div className="section-starcard-list__hero-card hidden justify-center lg:flex">
+            <div className="section-starcard-list__hero-card hidden justify-center lg:flex bg-neutral-200">
               <Image
                 alt="배우앤배움 스타카드"
                 className="h-auto w-[220px] rounded-[14px] shadow-[0_24px_80px_color-mix(in_srgb,var(--brand)_32%,transparent)]"
