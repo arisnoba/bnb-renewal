@@ -65,7 +65,7 @@ export function MonthNavigator({
         >
           <SelectTrigger
             aria-label={`${yearLabel}년 ${monthLabel} 월 선택 열기`}
-            className="h-auto w-auto gap-2 border-0 bg-transparent px-2 [font-size:inherit]! font-extrabold leading-[1.2] text-inherit shadow-none transition hover:[color:var(--brand)] focus-visible:ring-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand [&>span]:![font-size:inherit] [&>span]:line-clamp-none [&_svg]:size-5 [&_svg]:text-current [&_svg]:opacity-100 min-[769px]:[&_svg]:size-6"
+            className="h-auto w-auto gap-2 border-0 bg-transparent px-2 [font-size:inherit]! font-extrabold leading-[1.2] text-inherit shadow-none transition hover:[color:var(--brand)] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand [&>span]:![font-size:inherit] [&>span]:line-clamp-none [&_svg]:size-5 [&_svg]:text-current [&_svg]:opacity-100 min-[769px]:[&_svg]:size-6 cursor-pointer"
           >
             <SelectValue placeholder={monthLabel} />
           </SelectTrigger>
@@ -85,7 +85,7 @@ export function MonthNavigator({
                   <SelectItem
                     aria-current={isCurrentMonth ? 'page' : undefined}
                     className={[
-                      'flex min-h-10 justify-center rounded-none border px-2 pr-2 type-label-l font-extrabold leading-[1.2] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand [&>span:first-child]:hidden',
+                      'flex min-h-10 justify-center rounded-none border px-2 pr-2 type-label-l font-extrabold leading-[1.2] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand [&>span:first-child]:hidden',
                       isCurrentMonth
                         ? 'border-brand bg-brand text-white focus:bg-brand focus:text-white data-[highlighted]:bg-brand data-[highlighted]:text-white'
                         : 'border-neutral-200 bg-white text-neutral-900 focus:border-brand focus:bg-white focus:text-brand data-[highlighted]:border-brand data-[highlighted]:bg-white data-[highlighted]:text-brand',
