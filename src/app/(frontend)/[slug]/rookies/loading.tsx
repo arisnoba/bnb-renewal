@@ -1,5 +1,5 @@
-import { GenericArchiveLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
+import { RookiesLoadingSkeleton } from "../../_components/RouteLoadingSkeletons";
 
 export default function Loading() {
-  return <GenericArchiveLoadingSkeleton pageClassName="page-rookies" cardCount={12} />
+  return <RookiesLoadingSkeleton />;
 }

@@ -1,5 +1,5 @@
-import { GenericArchiveLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
+import { CurriculumLoadingSkeleton } from "../../_components/RouteLoadingSkeletons";
 
 export default function Loading() {
-  return <GenericArchiveLoadingSkeleton pageClassName="page-curriculum" />
+  return <CurriculumLoadingSkeleton />;
 }

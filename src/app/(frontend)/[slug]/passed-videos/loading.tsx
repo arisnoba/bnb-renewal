@@ -1,5 +1,5 @@
-import { GenericArchiveLoadingSkeleton } from '../../_components/RouteLoadingSkeletons'
+import { ExamPassedVideosLoadingSkeleton } from "../../_components/RouteLoadingSkeletons";
 
 export default function Loading() {
-  return <GenericArchiveLoadingSkeleton pageClassName="page-passed-videos" />
+  return <ExamPassedVideosLoadingSkeleton />;
 }
