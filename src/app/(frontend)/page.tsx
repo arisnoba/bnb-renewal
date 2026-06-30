@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import ImageGallery, {
   type ImageGalleryItem,
 } from '@/components/ui/image-gallery'
+import { commonOpenGraphImage, mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 
 const gateCenters: ImageGalleryItem[] = [
   {
@@ -52,6 +53,16 @@ export const metadata: Metadata = {
   title: '센터 선택 - 배우앤배움',
   description:
     '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터를 선택하는 게이트 페이지입니다.',
+  openGraph: mergeOpenGraph({
+    description:
+      '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터를 선택하는 게이트 페이지입니다.',
+    images: [commonOpenGraphImage()],
+    title: '센터 선택 - 배우앤배움',
+  }),
+  twitter: {
+    card: 'summary_large_image',
+    images: [commonOpenGraphImage().url],
+  },
 }
 
 export default function GatePage() {

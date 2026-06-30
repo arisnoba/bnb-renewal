@@ -6,6 +6,7 @@ import { getServerSideURL } from './getURL'
 import { getSiteTitle } from './siteMetadata'
 
 const defaultOpenGraphImagePath = '/website-template-OG.webp'
+const commonOpenGraphImagePath = '/assets/og/og-common.jpg'
 
 const centerOpenGraphImagePaths: Record<CenterSlug, string> = {
   art: '/assets/og/og-art.jpg',
@@ -21,6 +22,10 @@ type OpenGraphDefaults = {
 
 export function defaultOpenGraphImage() {
   return openGraphImage(defaultOpenGraphImagePath)
+}
+
+export function commonOpenGraphImage() {
+  return openGraphImage(commonOpenGraphImagePath)
 }
 
 export function centerOpenGraphImage(center: CenterSlug) {

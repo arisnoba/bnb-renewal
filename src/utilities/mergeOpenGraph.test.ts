@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { centerOpenGraphImage, defaultOpenGraphImage, mergeOpenGraph } from './mergeOpenGraph'
+import {
+  centerOpenGraphImage,
+  commonOpenGraphImage,
+  defaultOpenGraphImage,
+  mergeOpenGraph,
+} from './mergeOpenGraph'
 
 test('open graph images resolve to absolute default asset URLs', () => {
   const originalServerUrl = process.env.NEXT_PUBLIC_SERVER_URL
@@ -18,6 +23,12 @@ test('open graph images resolve to absolute default asset URLs', () => {
       height: 630,
       type: 'image/jpeg',
       url: 'https://example.com/assets/og/og-kids.jpg',
+      width: 1200,
+    })
+    assert.deepEqual(commonOpenGraphImage(), {
+      height: 630,
+      type: 'image/jpeg',
+      url: 'https://example.com/assets/og/og-common.jpg',
       width: 1200,
     })
   } finally {
