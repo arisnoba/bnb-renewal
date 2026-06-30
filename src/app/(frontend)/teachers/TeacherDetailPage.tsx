@@ -174,6 +174,7 @@ export async function TeacherDetailPage({
         nextLabel={adjacent.nextLabel}
         previousHref={adjacent.previousHref}
         previousLabel={adjacent.previousLabel}
+        tone="dark"
         width="wide"
       />
     </DetailPage>

@@ -124,6 +124,7 @@ type DetailPagerProps = {
   nextLabel?: string
   previousHref?: string | null
   previousLabel?: string
+  tone?: 'dark' | 'light'
   width?: DetailWidth
 }
 
@@ -134,6 +135,7 @@ export function DetailPager({
   nextLabel = '다음 글',
   previousHref,
   previousLabel = '이전 글',
+  tone = 'light',
   width = 'narrow',
 }: DetailPagerProps) {
   return (
@@ -175,6 +177,7 @@ export function DetailPager({
           },
         ]}
         showIcons
+        tone={tone}
       />
     </>
   )
