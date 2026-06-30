@@ -6,6 +6,11 @@ import type { Field } from 'payload'
 import { Users } from './Users'
 
 type NamedField = Field & {
+  admin?: {
+    components?: {
+      Field?: unknown
+    }
+  }
   access?: {
     update?: (args: { req: { user?: unknown } }) => boolean | Promise<boolean>
   }
@@ -106,4 +111,16 @@ test('users preserve protected fields during center-manager self updates', async
   assert.equal(data.role, 'manager')
   assert.equal(data.center, 'exam')
   assert.equal(data.permissionLevel, 50)
+})
+
+test('users form shows force unlock guidance at the bottom', () => {
+  const helpField = Users.fields.at(-1)
+
+  assert.ok(helpField)
+  assert.equal(helpField.type, 'ui')
+  assert.equal('name' in helpField ? helpField.name : undefined, 'forceUnlockHelp')
+  assert.equal(
+    helpField.admin?.components?.Field,
+    '@/components/payload/ForceUnlockHelp#ForceUnlockHelp',
+  )
 })

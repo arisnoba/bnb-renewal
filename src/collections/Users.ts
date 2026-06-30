@@ -143,5 +143,14 @@ export const Users: CollectionConfig = {
       options: centerOptions,
       required: true,
     },
+    {
+      name: 'forceUnlockHelp',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/components/payload/ForceUnlockHelp#ForceUnlockHelp',
+        },
+      },
+    },
   ],
 }
