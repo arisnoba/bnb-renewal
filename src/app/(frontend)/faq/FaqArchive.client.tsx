@@ -2,10 +2,10 @@
 
 import { Search } from 'lucide-react'
 import Link from 'next/link'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
-import { FilterChips } from '../_components/FilterChips'
+import { cn } from '@/utilities/ui'
 
 export type FaqCategoryTab = {
   count: number
@@ -21,7 +21,6 @@ type FaqDisplayItem = {
 }
 
 type FaqArchiveClientProps = {
-  activeCategory: string | null
   categoryTabs: FaqCategoryTab[]
   center: CenterSlug
   faqs: FaqDisplayItem[]
@@ -29,12 +28,16 @@ type FaqArchiveClientProps = {
 }
 
 export function FaqArchiveClient({
-  activeCategory,
   categoryTabs,
   center,
   faqs,
   totalCount,
 }: FaqArchiveClientProps) {
+  const validCategories = useMemo(
+    () => new Set(categoryTabs.map((category) => category.value)),
+    [categoryTabs],
+  )
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase('ko-KR')
@@ -43,6 +46,7 @@ export function FaqArchiveClient({
       active: !activeCategory,
       count: totalCount,
       href: `/${center}/faq`,
+      value: null,
       label: '전체',
     },
     ...categoryTabs.map((category) => ({
@@ -50,19 +54,46 @@ export function FaqArchiveClient({
       count: category.count,
       href: `/${center}/faq?category=${category.value}`,
       label: category.label,
+      value: category.value,
     })),
   ]
-  const visibleFaqs = useMemo(() => {
-    if (!normalizedSearchQuery) {
-      return faqs
+  const categoryFilteredFaqs = useMemo(() => {
+    if (!activeCategory) {
+      return [...faqs].reverse()
     }
 
-    return faqs.filter((faq) => {
+    return faqs.filter((faq) => faq.category === activeCategory)
+  }, [activeCategory, faqs])
+  const visibleFaqs = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return categoryFilteredFaqs
+    }
+
+    return categoryFilteredFaqs.filter((faq) => {
       const searchableText = `${faq.title}\n${faq.answer}`.toLocaleLowerCase('ko-KR')
 
       return searchableText.includes(normalizedSearchQuery)
     })
-  }, [faqs, normalizedSearchQuery])
+  }, [categoryFilteredFaqs, normalizedSearchQuery])
+
+  useEffect(() => {
+    const syncCategoryFromLocation = () => {
+      const category = new URLSearchParams(window.location.search).get('category')
+      setActiveCategory(category && validCategories.has(category) ? category : null)
+    }
+
+    syncCategoryFromLocation()
+    window.addEventListener('popstate', syncCategoryFromLocation)
+
+    return () => {
+      window.removeEventListener('popstate', syncCategoryFromLocation)
+    }
+  }, [validCategories])
+
+  const selectCategory = (category: string | null, href: string) => {
+    setActiveCategory(category)
+    window.history.pushState(null, '', href)
+  }
 
   return (
     <>
@@ -94,14 +125,34 @@ export function FaqArchiveClient({
           </button>
         </form>
 
-        <FilterChips
-          ariaLabel="FAQ 분류"
-          className="section-faq-list__tabs"
-          countClassName="section-faq-list__tab-count type-title-m font-semibold leading-none"
-          itemClassName="section-faq-list__tab type-title-m font-semibold leading-[1.4]"
-          items={categoryItems}
-          tone="brand"
-        />
+        <nav
+          aria-label="FAQ 분류"
+          className="filter-chips filter-chips--brand section-faq-list__tabs"
+        >
+          {categoryItems.map((item) => (
+            <a
+              aria-current={item.active ? 'page' : undefined}
+              className="filter-chips__item section-faq-list__tab type-title-m font-semibold leading-[1.4]"
+              data-active={item.active ? 'true' : 'false'}
+              href={item.href}
+              key={item.href}
+              onClick={(event) => {
+                event.preventDefault()
+                selectCategory(item.value, item.href)
+              }}
+            >
+              <span>{item.label}</span>
+              <span
+                className={cn(
+                  'filter-chips__count',
+                  'section-faq-list__tab-count type-title-m font-semibold leading-none',
+                )}
+              >
+                {item.count}
+              </span>
+            </a>
+          ))}
+        </nav>
       </div>
 
       <div className="section-faq-list__items">

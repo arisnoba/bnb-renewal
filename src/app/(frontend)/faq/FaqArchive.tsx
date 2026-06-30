@@ -35,7 +35,6 @@ const categoryLabels = {
 type FaqCategory = keyof typeof categoryLabels
 
 type FaqArchiveProps = {
-  activeCategory?: string
   center: CenterSlug
 }
 
@@ -46,19 +45,14 @@ export type FaqDisplayItem = {
   title: string
 }
 
-export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
-  const requestedCategory = normalizeCategory(activeCategory)
+export async function FaqArchive({ center }: FaqArchiveProps) {
   const faqs = await getCachedFaqs(center)
   const displayFaqs = faqs
     .map((faq) => faqDisplayForCenter(faq, center))
     .filter((item): item is FaqDisplayItem => Boolean(item))
   const categoryCounts = getCategoryCounts(displayFaqs)
-  const category = requestedCategory && categoryCounts[requestedCategory] > 0 ? requestedCategory : null
   const categoryTabs = getCategoryTabs(categoryCounts)
-  const visibleFaqs = category
-    ? displayFaqs.filter((item) => item.category === category)
-    : [...displayFaqs].reverse()
-  const faqJsonLd = buildFaqJsonLd({ center, faqs: visibleFaqs })
+  const faqJsonLd = buildFaqJsonLd({ center, faqs: displayFaqs })
 
   return (
     <>
@@ -93,10 +87,9 @@ export async function FaqArchive({ activeCategory, center }: FaqArchiveProps) {
             />
 
             <FaqArchiveClient
-              activeCategory={category}
               categoryTabs={categoryTabs}
               center={center}
-              faqs={visibleFaqs}
+              faqs={displayFaqs}
               totalCount={displayFaqs.length}
             />
           </div>
@@ -200,10 +193,6 @@ function variantMatchesCenter(
   }
 
   return variant.centerAvenue
-}
-
-function normalizeCategory(value: string | undefined): FaqCategory | null {
-  return value && value in categoryLabels ? (value as FaqCategory) : null
 }
 
 function getCategoryCounts(faqs: FaqDisplayItem[]) {

@@ -8,9 +8,6 @@ type Args = {
   params: Promise<{
     slug: string
   }>
-  searchParams: Promise<{
-    category?: string
-  }>
 }
 
 export const revalidate = 600
@@ -35,11 +32,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
 export default async function CenterFaqPage({
   params: paramsPromise,
-  searchParams: searchParamsPromise,
 }: Args) {
   const { slug } = await paramsPromise
-  const { category } = await searchParamsPromise
   const center = assertCenter(slug)
 
-  return <FaqArchive activeCategory={category} center={center} />
+  return <FaqArchive center={center} />
 }
