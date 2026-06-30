@@ -134,10 +134,13 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   return generateArtistPressDetailMetadata(decodedSlug)
 }
 
-export async function generateArtistPressDetailMetadata(slug: string): Promise<Metadata> {
+export async function generateArtistPressDetailMetadata(
+  slug: string,
+  center?: CenterSlug,
+): Promise<Metadata> {
   const artistPress = await queryArtistPressBySlug({ slug }).catch(() => null)
 
-  return generateArtistPressMeta(artistPress)
+  return generateArtistPressMeta(artistPress, center)
 }
 
 const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {

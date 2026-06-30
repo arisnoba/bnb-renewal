@@ -38,7 +38,7 @@ export default async function CenterArtistPressDetail({ params: paramsPromise }:
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { artistPressSlug, slug } = await paramsPromise
-  assertCenter(slug)
+  const center = assertCenter(slug)
 
-  return generateArtistPressDetailMetadata(decodeURIComponent(artistPressSlug))
+  return generateArtistPressDetailMetadata(decodeURIComponent(artistPressSlug), center)
 }

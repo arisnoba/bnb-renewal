@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 
-import type { ArtistPress, Media } from '@/payload-types'
+import type { CenterSlug } from '@/lib/centers'
+import type { ArtistPress } from '@/payload-types'
 
-import { getServerSideURL } from './getURL'
+import { asMedia, metadataImageUrlFromMedia } from './metadataImage'
 import { mergeOpenGraph } from './mergeOpenGraph'
 
 type ArtistPressLike = Partial<ArtistPress>
-type UploadValue = number | null | Media | undefined
 
 export function hasArtistPressLexicalContent(value: ArtistPressLike['body']) {
   const children = value?.root?.children
@@ -38,48 +38,34 @@ export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'slug'>, center
   return center ? `/${center}${path}` : path
 }
 
-export function generateArtistPressMeta(artistPress: ArtistPressLike | null): Metadata {
+export function generateArtistPressMeta(
+  artistPress: ArtistPressLike | null,
+  center?: CenterSlug,
+): Metadata {
   const title = artistPress?.meta?.title || artistPress?.title || '출신 아티스트'
   const description = artistPress ? getArtistPressDescription(artistPress) : undefined
   const imageUrl = artistPress ? getArtistPressMetaImageUrl(artistPress) : undefined
-  const canonicalPath = artistPress?.slug ? getArtistPressUrl({ slug: artistPress.slug }) : '/artist-press'
+  const canonicalPath = artistPress?.slug
+    ? getArtistPressUrl({ slug: artistPress.slug }, center)
+    : center
+      ? `/${center}/artist-press`
+      : '/artist-press'
 
   return {
     description,
-    openGraph: mergeOpenGraph({
-      description: description || '',
-      images: imageUrl ? [{ url: imageUrl }] : undefined,
-      title,
-      url: canonicalPath,
-    }),
+    openGraph: mergeOpenGraph(
+      {
+        description: description || '',
+        images: imageUrl ? [{ url: imageUrl }] : undefined,
+        title,
+        url: canonicalPath,
+      },
+      center ? { center } : undefined,
+    ),
     title,
   }
 }
 
 function getArtistPressMetaImageUrl(artistPress: ArtistPressLike) {
-  const serverUrl = getServerSideURL()
-  const media = getArtistPressSeoImageMedia(artistPress)
-  const mediaUrl = media?.url
-
-  if (mediaUrl) {
-    return absoluteUrl(mediaUrl, serverUrl)
-  }
-
-  return undefined
-}
-
-function asMedia(value: UploadValue) {
-  if (value && typeof value === 'object') {
-    return value as Media
-  }
-
-  return undefined
-}
-
-function absoluteUrl(value: string, serverUrl: string) {
-  if (value.startsWith('http://') || value.startsWith('https://')) {
-    return value
-  }
-
-  return `${serverUrl}${value.startsWith('/') ? value : `/${value}`}`
+  return metadataImageUrlFromMedia(getArtistPressSeoImageMedia(artistPress))
 }

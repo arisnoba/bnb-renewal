@@ -1,7 +1,8 @@
-import type { Media, News } from '@/payload-types'
+import type { News } from '@/payload-types'
+
+import { asMedia, metadataImageUrlFromMedia } from './metadataImage'
 
 type NewsLike = Partial<News>
-type UploadValue = number | null | Media | undefined
 
 export function hasLexicalContent(value: NewsLike['body']) {
   const children = value?.root?.children
@@ -16,14 +17,14 @@ export function getNewsThumbnailMedia(news: NewsLike) {
   return asMedia(news.thumbnailMedia)
 }
 
-export function getNewsUrl(news: Pick<News, 'slug'>, center: string) {
-  return `/${encodeURIComponent(center)}/news/${encodeURIComponent(news.slug)}`
+export function getNewsSeoImageMedia(news: NewsLike) {
+  return asMedia(news.meta?.image) || asMedia(news.thumbnailMedia)
 }
 
-function asMedia(value: UploadValue) {
-  if (value && typeof value === 'object') {
-    return value as Media
-  }
+export function getNewsMetaImageUrl(news: NewsLike) {
+  return metadataImageUrlFromMedia(getNewsSeoImageMedia(news))
+}
 
-  return undefined
+export function getNewsUrl(news: Pick<News, 'slug'>, center: string) {
+  return `/${encodeURIComponent(center)}/news/${encodeURIComponent(news.slug)}`
 }

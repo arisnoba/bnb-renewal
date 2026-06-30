@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { centers, type CenterSlug } from '@/lib/centers'
+import { centerOpenGraphImage } from '@/utilities/mergeOpenGraph'
 
 type Args = {
   params: Promise<{
@@ -29,6 +30,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   }
 
   const siteTitle = `배우앤배움 ${centers[center]}`
+  const openGraphImage = centerOpenGraphImage(center)
 
   return {
     icons: {
@@ -46,9 +48,16 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
       ],
     },
     manifest: centerFaviconPath(center, 'site.webmanifest'),
+    openGraph: {
+      images: [openGraphImage],
+    },
     title: {
       default: siteTitle,
       template: `%s - ${siteTitle}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: [openGraphImage.url],
     },
   }
 }

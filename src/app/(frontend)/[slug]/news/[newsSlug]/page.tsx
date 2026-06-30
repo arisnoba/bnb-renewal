@@ -6,9 +6,12 @@ import { assertCenter } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import {
   getNewsDescription,
+  getNewsMetaImageUrl,
   getNewsThumbnailMedia,
+  getNewsUrl,
   hasLexicalContent,
 } from '@/utilities/newsFallbacks'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -98,10 +101,22 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const decodedNewsSlug = decodeURIComponent(newsSlug)
   const news = await queryNewsBySlug({ center, slug: decodedNewsSlug }).catch(() => null)
   const description = news ? getNewsDescription(news) : undefined
+  const imageUrl = news ? getNewsMetaImageUrl(news) : undefined
+  const title = news?.meta?.title || news?.title || '뉴스'
+  const canonicalPath = news?.slug ? getNewsUrl({ slug: news.slug }, center) : `/${center}/news`
 
   return {
     description,
-    title: news?.title || '뉴스',
+    openGraph: mergeOpenGraph(
+      {
+        description: description || '',
+        images: imageUrl ? [{ url: imageUrl }] : undefined,
+        title,
+        url: canonicalPath,
+      },
+      { center },
+    ),
+    title,
   }
 }
 

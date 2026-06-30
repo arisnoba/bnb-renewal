@@ -127,6 +127,16 @@ const center = domainMap[host] ?? subdomain
 - SEO 이미지는 `meta.image` -> 대표 media -> legacy path 순서다.
 - legacy path는 신규 필드가 비어 있을 때만 fallback으로 사용한다.
 
+### 오픈그래프 메타태그 기준
+
+- 기본 OG 이미지는 전역 페이지는 `/website-template-OG.webp`, 센터 하위 페이지는 `/assets/og/og-{center}.jpg`를 사용한다.
+- 센터 기본 OG 이미지는 1200x630 JPG로 관리하고, 파일명은 `og-art.jpg`, `og-avenue.jpg`, `og-exam.jpg`, `og-highteen.jpg`, `og-kids.jpg` 형식을 유지한다.
+- 상세 페이지 OG 제목은 `meta.title` -> 대표 제목 순서로 만든다.
+- 상세 페이지 OG 설명은 `meta.description` -> excerpt/요약 가능 필드 순서로 만든다.
+- 상세 페이지 OG 이미지는 `meta.image` -> 상세 대표 media -> 센터 기본 OG 이미지 -> 전역 기본 OG 이미지 순서로 fallback한다.
+- 센터 URL로 접근하는 상세 페이지의 OG URL은 `/{center}/...` canonical 경로를 우선 사용한다. 전역 상세 URL이 별도로 살아있는 콘텐츠만 전역 URL을 canonical로 둘 수 있다.
+- `news`, `artist-press`처럼 SEO 탭이 있는 CMS 상세는 `mergeOpenGraph`에 실제 제목, 설명, URL, 이미지 fallback을 명시한다. 상세 대표 이미지가 없는 CMS 상세는 센터 기본 OG 이미지를 상속받는다.
+
 ## 목록 필터 URL 및 스크롤 기준
 
 목록 페이지의 필터, 탭, 페이지네이션처럼 콘텐츠 표시 상태를 바꾸는 UI는 사용자 공유와 접근성을 위해 URL 상태를 유지한다.
