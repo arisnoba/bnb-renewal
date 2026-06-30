@@ -100,7 +100,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
             <h2 className="type-title-l font-extrabold leading-[1.3]" id="curriculum-search-title">
               강의검색
             </h2>
-            <CurriculumPeriodTooltip period={period} periodMonths={periodMonths} />
+            <CurriculumPeriodTooltip center={center} period={period} periodMonths={periodMonths} />
           </div>
 
           <CurriculumSearchForm
@@ -347,9 +347,11 @@ function classMark(label: string) {
 }
 
 function CurriculumPeriodTooltip({
+  center,
   period,
   periodMonths,
 }: {
+  center: SearchableCurriculumCenter
   period: CurriculumPeriod
   periodMonths: number
 }) {
@@ -359,14 +361,19 @@ function CurriculumPeriodTooltip({
         <TooltipTrigger asChild>
           <button
             aria-label={`강의 갱신 기간 안내: ${period.start}부터 ${period.end}까지`}
-            className="mt-1 inline-flex items-center gap-.5 text-sm font-medium text-white/45 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            className="mt-1 inline-flex items-center gap-.5 text-sm font-medium text-white/45 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             type="button"
           >
             강의 갱신 : {periodMonths}개월
             <Info aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="bg-brand text-sm leading-normal" arrowClassName="fill-brand">
+        <TooltipContent
+          side="top"
+          className="bg-brand text-sm leading-normal"
+          arrowClassName="fill-brand"
+          data-center={center}
+        >
           기간 : {period.start} ~ {period.end}
         </TooltipContent>
       </Tooltip>

@@ -264,27 +264,20 @@ function CourseSearchSection({
         />
         <div className="section-center-home-course__meta mt-4 flex flex-col gap-2 type-body-m font-medium leading-normal text-neutral-500 md:flex-row md:items-center md:justify-between">
           <CurriculumPeriodTooltip
-            className="hover:text-white"
+            center={center}
+            className="hover:text-brand"
             iconClassName="size-4"
             period={period}
             periodMonths={periodMonths}
           />
-          {gradeSystemHref ? (
+          {gradeSystemHref && (
             <Link
-              className="inline-flex items-center gap-2 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              className="inline-flex items-center gap-2 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
               href={gradeSystemHref}
             >
               등급기준
               <Info aria-hidden="true" className="size-4" strokeWidth={2} />
             </Link>
-          ) : (
-            <span
-              aria-disabled="true"
-              className="inline-flex cursor-default items-center gap-1 text-neutral-700"
-            >
-              등급기준
-              <Info aria-hidden="true" className="size-4" strokeWidth={2} />
-            </span>
           )}
         </div>
       </div>
@@ -293,11 +286,13 @@ function CourseSearchSection({
 }
 
 function CurriculumPeriodTooltip({
+  center,
   className,
   iconClassName,
   period,
   periodMonths,
 }: {
+  center: CenterSlug
   className: string
   iconClassName: string
   period: CurriculumPeriod
@@ -316,7 +311,12 @@ function CurriculumPeriodTooltip({
             <Info aria-hidden="true" className={iconClassName} strokeWidth={2} />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="bg-brand text-sm leading-normal" arrowClassName="fill-brand">
+        <TooltipContent
+          side="top"
+          className="bg-brand text-sm leading-normal"
+          arrowClassName="fill-brand"
+          data-center={center}
+        >
           기간 : {period.start} ~ {period.end}
         </TooltipContent>
       </Tooltip>
