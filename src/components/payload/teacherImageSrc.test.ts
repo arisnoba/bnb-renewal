@@ -17,10 +17,10 @@ test('resolves slash-prefixed R2 media paths through the admin image preview rou
   )
 })
 
-test('preserves existing API media URLs', () => {
+test('resolves existing API media URLs through the admin image preview route', () => {
   assert.equal(
     getTeacherImageSrc('/api/media/file/image.png?prefix=media%2Fteachers', {}),
-    '/api/media/file/image.png?prefix=media%2Fteachers',
+    '/api/admin-images?key=media%2Fteachers%2Fimage.png',
   )
 })
 

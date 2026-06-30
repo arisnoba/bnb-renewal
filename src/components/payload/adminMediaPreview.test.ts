@@ -9,7 +9,7 @@ test('admin media preview prefers the original media URL over generated thumbnai
       thumbnailURL: '/api/media/file/mkkdy001-thumbnail.webp?prefix=media/screen-appearances/body-images/123',
       url: '/api/media/file/mkkdy001.webp?prefix=media/screen-appearances/body-images/123',
     }),
-    '/api/media/file/mkkdy001.webp?prefix=media/screen-appearances/body-images/123',
+    '/api/admin-images?key=media%2Fscreen-appearances%2Fbody-images%2F123%2Fmkkdy001.webp',
   )
 })
 
@@ -19,7 +19,7 @@ test('admin media preview falls back to thumbnail URL when URL is empty', () => 
       thumbnailURL: 'media/example.webp',
       url: '',
     }),
-    '/media/example.webp',
+    '/api/admin-images?key=media%2Fexample.webp',
   )
 })
 

@@ -1,3 +1,5 @@
+import { getAdminImagePreviewSrc } from './adminImagePreviewSrc'
+
 type AdminMediaPreview = {
   thumbnailURL?: unknown
   url?: unknown
@@ -10,13 +12,5 @@ function stringValue(value: unknown) {
 export function getAdminMediaPreviewSrc(media?: AdminMediaPreview | null) {
   const src = stringValue(media?.url) || stringValue(media?.thumbnailURL)
 
-  if (!src) {
-    return ''
-  }
-
-  if (/^(https?:)?\/\//.test(src) || src.startsWith('/')) {
-    return src
-  }
-
-  return `/${src.replace(/^\/+/, '')}`
+  return getAdminImagePreviewSrc(src)
 }

@@ -7,128 +7,10 @@ import { useRef, useState } from 'react';
 import { useDocumentInfo, useField } from '@payloadcms/ui';
 import { ImagePlus } from 'lucide-react';
 
+import { getAdminImagePreviewSrc } from './adminImagePreviewSrc';
 import { getTeacherImageSrc } from './teacherImageSrc';
 
 const imageExtensions = new Set(['avif', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp']);
-
-function getImageSrc(value: unknown) {
-	if (typeof value !== 'string') {
-		return '';
-	}
-
-	const trimmed = value.trim();
-
-	if (!trimmed) {
-		return '';
-	}
-
-	if (/^(https?:)?\/\//.test(trimmed) || trimmed.startsWith('/')) {
-		return trimmed;
-	}
-
-	return `/${trimmed.replace(/^\/+/, '')}`;
-}
-
-function getArtistPressImageSrc(
-	value: unknown,
-	{
-		fieldPath,
-		sourceDb,
-		sourceId,
-	}: {
-		fieldPath: string;
-		sourceDb?: string;
-		sourceId?: string;
-	},
-) {
-	const directSrc = getImageSrc(value);
-
-	if (!directSrc || directSrc.startsWith('/legacy/artist-press/')) {
-		return directSrc;
-	}
-
-	if (!sourceId) {
-		return directSrc;
-	}
-
-	const normalizedPath = directSrc.split('?')[0] ?? directSrc;
-	const parts = normalizedPath.split('/').filter(Boolean);
-	const fileName = parts.at(-1);
-	const boTable = parts.at(-2) || 'new_shoot';
-	const role = fieldPath === 'agencyLogoPath' ? 'agency-logo' : 'thumbnail';
-
-	if (!fileName) {
-		return directSrc;
-	}
-
-	return `/legacy/artist-press/${sourceDb || 'baewoo'}/${boTable}/${sourceId}/${role}/${fileName}`;
-}
-
-function getCastingAppearanceImageSrc(
-	value: unknown,
-	{
-		sourceDb,
-		sourceId,
-	}: {
-		sourceDb?: string;
-		sourceId?: string;
-	},
-) {
-	const directSrc = getImageSrc(value);
-
-	if (!directSrc || directSrc.startsWith('/legacy/casting-appearances/')) {
-		return directSrc;
-	}
-
-	if (!sourceId) {
-		return directSrc;
-	}
-
-	const normalizedPath = directSrc.split('?')[0] ?? directSrc;
-	const parts = normalizedPath.split('/').filter(Boolean);
-	const fileName = parts.at(-1);
-	const boTable = parts.at(-2) || 'new_appear';
-
-	if (!fileName) {
-		return directSrc;
-	}
-
-	return `/legacy/casting-appearances/${sourceDb || 'baewoo'}/${boTable}/${sourceId}/thumbnail/${fileName}`;
-}
-
-function getScreenAppearanceImageSrc(
-	value: unknown,
-	{
-		fieldPath,
-		sourceDb,
-		sourceId,
-	}: {
-		fieldPath: string;
-		sourceDb?: string;
-		sourceId?: string;
-	},
-) {
-	const directSrc = getImageSrc(value);
-
-	if (!directSrc || directSrc.startsWith('/legacy/screen-appearances/')) {
-		return directSrc;
-	}
-
-	if (!sourceId) {
-		return directSrc;
-	}
-
-	const normalizedPath = directSrc.split('?')[0] ?? directSrc;
-	const parts = normalizedPath.split('/').filter(Boolean);
-	const fileName = parts.at(-1);
-	const role = fieldPath === 'profileImagePath' ? 'profile' : 'thumbnail';
-
-	if (!fileName) {
-		return directSrc;
-	}
-
-	return `/legacy/screen-appearances/${sourceDb || 'baewoo'}/new_drama/${sourceId}/${role}/${fileName}`;
-}
 
 function getFileName(src: string) {
 	const pathname = src.split('?')[0] ?? '';
@@ -187,13 +69,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 	const imageSrc =
 		collectionSlug === 'teachers' && fieldPath === 'profileImagePath'
 			? getTeacherImageSrc(value, { sourceDb, sourceId, sourceTable })
-			: collectionSlug === 'artist-press' && (fieldPath === 'thumbnailPath' || fieldPath === 'agencyLogoPath')
-				? getArtistPressImageSrc(value, { fieldPath, sourceDb, sourceId })
-				: collectionSlug === 'casting-appearances' && fieldPath === 'thumbnailPath'
-					? getCastingAppearanceImageSrc(value, { sourceDb, sourceId })
-					: collectionSlug === 'screen-appearances' && (fieldPath === 'profileImagePath' || fieldPath === 'thumbnailPath')
-						? getScreenAppearanceImageSrc(value, { fieldPath, sourceDb, sourceId })
-						: getImageSrc(value);
+			: getAdminImagePreviewSrc(value);
 	const canPreview = imageSrc && isProbablyImage(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());
 	const hasError = Boolean(showError);

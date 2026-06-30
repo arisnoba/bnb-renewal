@@ -1,12 +1,12 @@
 'use client';
 
+import { getAdminImagePreviewSrc } from './adminImagePreviewSrc';
+
 type TeacherImageContext = {
 	sourceDb?: unknown;
 	sourceId?: unknown;
 	sourceTable?: unknown;
 };
-
-const rootHandledPrefixes = ['/api/', '/uploads/', '/_next/'];
 
 function stringValue(value: unknown) {
 	if (typeof value === 'number') {
@@ -31,25 +31,6 @@ function stripLegacyTeacherPrefix(path: string) {
 		.replace(/^legacy\/teachers\//, '');
 }
 
-function adminPreviewObjectKeySrc(path: string) {
-	const normalized = path.replace(/^\/+/, '');
-
-	if (!normalized.startsWith('media/') && !normalized.startsWith('legacy/')) {
-		return '';
-	}
-
-	const segments = normalized.split('/').filter(Boolean);
-	const filename = segments.pop();
-
-	if (!filename) {
-		return '';
-	}
-
-	segments.push(filename);
-
-	return `/api/admin-images?key=${encodeURIComponent(segments.join('/'))}`;
-}
-
 export function getTeacherImageSrc(value: unknown, context: TeacherImageContext) {
 	const trimmed = stringValue(value);
 
@@ -57,24 +38,20 @@ export function getTeacherImageSrc(value: unknown, context: TeacherImageContext)
 		return '';
 	}
 
-	if (/^(https?:)?\/\//.test(trimmed)) {
-		return trimmed;
-	}
+	const fallback = trimmed.startsWith('/') ? trimmed : `/${trimmed.replace(/^\/+/, '')}`;
+	const mediaSrc = getAdminImagePreviewSrc(trimmed);
 
-	const mediaSrc = adminPreviewObjectKeySrc(trimmed);
-
-	if (mediaSrc) {
+	if (mediaSrc !== fallback) {
 		return mediaSrc;
 	}
 
-	if (rootHandledPrefixes.some((prefix) => trimmed.startsWith(prefix))) {
-		return trimmed;
+	if (trimmed.startsWith('/api/') || trimmed.startsWith('/uploads/') || trimmed.startsWith('/_next/')) {
+		return fallback;
 	}
 
 	const sourceDb = stringValue(context.sourceDb);
 	const sourceTable = stringValue(context.sourceTable);
 	const sourceId = stringValue(context.sourceId);
-	const fallback = trimmed.startsWith('/') ? trimmed : `/${trimmed.replace(/^\/+/, '')}`;
 
 	if (!sourceDb || !sourceTable || !sourceTable.startsWith('g5_teacher')) {
 		return fallback;
@@ -83,14 +60,14 @@ export function getTeacherImageSrc(value: unknown, context: TeacherImageContext)
 	let sourcePath = stripLegacyTeacherPrefix(trimmed.replace(/^\/+/, ''));
 
 	if (sourcePath.startsWith(`${sourceDb}/${sourceTable}/`)) {
-		return adminPreviewObjectKeySrc(`/legacy/teachers/${encodePathSegments(sourcePath)}`);
+		return getAdminImagePreviewSrc(`/legacy/teachers/${encodePathSegments(sourcePath)}`);
 	}
 
 	if (sourceId && !sourcePath.includes('/')) {
 		sourcePath = `${sourceId}/${sourcePath}`;
 	}
 
-	return adminPreviewObjectKeySrc(
+	return getAdminImagePreviewSrc(
 		`/legacy/teachers/${encodePathSegments(`${sourceDb}/${sourceTable}/${sourcePath}`)}`,
 	);
 }
