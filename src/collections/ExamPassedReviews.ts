@@ -16,6 +16,10 @@ import {
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   authorNameFromCenters,
   centersField,
   displayStatusOptions,
@@ -27,6 +31,14 @@ import {
 } from "./shared";
 
 const examPassedReviewSlugify = createKoreanSlugifyWithFallback("review");
+const revalidateExamPassedReviewAfterChange = createCenterRevalidationAfterChange({
+  reason: "exam passed review",
+  suffixes: ["", "passed-reviews", "exam-passed-reviews"],
+});
+const revalidateExamPassedReviewAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "exam passed review",
+  suffixes: ["", "passed-reviews", "exam-passed-reviews"],
+});
 
 const examPassedReviewBodyEditor = lexicalEditor({
   admin: {
@@ -99,6 +111,8 @@ export const ExamPassedReviews: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
+    afterChange: [revalidateExamPassedReviewAfterChange],
+    afterDelete: [revalidateExamPassedReviewAfterDelete],
     beforeValidate: [setExamPassedReviewCenterBeforeValidate],
   },
   fields: [

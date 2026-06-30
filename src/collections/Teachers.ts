@@ -8,6 +8,10 @@ import { allowAll, centerScopedCollectionAccess } from "./access";
 import { koreanSlugify } from "../utilities/koreanSlugify";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   adminRow,
   adminTabs,
   authorNameField,
@@ -119,6 +123,16 @@ const normalizeTeacherSlugBeforeValidate: CollectionBeforeValidateHook = (args) 
 const normalizeTeacherSlugBeforeChange: CollectionBeforeChangeHook = (args) =>
   normalizeTeacherSlugData(args);
 
+const revalidateTeacherAfterChange = createCenterRevalidationAfterChange({
+  reason: "teacher",
+  suffixes: ["", "teachers"],
+});
+
+const revalidateTeacherAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "teacher",
+  suffixes: ["", "teachers"],
+});
+
 export const Teachers: CollectionConfig = {
   slug: "teachers",
   labels: {
@@ -137,6 +151,7 @@ export const Teachers: CollectionConfig = {
   defaultSort: "displayOrder",
   hooks: {
     afterChange: [
+      revalidateTeacherAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "profileImageMedia", role: "teachers.profile-image" },
         {
@@ -145,6 +160,7 @@ export const Teachers: CollectionConfig = {
         },
       ]),
     ],
+    afterDelete: [revalidateTeacherAfterDelete],
     beforeChange: [normalizeTeacherSlugBeforeChange],
     beforeValidate: [centerScopedBeforeValidate, normalizeTeacherSlugBeforeValidate],
   },

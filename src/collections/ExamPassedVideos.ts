@@ -4,6 +4,10 @@ import { centerScopedCollectionAccess } from "./access";
 import { extractYouTubeVideoId, youtubeWatchUrl } from "@/lib/youtube";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   authorNameField,
   authorNameFromCenters,
   centersField,
@@ -14,6 +18,14 @@ import {
 } from "./shared";
 
 const examPassedVideoSlugify = createKoreanSlugifyWithFallback("passedvideo");
+const revalidateExamPassedVideoAfterChange = createCenterRevalidationAfterChange({
+  reason: "exam passed video",
+  suffixes: ["", "passed-videos", "exam-passed-videos"],
+});
+const revalidateExamPassedVideoAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "exam passed video",
+  suffixes: ["", "passed-videos", "exam-passed-videos"],
+});
 
 const syncYouTubeFields: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
   if (!data) {
@@ -111,6 +123,8 @@ export const ExamPassedVideos: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
+    afterChange: [revalidateExamPassedVideoAfterChange],
+    afterDelete: [revalidateExamPassedVideoAfterDelete],
     beforeValidate: [
       syncYouTubeFields,
       syncCreatedAtToPublishedAt,

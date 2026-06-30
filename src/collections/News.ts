@@ -19,6 +19,10 @@ import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   adminTabs,
   authorNameField,
   centerScopedBeforeValidate,
@@ -31,6 +35,14 @@ import {
 import { seoTitleField } from "./seoFields";
 
 const newsSlugify = createKoreanSlugifyWithFallback("news");
+const revalidateNewsAfterChange = createCenterRevalidationAfterChange({
+  reason: "news",
+  suffixes: ["", "news"],
+});
+const revalidateNewsAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "news",
+  suffixes: ["", "news"],
+});
 
 export const newsBodyEditor = lexicalEditor({
   admin: {
@@ -69,11 +81,13 @@ export const News: CollectionConfig = {
   defaultSort: "-publishedAt",
   hooks: {
     afterChange: [
+      revalidateNewsAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "thumbnailMedia", role: "news.thumbnail" },
         { path: "body", role: "news.body-image", type: "richText" },
       ]),
     ],
+    afterDelete: [revalidateNewsAfterDelete],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

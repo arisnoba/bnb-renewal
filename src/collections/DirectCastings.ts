@@ -15,6 +15,10 @@ import {
 } from './shared'
 import { newsBodyEditor } from './News'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
+import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from './revalidateFrontend'
 
 const directCastingSlugify = createKoreanSlugifyWithFallback('direct-casting')
 
@@ -260,6 +264,16 @@ const validateDirectCastingCenters: Validate<unknown> = (value) => {
   return invalidCenter ? `다이렉트캐스팅에서 지원하지 않는 센터 값입니다: ${invalidCenter}` : true
 }
 
+const revalidateDirectCastingAfterChange = createCenterRevalidationAfterChange({
+  reason: 'direct casting',
+  suffixes: ['direct-castings'],
+})
+
+const revalidateDirectCastingAfterDelete = createCenterRevalidationAfterDelete({
+  reason: 'direct casting',
+  suffixes: ['direct-castings'],
+})
+
 export const DirectCastings: CollectionConfig = {
   slug: 'direct-castings',
   labels: {
@@ -288,11 +302,13 @@ export const DirectCastings: CollectionConfig = {
   defaultSort: '-publishedAt',
   hooks: {
     afterChange: [
+      revalidateDirectCastingAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: 'thumbnailMedia', role: 'direct-castings.thumbnail' },
         { path: 'body', role: 'direct-castings.body-image', type: 'richText' },
       ]),
     ],
+    afterDelete: [revalidateDirectCastingAfterDelete],
     beforeValidate: [
       setDirectCastingAuthorName,
       normalizeDirectCastingTitle,

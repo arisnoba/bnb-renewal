@@ -1,6 +1,7 @@
 import type {
   Access,
   CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
   CollectionBeforeValidateHook,
   CollectionConfig,
   Validate,
@@ -281,6 +282,7 @@ function revalidateMainBannerCenterPaths({
   previousCenter?: CenterValue
   revalidate?: RevalidatePath
   req: Parameters<CollectionAfterChangeHook<MainBanner>>[0]['req']
+    | Parameters<CollectionAfterDeleteHook<MainBanner>>[0]['req']
 }) {
   if (req.context.disableRevalidate) {
     return
@@ -348,6 +350,19 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
   return doc
 }
 
+const revalidateMainBannerAfterDelete: CollectionAfterDeleteHook<MainBanner> = ({
+  doc,
+  req,
+}) => {
+  const center = selectedCenter(doc) as CenterValue | undefined
+
+  if (center) {
+    revalidateMainBannerCenterPaths({ center, req })
+  }
+
+  return doc
+}
+
 export const MainBanners: CollectionConfig = {
   slug: 'main-banners',
   labels: {
@@ -376,6 +391,7 @@ export const MainBanners: CollectionConfig = {
         { path: 'mobileVideo', role: 'main-banners.mobile-video' },
       ]),
     ],
+    afterDelete: [revalidateMainBannerAfterDelete],
     beforeValidate: [normalizeMainBannerData],
   },
   fields: [

@@ -1,14 +1,10 @@
-import { revalidatePath } from "next/cache";
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig } from "payload";
+import type { CollectionConfig } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
   authorNameField,
-  centerOptions,
-  type CenterFilterValue,
-  type CenterValue,
   centerScopedBeforeValidate,
   centersField,
   imagePathField,
@@ -17,6 +13,10 @@ import {
   slugField,
 } from "./shared";
 import { createUniqueSlugBeforeValidate } from "./slugUtils";
+import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
 
 const setCastingAppearanceSlug = createUniqueSlugBeforeValidate({
   collection: "casting-appearances",
@@ -24,92 +24,15 @@ const setCastingAppearanceSlug = createUniqueSlugBeforeValidate({
   getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
 });
 
-type RevalidatePath = typeof revalidatePath;
-type CastingAppearanceWithCenters = {
-  id: number | string;
-  centers?: CenterFilterValue[] | CenterFilterValue | null;
-};
+const revalidateCastingStatusAfterChange = createCenterRevalidationAfterChange({
+  reason: "casting status",
+  suffixes: ["casting-status"],
+});
 
-function selectedCenterValues(value: CastingAppearanceWithCenters["centers"]) {
-  const values = Array.isArray(value) ? value : value ? [value] : [];
-
-  if (values.includes("all")) {
-    return centerOptions.map((option) => option.value);
-  }
-
-  return Array.from(
-    new Set(
-      values
-        .map((item) => String(item ?? "").trim())
-        .filter((item): item is CenterValue =>
-          centerOptions.some((option) => option.value === item),
-        ),
-    ),
-  );
-}
-
-export function castingStatusCenterPaths(
-  centers: CastingAppearanceWithCenters["centers"],
-  previousCenters?: CastingAppearanceWithCenters["centers"],
-) {
-  return Array.from(
-    new Set(
-      [
-        ...selectedCenterValues(centers),
-        ...selectedCenterValues(previousCenters),
-      ].map((center) => `/${center}/casting-status`),
-    ),
-  );
-}
-
-function revalidateCastingStatusCenterPaths({
-  centers,
-  previousCenters,
-  revalidate = revalidatePath,
-  req,
-}: {
-  centers: CastingAppearanceWithCenters["centers"];
-  previousCenters?: CastingAppearanceWithCenters["centers"];
-  revalidate?: RevalidatePath;
-  req:
-    | Parameters<CollectionAfterChangeHook>[0]["req"]
-    | Parameters<CollectionAfterDeleteHook>[0]["req"];
-}) {
-  if (req.context.disableRevalidate) {
-    return;
-  }
-
-  for (const path of castingStatusCenterPaths(centers, previousCenters)) {
-    req.payload.logger.info(`Revalidating casting status path ${path}`);
-    revalidate(path, "page");
-  }
-}
-
-const revalidateCastingStatusAfterChange: CollectionAfterChangeHook<CastingAppearanceWithCenters> = ({
-  doc,
-  previousDoc,
-  req,
-}) => {
-  revalidateCastingStatusCenterPaths({
-    centers: doc.centers,
-    previousCenters: previousDoc?.centers,
-    req,
-  });
-
-  return doc;
-};
-
-const revalidateCastingStatusAfterDelete: CollectionAfterDeleteHook<CastingAppearanceWithCenters> = ({
-  doc,
-  req,
-}) => {
-  revalidateCastingStatusCenterPaths({
-    centers: doc.centers,
-    req,
-  });
-
-  return doc;
-};
+const revalidateCastingStatusAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "casting status",
+  suffixes: ["casting-status"],
+});
 
 export const CastingAppearances: CollectionConfig = {
   slug: "casting-appearances",

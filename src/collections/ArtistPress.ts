@@ -19,6 +19,10 @@ import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   adminRow,
   adminTabs,
   authorNameField,
@@ -32,6 +36,14 @@ import {
 import { seoTitleField } from "./seoFields";
 
 const artistPressSlugify = createKoreanSlugifyWithFallback("artist-press");
+const revalidateArtistPressAfterChange = createCenterRevalidationAfterChange({
+  reason: "artist press",
+  suffixes: ["", "artist-press"],
+});
+const revalidateArtistPressAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "artist press",
+  suffixes: ["", "artist-press"],
+});
 
 const validateArtistPressAgency: Validate<unknown> = (value) => {
   return value ? true : "소속사를 선택해야 합니다.";
@@ -74,12 +86,14 @@ export const ArtistPress: CollectionConfig = {
   defaultSort: "-publishedAt",
   hooks: {
     afterChange: [
+      revalidateArtistPressAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "thumbnailMedia", role: "artist-press.thumbnail" },
         { path: "agencyLogoMedia", role: "artist-press.agency-logo" },
         { path: "body", role: "artist-press.body-image", type: "richText" },
       ]),
     ],
+    afterDelete: [revalidateArtistPressAfterDelete],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [

@@ -8,6 +8,10 @@ import type {
 import { adminRow, centerOptions, displayStatusOptions, isGlobalAdminUser, userCenterValue } from './shared'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import { extractYouTubeVideoId } from '@/lib/youtube'
+import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from './revalidateFrontend'
 
 type SocialLinkData = {
   center?: unknown
@@ -169,6 +173,16 @@ const normalizeSocialLinkData: CollectionBeforeValidateHook = ({ data, operation
   return nextData
 }
 
+const revalidateSocialLinkAfterChange = createCenterRevalidationAfterChange({
+  reason: 'social link',
+  suffixes: [''],
+})
+
+const revalidateSocialLinkAfterDelete = createCenterRevalidationAfterDelete({
+  reason: 'social link',
+  suffixes: [''],
+})
+
 export const SocialLinks: CollectionConfig = {
   slug: 'social-links',
   labels: {
@@ -197,10 +211,12 @@ export const SocialLinks: CollectionConfig = {
   defaultSort: '-createdAt',
   hooks: {
     afterChange: [
+      revalidateSocialLinkAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: 'representativeImage', role: 'social-links.image' },
       ]),
     ],
+    afterDelete: [revalidateSocialLinkAfterDelete],
     beforeValidate: [normalizeSocialLinkData],
   },
   fields: [

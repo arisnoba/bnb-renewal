@@ -18,6 +18,10 @@ import {
   userCenterValue,
 } from "./shared";
 import { createUniqueSlugBeforeValidate } from "./slugUtils";
+import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
 
 const curriculumCenterOptions = centerOptions.filter((option) => option.value !== "kids");
 const curriculumCenterValues = new Set(curriculumCenterOptions.map((option) => option.value));
@@ -239,6 +243,16 @@ const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, original
   return nextData;
 };
 
+const revalidateCurriculumAfterChange = createCenterRevalidationAfterChange({
+  reason: "curriculum",
+  suffixes: ["", "curriculum"],
+});
+
+const revalidateCurriculumAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "curriculum",
+  suffixes: ["", "curriculum"],
+});
+
 export const Curriculums: CollectionConfig = {
   slug: "curriculums",
   labels: {
@@ -269,6 +283,8 @@ export const Curriculums: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
+    afterChange: [revalidateCurriculumAfterChange],
+    afterDelete: [revalidateCurriculumAfterDelete],
     beforeValidate: [curriculumBeforeValidate, setCurriculumSlug],
   },
   fields: [

@@ -3,6 +3,10 @@ import type { CollectionBeforeValidateHook, CollectionConfig, SelectField, Valid
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   adminRow,
   adminTabs,
   adminDateConfig,
@@ -66,6 +70,14 @@ const screenAppearanceTypeOptions = [
   { label: "영화", value: "movie" },
   { label: "광고", value: "commercial" },
 ];
+const revalidateScreenAppearanceAfterChange = createCenterRevalidationAfterChange({
+  reason: "screen appearance",
+  suffixes: ["", "screen-appearances"],
+});
+const revalidateScreenAppearanceAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "screen appearance",
+  suffixes: ["", "screen-appearances"],
+});
 
 const actorInputModeOptions = [
   { label: "프로필 선택", value: "profile" },
@@ -191,10 +203,12 @@ export const ScreenAppearances: CollectionConfig = {
   defaultSort: "-publishedAt",
   hooks: {
     afterChange: [
+      revalidateScreenAppearanceAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "bodyImages.*.image", role: "screen-appearances.body-image" },
       ]),
     ],
+    afterDelete: [revalidateScreenAppearanceAfterDelete],
     beforeValidate: [screenAppearanceBeforeValidate, setScreenAppearanceSlug],
   },
   fields: [

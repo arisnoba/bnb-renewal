@@ -2,10 +2,12 @@ import type {
   Access,
   Field,
   FieldAccess,
+  GlobalAfterChangeHook,
   GlobalBeforeChangeHook,
   GlobalConfig,
   Validate,
 } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 import { centerOptions, type CenterValue, isGlobalAdminUser, userCenterValue } from '@/collections/shared'
 
@@ -139,6 +141,21 @@ export const restrictCenterStatisticUpdates: GlobalBeforeChangeHook = ({
   return preserveOtherCenterData(data, originalDoc, center)
 }
 
+export const revalidateMainStatisticsCenterPaths: GlobalAfterChangeHook = ({ doc, req }) => {
+  if (req.context.disableRevalidate) {
+    return doc
+  }
+
+  for (const option of centerOptions) {
+    const path = `/${option.value}`
+
+    req.payload.logger.info(`Revalidating main statistics path ${path}`)
+    revalidatePath(path, 'page')
+  }
+
+  return doc
+}
+
 export const MainStatistics: GlobalConfig = {
   slug: 'main-statistics',
   label: '통계 설정',
@@ -150,6 +167,7 @@ export const MainStatistics: GlobalConfig = {
     group: '메인설정',
   },
   hooks: {
+    afterChange: [revalidateMainStatisticsCenterPaths],
     beforeChange: [restrictCenterStatisticUpdates],
   },
   fields: [
