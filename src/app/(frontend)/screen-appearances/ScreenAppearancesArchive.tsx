@@ -243,9 +243,6 @@ function ScreenAppearanceCard({
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
   const airDate = formatDate(appearance.airDateLabel)
-  const roleText = [appearance.roleName, airDate ? `방영일 ${airDate}` : null]
-    .filter(Boolean)
-    .join(' · ')
   const detailHref = `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`
 
   return (
@@ -301,8 +298,9 @@ function ScreenAppearanceCard({
             {appearance.className && (
               <p className="line-clamp-1">클래스 : {appearance.className}</p>
             )}
-            {roleText && <p className="line-clamp-2">{roleText}</p>}
-            {!roleText && appearance.introText && (
+            {appearance.roleName && <p className="line-clamp-1">{appearance.roleName}</p>}
+            {airDate && <p className="line-clamp-1">방영일 : {airDate}</p>}
+            {!appearance.roleName && !airDate && appearance.introText && (
               <p className="line-clamp-2">{appearance.introText}</p>
             )}
           </div>
