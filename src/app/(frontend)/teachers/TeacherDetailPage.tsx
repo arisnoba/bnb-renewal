@@ -115,7 +115,7 @@ export async function TeacherDetailPage({
       <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
       <DetailContainer width="wide">
-        <div className="section-teacher-detail__profile grid gap-5 lg:grid-cols-2 lg:items-start">
+        <div className="section-teacher-detail__profile grid gap-5 lg:grid-cols-2 lg:items-start z-10 relative">
           <TeacherDetailGallery images={teacherImages} teacherName={teacher.name} />
 
           <section className="section-teacher-detail__info bg-black p-6 md:p-8">
@@ -153,7 +153,7 @@ export async function TeacherDetailPage({
         </div>
 
         {representativeWorks.length > 0 && (
-          <section className="section-teacher-detail__works mt-16 border-t border-white/10 py-10">
+          <section className="section-teacher-detail__works relative mt-16 border-t border-white/10 py-10 z-10">
             <h2 className="type-title-m font-bold leading-[1.4] text-white">대표작품</h2>
             <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-10 sm:grid-cols-4 lg:grid-cols-8">
               {representativeWorks.map((work, index) => (

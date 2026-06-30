@@ -111,7 +111,7 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
   }, [activeMaskShape.path, prefersReducedMotion])
 
   return (
-    <div className="section-center-home-screen__stage mx-auto mt-14 max-w-[1120px] md:mt-[72px]">
+    <div className="section-center-home-screen__stage mx-auto mt-14  md:mt-[72px]">
       <svg
         className="section-center-home-screen__mask-viewport block aspect-video w-full overflow-hidden"
         data-mask-id={activeMaskShape.id}

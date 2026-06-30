@@ -37,11 +37,11 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
   }
 
   return (
-    <div className="section-teacher-detail__gallery">
-      <div className="overflow-hidden bg-black">
+    <div className="section-teacher-detail__gallery min-w-0 max-w-full">
+      <div className="min-w-0 max-w-full overflow-hidden bg-black">
         {hasImages ? (
           <Swiper
-            className="section-teacher-detail__gallery-swiper"
+            className="section-teacher-detail__gallery-swiper w-full min-w-0 max-w-full"
             keyboard={{ enabled: shouldSlide }}
             modules={[A11y, Keyboard]}
             onSlideChange={(swiper) => setActiveSlide(swiper.realIndex)}
@@ -68,7 +68,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
 
       {shouldSlide && (
         <Swiper
-          className="section-teacher-detail__gallery-thumbs mt-3"
+          className="section-teacher-detail__gallery-thumbs mt-3 w-full min-w-0 max-w-full"
           onSwiper={setThumbsSwiper}
           spaceBetween={12}
           slidesPerView={5}
@@ -82,7 +82,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
                 <button
                   aria-current={isActive ? 'true' : undefined}
                   aria-label={`${teacherName} 이미지 ${index + 1} 보기`}
-                  className="aspect-square w-full overflow-hidden bg-black opacity-40 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[active=true]:rounded-full data-[active=true]:opacity-100"
+                  className="aspect-square w-full overflow-hidden bg-black opacity-40 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[active=true]:rounded-full data-[active=true]:opacity-100"
                   data-active={isActive}
                   onClick={() => {
                     mainSwiper?.slideTo(index)

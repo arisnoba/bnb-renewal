@@ -92,15 +92,15 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
       </section>
 
       <section
-        className="section-teachers-list section-p-block-base relative overflow-hidden bg-[#0C0C0C] text-white"
+        className="section-teachers-list section-p-block-base relative overflow-hidden text-white"
         aria-labelledby="teachers-list-title"
       >
-        <PageDeco
+        {/* <PageDeco
           className="right-[-120px] top-20 hidden md:block"
           icon={decoIcons[2]}
-        />
+        /> */}
 
-        <div className="container relative z-10 max-w-[1120px]">
+        <div className="container relative z-10">
           <PageIntro
             className="section-teachers-list__head page-heading--dark mb-16 md:mb-[100px]"
             description={'배우앤배움의 모든 교육진은 현재 드라마, 영화 등\n메이저채널에서 작품활동을 하시는 배우분들로 구성되어 있습니다.'}
