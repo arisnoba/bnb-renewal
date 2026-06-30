@@ -223,7 +223,7 @@ export default async function CenterAboutPage({ params }: Args) {
 function CenterIntroArticle({ item }: { item: CenterIntro }) {
   return (
     <article
-      className="section-center-about-card grid gap-10 py-16 first:pt-0 md:grid-cols-[minmax(0,648px)_minmax(220px,1fr)] md:items-start md:gap-20 md:py-20"
+      className="section-center-about-card grid gap-10 py-16 first:pt-0 last:pb-0 md:grid-cols-[minmax(0,648px)_minmax(220px,1fr)] md:items-start md:gap-20 md:py-20"
       data-center={item.centerSlug}
     >
       <div className="section-center-about-card__copy flex flex-col items-start gap-8 md:gap-10">
