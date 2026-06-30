@@ -6,6 +6,8 @@ import { SelectField, useAuth, useField } from '@payloadcms/ui';
 import { useEffect } from 'react';
 
 const validCenters = new Set(['art', 'exam', 'kids', 'highteen', 'avenue']);
+const restrictedCenterDescription =
+	'소속 센터가 자동 선택됩니다. 센터 변경은 센터 통합 매니저 이상만 가능합니다.';
 
 function getUserCenter(user: unknown) {
 	if (!user || typeof user !== 'object') {
@@ -46,19 +48,21 @@ export const CentersField: SelectFieldClientComponent = props => {
 		}
 	}, [canEditCenters, setValue, userCenter, values.length]);
 
+	const field = canEditCenters
+		? props.field
+		: ({
+				...props.field,
+				admin: {
+					...(props.field.admin ?? {}),
+					description: restrictedCenterDescription,
+				} as typeof props.field.admin,
+			} satisfies typeof props.field);
+
 	return (
-		<>
-			<SelectField {...props} readOnly={!canEditCenters} />
-			{!canEditCenters ? (
-				<p
-					style={{
-						color: 'var(--theme-elevation-600)',
-						fontSize: 12,
-						margin: 0,
-					}}>
-					소속 센터가 자동 선택됩니다. 센터 변경은 센터 통합 매니저 이상만 가능합니다.
-				</p>
-			) : null}
-		</>
+		<SelectField
+			{...props}
+			field={field}
+			readOnly={!canEditCenters}
+		/>
 	);
 };
