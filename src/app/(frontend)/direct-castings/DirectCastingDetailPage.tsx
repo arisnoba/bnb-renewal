@@ -255,7 +255,7 @@ function directCastingBackHref({
 
   const query = params.toString()
 
-  return `/${center}/direct-castings${query ? `?${query}` : ''}#direct-castings-list`
+  return `/${center}/direct-castings${query ? `?${query}` : ''}`
 }
 
 function hasLexicalContent(value: DirectCasting['body']) {

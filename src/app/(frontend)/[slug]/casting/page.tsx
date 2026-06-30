@@ -374,7 +374,7 @@ function getCastingCompanies(center: CenterSlug) {
 function directCastingHref(center: CenterSlug, companyId: string) {
   const company = companyId === 'im-ground' ? 'imground' : companyId
 
-  return `/${center}/direct-castings?company=${encodeURIComponent(company)}#direct-castings-list`
+  return `/${center}/direct-castings?company=${encodeURIComponent(company)}`
 }
 
 function assertCastingCenter(center: CenterSlug) {
