@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { getAboutHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { assertCenter, centers } from '@/lib/centers'
 
 import { FacilitiesGallery } from './FacilitiesGallery.client'
@@ -41,11 +42,7 @@ export default async function FacilitiesPage({ params }: Args) {
         aria-labelledby="facilities-title"
         className="section-facilities-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-55"
-          style={{ backgroundImage: "url('/assets/facilities/gallery_39.jpg')" }}
-        />
+        <PageHeroImage image={getAboutHeroImage()} className="opacity-55 grayscale" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/70" />
         <PageDeco className="hidden -left-39 top-28 opacity-100 md:block" icon={decoIcons[0]} size="360px" />
         <PageDeco className="hidden -right-18 bottom-[-56px] opacity-100 md:block" icon={decoIcons[1]} size="360px" />

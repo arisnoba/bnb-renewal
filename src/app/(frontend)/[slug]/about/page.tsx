@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 
+import { getAboutHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { centers, type CenterSlug } from '@/lib/centers'
 
@@ -162,6 +163,7 @@ export default async function CenterAboutPage({ params }: Args) {
         aria-labelledby="center-about-hero-title"
         className="section-center-about-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
       >
+        <PageHeroImage image={getAboutHeroImage()} className="opacity-55 grayscale" />
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.02)_38%,rgba(255,255,255,0.16)_100%)]"

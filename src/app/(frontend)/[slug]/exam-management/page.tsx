@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter, getCenterLabel } from '@/lib/centers'
@@ -124,15 +125,7 @@ export default async function ExamManagementPage({ params }: Args) {
         className="section-exam-management-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover opacity-70"
-          fill
-          priority
-          sizes="100vw"
-          src="/assets/exam-management/hero-1.png"
-        />
+        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-70" />
         <div className="absolute inset-0 bg-black/72" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[38%] max-md:hidden! md:block md:-left-28"

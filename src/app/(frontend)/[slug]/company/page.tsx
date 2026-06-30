@@ -7,6 +7,7 @@ import { cache } from 'react'
 
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { getAboutHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { centers, type CenterSlug, assertCenter } from '@/lib/centers'
 import type { History } from '@/payload-types'
 
@@ -179,14 +180,7 @@ export default async function CompanyPage({ params }: Args) {
         className="section-company-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          className="absolute inset-0 size-full object-cover object-center opacity-60 grayscale"
-          fill
-          priority
-          sizes="100vw"
-          src="/assets/company/hero-building.png"
-        />
+        <PageHeroImage image={getAboutHeroImage()} className="opacity-60 grayscale" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
         <PageDeco
           className="absolute -left-18 top-24 hidden md:block"

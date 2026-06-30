@@ -1,3 +1,4 @@
+import { getExamResultsHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { PageIntro } from '@/components/PageIntro'
 import {
@@ -33,7 +34,6 @@ type ExamResultPageConfig = {
   description: [string, string]
   emptyLabel: string
   eyebrow: string
-  heroImage: string
   heroTitle: string
   title: string
 }
@@ -58,7 +58,6 @@ const pageConfigByType = {
     ],
     emptyLabel: '등록된 대학교 합격현황이 없습니다.',
     eyebrow: '대학교 합격현황',
-    heroImage: '/assets/exam-results/hero-university.png',
     heroTitle: '대학교',
     title: '체계적인 교육과 학생 관리를 통해\n수많은 합격의 결과를 만들어가고 있습니다.',
   },
@@ -69,7 +68,6 @@ const pageConfigByType = {
     ],
     emptyLabel: '등록된 예술고등학교 합격현황이 없습니다.',
     eyebrow: '예술고등학교 합격현황',
-    heroImage: '/assets/exam-results/hero-arts-high.png',
     heroTitle: '예술고등학교',
     title: '체계적인 교육과 학생 관리를 통해\n수많은 합격의 결과를 만들어가고 있습니다.',
   },
@@ -88,15 +86,7 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
         className="section-exam-results-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover opacity-60"
-          fill
-          priority
-          sizes="100vw"
-          src={config.heroImage}
-        />
+        <PageHeroImage image={getExamResultsHeroImage()} className="opacity-60" />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"

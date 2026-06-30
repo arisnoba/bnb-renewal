@@ -1,3 +1,4 @@
+import { getExamPassedHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { PageIntro } from '@/components/PageIntro'
 import {
@@ -48,15 +49,7 @@ export async function ExamPassedVideosPage({ page = 1 }: ExamPassedVideosPagePro
         className="section-exam-passed-videos-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover opacity-60"
-          fill
-          priority
-          sizes="100vw"
-          src="/assets/exam-results/hero-university.png"
-        />
+        <PageHeroImage image={getExamPassedHeroImage()} className="opacity-60" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco
           className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"

@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { Media } from '@/components/Media/Renderer'
 import { PageIntro } from '@/components/PageIntro'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
@@ -75,20 +76,16 @@ export default async function EntertainmentEducationPage({ params }: Args) {
 
   return (
     <main className="page page-dark page-entertainment" data-center={center}>
-      <EntertainmentHero />
+      <EntertainmentHero center={center} />
       <EntertainmentEducationSection agencies={agencies} center={center} />
     </main>
   )
 }
 
-function EntertainmentHero() {
+function EntertainmentHero({ center }: { center: EntertainmentCenter }) {
   return (
     <section className="section-entertainment-hero relative min-h-[520px] overflow-hidden md:min-h-[740px]">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center opacity-55 grayscale"
-        style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
-      />
+      <PageHeroImage image={getEducationHeroImage(center)} className="opacity-55 grayscale" />
       <div className="absolute inset-0 bg-black/55" />
       <div
         aria-hidden="true"

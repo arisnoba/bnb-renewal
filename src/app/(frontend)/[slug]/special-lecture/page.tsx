@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { getPayload, type Where } from 'payload'
 import React from 'react'
 
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { Media } from '@/components/Media/Renderer'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
@@ -74,11 +75,7 @@ export default async function HighteenSpecialLecturePage({
         className="section-special-lecture-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-45 grayscale"
-          style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
-        />
+        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-45 grayscale" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/65" />
         <HeroDeco />
         <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">

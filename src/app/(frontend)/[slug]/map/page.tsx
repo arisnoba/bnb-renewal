@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { footerCenterInfoMatchForCenter } from '@/Footer/centerInfo'
+import { getAboutHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import {
@@ -44,11 +45,7 @@ export default async function CenterMapPage({ params }: Args) {
   return (
     <main className="page page-dark map-page" data-center={center}>
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-45"
-          style={{ backgroundImage: "url('/assets/map/map-hero.png')" }}
-        />
+        <PageHeroImage image={getAboutHeroImage()} className="opacity-45 grayscale" />
         <div className="absolute inset-0 bg-black/45" />
         <PageDeco
           className="-left-16 top-[15%]"

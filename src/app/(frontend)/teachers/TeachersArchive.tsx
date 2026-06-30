@@ -1,3 +1,4 @@
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
@@ -66,11 +67,7 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
         className="section-teachers-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         aria-labelledby="teachers-hero-title"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-55 grayscale"
-          style={{ backgroundImage: "url('/assets/rookies/hero.png')" }}
-        />
+        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-55 grayscale" />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[22%] md:-left-28"

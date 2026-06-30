@@ -3,6 +3,7 @@ import { ChevronRight, Info } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { CurriculumSearchForm } from '@/components/CurriculumSearchForm.client'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -72,11 +73,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
         className="section-curriculum-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-70 grayscale"
-          style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
-        />
+        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-70 grayscale" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/70" />
         <PageDeco className="-left-20 top-[36%] max-md:hidden! md:-left-28" icon={decoIcons[0]} />
         <PageDeco

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import type { CenterSlug } from '@/lib/centers'
@@ -63,11 +64,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
   return (
     <main className="page page-dark page-grade-system" data-center={center}>
       <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-70 grayscale"
-          style={{ backgroundImage: "url('/assets/art/grade-system-hero.png')" }}
-        />
+        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-70 grayscale" />
         <div className="absolute inset-0 bg-black/55" />
         <PageDeco
           className={

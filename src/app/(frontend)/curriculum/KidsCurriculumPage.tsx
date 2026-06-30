@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
+import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 
 type KidsCurriculumSection = {
@@ -161,11 +162,7 @@ export function KidsCurriculumPage() {
         className="section-kids-curriculum-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center opacity-70 grayscale"
-          style={{ backgroundImage: "url('/assets/curriculum/hero.png')" }}
-        />
+        <PageHeroImage image={getEducationHeroImage('kids')} className="opacity-70 grayscale" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/75" />
         <PageDeco
           className="-left-24 top-[48%] max-md:hidden! md:-left-28"

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
+import { getArtistHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { Media } from '@/components/Media/Renderer'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
@@ -47,7 +48,11 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
         className="section-artist-press-hero"
         aria-labelledby="artist-press-hero-title"
       >
-        <div className="section-artist-press-hero__background" aria-hidden="true" />
+        <PageHeroImage
+          image={getArtistHeroImage(center)}
+          className="section-artist-press-hero__background"
+        />
+        <div aria-hidden="true" className="section-artist-press-hero__overlay" />
         <PageDeco
           className="section-artist-press-hero__deco section-artist-press-hero__deco--left"
           icon={decoIcons[0]}

@@ -67,6 +67,9 @@ const nextConfig = {
         pathname: '/assets/common/**',
       },
       {
+        pathname: '/assets/hero/**',
+      },
+      {
         pathname: '/assets/map/**',
       },
       {

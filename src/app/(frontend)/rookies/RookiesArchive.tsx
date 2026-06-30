@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
+import { getArtistHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { Media } from '@/components/Media/Renderer'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
@@ -120,7 +121,11 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
       data-page-tone="dark"
     >
       <section className="section-rookies-hero" aria-labelledby="rookies-hero-title">
-        <div className="section-rookies-hero__background" aria-hidden="true" />
+        <PageHeroImage
+          image={getArtistHeroImage(center)}
+          className="section-rookies-hero__background"
+        />
+        <div aria-hidden="true" className="section-rookies-hero__overlay" />
         <PageDeco
           className="section-rookies-hero__deco section-rookies-hero__deco--left"
           icon={decoIcons[0]}
