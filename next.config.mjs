@@ -79,6 +79,9 @@ const nextConfig = {
         pathname: '/assets/casting/**',
       },
       {
+        pathname: '/assets/artist-care/**',
+      },
+      {
         pathname: '/assets/center-about/**',
       },
       {

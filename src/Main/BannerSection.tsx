@@ -165,6 +165,12 @@ function mainBannerProfileHref(profile: Profile, center: CenterSlug) {
   return slug ? `/${center}/profiles/${encodeURIComponent(slug)}` : mainBannerAnchorHref(center)
 }
 
+function mainBannerExamReviewHref(review: ExamPassedReview) {
+  const slug = textValue(review.slug)
+
+  return slug ? `/exam/passed-reviews/${encodeURIComponent(slug)}` : mainBannerAnchorHref('exam')
+}
+
 function mainBannerProfileImage(profile: Profile) {
   return profile.profileImageMedia || mainBannerPathImage(profile.profileImagePath) || null
 }
@@ -183,8 +189,6 @@ export function mainBannerMarqueeItems(
   banner: MainBanner,
   center: CenterSlug,
 ): MainBannerMarqueeItem[] {
-  const href = mainBannerAnchorHref(center)
-
   if (center === 'exam') {
     return (banner.linkedExamReviewItems ?? [])
       .map((item) => {
@@ -197,7 +201,7 @@ export function mainBannerMarqueeItems(
         const cardItem: MainBannerCardItem = {
           type: 'card',
           buttonLabel: '후기 보기',
-          href,
+          href: mainBannerExamReviewHref(review),
           image: mainBannerExamReviewImage(review),
           imageAlt: textValue(review.studentName, review.title) || '합격후기',
           label: labelWithDetail(

@@ -115,7 +115,7 @@ test('main banner renders exam review cards with review buttons', () => {
       {
         type: 'card',
         buttonLabel: '후기 보기',
-        href: '/exam#exam-passed-reviews',
+        href: '/exam/passed-reviews/seoul-art-pass',
         image: '/legacy/exam-student.jpg',
         imageAlt: '이학생',
         label: '이학생 | 한예종, 세종대',
@@ -130,7 +130,7 @@ test('main banner renders exam review cards with review buttons', () => {
   assert.match(html, /이학생/)
   assert.match(html, /한예종, 세종대/)
   assert.match(html, /후기 보기/)
-  assert.match(html, /href="\/exam#exam-passed-reviews"/)
+  assert.match(html, /href="\/exam\/passed-reviews\/seoul-art-pass"/)
 })
 
 test('main banner skips marquee links when linked content is empty', () => {

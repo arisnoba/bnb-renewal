@@ -133,6 +133,7 @@ test('main banner slides expose linked exam reviews for exam center', () => {
       {
         review: examReview({
           id: 10,
+          slug: 'seoul-art-pass',
           studentImagePath: '/legacy/exam-student-1.jpg',
           studentName: '이학생',
           title: '서울예대 합격',
@@ -142,6 +143,7 @@ test('main banner slides expose linked exam reviews for exam center', () => {
       {
         review: examReview({
           id: 11,
+          slug: 'park-pass',
           studentImagePath: '/legacy/exam-student-2.jpg',
           studentName: '박학생',
           title: '',
@@ -157,7 +159,7 @@ test('main banner slides expose linked exam reviews for exam center', () => {
     {
       type: 'card',
       buttonLabel: '후기 보기',
-      href: '/exam#exam-passed-reviews',
+      href: '/exam/passed-reviews/seoul-art-pass',
       image: '/legacy/exam-student-1.jpg',
       imageAlt: '이학생',
       label: '이학생 | 한예종, 세종대',
@@ -167,12 +169,40 @@ test('main banner slides expose linked exam reviews for exam center', () => {
     {
       type: 'card',
       buttonLabel: '후기 보기',
-      href: '/exam#exam-passed-reviews',
+      href: '/exam/passed-reviews/park-pass',
       image: '/legacy/exam-student-2.jpg',
       imageAlt: '박학생',
       label: '박학생 | 건국대',
       name: '박학생',
       roleLabel: '건국대',
+    },
+  ])
+})
+
+test('main banner exam review links fall back to center anchor when slug is missing', () => {
+  const banner = {
+    linkedExamReviewItems: [
+      {
+        review: examReview({
+          id: 10,
+          studentName: '이학생',
+          title: '서울예대 합격',
+        }),
+        resultLabel: '한예종',
+      },
+    ],
+  } as MainBanner
+
+  assert.deepEqual(mainBannerMarqueeItems(banner, 'exam'), [
+    {
+      type: 'card',
+      buttonLabel: '후기 보기',
+      href: '/exam#exam-passed-reviews',
+      image: null,
+      imageAlt: '이학생',
+      label: '이학생 | 한예종',
+      name: '이학생',
+      roleLabel: '한예종',
     },
   ])
 })
@@ -187,6 +217,7 @@ test('main banner rewrites exam review media paths to R2 URLs in production', ()
       {
         review: examReview({
           id: 10,
+          slug: 'r2-pass',
           studentImagePath: '/media/exam-passed-reviews/images/1/exam-passed-review-image-1-large.jpg',
           studentName: '이학생',
           title: '서울예대 합격',
@@ -199,7 +230,7 @@ test('main banner rewrites exam review media paths to R2 URLs in production', ()
   assert.deepEqual(toSlide(banner, 'exam').marqueeItems?.[0], {
     type: 'card',
     buttonLabel: '후기 보기',
-    href: '/exam#exam-passed-reviews',
+    href: '/exam/passed-reviews/r2-pass',
     image: 'https://cdn.example.com/media/exam-passed-reviews/images/1/exam-passed-review-image-1-large.jpg',
     imageAlt: '이학생',
     label: '이학생 | 한예종',
