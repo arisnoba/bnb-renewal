@@ -39,7 +39,7 @@ type SpecialSystemItem = {
   title: string
 }
 
-const specialSystemItems = [
+const specialSystemItems: SpecialSystemItem[] = [
   {
     description: [
       '입시 실기시험에서 의상과 헤어, 메이크업 등의 비주얼적인 요소는 심사위원들에게 학생의 첫인상을 결정하는 중요한 요소로 작용합니다.',
@@ -80,10 +80,6 @@ const specialSystemItems = [
     title: '수업 밖에서도 이어지는 \n입시 맞춤형 교육지원 시스템',
   },
   {
-    cta: {
-      href: '/exam/casting-system',
-      label: '드라마 · 광고 캐스팅',
-    },
     description: [
       '배우앤배움 입시센터는 매니지먼트BNB와 협력하여, 예비입시생에게 현장경험을 통한 수시 특기자전형 지원이 가능하도록 오디션의 기회를 제공합니다.',
       '배우앤배움은 국내에서 이루어지는 모든 드라마, 영화, 광고 오디션 정보를 보유하고 있으며, 아트센터 1층 DID를 통해 이 달의 오디션에 대한 공지와 안내를 하고 있습니다. 특히 계열사인 ㈜라인업(드라마 캐스팅)과 ㈜유캐스팅(드라마 캐스팅) 및 ㈜BX모델에이전시(광고 캐스팅)에서 진행하는 오디션을 통해 국내 드라마, 영화, OTT 및 주요 CF광고를 다이렉트 캐스팅하고 있으며, 이를 통해 배우앤배움 입시센터 학생들이 각 대학 특기자전형 지원자격을 갖출 수 있도록 지원합니다.',
@@ -92,7 +88,7 @@ const specialSystemItems = [
     navTitle: '특기 전형 시스템',
     title: '현장 경험부터 오디션 기회까지\n특기자 전형을 체계적으로 지원합니다.',
   },
-] satisfies SpecialSystemItem[]
+]
 
 export function generateStaticParams() {
   return [{ slug: 'exam' }]

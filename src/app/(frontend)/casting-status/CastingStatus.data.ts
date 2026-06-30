@@ -6,6 +6,8 @@ import type { Payload, Where } from 'payload'
 
 import type { CastingStatusPosterItem, CastingStatusYearGroup } from './CastingStatusYearSwiper.client'
 
+export const castingStatusCenters: readonly CenterSlug[] = ['art', 'avenue', 'highteen', 'kids']
+
 export const CASTING_STATUS_INITIAL_YEAR_COUNT = 4
 export const CASTING_STATUS_YEAR_BATCH_SIZE = 2
 export const CASTING_STATUS_YEAR_PAGE_SIZE = 12

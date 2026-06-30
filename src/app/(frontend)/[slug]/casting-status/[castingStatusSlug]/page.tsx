@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
 
-import { assertCenter } from '@/lib/centers'
+import { notFound } from 'next/navigation'
 
+import { assertCenter, type CenterSlug } from '@/lib/centers'
+
+import { castingStatusCenters } from '../../../casting-status/CastingStatus.data'
 import {
   CastingStatusDetailPage,
   generateCastingStatusMetadata,
@@ -23,7 +26,7 @@ export async function generateStaticParams() {
 
 export default async function CenterCastingStatusDetail({ params: paramsPromise }: Args) {
   const { castingStatusSlug, slug } = await paramsPromise
-  const center = assertCenter(slug)
+  const center = assertCastingStatusCenter(assertCenter(slug))
   const decodedSlug = decodeURIComponent(castingStatusSlug)
 
   return <CastingStatusDetailPage center={center} slug={decodedSlug} />
@@ -31,10 +34,18 @@ export default async function CenterCastingStatusDetail({ params: paramsPromise 
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { castingStatusSlug, slug } = await paramsPromise
-  const center = assertCenter(slug)
+  const center = assertCastingStatusCenter(assertCenter(slug))
 
   return generateCastingStatusMetadata({
     center,
     slug: decodeURIComponent(castingStatusSlug),
   })
+}
+
+function assertCastingStatusCenter(center: CenterSlug) {
+  if (!castingStatusCenters.includes(center)) {
+    notFound()
+  }
+
+  return center
 }

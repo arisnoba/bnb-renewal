@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { PageIntro } from "@/components/PageIntro";
 import { getPageDecoIcons, PageDeco } from "@/components/PageDeco";
 import {
   assertCenter,
-  centers,
   getCenterLabel,
   type CenterSlug,
 } from "@/lib/centers";
@@ -47,7 +47,8 @@ type CastingSystemItem = {
   title: string;
 };
 
-const castingSystemCenters = Object.keys(centers) as CenterSlug[];
+const castingSystemCenters = ["art", "avenue", "highteen", "kids"] as const satisfies readonly CenterSlug[];
+type CastingSystemCenter = (typeof castingSystemCenters)[number];
 
 function castingSystemCenterAssets(
   center: CenterSlug,
@@ -88,12 +89,6 @@ const castingSystemConfigs = {
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
-  exam: {
-    heroImage: "/assets/casting-system/exam/hero.jpg",
-    images: castingSystemCenterAssets("exam"),
-    studioName: "스튜디오BNB",
-    videoCompanyName: "㈜아비오 콘텐츠",
-  },
   highteen: {
     heroImage: "/assets/casting-system/highteen/hero.jpg",
     images: castingSystemCenterAssets("highteen"),
@@ -106,9 +101,9 @@ const castingSystemConfigs = {
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
-} satisfies Record<CenterSlug, CastingSystemCenterConfig>;
+} satisfies Record<CastingSystemCenter, CastingSystemCenterConfig>;
 
-function getCastingSystemItems(center: CenterSlug): CastingSystemItem[] {
+function getCastingSystemItems(center: CastingSystemCenter): CastingSystemItem[] {
   const config = castingSystemConfigs[center];
   const centerName = getCenterLabel(center);
 
@@ -209,7 +204,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params;
-  const center = assertCenter(slug);
+  const center = assertCastingSystemCenter(assertCenter(slug));
 
   return {
     description: `${getCenterLabel(center)} 프로필 제작, 영상 제작, 오디션, 현장 케어까지 이어지는 배우 케어 시스템 안내`,
@@ -219,7 +214,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
 export default async function CastingSystemPage({ params }: Args) {
   const { slug } = await params;
-  const center = assertCenter(slug);
+  const center = assertCastingSystemCenter(assertCenter(slug));
   const castingSystemItems = getCastingSystemItems(center);
   const castingSystemConfig = castingSystemConfigs[center];
   const decoIcons = getPageDecoIcons(
@@ -353,4 +348,12 @@ export default async function CastingSystemPage({ params }: Args) {
 
 function formatCastingSystemIndex(index: number) {
   return String(index + 1).padStart(2, "0");
+}
+
+function assertCastingSystemCenter(center: CenterSlug): CastingSystemCenter {
+  if (!(castingSystemCenters as readonly CenterSlug[]).includes(center)) {
+    notFound();
+  }
+
+  return center as CastingSystemCenter;
 }

@@ -14,8 +14,6 @@ const allCenterRouteSections = new Set([
   'about',
   'admission',
   'artist-press',
-  'casting-status',
-  'casting-system',
   'company',
   'consult',
   'facilities',
@@ -33,6 +31,8 @@ const allCenterRouteSections = new Set([
 
 const routeCenters: Partial<Record<string, readonly CenterSlug[]>> = {
   casting: ['art', 'avenue', 'highteen', 'kids'],
+  'casting-status': ['art', 'avenue', 'highteen', 'kids'],
+  'casting-system': ['art', 'avenue', 'highteen', 'kids'],
   curriculum: ['art', 'highteen', 'kids'],
   'direct-castings': ['art', 'avenue', 'highteen', 'kids'],
   entertainment: ['art', 'avenue', 'highteen', 'kids'],

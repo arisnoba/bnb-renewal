@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
 
-import { assertCenter, centers } from '@/lib/centers'
+import { notFound } from 'next/navigation'
 
+import { assertCenter, type CenterSlug } from '@/lib/centers'
+
+import { castingStatusCenters } from '../../casting-status/CastingStatus.data'
 import { CastingStatusPage } from '../../casting-status/CastingStatusPage'
 
 type Args = {
@@ -13,12 +16,12 @@ type Args = {
 export const revalidate = 600
 
 export function generateStaticParams() {
-  return Object.keys(centers).map((slug) => ({ slug }))
+  return castingStatusCenters.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  assertCenter(slug)
+  assertCastingStatusCenter(assertCenter(slug))
 
   return {
     title: '캐스팅 출연현황',
@@ -27,7 +30,15 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
 export default async function CenterCastingStatusPage({ params: paramsPromise }: Args) {
   const { slug = '' } = await paramsPromise
-  const center = assertCenter(slug)
+  const center = assertCastingStatusCenter(assertCenter(slug))
 
   return <CastingStatusPage center={center} />
+}
+
+function assertCastingStatusCenter(center: CenterSlug) {
+  if (!castingStatusCenters.includes(center)) {
+    notFound()
+  }
+
+  return center
 }

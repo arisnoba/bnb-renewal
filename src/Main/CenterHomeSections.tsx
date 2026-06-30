@@ -141,7 +141,7 @@ const artistCareGroups = {
 } as const
 
 function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
-  return [
+  const items: CenterHomeArtistCareItem[] = [
     {
       category: artistCareGroups.actorCare,
       description: '작품과 배우를 연결하는 전담 캐스팅 관리',
@@ -199,6 +199,17 @@ function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
       title: '촬영현장 지원',
     },
   ]
+
+  if (center !== 'exam') {
+    return items
+  }
+
+  return items.filter(
+    (item) =>
+      !item.href.includes('/casting') &&
+      !item.href.includes('/direct-castings') &&
+      !item.href.includes('/casting-system'),
+  )
 }
 
 export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {

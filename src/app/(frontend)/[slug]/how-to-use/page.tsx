@@ -245,7 +245,7 @@ export default async function CenterHowToUsePage({ params }: Args) {
             {services.map((service) => {
               return (
                 <article
-                  className="section-how-to-use__card flex min-h-[300px] flex-col bg-white p-7 md:min-h-[349px] md:p-10"
+                  className="section-how-to-use__card flex min-h-[300px] scroll-mt-(--page-top-offset) flex-col bg-white p-7 md:min-h-[349px] md:p-10"
                   id={service.id}
                   key={service.id}
                 >

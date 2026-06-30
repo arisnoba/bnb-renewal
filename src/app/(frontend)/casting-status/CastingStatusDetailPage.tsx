@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { centers, type CenterSlug } from '@/lib/centers'
+import type { CenterSlug } from '@/lib/centers'
 import type { CastingAppearance } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -17,6 +17,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { castingStatusCenters } from './CastingStatus.data'
 
 export async function generateCastingStatusStaticParams() {
   try {
@@ -319,13 +320,13 @@ function createCenterWhere(center: CenterSlug) {
 }
 
 function getStaticParamCenters(value: CastingAppearance['centers']) {
-  const centerSlugs = Object.keys(centers) as CenterSlug[]
-
   if (value.includes('all')) {
-    return centerSlugs
+    return castingStatusCenters
   }
 
-  return value.filter((center): center is CenterSlug => center in centers)
+  return value.filter((center): center is CenterSlug =>
+    castingStatusCenters.includes(center as CenterSlug),
+  )
 }
 
 function normalizeCastMembers(value: CastingAppearance['castMembers']) {
