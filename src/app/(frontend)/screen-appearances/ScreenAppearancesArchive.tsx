@@ -237,23 +237,28 @@ function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
       className="absolute -inset-x-8 -top-12 grid grid-cols-3 gap-2 opacity-70 md:-inset-x-12 md:-top-24 md:grid-cols-6 md:rotate-[-5.5deg] md:scale-110 md:gap-4"
     >
       {images.map((image, index) => (
-        <div
-          className="relative aspect-4/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
-          key={`${image.id}-${index}`}
-        >
-          <Image
-            alt=""
-            className="size-full object-cover grayscale"
-            fill
-            blurDataURL={heroImagePlaceholder}
-            loading="eager"
-            placeholder="blur"
-            priority={index < heroImagePriorityCount}
-            sizes="(max-width: 767px) 34vw, 18vw"
-            src={image.src}
-          />
-        </div>
+        <HeroImageTile image={image} index={index} key={`${image.id}-${index}`} />
       ))}
+    </div>
+  )
+}
+
+function HeroImageTile({ image, index }: { image: ScreenAppearanceHeroImage; index: number }) {
+  const isPriority = index < heroImagePriorityCount
+
+  return (
+    <div className="relative aspect-4/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800">
+      <Image
+        alt=""
+        className="size-full object-cover grayscale"
+        fill
+        blurDataURL={heroImagePlaceholder}
+        loading={isPriority ? undefined : 'lazy'}
+        placeholder="blur"
+        priority={isPriority}
+        sizes="(max-width: 767px) 34vw, 18vw"
+        src={image.src}
+      />
     </div>
   )
 }
@@ -282,6 +287,7 @@ function ScreenAppearanceCard({
       aria-label={`${projectTitle} 출연장면 상세 보기`}
       className="group section-screen-appearances-card flex h-full flex-col overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-sm transition hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       href={detailHref}
+      prefetch={false}
     >
       <div className="section-screen-appearances-card__head flex min-h-[76px] items-center gap-3 px-5 py-4">
         <BroadcastStationLogo station={broadcastStation} />
@@ -457,6 +463,7 @@ function ScreenAppearancesPaginationLink({
       className={className}
       data-active={active ? 'true' : 'false'}
       href={href}
+      prefetch={false}
     >
       {children}
     </Link>
