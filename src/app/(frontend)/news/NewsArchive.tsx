@@ -233,11 +233,12 @@ async function queryNewsArchivePage({
   }
 
   return category
-    ? await findCategorizedNews({
-        category,
+    ? await findNewsPage({
         page,
         payload,
-        where: baseWhere,
+        where: {
+          and: [baseWhere, buildCategoryWhere(category)],
+        },
       })
     : await findNewsPage({
         page,
@@ -483,82 +484,6 @@ async function findNewsPage({
   }
 }
 
-async function findCategorizedNews({
-  category,
-  page,
-  payload,
-  where,
-}: {
-  category: NewsCategory
-  page: number
-  payload: Awaited<ReturnType<typeof getPayload>>
-  where: Where
-}): Promise<NewsPageResult> {
-  const categoryCandidates = await payload
-    .find({
-      collection: 'news',
-      depth: 0,
-      limit: 10000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        category: true,
-      },
-      sort: '-publishedAt',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-    }))
-  const matchingIds = categoryCandidates.docs
-    .filter((news) => categoryMatches(news.category, category))
-    .map((news) => news.id)
-  const totalDocs = matchingIds.length
-  const totalPages = Math.max(Math.ceil(totalDocs / pageSize), 1)
-  const safePage = Math.min(Math.max(page, 1), totalPages)
-  const pageIds = matchingIds.slice((safePage - 1) * pageSize, safePage * pageSize)
-
-  if (pageIds.length === 0) {
-    return {
-      docs: [],
-      page: safePage,
-      totalDocs,
-      totalPages,
-    }
-  }
-
-  const result = await payload
-    .find({
-      collection: 'news',
-      depth: 1,
-      limit: pageSize,
-      overrideAccess: false,
-      pagination: false,
-      select: newsArchiveSelect,
-      sort: '-publishedAt',
-      where: {
-        and: [
-          where,
-          {
-            id: {
-              in: pageIds,
-            },
-          },
-        ],
-      },
-    })
-    .catch(() => ({
-      docs: [],
-    }))
-
-  return {
-    docs: result.docs,
-    page: safePage,
-    totalDocs,
-    totalPages,
-  }
-}
-
 const newsArchiveSelect = {
   category: true,
   body: true,
@@ -568,6 +493,17 @@ const newsArchiveSelect = {
   thumbnailMedia: true,
   title: true,
 } as const
+
+export function buildCategoryWhere(category: NewsCategory): Where {
+  const operator = category.matchMode === 'exact' ? 'equals' : 'like'
+  const conditions = category.match.map((categoryValue) => ({
+    category: {
+      [operator]: categoryValue,
+    },
+  }))
+
+  return conditions.length === 1 ? conditions[0] : { or: conditions }
+}
 
 function categoryMatches(value: string | null | undefined, category: NewsCategory) {
   const normalizedValue = normalizeCategoryText(value ?? '')
