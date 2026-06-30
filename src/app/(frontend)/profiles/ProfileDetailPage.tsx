@@ -1,13 +1,11 @@
 import type { Metadata } from 'next'
 
-import { Media } from '@/components/Media/Renderer'
 import { centers, type CenterSlug } from '@/lib/centers'
-import type { Media as PayloadMedia, Profile } from '@/payload-types'
+import type { Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import React, { cache } from 'react'
@@ -18,6 +16,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { ProfileDetailGallery, type ProfileImageItem } from './ProfileDetailGallery.client'
 
 export type ProfileDetailParams = {
   center?: string
@@ -89,7 +88,6 @@ export async function ProfileDetailPage({
       .filter((src): src is string => Boolean(src))
       .map((src) => ({ src, type: 'legacy' as const })),
   ].filter((item): item is ProfileImageItem => Boolean(item))
-  const [primaryImage, ...thumbnailImages] = profileImages
   const backHref = center ? `/${center}/rookies` : '/profiles'
   const backLabel = center ? 'BNB 루키' : '프로필'
   const adjacent = await queryAdjacentProfiles({ center, slug: profile.slug })
@@ -100,36 +98,7 @@ export async function ProfileDetailPage({
 
       <DetailContainer width="wide">
         <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
-          <div>
-            <div className="overflow-hidden bg-muted">
-              {primaryImage ? (
-                <ProfileImage
-                  alt={profile.name}
-                  image={primaryImage}
-                  imgClassName="aspect-[55/64] h-auto w-full object-cover object-top"
-                  priority
-                  size="(max-width: 1023px) 100vw, 550px"
-                />
-              ) : (
-                <div className="aspect-[55/64] w-full bg-muted" />
-              )}
-            </div>
-
-            {thumbnailImages.length > 0 && (
-              <div className="mt-3 grid grid-cols-3 gap-3">
-                {thumbnailImages.slice(0, 6).map((thumbnail, index) => (
-                  <div className="overflow-hidden bg-muted" key={`${thumbnail.type}-${index}`}>
-                    <ProfileImage
-                      alt={`${profile.name} 이미지 ${index + 2}`}
-                      image={thumbnail}
-                      imgClassName="aspect-square h-auto w-full object-cover object-top"
-                      size="104px"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProfileDetailGallery images={profileImages} profileName={profile.name} />
 
           <div className="border border-border p-8 md:p-10">
             <header className="border-b border-border pb-8">
@@ -337,53 +306,4 @@ function profileCenterSlugs(profile: Profile) {
   }
 
   return profile.centers.filter((center): center is CenterSlug => center in centers)
-}
-
-type ProfileImageItem =
-  | {
-      resource: PayloadMedia
-      type: 'media'
-    }
-  | {
-      src: string
-      type: 'legacy'
-    }
-
-function ProfileImage({
-  alt,
-  image,
-  imgClassName,
-  priority,
-  size,
-}: {
-  alt: string
-  image: ProfileImageItem
-  imgClassName: string
-  priority?: boolean
-  size: string
-}) {
-  if (image.type === 'media') {
-    return (
-      <Media
-        htmlElement={null}
-        imgClassName={imgClassName}
-        pictureClassName="block w-full"
-        priority={priority}
-        resource={image.resource}
-        size={size}
-      />
-    )
-  }
-
-  return (
-    <Image
-      alt={alt}
-      className={imgClassName}
-      height={1200}
-      priority={priority}
-      src={image.src}
-      unoptimized
-      width={900}
-    />
-  )
 }

@@ -9,7 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Media } from '@/components/Media/Renderer'
 
-export type TeacherImageItem =
+export type ProfileImageItem =
   | {
       resource: PayloadMedia
       type: 'media'
@@ -19,12 +19,12 @@ export type TeacherImageItem =
       type: 'legacy'
     }
 
-type TeacherDetailGalleryProps = {
-  images: TeacherImageItem[]
-  teacherName: string
+type ProfileDetailGalleryProps = {
+  images: ProfileImageItem[]
+  profileName: string
 }
 
-export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalleryProps) {
+export function ProfileDetailGallery({ images, profileName }: ProfileDetailGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [mainSwiper, setMainSwiper] = useState<SwiperInstance | null>(null)
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null)
@@ -37,11 +37,11 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
   }
 
   return (
-    <div className="section-teacher-detail__gallery min-w-0 max-w-full">
-      <div className="aspect-square min-w-0 max-w-full overflow-hidden bg-black">
+    <div className="section-profile-detail__gallery min-w-0 max-w-full">
+      <div className="aspect-square min-w-0 max-w-full overflow-hidden bg-muted">
         {hasImages ? (
           <Swiper
-            className="section-teacher-detail__gallery-swiper aspect-square w-full min-w-0 max-w-full"
+            className="section-profile-detail__gallery-swiper aspect-square w-full min-w-0 max-w-full"
             keyboard={{ enabled: shouldSlide }}
             modules={[A11y, Keyboard]}
             onSlideChange={(swiper) => setActiveSlide(swiper.realIndex)}
@@ -49,9 +49,9 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
             slidesPerView={1}
           >
             {images.map((image, index) => (
-              <SwiperSlide className="aspect-square!" key={teacherImageKey(image, index)}>
-                <TeacherGalleryImage
-                  alt={index === 0 ? teacherName : `${teacherName} 이미지 ${index + 1}`}
+              <SwiperSlide className="aspect-square!" key={profileImageKey(image, index)}>
+                <ProfileGalleryImage
+                  alt={index === 0 ? profileName : `${profileName} 이미지 ${index + 1}`}
                   image={image}
                   imgClassName="size-full object-cover object-top"
                   pictureClassName="block size-full"
@@ -62,13 +62,13 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
             ))}
           </Swiper>
         ) : (
-          <div className="aspect-square w-full bg-black" />
+          <div className="aspect-square w-full bg-muted" />
         )}
       </div>
 
       {shouldSlide && (
         <Swiper
-          className="section-teacher-detail__gallery-thumbs mt-3 w-full min-w-0 max-w-full"
+          className="section-profile-detail__gallery-thumbs mt-3 w-full min-w-0 max-w-full"
           onSwiper={setThumbsSwiper}
           spaceBetween={12}
           slidesPerView={5}
@@ -78,11 +78,11 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
             const isActive = index === activeIndex
 
             return (
-              <SwiperSlide key={`thumb-${teacherImageKey(image, index)}`}>
+              <SwiperSlide key={`thumb-${profileImageKey(image, index)}`}>
                 <button
                   aria-current={isActive ? 'true' : undefined}
-                  aria-label={`${teacherName} 이미지 ${index + 1} 보기`}
-                  className="aspect-square w-full overflow-hidden bg-black opacity-40 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[active=true]:rounded-full data-[active=true]:opacity-100"
+                  aria-label={`${profileName} 이미지 ${index + 1} 보기`}
+                  className="aspect-square w-full overflow-hidden bg-muted opacity-45 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand data-[active=true]:rounded-full data-[active=true]:opacity-100"
                   data-active={isActive}
                   onClick={() => {
                     mainSwiper?.slideTo(index)
@@ -90,7 +90,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
                   }}
                   type="button"
                 >
-                  <TeacherGalleryImage
+                  <ProfileGalleryImage
                     alt=""
                     image={image}
                     imgClassName="size-full object-cover object-top"
@@ -107,7 +107,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
   )
 }
 
-function TeacherGalleryImage({
+function ProfileGalleryImage({
   alt,
   image,
   imgClassName,
@@ -116,7 +116,7 @@ function TeacherGalleryImage({
   size,
 }: {
   alt: string
-  image: TeacherImageItem
+  image: ProfileImageItem
   imgClassName: string
   pictureClassName: string
   priority?: boolean
@@ -143,12 +143,13 @@ function TeacherGalleryImage({
       height={1200}
       priority={priority}
       src={image.src}
+      unoptimized
       width={1200}
     />
   )
 }
 
-function teacherImageKey(image: TeacherImageItem, index: number) {
+function profileImageKey(image: ProfileImageItem, index: number) {
   if (image.type === 'media') {
     return `media-${image.resource.id ?? index}`
   }

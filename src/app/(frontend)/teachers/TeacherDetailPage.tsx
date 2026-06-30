@@ -20,6 +20,7 @@ import {
   DetailPager,
 } from '../_components/DetailLayout'
 import { TeacherDetailGallery, type TeacherImageItem } from './TeacherDetailGallery.client'
+import { TeacherDetailScrollReset } from './TeacherDetailScrollReset.client'
 
 type TeacherRepresentativeWork = NonNullable<Teacher['representativeWorks']>[number] & {
   posterMedia?: number | PayloadMedia | null
@@ -103,6 +104,7 @@ export async function TeacherDetailPage({
       sectionClassName="relative z-10"
       tone="dark"
     >
+      <TeacherDetailScrollReset />
       <PageDeco
         className="right-[8%] top-[34rem] hidden lg:block"
         icon={decoIcons[0]}
