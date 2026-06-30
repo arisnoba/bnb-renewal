@@ -58,5 +58,5 @@ export function youtubeEmbedUrl(videoId: string) {
 export function youtubeThumbnailUrl(value: unknown) {
   const videoId = extractYouTubeVideoId(value);
 
-  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
+  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "";
 }

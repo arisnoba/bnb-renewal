@@ -2,6 +2,7 @@
 
 import { interpolate } from 'flubber'
 import { animate, useReducedMotion } from 'motion/react'
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
@@ -15,6 +16,7 @@ export type CenterHomeScreenAppearanceSlide = {
   href: string
   id: string | number
   meta: string
+  openInNewTab?: boolean
   performerName: string
   performerRole: string
   profileImageUrl: string
@@ -23,9 +25,11 @@ export type CenterHomeScreenAppearanceSlide = {
 }
 
 type CenterHomeScreenAppearancesProps = {
+  contentType?: 'screen' | 'video'
   fallbackHref: string
   fallbackImageUrl: string
   items: CenterHomeScreenAppearanceSlide[]
+  showThumbnails?: boolean
 }
 
 const screenMaskShapes = [
@@ -52,7 +56,13 @@ const screenMaskViewBox = {
 }
 const initialMaskShape = screenMaskShapes[0]
 
-export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, items }: CenterHomeScreenAppearancesProps) {
+export function CenterHomeScreenAppearances({
+  contentType = 'screen',
+  fallbackHref,
+  fallbackImageUrl,
+  items,
+  showThumbnails = true,
+}: CenterHomeScreenAppearancesProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const clipPathId = useId()
   const [mainSwiper, setMainSwiper] = useState<SwiperInstance | null>(null)
@@ -64,6 +74,9 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
   const shouldSlide = slides.length > 1
   const activeMaskIndex = activeIndex % screenMaskShapes.length
   const activeMaskShape = screenMaskShapes[activeMaskIndex]
+  const isFirstSlide = activeIndex <= 0
+  const isLastSlide = activeIndex >= slides.length - 1
+  const isVideo = contentType === 'video'
 
   const setActiveSlide = useCallback(
     (index: number) => {
@@ -111,7 +124,7 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
   }, [activeMaskShape.path, prefersReducedMotion])
 
   return (
-    <div className="section-center-home-screen__stage mx-auto mt-14  md:mt-[72px]">
+    <div className="section-center-home-screen__stage relative mx-auto mt-14 md:mt-[72px]">
       <svg
         className="section-center-home-screen__mask-viewport block aspect-video w-full overflow-hidden"
         data-mask-id={activeMaskShape.id}
@@ -143,9 +156,11 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
               {slides.map((item, index) => (
                 <SwiperSlide key={item.id}>
                   <Link
-                    aria-label={`${item.projectTitle} 출연장면 상세 보기`}
+                    aria-label={`${item.projectTitle} ${isVideo ? '영상 보기' : '출연장면 상세 보기'}`}
                     className="group section-center-home-screen-feature relative block size-full overflow-hidden bg-neutral-900 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                     href={item.href}
+                    rel={item.openInNewTab ? 'noreferrer' : undefined}
+                    target={item.openInNewTab ? '_blank' : undefined}
                   >
                     <Image
                       alt=""
@@ -156,8 +171,18 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
                       src={item.sceneImageUrl || fallbackImageUrl}
                       unoptimized
                     />
-                    <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/10" />
-                    {item.broadcastLogoUrl ? (
+                    <span
+                      aria-hidden="true"
+                      className={isVideo ? 'absolute inset-0 bg-black/35' : 'absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/10'}
+                    />
+                    {isVideo ? (
+                      <Play
+                        aria-hidden="true"
+                        className="absolute left-1/2 top-1/2 size-16 -translate-x-1/2 -translate-y-1/2 fill-white text-white drop-shadow-sm md:size-24"
+                        strokeWidth={1.2}
+                      />
+                    ) : null}
+                    {!isVideo && item.broadcastLogoUrl ? (
                       <span className="absolute left-7 top-6 flex h-32 md:h-20 items-center justify-center md:left-10 md:top-8">
                         <Image
                           alt={item.broadcastLogoAlt}
@@ -171,21 +196,23 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
                         />
                       </span>
                     ) : null}
-                    <span className="absolute bottom-8 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
-                      <span className="block type-caption-l font-bold leading-[1.35] text-white/70">{item.meta}</span>
-                      <span className="mt-2 block max-w-[360px] type-headline-s font-extrabold leading-[1.2] text-white md:type-headline-l">
-                        {item.projectTitle}
-                      </span>
-                      <span className="mt-5 inline-flex items-center gap-4 type-label-m font-bold leading-[1.2] text-white">
-                        <ActorThumb imageUrl={item.profileImageUrl} name={item.performerName} size="small" />
-                        <span className="grid gap-1">
-                          <span>{item.performerName}</span>
-                          {item.performerRole ? (
-                            <span className="type-caption-l font-semibold leading-[1.35] text-white/80">{item.performerRole}</span>
-                          ) : null}
+                    {!isVideo ? (
+                      <span className="absolute bottom-8 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
+                        <span className="block type-caption-l font-bold leading-[1.35] text-white/70">{item.meta}</span>
+                        <span className="mt-2 block max-w-[360px] type-headline-s font-extrabold leading-[1.2] text-white md:type-headline-l">
+                          {item.projectTitle}
+                        </span>
+                        <span className="mt-5 inline-flex items-center gap-4 type-label-m font-bold leading-[1.2] text-white">
+                          <ActorThumb imageUrl={item.profileImageUrl} name={item.performerName} size="small" />
+                          <span className="grid gap-1">
+                            <span>{item.performerName}</span>
+                            {item.performerRole ? (
+                              <span className="type-caption-l font-semibold leading-[1.35] text-white/80">{item.performerRole}</span>
+                            ) : null}
+                          </span>
                         </span>
                       </span>
-                    </span>
+                    ) : null}
                   </Link>
                 </SwiperSlide>
               ))}
@@ -194,45 +221,90 @@ export function CenterHomeScreenAppearances({ fallbackHref, fallbackImageUrl, it
         </foreignObject>
       </svg>
 
-      <div className="section-center-home-screen__thumb-row mt-10 md:mt-18">
-        <Swiper
-          className="section-center-home-screen__thumb-swiper w-full min-w-0"
-          onSwiper={setThumbsSwiper}
-          slidesPerView="auto"
-          spaceBetween={8}
-          watchSlidesProgress
-        >
-          {slides.map((item, index) => {
-            const isActive = index === activeIndex
+      {!showThumbnails && shouldSlide ? (
+        <>
+          <button
+            aria-disabled={isFirstSlide}
+            aria-label="이전 합격자 후기 영상"
+            className="absolute left-4 top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-white/70 text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[disabled=true]:cursor-default data-[disabled=true]:opacity-35 md:left-8 md:size-16"
+            data-disabled={isFirstSlide}
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
 
-            return (
-              <SwiperSlide
-                className="h-auto! w-20! transition-[width] duration-300 data-[active=true]:w-28! md:w-[134px]! md:data-[active=true]:w-[225px]!"
-                data-active={isActive}
-                key={`thumb-${item.id}`}
-              >
-                <button
-                  aria-current={isActive ? 'true' : undefined}
-                  aria-label={`${item.projectTitle} 출연장면 보기`}
-                  className="group/thumb block w-full text-left outline-none"
-                  onClick={() => {
-                    mainSwiper?.slideTo(index)
-                    setActiveSlide(index)
-                  }}
-                  type="button"
+              if (isFirstSlide) {
+                return
+              }
+
+              mainSwiper?.slidePrev()
+            }}
+            type="button"
+          >
+            <ChevronLeft aria-hidden="true" className="size-7 md:size-9" strokeWidth={1.6} />
+          </button>
+          <button
+            aria-disabled={isLastSlide}
+            aria-label="다음 합격자 후기 영상"
+            className="absolute right-4 top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-white/70 text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[disabled=true]:cursor-default data-[disabled=true]:opacity-35 md:right-8 md:size-16"
+            data-disabled={isLastSlide}
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+
+              if (isLastSlide) {
+                return
+              }
+
+              mainSwiper?.slideNext()
+            }}
+            type="button"
+          >
+            <ChevronRight aria-hidden="true" className="size-7 md:size-9" strokeWidth={1.6} />
+          </button>
+        </>
+      ) : null}
+
+      {showThumbnails ? (
+        <div className="section-center-home-screen__thumb-row mt-10 md:mt-18">
+          <Swiper
+            className="section-center-home-screen__thumb-swiper w-full min-w-0"
+            onSwiper={setThumbsSwiper}
+            slidesPerView="auto"
+            spaceBetween={8}
+            watchSlidesProgress
+          >
+            {slides.map((item, index) => {
+              const isActive = index === activeIndex
+
+              return (
+                <SwiperSlide
+                  className="h-auto! w-20! transition-[width] duration-300 data-[active=true]:w-28! md:w-[134px]! md:data-[active=true]:w-[225px]!"
+                  data-active={isActive}
+                  key={`thumb-${item.id}`}
                 >
-                  <span
-                    className="relative block aspect-[4/5] w-full overflow-hidden bg-neutral-900 transition data-[active=true]:aspect-square"
-                    data-active={isActive}
+                  <button
+                    aria-current={isActive ? 'true' : undefined}
+                    aria-label={`${item.projectTitle} 출연장면 보기`}
+                    className="group/thumb block w-full text-left outline-none"
+                    onClick={() => {
+                      mainSwiper?.slideTo(index)
+                      setActiveSlide(index)
+                    }}
+                    type="button"
                   >
-                    <ActorThumb imageUrl={item.profileImageUrl} isActive={isActive} name={item.performerName} size="large" />
-                  </span>
-                </button>
-              </SwiperSlide>
-            )
-          })}
-        </Swiper>
-      </div>
+                    <span
+                      className="relative block aspect-[4/5] w-full overflow-hidden bg-neutral-900 transition data-[active=true]:aspect-square"
+                      data-active={isActive}
+                    >
+                      <ActorThumb imageUrl={item.profileImageUrl} isActive={isActive} name={item.performerName} size="large" />
+                    </span>
+                  </button>
+                </SwiperSlide>
+              )
+            })}
+          </Swiper>
+        </div>
+      ) : null}
     </div>
   )
 }

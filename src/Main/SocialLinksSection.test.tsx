@@ -87,7 +87,7 @@ test('social links render YouTube thumbnail from link when representative image 
   )
 
   assert.match(html, /href="https:\/\/www\.youtube\.com\/watch\?v=dQw4w9WgXcQ"/)
-  assert.match(html, /src="https:\/\/img\.youtube\.com\/vi\/dQw4w9WgXcQ\/hqdefault\.jpg"/)
+  assert.match(html, /src="https:\/\/img\.youtube\.com\/vi\/dQw4w9WgXcQ\/maxresdefault\.jpg"/)
 })
 
 test('social links do not render instagram items without representative image', () => {

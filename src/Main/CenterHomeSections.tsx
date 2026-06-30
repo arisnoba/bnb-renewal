@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- Home cards use mixed Payload/R2/local URLs already normalized by getMediaUrl. */
 import configPromise from '@payload-config'
-import { ChevronRight, Info } from 'lucide-react'
+import { ChevronRight, GraduationCap, Info } from 'lucide-react'
 import Link from 'next/link'
 import { cache, type ReactNode } from 'react'
 import { getPayload, type Where } from 'payload'
@@ -26,24 +26,22 @@ import {
 import { extractYouTubeVideoId, youtubeThumbnailUrl } from '@/lib/youtube'
 import type {
   ArtistPress,
-  BroadcastStation,
   Curriculum,
+  ExamPassedReview,
+  ExamPassedVideo,
+  ExamSchoolLogo,
   Footer,
   Media,
   News,
-  ScreenAppearance,
   SocialLink,
 } from '@/payload-types'
 import { getArtistPressThumbnailMedia, getArtistPressUrl } from '@/utilities/artistPressFallbacks'
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
-import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
-import {
-  CenterHomeScreenAppearances,
-  type CenterHomeScreenAppearanceSlide,
-} from './CenterHomeScreenAppearances.client'
+import { CenterHomeScreenAppearances } from './CenterHomeScreenAppearances.client'
 import { CenterHomeArtistCare, type CenterHomeArtistCareItem } from './CenterHomeArtistCare.client'
+import { screenAppearanceSlide, type HomeScreenAppearance } from './screenAppearanceSlides'
 
 type CenterHomeSectionsProps = {
   center: CenterSlug
@@ -56,22 +54,17 @@ type HomeArtistPress = Pick<
   'actorName' | 'generation' | 'id' | 'publishedAt' | 'slug' | 'thumbnailMedia' | 'title'
 >
 
-type HomeScreenAppearance = Pick<
-  ScreenAppearance,
-  | 'id'
-  | 'appearanceType'
-  | 'bodyImages'
-  | 'broadcastStation'
-  | 'className'
-  | 'performerName'
-  | 'profileImagePath'
-  | 'projectTitle'
-  | 'publishedAt'
-  | 'roleName'
-  | 'slug'
-  | 'thumbnailPath'
-  | 'title'
+type HomeExamPassedVideo = Pick<
+  ExamPassedVideo,
+  'id' | 'publishedAt' | 'slug' | 'title' | 'youtubeCode' | 'youtubeUrl'
 >
+
+type HomeExamPassedReview = Pick<
+  ExamPassedReview,
+  'id' | 'publishedAt' | 'resultSummary' | 'slug' | 'studentImagePath' | 'studentName' | 'title'
+> & {
+  school: number | (Pick<ExamSchoolLogo, 'id' | 'logoMedia' | 'schoolName'> & Record<string, unknown>)
+}
 
 type HomeCurriculum = Pick<
   Curriculum,
@@ -103,6 +96,8 @@ type HomeSocialAccount = FooterSocialLink & {
 type CenterHomeData = {
   artistPress: HomeArtistPress[]
   curriculums: HomeCurriculum[]
+  examPassedReviews: HomeExamPassedReview[]
+  examPassedVideos: HomeExamPassedVideo[]
   news: HomeNews[]
   screenAppearances: HomeScreenAppearance[]
   socialAccounts: HomeSocialAccount[]
@@ -111,6 +106,8 @@ type CenterHomeData = {
 
 const screenAppearanceLimit = 10
 const artistPressLimit = 5
+const examPassedReviewLimit = 5
+const examPassedVideoLimit = 6
 const newsLimit = 5
 const socialLimit = 10
 
@@ -211,8 +208,16 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
     <>
       <CourseSearchSection center={center} curriculums={data.curriculums} />
       <ArtistCareSection center={center} />
-      <ScreenAppearancesHomeSection center={center} appearances={data.screenAppearances} />
-      <ArtistPressHomeSection artistPress={data.artistPress} center={center} />
+      {center === 'exam' ? (
+        <ExamPassedVideosHomeSection videos={data.examPassedVideos} />
+      ) : (
+        <ScreenAppearancesHomeSection center={center} appearances={data.screenAppearances} />
+      )}
+      {center === 'exam' ? (
+        <ExamPassedReviewsHomeSection reviews={data.examPassedReviews} />
+      ) : (
+        <ArtistPressHomeSection artistPress={data.artistPress} center={center} />
+      )}
       <NewsHomeSection center={center} news={data.news} />
       <SocialHomeSection
         center={center}
@@ -394,6 +399,34 @@ function ScreenAppearancesHomeSection({
   )
 }
 
+function ExamPassedVideosHomeSection({ videos }: { videos: HomeExamPassedVideo[] }) {
+  const slides = videos.map((video) => examPassedVideoSlide(video))
+
+  return (
+    <section
+      aria-labelledby="center-home-exam-videos-title"
+      className="section-center-home-exam-videos relative overflow-hidden bg-black py-24 text-white md:py-[120px]"
+      data-center="exam"
+    >
+      <div className="container">
+        <SectionIntro
+          align="center"
+          eyebrow="SUCCESS STORIES"
+          id="center-home-exam-videos-title"
+          title="합격자 후기 영상"
+        />
+        <CenterHomeScreenAppearances
+          contentType="video"
+          fallbackHref="/exam/passed-videos"
+          fallbackImageUrl={centerHeroImage.exam}
+          items={slides}
+          showThumbnails={false}
+        />
+      </div>
+    </section>
+  )
+}
+
 function ArtistPressHomeSection({
   artistPress,
   center,
@@ -429,6 +462,48 @@ function ArtistPressHomeSection({
             <span className="type-title-s font-extrabold leading-normal">BNB ARTIST</span>
             <span className="inline-flex items-center gap-2 type-label-s font-bold leading-[1.2]">
               전체보기
+              <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
+            </span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ExamPassedReviewsHomeSection({ reviews }: { reviews: HomeExamPassedReview[] }) {
+  const [featured, ...rest] = reviews
+
+  return (
+    <section
+      aria-labelledby="center-home-exam-reviews-title"
+      className="section-center-home-exam-reviews bg-neutral-950 section-p-block-base text-white"
+      data-center="exam"
+    >
+      <div className="container grid gap-12 lg:grid-cols-12 lg:items-start">
+        <div className="lg:col-span-4">
+          <SectionIntro
+            eyebrow="BNB STUDENT STORIES"
+            id="center-home-exam-reviews-title"
+            title={'수강생\n합격 후기'}
+          />
+        </div>
+        <div className="section-center-home-exam-reviews__grid grid grid-cols-2 gap-3 md:grid-cols-4 lg:col-span-8">
+          <ExamPassedReviewFeaturedCard review={featured} />
+          {rest.slice(0, 3).map((item) => (
+            <ExamPassedReviewMiniCard key={item.id} review={item} />
+          ))}
+          <Link
+            className="section-center-home-exam-reviews__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
+            href="/exam/passed-reviews"
+          >
+            <span className="type-title-s font-extrabold leading-normal">
+              수강생
+              <br />
+              합격 후기
+            </span>
+            <span className="inline-flex items-center gap-2 type-label-s font-bold leading-[1.2]">
+              더보기
               <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
             </span>
           </Link>
@@ -524,6 +599,102 @@ function ArtistPressMiniCard({
         </span>
       </span>
     </Link>
+  )
+}
+
+function ExamPassedReviewFeaturedCard({ review }: { review?: HomeExamPassedReview }) {
+  const imageUrl = examPassedReviewImageUrl(review)
+  const schoolLogoUrl = examPassedReviewSchoolLogoUrl(review)
+  const resultText = examPassedReviewResultText(review)
+  const studentName = normalizeText(review?.studentName) || '합격생'
+  const href = review ? examPassedReviewHref(review) : '/exam/passed-reviews'
+
+  return (
+    <Link
+      aria-label={`${studentName} 합격 후기 보기`}
+      className="group section-center-home-exam-review-featured col-span-2 row-span-2 overflow-hidden bg-white text-neutral-950 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
+      href={href}
+    >
+      <div className="relative aspect-4/3 overflow-hidden bg-neutral-900">
+        {imageUrl ? (
+          <img
+            alt=""
+            className="size-full object-cover object-top transition duration-300 ease-out group-hover:scale-[1.03]"
+            loading="lazy"
+            src={imageUrl}
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center bg-neutral-900 px-6 text-center type-label-m font-semibold leading-normal text-white/45">
+            이미지 준비중
+          </div>
+        )}
+        <ExamPassedSchoolMark imageUrl={schoolLogoUrl} />
+      </div>
+      <div className="relative z-10 bg-white p-5">
+        <h3 className="type-title-l font-extrabold leading-[1.4] text-neutral-950">
+          {resultText}
+        </h3>
+        <p className="mt-4 line-clamp-2 type-body-s font-medium leading-[1.6] text-neutral-500">
+          {examPassedReviewSummary(review)}
+        </p>
+      </div>
+    </Link>
+  )
+}
+
+function ExamPassedReviewMiniCard({ review }: { review: HomeExamPassedReview }) {
+  const imageUrl = examPassedReviewImageUrl(review)
+  const schoolLogoUrl = examPassedReviewSchoolLogoUrl(review)
+  const resultText = examPassedReviewResultText(review)
+  const studentName = normalizeText(review.studentName) || '합격생'
+
+  return (
+    <Link
+      aria-label={`${studentName} 합격 후기 보기`}
+      className="group section-center-home-exam-review-mini relative aspect-square overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:aspect-auto md:min-h-[184px]"
+      href={examPassedReviewHref(review)}
+    >
+      {imageUrl ? (
+        <img
+          alt=""
+          className="absolute inset-0 size-full object-cover object-top opacity-80 transition duration-300 ease-out group-hover:scale-105"
+          loading="lazy"
+          src={imageUrl}
+        />
+      ) : null}
+      <span className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-black/5" />
+      <ExamPassedSchoolMark imageUrl={schoolLogoUrl} size="small" />
+      <span className="absolute bottom-4 left-4 right-4">
+        <span className="block type-body-s font-medium leading-normal text-white/80">
+          {resultText}
+        </span>
+        <span className="mt-1 block type-title-s font-bold leading-normal text-white">
+          {studentName}
+        </span>
+      </span>
+    </Link>
+  )
+}
+
+function ExamPassedSchoolMark({
+  imageUrl,
+  size = 'default',
+}: {
+  imageUrl: string
+  size?: 'default' | 'small'
+}) {
+  const sizeClass = size === 'small' ? 'right-4 top-4 size-10' : 'right-5 top-5 size-[52px]'
+
+  return (
+    <span
+      className={`absolute ${sizeClass} grid place-items-center overflow-hidden rounded-full border border-white/50 bg-white/95 p-1.5`}
+    >
+      {imageUrl ? (
+        <img alt="" aria-hidden="true" className="size-full object-contain" loading="lazy" src={imageUrl} />
+      ) : (
+        <GraduationCap aria-hidden="true" className="size-6 text-brand" strokeWidth={2.2} />
+      )}
+    </span>
   )
 }
 
@@ -867,52 +1038,50 @@ function artistPressImageUrl(artistPress: HomeArtistPress | null | undefined) {
   return mediaUrl(getArtistPressThumbnailMedia(artistPress))
 }
 
-function screenAppearanceSlide(
-  appearance: HomeScreenAppearance,
-  center: CenterSlug,
-): CenterHomeScreenAppearanceSlide {
-  const broadcastStation = getHomeBroadcastStation(appearance.broadcastStation)
+function examPassedVideoSlide(video: HomeExamPassedVideo) {
+  const youtubeUrl = normalizeText(video.youtubeUrl)
+  const thumbnailUrl = youtubeThumbnailUrl(video.youtubeCode || youtubeUrl)
+  const title = normalizeText(video.title) || '합격자 후기 영상'
 
   return {
-    broadcastLogoAlt: broadcastStation?.stationName ? `${broadcastStation.stationName} 로고` : '',
-    broadcastLogoUrl: screenAppearanceBroadcastLogoUrl(broadcastStation),
-    href: `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`,
-    id: appearance.id,
-    meta: screenAppearanceMeta(appearance),
-    performerName: featuredPerformerName(appearance),
-    performerRole: featuredPerformerRole(appearance),
-    profileImageUrl: screenAppearanceProfileImageUrl(appearance),
-    projectTitle: featuredTitle(appearance),
-    sceneImageUrl: screenAppearanceSceneImageUrl(appearance),
+    broadcastLogoAlt: '',
+    broadcastLogoUrl: '',
+    href: youtubeUrl || '/exam/passed-videos',
+    id: video.id,
+    meta: 'SUCCESS STORIES',
+    openInNewTab: Boolean(youtubeUrl),
+    performerName: '',
+    performerRole: '',
+    profileImageUrl: '',
+    projectTitle: title,
+    sceneImageUrl: thumbnailUrl,
   }
 }
 
-function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return screenAppearanceBodyImageUrl(appearance) || screenAppearanceImageUrl(appearance)
+function examPassedReviewHref(review: Pick<HomeExamPassedReview, 'slug'>) {
+  return `/exam/passed-reviews/${encodeURIComponent(review.slug)}`
 }
 
-function screenAppearanceBodyImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  const bodyImage = appearance?.bodyImages?.find(
-    (item) => item?.image && typeof item.image === 'object',
-  )?.image
-
-  return mediaUrl(bodyImage as Media | undefined)
+function examPassedReviewImageUrl(review: HomeExamPassedReview | null | undefined) {
+  return normalizeImageUrl(review?.studentImagePath)
 }
 
-function screenAppearanceProfileImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return (
-    normalizeImageUrl(appearance?.profileImagePath) ||
-    screenAppearanceBodyImageUrl(appearance) ||
-    screenAppearanceImageUrl(appearance)
-  )
+function examPassedReviewResultText(review: HomeExamPassedReview | null | undefined) {
+  return normalizeText(review?.resultSummary) || normalizeText(review?.title) || '수강생 합격 후기'
 }
 
-function screenAppearanceBroadcastLogoUrl(station: BroadcastStation | null | undefined) {
-  return mediaUrl(station?.logoMedia)
+function examPassedReviewSummary(review: HomeExamPassedReview | null | undefined) {
+  const studentName = normalizeText(review?.studentName)
+  const title = normalizeText(review?.title)
+
+  return [studentName, title].filter(Boolean).join(' 합격현황 ') || '배우앤배움 입시센터 합격생의 이야기'
 }
 
-function screenAppearanceImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return normalizeImageUrl(appearance?.thumbnailPath)
+function examPassedReviewSchoolLogoUrl(review: HomeExamPassedReview | null | undefined) {
+  const school = review?.school
+  const media = typeof school === 'object' ? school.logoMedia : null
+
+  return mediaUrl(media)
 }
 
 function socialImageUrl(link: HomeSocialLink) {
@@ -1001,7 +1170,7 @@ function socialMediaUrl(value: number | null | Media | undefined) {
 }
 
 function normalizeImageUrl(value: string | null | undefined) {
-  const trimmed = publishedImageSrc(value)
+  const trimmed = normalizeText(value)
 
   if (!trimmed) {
     return ''
@@ -1014,41 +1183,8 @@ function normalizeImageUrl(value: string | null | undefined) {
   return getMediaUrl(`/${trimmed.replace(/^\/+/, '')}`)
 }
 
-function featuredTitle(appearance: HomeScreenAppearance | null | undefined) {
-  return appearance?.projectTitle?.trim() || appearance?.title || '배우앤배움 출연장면'
-}
-
-function featuredPerformerName(appearance: HomeScreenAppearance | null | undefined) {
-  return appearance?.performerName?.trim() || '배우앤배움 수강생'
-}
-
-function featuredPerformerRole(appearance: HomeScreenAppearance | null | undefined) {
-  return appearance?.roleName?.trim() || ''
-}
-
-function screenAppearanceMeta(appearance: HomeScreenAppearance) {
-  const station = getHomeBroadcastStation(appearance.broadcastStation)
-  const stationName = station?.stationName?.trim()
-
-  return [stationName, screenAppearanceTypeText(appearance.appearanceType)]
-    .filter(Boolean)
-    .join(' ')
-}
-
-function screenAppearanceTypeText(value: HomeScreenAppearance['appearanceType'] | undefined) {
-  if (value === 'commercial') {
-    return '광고 출연장면'
-  }
-
-  if (value === 'movie') {
-    return '영화 출연장면'
-  }
-
-  return '드라마 출연장면'
-}
-
-function getHomeBroadcastStation(value: HomeScreenAppearance['broadcastStation']) {
-  return value && typeof value === 'object' ? (value as BroadcastStation) : null
+function normalizeText(value: string | null | undefined) {
+  return value?.trim() ?? ''
 }
 
 function newsTypeLabel(value: string | null | undefined) {
@@ -1082,7 +1218,16 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
   try {
     const payload = await getPayload({ config: configPromise })
-    const [screenAppearances, artistPress, news, socialLinks, footer, curriculums] =
+    const [
+      screenAppearances,
+      artistPress,
+      examPassedReviews,
+      examPassedVideos,
+      news,
+      socialLinks,
+      footer,
+      curriculums,
+    ] =
       await Promise.all([
         payload.find({
           collection: 'screen-appearances',
@@ -1092,9 +1237,11 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
           pagination: false,
           select: {
             appearanceType: true,
+            actorInputMode: true,
             bodyImages: true,
             broadcastStation: true,
             className: true,
+            linkedProfiles: true,
             performerName: true,
             profileImagePath: true,
             projectTitle: true,
@@ -1137,6 +1284,44 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
           sort: '-publishedAt',
           where: publishedArtistPressWhere(center),
         }),
+        center === 'exam'
+          ? payload.find({
+              collection: 'exam-passed-reviews',
+              depth: 2,
+              limit: examPassedReviewLimit,
+              overrideAccess: false,
+              pagination: false,
+              select: {
+                publishedAt: true,
+                resultSummary: true,
+                school: true,
+                slug: true,
+                studentImagePath: true,
+                studentName: true,
+                title: true,
+              },
+              sort: '-publishedAt',
+              where: centerArrayWhere('exam'),
+            })
+          : Promise.resolve({ docs: [] }),
+        center === 'exam'
+          ? payload.find({
+              collection: 'exam-passed-videos',
+              depth: 0,
+              limit: examPassedVideoLimit,
+              overrideAccess: false,
+              pagination: false,
+              select: {
+                publishedAt: true,
+                slug: true,
+                title: true,
+                youtubeCode: true,
+                youtubeUrl: true,
+              },
+              sort: '-publishedAt',
+              where: centerArrayWhere('exam'),
+            })
+          : Promise.resolve({ docs: [] }),
         payload.find({
           collection: 'news',
           depth: 0,
@@ -1201,6 +1386,8 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     return {
       artistPress: artistPress.docs as HomeArtistPress[],
       curriculums: curriculums.docs as HomeCurriculum[],
+      examPassedReviews: examPassedReviews.docs as HomeExamPassedReview[],
+      examPassedVideos: examPassedVideos.docs as HomeExamPassedVideo[],
       news: news.docs as HomeNews[],
       screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
       socialAccounts: centerSocialAccounts(footer as Footer, center),
@@ -1210,6 +1397,8 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     return {
       artistPress: [],
       curriculums: [],
+      examPassedReviews: [],
+      examPassedVideos: [],
       news: [],
       screenAppearances: [],
       socialAccounts: [],
