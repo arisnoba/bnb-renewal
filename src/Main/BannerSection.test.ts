@@ -19,6 +19,9 @@ function examReview(data: Partial<ExamPassedReview>): ExamPassedReview {
   return data as ExamPassedReview
 }
 
+const originalNodeEnv = process.env.NODE_ENV
+const originalR2PublicBaseUrl = process.env.R2_PUBLIC_BASE_URL
+
 const profileImage = {
   id: 9,
   alt: '김배우 프로필',
@@ -174,6 +177,47 @@ test('main banner slides expose linked exam reviews for exam center', () => {
   ])
 })
 
+test('main banner rewrites exam review media paths to R2 URLs in production', () => {
+  setNodeEnv('production')
+  process.env.R2_PUBLIC_BASE_URL = 'https://cdn.example.com'
+
+  const banner = {
+    title: '입시 배너',
+    linkedExamReviewItems: [
+      {
+        review: examReview({
+          id: 10,
+          studentImagePath: '/media/exam-passed-reviews/images/1/exam-passed-review-image-1-large.jpg',
+          studentName: '이학생',
+          title: '서울예대 합격',
+        }),
+        resultLabel: '한예종',
+      },
+    ],
+  } as MainBanner
+
+  assert.deepEqual(toSlide(banner, 'exam').marqueeItems?.[0], {
+    type: 'card',
+    buttonLabel: '후기 보기',
+    href: '/exam#exam-passed-reviews',
+    image: 'https://cdn.example.com/media/exam-passed-reviews/images/1/exam-passed-review-image-1-large.jpg',
+    imageAlt: '이학생',
+    label: '이학생 | 한예종',
+    name: '이학생',
+    roleLabel: '한예종',
+  })
+})
+
+test('main banner statistics hide total work count for exam center', () => {
+  const statistics = {
+    artTotalWorkCount: 10,
+    examTotalWorkCount: 20,
+  } as MainStatistic
+
+  assert.equal(mainBannerStatistics(statistics, 'art')?.totalWorkCount, 10)
+  assert.equal(mainBannerStatistics(statistics, 'exam')?.totalWorkCount, null)
+})
+
 test('main banner autoplay settings use center-specific main values', () => {
   assert.deepEqual(mainBannerAutoplaySettings(null, 'art'), {
     autoplayDelay: 5000,
@@ -206,6 +250,25 @@ test('main banner autoplay settings use center-specific main values', () => {
     },
   )
 })
+
+test.after(() => {
+  setNodeEnv(originalNodeEnv)
+
+  if (originalR2PublicBaseUrl === undefined) {
+    delete process.env.R2_PUBLIC_BASE_URL
+  } else {
+    process.env.R2_PUBLIC_BASE_URL = originalR2PublicBaseUrl
+  }
+})
+
+function setNodeEnv(value: typeof process.env.NODE_ENV) {
+  Object.defineProperty(process.env, 'NODE_ENV', {
+    configurable: true,
+    enumerable: true,
+    value,
+    writable: true,
+  })
+}
 
 test('main banner statistics expose center-specific values', () => {
   assert.deepEqual(

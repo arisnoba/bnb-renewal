@@ -1,5 +1,6 @@
 import type { ExamPassedReview, Main, MainBanner, MainStatistic, Profile } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
 import {
@@ -165,11 +166,17 @@ function mainBannerProfileHref(profile: Profile, center: CenterSlug) {
 }
 
 function mainBannerProfileImage(profile: Profile) {
-  return profile.profileImageMedia || publishedImageSrc(textValue(profile.profileImagePath)) || null
+  return profile.profileImageMedia || mainBannerPathImage(profile.profileImagePath) || null
 }
 
 function mainBannerExamReviewImage(review: ExamPassedReview) {
-  return publishedImageSrc(textValue(review.studentImagePath)) || null
+  return mainBannerPathImage(review.studentImagePath) || null
+}
+
+function mainBannerPathImage(value: unknown) {
+  const src = publishedImageSrc(textValue(value))
+
+  return src ? getMediaUrl(src) : ''
 }
 
 export function mainBannerMarqueeItems(
@@ -297,7 +304,8 @@ export function mainBannerStatistics(
       statisticGroup(statistics[centerMonthlyLeadSupportingField[center]], '이달의 주·조연'),
       statisticGroup(statistics[centerMonthlyMinorExtraField[center]], '이달의 조·단역'),
     ],
-    totalWorkCount: numericValue(statistics[centerTotalWorkCountField[center]]),
+    totalWorkCount:
+      center === 'exam' ? null : numericValue(statistics[centerTotalWorkCountField[center]]),
   }
 }
 

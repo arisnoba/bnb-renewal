@@ -154,3 +154,27 @@ test('main banner video uses viewport-specific image posters', () => {
   assert.match(html, /poster="\/media\/banner\.jpg\?2026-01-01T00%3A00%3A00\.000Z"/)
   assert.match(html, /poster="\/media\/banner-mobile\.jpg\?2026-01-01T00%3A00%3A00\.000Z"/)
 })
+
+test('main banner hides total work count when statistics omit it', () => {
+  const html = renderToStaticMarkup(
+    <MainBannerSlider
+      banners={[{ desktopImage: image, title: '입시 배너' }]}
+      center="exam"
+      statistics={{
+        groups: [
+          {
+            title: '이달의 주·조연',
+            items: [
+              { label: '오디션 진행', value: 1 },
+              { label: '최종 감독 미팅', value: 2 },
+            ],
+          },
+        ],
+        totalWorkCount: null,
+      }}
+    />,
+  )
+
+  assert.doesNotMatch(html, /누적\s*작품수/)
+  assert.match(html, /이달의 스케줄/)
+})
