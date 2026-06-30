@@ -96,7 +96,11 @@ function getLocalFilePath(publicPath: string) {
 function previewObjectKey(value: unknown) {
   const key = typeof value === "string" ? value.trim().replace(/^\/+/, "") : "";
 
-  if (!key.startsWith("media/") || key.includes("..") || key.includes("\\")) {
+  if (
+    (!key.startsWith("media/") && !key.startsWith("legacy/")) ||
+    key.includes("..") ||
+    key.includes("\\")
+  ) {
     return "";
   }
 

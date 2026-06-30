@@ -6,7 +6,7 @@ type TeacherImageContext = {
 	sourceTable?: unknown;
 };
 
-const rootHandledPrefixes = ['/api/', '/legacy/', '/media/', '/uploads/', '/_next/'];
+const rootHandledPrefixes = ['/api/', '/uploads/', '/_next/'];
 
 function stringValue(value: unknown) {
 	if (typeof value === 'number') {
@@ -31,10 +31,10 @@ function stripLegacyTeacherPrefix(path: string) {
 		.replace(/^legacy\/teachers\//, '');
 }
 
-function mediaObjectKeySrc(path: string) {
+function adminPreviewObjectKeySrc(path: string) {
 	const normalized = path.replace(/^\/+/, '');
 
-	if (!normalized.startsWith('media/')) {
+	if (!normalized.startsWith('media/') && !normalized.startsWith('legacy/')) {
 		return '';
 	}
 
@@ -61,7 +61,7 @@ export function getTeacherImageSrc(value: unknown, context: TeacherImageContext)
 		return trimmed;
 	}
 
-	const mediaSrc = mediaObjectKeySrc(trimmed);
+	const mediaSrc = adminPreviewObjectKeySrc(trimmed);
 
 	if (mediaSrc) {
 		return mediaSrc;
@@ -83,12 +83,14 @@ export function getTeacherImageSrc(value: unknown, context: TeacherImageContext)
 	let sourcePath = stripLegacyTeacherPrefix(trimmed.replace(/^\/+/, ''));
 
 	if (sourcePath.startsWith(`${sourceDb}/${sourceTable}/`)) {
-		return `/legacy/teachers/${encodePathSegments(sourcePath)}`;
+		return adminPreviewObjectKeySrc(`/legacy/teachers/${encodePathSegments(sourcePath)}`);
 	}
 
 	if (sourceId && !sourcePath.includes('/')) {
 		sourcePath = `${sourceId}/${sourcePath}`;
 	}
 
-	return `/legacy/teachers/${encodePathSegments(`${sourceDb}/${sourceTable}/${sourcePath}`)}`;
+	return adminPreviewObjectKeySrc(
+		`/legacy/teachers/${encodePathSegments(`${sourceDb}/${sourceTable}/${sourcePath}`)}`,
+	);
 }

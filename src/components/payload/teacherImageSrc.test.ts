@@ -24,13 +24,23 @@ test('preserves existing API media URLs', () => {
   )
 })
 
-test('keeps legacy teacher image fallback behavior', () => {
+test('resolves legacy paths through the admin image preview route', () => {
+  assert.equal(
+    getTeacherImageSrc(
+      '/legacy/profiles/baewoo/new_profile/761/3717534017_ZSaKudp3_5fb74faac49d8a8b33536df17551d9b0a8ec8b56.png',
+      {},
+    ),
+    '/api/admin-images?key=legacy%2Fprofiles%2Fbaewoo%2Fnew_profile%2F761%2F3717534017_ZSaKudp3_5fb74faac49d8a8b33536df17551d9b0a8ec8b56.png',
+  )
+})
+
+test('resolves legacy teacher image fallback paths through the admin image preview route', () => {
   assert.equal(
     getTeacherImageSrc('photo1.png', {
       sourceDb: 'baewoo',
       sourceId: 84,
       sourceTable: 'g5_teacher',
     }),
-    '/legacy/teachers/baewoo/g5_teacher/84/photo1.png',
+    '/api/admin-images?key=legacy%2Fteachers%2Fbaewoo%2Fg5_teacher%2F84%2Fphoto1.png',
   )
 })
