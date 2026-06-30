@@ -10,6 +10,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { deleteR2Object, hasR2Config } from '@/lib/r2'
+import { resolveMediaPublicUrl } from '@/utilities/resolveMediaPublicUrl'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
@@ -60,29 +61,17 @@ const mediaImageSizes = [
   formatOptions: imageFormatOptions,
 }))
 
-function normalizeLocalMediaURL(value: unknown) {
-  const url = typeof value === 'string' ? value.trim() : ''
-
-  if (!url) {
-    return ''
-  }
-
-  try {
-    const parsed = new URL(url)
-
-    if (parsed.pathname.startsWith('/api/media/file/')) {
-      return parsed.pathname
-    }
-  } catch {
-    return url
-  }
-
-  return url
-}
-
 function mediaAdminThumbnail({ doc }: { doc: Record<string, unknown> }) {
-  const url = normalizeLocalMediaURL(doc.url)
-  const thumbnailURL = normalizeLocalMediaURL(doc.thumbnailURL)
+  const url = resolveMediaPublicUrl({
+    filename: doc.filename,
+    prefix: doc.prefix,
+    value: doc.url,
+  })
+  const thumbnailURL = resolveMediaPublicUrl({
+    filename: doc.filename,
+    prefix: doc.prefix,
+    value: doc.thumbnailURL,
+  })
 
   return url || thumbnailURL || null
 }
@@ -142,11 +131,35 @@ const applyExternalUrlAfterRead: CollectionAfterReadHook = ({ doc }) => {
   const externalUrl = typeof doc?.externalUrl === 'string' ? doc.externalUrl.trim() : ''
 
   if (!externalUrl) {
-    const normalizedUrl = normalizeLocalMediaURL(doc?.url)
+    const thumbnailSize =
+      doc?.sizes && typeof doc.sizes === 'object' && 'thumbnail' in doc.sizes
+        ? doc.sizes.thumbnail
+        : null
+    const thumbnailFilename =
+      thumbnailSize && typeof thumbnailSize === 'object' && 'filename' in thumbnailSize
+        ? thumbnailSize.filename
+        : doc?.filename
+    const thumbnailSizeUrl =
+      thumbnailSize && typeof thumbnailSize === 'object' && 'url' in thumbnailSize
+        ? thumbnailSize.url
+        : ''
+    const normalizedUrl = resolveMediaPublicUrl({
+      filename: doc?.filename,
+      prefix: doc?.prefix,
+      value: doc?.url,
+    })
     const normalizedThumbnailURL =
       normalizedUrl ||
-      normalizeLocalMediaURL(doc?.thumbnailURL) ||
-      normalizeLocalMediaURL(doc?.sizes?.thumbnail?.url) ||
+      resolveMediaPublicUrl({
+        filename: thumbnailFilename,
+        prefix: doc?.prefix,
+        value: doc?.thumbnailURL,
+      }) ||
+      resolveMediaPublicUrl({
+        filename: thumbnailFilename,
+        prefix: doc?.prefix,
+        value: thumbnailSizeUrl,
+      }) ||
       ''
 
     return {
