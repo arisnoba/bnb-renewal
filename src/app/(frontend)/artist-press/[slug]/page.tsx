@@ -6,7 +6,6 @@ import type { CenterSlug } from '@/lib/centers'
 import type { ArtistPress } from '@/payload-types'
 import {
   generateArtistPressMeta,
-  getArtistPressDescription,
   getArtistPressThumbnailMedia,
   hasArtistPressLexicalContent,
 } from '@/utilities/artistPressFallbacks'
@@ -78,7 +77,7 @@ export async function ArtistPressDetailPage({
   }
 
   const media = getArtistPressThumbnailMedia(artistPress)
-  const description = getArtistPressDescription(artistPress)
+  const description = artistPress.meta?.description?.trim() || undefined
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
   const eyebrow = [artistPress.actorName, artistPress.generation].filter(Boolean).join(' ')
   const adjacent = await queryAdjacentArtistPress({ center, slug: artistPress.slug })
