@@ -62,6 +62,7 @@ type DirectCastingCompanyOnlyTab = {
 
 const pageSize = 16
 const heroImageLimit = 18
+const heroImagePriorityCount = 6
 const listAnchorId = 'direct-castings-list'
 
 const directCastingCompanyTabs = [
@@ -150,7 +151,7 @@ export async function DirectCastingsArchive({
                   casting={casting}
                   center={center}
                   key={casting.id}
-                  priority={index < 4}
+                  priority={index < 8}
                 />
               ))}
             </div>
@@ -372,14 +373,13 @@ function DirectCastingsHero({ images }: { images: DirectCastingHeroImage[] }) {
         >
           <Media
             alt=""
-            fadeIn
             fill
             htmlElement={null}
             imgClassName="size-full object-cover grayscale"
-            loading={index < 6 ? 'eager' : 'lazy'}
+            loading="eager"
             pictureClassName="block size-full"
-            placeholder="empty"
-            priority={index < 6}
+            placeholder="blur"
+            priority={index < heroImagePriorityCount}
             resource={image.media}
             size="(max-width: 767px) 34vw, 18vw"
           />

@@ -24,6 +24,9 @@ const HERO_POSTER_COUNT = 21
 const HERO_POSTER_CENTER_INDEX = Math.floor(HERO_POSTER_COUNT / 2)
 const HERO_POSTER_COLUMNS = 7
 const HERO_POSTER_SLOT_ORDER = getHeroPosterSlotOrder()
+const HERO_POSTER_PRIORITY_COUNT = 7
+const heroPosterPlaceholder =
+  'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 2 3%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23111111%22/%3E%3Cstop offset=%221%22 stop-color=%22%23333333%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%222%22 height=%223%22 fill=%22url(%23g)%22/%3E%3C/svg%3E'
 
 export async function CastingStatusPage({ center }: CastingStatusPageProps) {
   const payload = await getPayload({ config: configPromise })
@@ -120,17 +123,19 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
       <div className="hero-pattern__grid section-casting-status-hero__poster-grid absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
         {items.map((item, index) => (
           <div
-            className="hero-pattern__item section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-neutral-900"
+            className="hero-pattern__item section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
             key={`${item.id}-${index}`}
           >
             <Image
               alt=""
               className="size-full object-cover"
+              blurDataURL={heroPosterPlaceholder}
               fill
-              loading={index === HERO_POSTER_CENTER_INDEX || index < 4 ? 'eager' : 'lazy'}
+              loading="eager"
+              placeholder="blur"
+              priority={isPriorityHeroPoster(index)}
               sizes="(max-width: 767px) 34vw, 13vw"
               src={item.imageUrl}
-              unoptimized
             />
           </div>
         ))}
@@ -139,23 +144,37 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
   )
 }
 
+function isPriorityHeroPoster(index: number) {
+  return index === HERO_POSTER_CENTER_INDEX || index < HERO_POSTER_PRIORITY_COUNT
+}
+
 function getCastingStatusHeroItems(items: CastingStatusPosterItem[]) {
   const posters = items.filter((item) => item.imageUrl)
+  const preferredPosters = posters.filter((item) => !isLegacyHeroImage(item.imageUrl))
+  const heroPosters = preferredPosters.length > 0 ? preferredPosters : posters
 
-  if (posters.length === 0) {
+  if (heroPosters.length === 0) {
     return []
   }
 
   const arrangedItems = Array.from(
     { length: HERO_POSTER_COUNT },
-    () => posters[posters.length - 1],
+    () => heroPosters[heroPosters.length - 1],
   )
 
   HERO_POSTER_SLOT_ORDER.forEach((slotIndex, sourceIndex) => {
-    arrangedItems[slotIndex] = posters[Math.min(sourceIndex, posters.length - 1)]
+    arrangedItems[slotIndex] = heroPosters[Math.min(sourceIndex, heroPosters.length - 1)]
   })
 
   return arrangedItems
+}
+
+function isLegacyHeroImage(value: string) {
+  try {
+    return new URL(value, 'http://local.test').pathname.startsWith('/legacy/')
+  } catch {
+    return value.startsWith('/legacy/') || value.startsWith('legacy/')
+  }
 }
 
 function getHeroPosterSlotOrder() {

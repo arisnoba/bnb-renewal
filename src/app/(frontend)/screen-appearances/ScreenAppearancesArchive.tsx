@@ -60,7 +60,10 @@ type ScreenAppearancesPageResult = {
 
 const pageSize = 12
 const heroImageLimit = 24
+const heroImagePriorityCount = 6
 const listAnchorId = 'screen-appearances-list'
+const heroImagePlaceholder =
+  'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 3%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23111111%22/%3E%3Cstop offset=%221%22 stop-color=%22%23333333%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%224%22 height=%223%22 fill=%22url(%23g)%22/%3E%3C/svg%3E'
 
 export async function ScreenAppearancesArchive({
   center,
@@ -235,17 +238,19 @@ function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
     >
       {images.map((image, index) => (
         <div
-          className="relative aspect-4/3 overflow-hidden bg-neutral-900 rounded-xl"
+          className="relative aspect-4/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
           key={`${image.id}-${index}`}
         >
           <Image
             alt=""
             className="size-full object-cover grayscale"
             fill
-            loading={index < 6 ? 'eager' : 'lazy'}
+            blurDataURL={heroImagePlaceholder}
+            loading="eager"
+            placeholder="blur"
+            priority={index < heroImagePriorityCount}
             sizes="(max-width: 767px) 34vw, 18vw"
             src={image.src}
-            unoptimized
           />
         </div>
       ))}
