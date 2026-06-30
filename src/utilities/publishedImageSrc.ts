@@ -5,8 +5,10 @@ export function publishedImageSrc(value: string | null | undefined) {
     return ''
   }
 
-  if (process.env.VERCEL === '1' && isLegacyAssetSrc(trimmed)) {
-    return ''
+  const legacyObjectKey = legacyAssetObjectKey(trimmed)
+
+  if (legacyObjectKey) {
+    return r2PublicUrl(legacyObjectKey)
   }
 
   if (isR2MediaObjectKey(trimmed)) {
@@ -30,14 +32,16 @@ function r2PublicUrl(objectKey: string) {
   return `${publicBaseUrl}/${objectKey}`
 }
 
-function isLegacyAssetSrc(value: string) {
-  if (value.startsWith('/legacy/')) {
-    return true
+function legacyAssetObjectKey(value: string) {
+  if (value.startsWith('legacy/') || value.startsWith('/legacy/')) {
+    return value.replace(/^\/+/, '')
   }
 
   try {
-    return new URL(value).pathname.startsWith('/legacy/')
+    const pathname = new URL(value).pathname
+
+    return pathname.startsWith('/legacy/') ? pathname.replace(/^\/+/, '') : ''
   } catch {
-    return false
+    return ''
   }
 }

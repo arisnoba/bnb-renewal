@@ -21,7 +21,7 @@ function stringValue(value: unknown) {
 }
 
 function getFileName(src: string) {
-	const pathname = src.split('?')[0] ?? '';
+	const pathname = imagePathname(src);
 	const fileName = pathname.split('/').filter(Boolean).pop();
 
 	if (!fileName) {
@@ -36,10 +36,26 @@ function getFileName(src: string) {
 }
 
 function isProbablyImage(src: string) {
-	const pathname = src.split('?')[0] ?? '';
-	const extension = pathname.split('.').pop()?.toLowerCase();
+	const pathname = imagePathname(src);
+	const fileName = pathname.split('/').filter(Boolean).pop() ?? '';
+	const extension = fileName.includes('.') ? fileName.split('.').pop()?.toLowerCase() : '';
 
 	return extension ? imageExtensions.has(extension) : true;
+}
+
+function imagePathname(src: string) {
+	try {
+		const parsed = new URL(src, 'http://local.test');
+		const adminImageKey = parsed.pathname === '/api/admin-images' ? parsed.searchParams.get('key') : '';
+
+		if (adminImageKey) {
+			return adminImageKey;
+		}
+
+		return parsed.pathname;
+	} catch {
+		return src.split('?')[0] ?? '';
+	}
 }
 
 async function readErrorMessage(response: Response) {
