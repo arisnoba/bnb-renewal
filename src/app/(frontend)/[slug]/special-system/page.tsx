@@ -2,9 +2,13 @@ import type { Metadata } from 'next'
 
 import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
+import {
+  getEducationHeroImage,
+  PageHeroImage,
+} from '@/app/(frontend)/_components/PageHeroImage'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter, getCenterLabel } from '@/lib/centers'
@@ -23,10 +27,15 @@ type SpecialSystemDetail = {
 }
 
 type SpecialSystemItem = {
+  cta?: {
+    href: string
+    label: string
+  }
   details?: SpecialSystemDetail[]
   description: string[]
   id: string
   image?: string
+  navTitle: string
   title: string
 }
 
@@ -45,7 +54,9 @@ const specialSystemItems = [
     ],
     id: 'image-making',
     image: '/assets/special-system/image-making.png',
-    title: '의상·헤어·메이크업을 체계적으로 준비하는\n입시생 맞춤형 이미지 메이킹 프로그램',
+    navTitle: '의상 제작 & 헤어, 메이크업',
+    title:
+      '의상·헤어·메이크업을 체계적으로 준비하는\n입시생 맞춤형 이미지 메이킹 프로그램',
   },
   {
     description: [
@@ -65,14 +76,23 @@ const specialSystemItems = [
       },
     ],
     id: 'education-support',
+    navTitle: '특별 교육 지원 시스템',
     title: '수업 밖에서도 이어지는 \n입시 맞춤형 교육지원 시스템',
   },
+  {
+    cta: {
+      href: '/exam/casting-system',
+      label: '드라마 · 광고 캐스팅',
+    },
+    description: [
+      '배우앤배움 입시센터는 매니지먼트BNB와 협력하여, 예비입시생에게 현장경험을 통한 수시 특기자전형 지원이 가능하도록 오디션의 기회를 제공합니다.',
+      '배우앤배움은 국내에서 이루어지는 모든 드라마, 영화, 광고 오디션 정보를 보유하고 있으며, 아트센터 1층 DID를 통해 이 달의 오디션에 대한 공지와 안내를 하고 있습니다. 특히 계열사인 ㈜라인업(드라마 캐스팅)과 ㈜유캐스팅(드라마 캐스팅) 및 ㈜BX모델에이전시(광고 캐스팅)에서 진행하는 오디션을 통해 국내 드라마, 영화, OTT 및 주요 CF광고를 다이렉트 캐스팅하고 있으며, 이를 통해 배우앤배움 입시센터 학생들이 각 대학 특기자전형 지원자격을 갖출 수 있도록 지원합니다.',
+    ],
+    id: 'special-admission',
+    navTitle: '특가 전형 시스템',
+    title: '현장 경험부터 오디션 기회까지\n특기자전형을 체계적으로 지원합니다.',
+  },
 ] satisfies SpecialSystemItem[]
-
-const specialSystemQuickLinks = [
-  '특가 전형 시스템',
-  '매니지먼트 연계 시스템',
-] as const
 
 export function generateStaticParams() {
   return [{ slug: 'exam' }]
@@ -87,7 +107,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   }
 
   return {
-    description: `${getCenterLabel(center)} 의상, 헤어, 메이크업과 특별 교육 지원 시스템 안내`,
+    description: `${getCenterLabel(center)} 의상, 헤어, 메이크업과 특별 교육 지원, 특기자전형 지원 시스템 안내`,
     title: '특별한 시스템',
   }
 }
@@ -112,7 +132,10 @@ export default async function SpecialSystemPage({ params }: Args) {
         className="section-special-system-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-70" />
+        <PageHeroImage
+          image={getEducationHeroImage(center)}
+          className="opacity-70"
+        />
         <div className="absolute inset-0 bg-black/70" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[38%] max-md:hidden! md:block md:-left-28"
@@ -147,36 +170,14 @@ export default async function SpecialSystemPage({ params }: Args) {
             />
 
             <SpecialSystemIndex
-              items={specialSystemItems.map(({ id, title }) => ({
+              items={specialSystemItems.map(({ id, navTitle }) => ({
                 id,
-                title: indexTitle(title),
+                title: navTitle,
               }))}
             />
-
-            <div
-              aria-label="특별 시스템 추가 항목"
-              className="section-special-system-list__quick mt-10 flex w-fit flex-col text-white md:mt-14"
-            >
-              {specialSystemQuickLinks.map((label, index) => (
-                <div
-                  className={[
-                    'inline-flex items-center gap-2 border border-white/10 px-4 py-3 type-label-m font-medium leading-[1.6] text-white',
-                    index > 0 ? 'border-t-0' : '',
-                  ].join(' ')}
-                  key={label}
-                >
-                  {label}
-                  <ChevronRight
-                    aria-hidden="true"
-                    className="size-3 text-brand"
-                    strokeWidth={2.3}
-                  />
-                </div>
-              ))}
-            </div>
           </aside>
 
-          <div className="section-special-system-list__items col-span-1 flex flex-col gap-24 md:gap-32 lg:col-span-2">
+          <div className="section-special-system-list__items col-span-1 flex flex-col gap-24 md:gap-40 lg:col-span-2">
             {specialSystemItems.map((item, index) => (
               <article
                 className="section-special-system-card scroll-mt-(--page-top-offset)"
@@ -205,10 +206,10 @@ export default async function SpecialSystemPage({ params }: Args) {
                       alt=""
                       aria-hidden="true"
                       className="h-auto w-full"
-                      height={523}
+                      height={308}
                       sizes="(max-width: 1023px) calc(100vw - 40px), 552px"
                       src={item.image}
-                      width={917}
+                      width={552}
                     />
                   </div>
                 ) : null}
@@ -238,6 +239,20 @@ export default async function SpecialSystemPage({ params }: Args) {
                     ))}
                   </div>
                 ) : null}
+
+                {item.cta ? (
+                  <Link
+                    className="section-special-system-card__link mt-8 inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-full border border-white/40 px-5 py-3 type-label-l font-semibold leading-[1.2] text-white transition hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+                    href={item.cta.href}
+                  >
+                    {item.cta.label}
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="size-4"
+                      strokeWidth={2.3}
+                    />
+                  </Link>
+                ) : null}
               </article>
             ))}
           </div>
@@ -245,14 +260,6 @@ export default async function SpecialSystemPage({ params }: Args) {
       </section>
     </main>
   )
-}
-
-function indexTitle(title: string) {
-  if (title.startsWith('의상')) {
-    return '의상 제작 & 헤어, 메이크업'
-  }
-
-  return '특별 교육 지원 시스템'
 }
 
 function formatSpecialSystemIndex(index: number) {
