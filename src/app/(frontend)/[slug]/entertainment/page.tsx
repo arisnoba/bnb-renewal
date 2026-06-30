@@ -158,7 +158,7 @@ function EntertainmentEducationSection({
       </div>
 
       <div className="container">
-        {center !== 'highteen' ? (
+        {center !== 'highteen' && center !== 'exam' ? (
           <TrustActorEducationSystem center={center} centerName={centerName} />
         ) : null}
       </div>
