@@ -14,6 +14,7 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
+import { getProfileFilterOptions } from '@/lib/profileFilters'
 import type { Profile } from '@/payload-types'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
@@ -23,12 +24,23 @@ import { FilterChips } from '../_components/FilterChips'
 
 const ITEMS_PER_PAGE = 16
 
-const rookieFilters = [
-  { key: 'women', label: 'Women' },
-  { key: 'men', label: 'Men' },
-] as const
+const rookieFilterLabelOverrides: Partial<Record<CenterSlug, Record<string, string>>> = {
+  art: {
+    men: 'Men',
+    women: 'Women',
+  },
+  highteen: {
+    men: 'Men',
+    women: 'Women',
+  },
+  kids: {
+    베이비: 'Baby',
+    시니어: 'Senior',
+    주니어: 'Junior',
+  },
+}
 
-type RookieFilter = (typeof rookieFilters)[number]['key']
+type RookieFilter = string
 
 type RookiesArchiveProps = {
   activeFilter?: string
@@ -39,7 +51,8 @@ type RookiesArchiveProps = {
 export async function RookiesArchive({ activeFilter, center, page = 1 }: RookiesArchiveProps) {
   const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
-  const filter = normalizeRookieFilter(activeFilter)
+  const rookieFilters = getRookieFilters(center)
+  const filter = normalizeRookieFilter(activeFilter, rookieFilters)
   const decoIcons = getPageDecoIcons(3, `rookies-${center}`)
   const where: Where = {
     and: [
@@ -105,7 +118,7 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
     {
       active: !filter,
       href: rookiesArchiveHref({ center }),
-      label: 'ALL',
+      label: 'All',
     },
     ...rookieFilters.map((item) => ({
       active: filter === item.key,
@@ -164,7 +177,7 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
 
           <div className="section-rookies-list__content">
             <FilterChips
-              ariaLabel="BNB 루키 성별 필터"
+              ariaLabel="BNB 루키 필터"
               className="section-rookies-list__tabs"
               itemClassName="section-rookies-list__tab type-title-m font-bold leading-[1.4]"
               items={filterItems}
@@ -370,8 +383,20 @@ function rookiesArchiveHref({
   return `/${center}/rookies${query ? `?${query}` : ''}`
 }
 
-function normalizeRookieFilter(value: string | undefined): RookieFilter | undefined {
-  return rookieFilters.some((filter) => filter.key === value) ? (value as RookieFilter) : undefined
+function getRookieFilters(center: CenterSlug) {
+  const labelOverrides = rookieFilterLabelOverrides[center] ?? {}
+
+  return getProfileFilterOptions(center).map((option) => ({
+    key: option.value,
+    label: labelOverrides[option.value] ?? option.label,
+  }))
+}
+
+function normalizeRookieFilter(
+  value: string | undefined,
+  rookieFilters: ReturnType<typeof getRookieFilters>,
+): RookieFilter | undefined {
+  return rookieFilters.some((filter) => filter.key === value) ? value : undefined
 }
 
 function paginationItems(page: number, totalPages: number) {
