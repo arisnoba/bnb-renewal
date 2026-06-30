@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { useCallback, useState } from 'react'
-import { A11y, FreeMode, Keyboard, Thumbs } from 'swiper/modules'
+import { A11y, EffectFade, FreeMode, Keyboard, Thumbs } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { cn } from '@/utilities/ui'
@@ -23,9 +23,31 @@ export function FacilitiesGallery({ images }: FacilitiesGalleryProps) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperInstance | null>(null)
   const activeThumbsSwiper = thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null
 
-  const updateState = useCallback((instance: SwiperInstance) => {
-    setActiveIndex(instance.realIndex)
-  }, [])
+  const syncThumbs = useCallback(
+    (index: number) => {
+      if (!activeThumbsSwiper) {
+        return
+      }
+
+      const targetIndex = Math.max(index - 2, 0)
+
+      if (activeThumbsSwiper.params.loop) {
+        activeThumbsSwiper.slideToLoop(targetIndex)
+        return
+      }
+
+      activeThumbsSwiper.slideTo(targetIndex)
+    },
+    [activeThumbsSwiper],
+  )
+
+  const updateState = useCallback(
+    (instance: SwiperInstance) => {
+      setActiveIndex(instance.realIndex)
+      syncThumbs(instance.realIndex)
+    },
+    [syncThumbs],
+  )
 
   const handleSwiper = useCallback(
     (instance: SwiperInstance) => {
@@ -45,11 +67,15 @@ export function FacilitiesGallery({ images }: FacilitiesGalleryProps) {
               prevSlideMessage: '이전 시설 이미지',
             }}
             className="section-facilities-gallery__swiper"
+            effect="fade"
+            fadeEffect={{
+              crossFade: true,
+            }}
             keyboard={{
               enabled: true,
             }}
             loop={images.length > 2}
-            modules={[A11y, Keyboard, Thumbs]}
+            modules={[A11y, EffectFade, Keyboard, Thumbs]}
             onResize={updateState}
             onSlideChange={updateState}
             onSwiper={handleSwiper}
