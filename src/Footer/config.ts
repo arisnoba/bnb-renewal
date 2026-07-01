@@ -1,9 +1,81 @@
-import type { GlobalConfig, Validate } from 'payload'
+import type { Access, GlobalBeforeChangeHook, GlobalConfig, Validate } from 'payload'
+
+import { isGlobalAdminUser, userCenterValue, type CenterValue } from '@/collections/shared'
+import { centers, type CenterSlug } from '@/lib/centers'
 
 import { revalidateFooter } from './hooks/revalidateFooter'
 
+type FooterData = Record<string, unknown>
+type CenterInfoRow = Record<string, unknown> & {
+  centerName?: unknown
+}
+
 function stringValue(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
+}
+
+function centerInfoRows(value: unknown): CenterInfoRow[] {
+  return Array.isArray(value) ? value.filter((item): item is CenterInfoRow => Boolean(item && typeof item === 'object')) : []
+}
+
+function normalizeCenterName(value: unknown) {
+  return stringValue(value).replace(/\s+/g, '')
+}
+
+function centerInfoMatchesCenter(row: CenterInfoRow, center: CenterValue) {
+  const rowName = normalizeCenterName(row.centerName)
+  const centerName = normalizeCenterName(centers[center as CenterSlug])
+
+  return rowName === centerName || rowName.includes(centerName)
+}
+
+const updateFooterAccess: Access = ({ req }) => {
+  return Boolean(req.user && (isGlobalAdminUser(req.user) || userCenterValue(req.user)))
+}
+
+function preserveOtherCenterInfos(
+  data: FooterData,
+  originalDoc: FooterData | undefined,
+  allowedCenter: CenterValue,
+) {
+  const originalRows = centerInfoRows(originalDoc?.centerInfos)
+  const nextRows = centerInfoRows(data.centerInfos)
+  const nextAllowedRow = nextRows.find((row) => centerInfoMatchesCenter(row, allowedCenter))
+  const hasOriginalAllowedRow = originalRows.some((row) => centerInfoMatchesCenter(row, allowedCenter))
+  const centerInfos = originalRows.map((row) => {
+    if (centerInfoMatchesCenter(row, allowedCenter)) {
+      return nextAllowedRow ?? row
+    }
+
+    return row
+  })
+
+  if (!hasOriginalAllowedRow && nextAllowedRow) {
+    centerInfos.push(nextAllowedRow)
+  }
+
+  return {
+    ...data,
+    centerInfos,
+  }
+}
+
+export const restrictCenterFooterUpdates: GlobalBeforeChangeHook = ({
+  data,
+  originalDoc,
+  req,
+}) => {
+  if (!req.user || isGlobalAdminUser(req.user)) {
+    return data
+  }
+
+  const center = userCenterValue(req.user)
+
+  if (!center) {
+    return originalDoc ?? data
+  }
+
+  return preserveOtherCenterInfos(data, originalDoc, center)
 }
 
 const validateOptionalUrl: Validate<unknown> = (value) => {
@@ -47,6 +119,7 @@ export const Footer: GlobalConfig = {
   label: '센터 정보',
   access: {
     read: () => true,
+    update: updateFooterAccess,
   },
   admin: {
     group: '회사정보',
@@ -109,6 +182,7 @@ export const Footer: GlobalConfig = {
   ],
   hooks: {
     afterChange: [revalidateFooter],
+    beforeChange: [restrictCenterFooterUpdates],
   },
   versions: {
     max: 15,
