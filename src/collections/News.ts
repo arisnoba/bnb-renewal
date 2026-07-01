@@ -1,6 +1,7 @@
 import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
+  CollectionBeforeValidateHook,
   CollectionConfig,
   PayloadRequest,
   SelectField,
@@ -54,6 +55,8 @@ import {
 import { seoTitleField, syncSeoMetaImageFromUpload } from "./seoFields";
 
 const newsSlugify = createKoreanSlugifyWithFallback("news");
+const newsSlugPageSize = 100;
+const newsSlugCenters = new Set(["all", "art", "avenue", "exam", "highteen", "kids"]);
 const revalidateNewsAfterChange = createCenterRevalidationAfterChange({
   reason: "news",
   suffixes: ["", "news"],
@@ -66,6 +69,34 @@ const revalidateNewsAfterDelete = createCenterRevalidationAfterDelete({
 type NewsRevalidationDoc = TypeWithID & {
   centers?: unknown;
   slug?: unknown;
+};
+
+type NewsSlugDoc = {
+  id?: unknown;
+  slug?: unknown;
+};
+
+type NewsSlugFindResult = {
+  docs: NewsSlugDoc[];
+  nextPage?: number | null;
+};
+
+type NewsSlugPayload = {
+  find: (args: {
+    collection: "news";
+    depth: 0;
+    limit: number;
+    overrideAccess: true;
+    page: number;
+    select: {
+      slug: true;
+    };
+    where: {
+      slug: {
+        like: string;
+      };
+    };
+  }) => Promise<NewsSlugFindResult>;
 };
 
 export function newsDetailFrontendPaths({
@@ -207,6 +238,134 @@ function selectedNewsCenters(value: unknown) {
     .filter(Boolean);
 }
 
+function newsSlugCenterFromCenters(value: unknown) {
+  return (
+    selectedNewsCenters(value).find((center) => newsSlugCenters.has(center)) ??
+    "art"
+  );
+}
+
+export function newsSlugPrefixFromCenters(value: unknown) {
+  return `news-${newsSlugCenterFromCenters(value)}`;
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function numericSuffixFromNewsSlug(slug: unknown, prefix: string) {
+  const match = new RegExp(`^${escapeRegExp(prefix)}-(\\d+)$`).exec(
+    String(slug ?? "").trim(),
+  );
+
+  if (!match) {
+    return undefined;
+  }
+
+  const suffix = Number(match[1]);
+
+  return Number.isSafeInteger(suffix) ? suffix : undefined;
+}
+
+async function maxNewsSlugNumber({
+  payload,
+  prefix,
+}: {
+  payload?: NewsSlugPayload;
+  prefix: string;
+}) {
+  if (!payload) {
+    return 0;
+  }
+
+  let max = 0;
+  let page = 1;
+
+  while (page) {
+    const result = await payload.find({
+      collection: "news",
+      depth: 0,
+      limit: newsSlugPageSize,
+      overrideAccess: true,
+      page,
+      select: {
+        slug: true,
+      },
+      where: {
+        slug: {
+          like: `${prefix}-`,
+        },
+      },
+    });
+
+    for (const doc of result.docs) {
+      const suffix = numericSuffixFromNewsSlug(doc.slug, prefix);
+
+      if (suffix !== undefined && suffix > max) {
+        max = suffix;
+      }
+    }
+
+    if (!result.nextPage || result.nextPage === page) {
+      break;
+    }
+
+    page = result.nextPage;
+  }
+
+  return max;
+}
+
+export async function nextNewsSlugForCenters({
+  centers,
+  payload,
+}: {
+  centers: unknown;
+  payload?: NewsSlugPayload;
+}) {
+  const prefix = newsSlugPrefixFromCenters(centers);
+  const nextNumber = (await maxNewsSlugNumber({ payload, prefix })) + 1;
+
+  return `${prefix}-${nextNumber}`;
+}
+
+export const setNewsSlugBeforeValidate: CollectionBeforeValidateHook = async ({
+  data,
+  operation,
+  originalDoc,
+  req,
+}) => {
+  if (!data) {
+    return data;
+  }
+
+  const shouldGenerateSlug = data.generateSlug ?? originalDoc?.generateSlug ?? true;
+  const existingSlug = String(originalDoc?.slug ?? "").trim();
+
+  if (operation === "update" && existingSlug) {
+    if (shouldGenerateSlug === false && data.slug) {
+      return data;
+    }
+
+    return {
+      ...data,
+      slug: existingSlug,
+    };
+  }
+
+  if (shouldGenerateSlug === false && data.slug) {
+    return data;
+  }
+
+  return {
+    ...data,
+    slug: await nextNewsSlugForCenters({
+      centers: data.centers,
+      payload: req.payload as unknown as NewsSlugPayload,
+    }),
+  };
+};
+
 function newsCategoryValuesForCenters(value: unknown) {
   return new Set(
     getNewsCategoryOptions(getNewsCategoriesForCenters(selectedNewsCenters(value))).map(
@@ -340,7 +499,11 @@ export const News: CollectionConfig = {
       revalidateNewsCacheTagsAfterDelete,
       revalidateNewsDetailAfterDelete,
     ],
-    beforeValidate: [syncSeoMetaImageFromUpload("thumbnailMedia"), centerScopedBeforeValidate],
+    beforeValidate: [
+      syncSeoMetaImageFromUpload("thumbnailMedia"),
+      centerScopedBeforeValidate,
+      setNewsSlugBeforeValidate,
+    ],
   },
   fields: [
     {
