@@ -44,9 +44,9 @@ export default async function CenterMapPage({ params }: Args) {
 
   return (
     <main className="page page-dark map-page" data-center={center}>
-      <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
-        <PageHeroImage image={getAboutHeroImage()} className="opacity-45 grayscale" />
-        <div className="absolute inset-0 bg-black/45" />
+      <section className="relative min-h-140 overflow-hidden bg-black md:min-h-200">
+        <PageHeroImage image={getAboutHeroImage()} />
+        <div className="absolute inset-0 bg-black/60" />
         <PageDeco
           className="-left-16 top-[15%]"
           icon={decoIcons[0]}
@@ -55,7 +55,7 @@ export default async function CenterMapPage({ params }: Args) {
           className="-right-20 bottom-[8%]"
           icon={decoIcons[1]}
         />
-        <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <div className="page-hero-label">
             <span className="block text-brand">배우앤배움</span>
             <span className="block">오시는 길</span>

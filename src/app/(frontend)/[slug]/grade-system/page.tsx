@@ -63,9 +63,9 @@ export default async function ArtGradeSystemPage({ params }: Args) {
 
   return (
     <main className="page page-dark page-grade-system" data-center={center}>
-      <section className="relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
-        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-70 grayscale" />
-        <div className="absolute inset-0 bg-black/55" />
+      <section className="relative min-h-140 overflow-hidden bg-black md:min-h-200">
+        <PageHeroImage image={getEducationHeroImage(center)} />
+        <div className="absolute inset-0 bg-black/60" />
         <PageDeco
           className={
             center === 'kids'
@@ -82,7 +82,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
           }
           icon={center === 'kids' ? 'icon-ae.svg' : decoIcons[1]}
         />
-        <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <h1 className="page-hero-label">
             <span className="block whitespace-nowrap text-brand">교육</span>
             <span className="block">등급제</span>

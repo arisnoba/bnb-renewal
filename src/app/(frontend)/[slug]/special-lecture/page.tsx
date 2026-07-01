@@ -72,13 +72,13 @@ export default async function HighteenSpecialLecturePage({
     <main className="page page-dark page-special-lecture" data-center={center}>
       <section
         aria-labelledby="special-lecture-hero-title"
-        className="section-special-lecture-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-special-lecture-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-45 grayscale" />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/65" />
+        <PageHeroImage image={getEducationHeroImage(center)} />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <HeroDeco />
-        <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             className="section-special-lecture-hero__title page-hero-label"
             id="special-lecture-hero-title"

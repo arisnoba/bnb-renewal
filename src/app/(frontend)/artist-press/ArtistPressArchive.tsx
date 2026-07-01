@@ -52,7 +52,7 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
           image={getArtistHeroImage(center)}
           className="section-artist-press-hero__background"
         />
-        <div aria-hidden="true" className="section-artist-press-hero__overlay" />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco
           className="section-artist-press-hero__deco section-artist-press-hero__deco--left"
           icon={decoIcons[0]}

@@ -124,7 +124,7 @@ export default async function CastingPage({ params }: Args) {
     <main className="page page-light page-casting" data-center={center}>
       <section
         aria-labelledby="casting-hero-title"
-        className="section-casting-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-casting-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <div
@@ -153,7 +153,7 @@ export default async function CastingPage({ params }: Args) {
           icon={decoIcons[1]}
           size="360px"
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <h1
             className="section-casting-hero__title page-hero-label"
             id="casting-hero-title"

@@ -83,7 +83,7 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
     <main className="page page-light page-schedule" data-center={center}>
       <section
         aria-labelledby="schedule-hero-title"
-        className="section-schedule-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-schedule-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <Image
@@ -95,7 +95,7 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
           sizes="100vw"
           src={scheduleHeroImage}
         />
-        <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[36%] max-md:hidden! md:block md:-left-28"
           icon={decoIcons[0]}
@@ -108,7 +108,7 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
           className="right-[18%] bottom-[-8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             className="section-schedule-hero__title page-hero-label"
             id="schedule-hero-title"

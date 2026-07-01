@@ -70,17 +70,17 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
     <main className="page page-light page-curriculum" data-center={center}>
       <section
         aria-labelledby="curriculum-hero-title"
-        className="section-curriculum-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-curriculum-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-70 grayscale" />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/70" />
+        <PageHeroImage image={getEducationHeroImage(center)} />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco className="-left-20 top-[36%] max-md:hidden! md:-left-28" icon={decoIcons[0]} />
         <PageDeco
           className="right-[-72px] top-[12%] max-md:hidden! md:right-[-104px]"
           icon={decoIcons[1]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <h1
             className="section-curriculum-hero__title page-hero-label"
             id="curriculum-hero-title"

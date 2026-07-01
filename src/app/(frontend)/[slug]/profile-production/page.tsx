@@ -249,7 +249,7 @@ export default async function ProfileProductionPage({ params }: Args) {
     >
       <section
         aria-labelledby="profile-production-hero-title"
-        className="section-profile-production-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-profile-production-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <Image
@@ -261,7 +261,7 @@ export default async function ProfileProductionPage({ params }: Args) {
           sizes="100vw"
           src={profileProductionConfig.heroImage}
         />
-        <div className="absolute inset-0 bg-black/70" aria-hidden="true" />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[38%] max-md:hidden! md:block md:-left-28"
           icon={decoIcons[0]}
@@ -270,7 +270,7 @@ export default async function ProfileProductionPage({ params }: Args) {
           className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             className="section-profile-production-hero__title page-hero-label"
             id="profile-production-hero-title"

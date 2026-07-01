@@ -113,12 +113,12 @@ export async function DirectCastingsArchive({
     <main className="page page-light page-direct-castings" data-center={center}>
       <section
         aria-labelledby="direct-castings-hero-title"
-        className="section-direct-castings-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-direct-castings-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <DirectCastingsHero images={heroImages} />
         <HeroMosaicDim />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <div
             className="section-direct-castings-hero__title page-hero-label"
             id="direct-castings-hero-title"

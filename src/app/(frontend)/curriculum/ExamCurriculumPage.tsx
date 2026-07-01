@@ -242,7 +242,7 @@ export function ExamCurriculumPage({ tab }: ExamCurriculumPageProps) {
         className="section-exam-curriculum-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getEducationHeroImage('exam')} className="opacity-70 grayscale" />
+        <PageHeroImage image={getEducationHeroImage('exam')} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/72" />
         <PageDeco
           className="-left-56 top-[48%] max-md:hidden! lg:-left-72"

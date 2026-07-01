@@ -76,9 +76,9 @@ function EntertainmentHero({ center }: { center: EntertainmentCenter }) {
   const decoIcons = getPageDecoIcons(2, `entertainment-${center}`)
 
   return (
-    <section className="section-entertainment-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
-      <PageHeroImage image={getEducationHeroImage(center)} className="opacity-55 grayscale" />
-      <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
+    <section className="section-entertainment-hero relative min-h-140 overflow-hidden bg-black md:min-h-200">
+      <PageHeroImage image={getEducationHeroImage(center)} />
+      <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
       <PageDeco
         className="-left-20 top-[22%] md:-left-28"
         icon={decoIcons[0]}
@@ -87,7 +87,7 @@ function EntertainmentHero({ center }: { center: EntertainmentCenter }) {
         className="-right-12 bottom-[10%] md:-right-20"
         icon={decoIcons[1]}
       />
-      <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+      <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
         <div className="page-hero-label">
           <span className="block text-brand">교육</span>
           <span className="block">엔터테인먼트</span>

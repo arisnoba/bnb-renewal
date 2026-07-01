@@ -64,10 +64,10 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
   return (
     <main className="page page-dark page-teachers-archive" data-center={center}>
       <section
-        className="section-teachers-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-teachers-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         aria-labelledby="teachers-hero-title"
       >
-        <PageHeroImage image={getEducationHeroImage(center)} className="opacity-55 grayscale" />
+        <PageHeroImage image={getEducationHeroImage(center)} />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[22%] md:-left-28"
@@ -77,7 +77,7 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
           className="-right-16 bottom-[18%] md:-right-24"
           icon={decoIcons[1]}
         />
-        <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             id="teachers-hero-title"
             className="page-hero-label"

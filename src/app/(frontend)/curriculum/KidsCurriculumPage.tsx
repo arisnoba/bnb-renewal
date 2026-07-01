@@ -162,8 +162,8 @@ export function KidsCurriculumPage() {
         className="section-kids-curriculum-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getEducationHeroImage('kids')} className="opacity-70 grayscale" />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/75" />
+        <PageHeroImage image={getEducationHeroImage('kids')} />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco
           className="-left-24 top-[48%] max-md:hidden! md:-left-28"
           icon={heroDecoIcons[0]}

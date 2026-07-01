@@ -83,7 +83,7 @@ export async function ScreenAppearancesArchive({
   return (
     <main className="page page-light page-screen-appearances" data-center={center}>
       <section
-        className="section-screen-appearances-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-screen-appearances-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         aria-labelledby="screen-appearances-hero-title"
         data-page-tone="dark"
       >
@@ -97,7 +97,7 @@ export async function ScreenAppearancesArchive({
           className="right-[-72px] top-[12%] md:right-[-104px]"
           icon={decoIcons[1]}
         />
-        <div className="container relative flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             id="screen-appearances-hero-title"
             className="section-screen-appearances-hero__title page-hero-label"

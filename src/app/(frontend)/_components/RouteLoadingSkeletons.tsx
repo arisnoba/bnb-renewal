@@ -184,7 +184,7 @@ function EducationHeroLoadingSkeleton({
     <section
       aria-label="페이지 상단 콘텐츠 로딩"
       className={cn(
-        "relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]",
+        "relative min-h-140 overflow-hidden bg-black md:min-h-200",
         sectionClassName,
       )}
       data-page-tone="dark"
@@ -205,7 +205,7 @@ function EducationHeroLoadingSkeleton({
         className="right-[-72px] top-[16%] max-md:hidden! md:right-[-104px]"
         icon={decoIcons[1]}
       />
-      <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+      <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
         <div className="space-y-4">
           <SkeletonBlock className="h-10 w-28" tone="dark" />
           <SkeletonBlock className="h-16 w-[min(72vw,420px)]" tone="dark" />
@@ -295,12 +295,11 @@ export function ExamPassedVideosLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="합격영상 상단 콘텐츠 로딩"
-        className="section-exam-passed-videos-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-exam-passed-videos-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <PageHeroImage
           image={getExamPassedHeroImage()}
-          className="opacity-60"
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
@@ -315,7 +314,7 @@ export function ExamPassedVideosLoadingSkeleton() {
           className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <div className="space-y-4">
             <SkeletonBlock className="h-10 w-36" tone="dark" />
             <SkeletonBlock className="h-16 w-[min(72vw,460px)]" tone="dark" />
@@ -408,7 +407,7 @@ export function ScheduleLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="촬영ㆍ오디션 스케줄 상단 콘텐츠 로딩"
-        className="section-schedule-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-schedule-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <Image
@@ -420,7 +419,7 @@ export function ScheduleLoadingSkeleton() {
           sizes="100vw"
           src={scheduleHeroImage}
         />
-        <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[36%] max-md:hidden! md:block md:-left-28"
           icon={decoIcons[0]}
@@ -433,7 +432,7 @@ export function ScheduleLoadingSkeleton() {
           className="right-[18%] bottom-[-8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div className="space-y-4">
             <SkeletonBlock className="h-10 w-28" tone="dark" />
             <SkeletonBlock className="h-16 w-[min(72vw,460px)]" tone="dark" />
@@ -550,8 +549,8 @@ export function HeroArchiveLoadingSkeleton({
     kind === "direct-castings" || kind === "screen-appearances";
   const heroHeightClassName =
     kind === "artist-press"
-      ? "min-h-[620px] md:min-h-[800px]"
-      : "min-h-[560px] md:min-h-[800px]";
+      ? "min-h-[620px] md:min-h-200"
+      : "min-h-140 md:min-h-200";
 
   return (
     <main
@@ -579,7 +578,7 @@ export function HeroArchiveLoadingSkeleton({
         {usesMosaicDim ? (
           <HeroMosaicDim />
         ) : (
-          <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
+          <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         )}
         <div
           className={cn(
@@ -636,7 +635,7 @@ export function ExamResultsLoadingSkeleton({
       <LoadingLabel />
       <section
         aria-label="합격현황 상단 콘텐츠 로딩"
-        className="section-exam-results-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-exam-results-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <PageHeroImage
@@ -656,7 +655,7 @@ export function ExamResultsLoadingSkeleton({
           className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <div className="space-y-4">
             <SkeletonBlock className="h-10 w-36" tone="dark" />
             <SkeletonBlock className="h-16 w-[min(72vw,420px)]" tone="dark" />
@@ -692,7 +691,7 @@ export function ExamPassedReviewsLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="합격후기 상단 콘텐츠 로딩"
-        className="section-exam-passed-reviews-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-exam-passed-reviews-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <PageHeroImage
@@ -712,7 +711,7 @@ export function ExamPassedReviewsLoadingSkeleton() {
           className="right-[16%] bottom-[-8%] max-md:!hidden md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <div className="space-y-4">
             <SkeletonBlock className="h-10 w-36" tone="dark" />
             <SkeletonBlock className="h-16 w-[min(72vw,460px)]" tone="dark" />

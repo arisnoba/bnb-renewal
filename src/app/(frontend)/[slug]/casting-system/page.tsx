@@ -226,7 +226,7 @@ export default async function CastingSystemPage({ params }: Args) {
     <main className="page page-light page-casting-system" data-center={center}>
       <section
         aria-labelledby="casting-system-hero-title"
-        className="section-casting-system-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-casting-system-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <Image
@@ -238,7 +238,7 @@ export default async function CastingSystemPage({ params }: Args) {
           sizes="100vw"
           src={castingSystemConfig.heroImage}
         />
-        <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
+        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[38%] max-md:hidden! md:block md:-left-28"
           icon={decoIcons[0]}
@@ -247,7 +247,7 @@ export default async function CastingSystemPage({ params }: Args) {
           className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             className="section-casting-system-hero__title page-hero-label"
             id="casting-system-hero-title"

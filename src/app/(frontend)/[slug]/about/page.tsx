@@ -163,11 +163,8 @@ export default async function CenterAboutPage({ params }: Args) {
         aria-labelledby="center-about-hero-title"
         className="section-center-about-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
       >
-        <PageHeroImage image={getAboutHeroImage()} className="opacity-55 grayscale" />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.14),rgba(255,255,255,0.02)_38%,rgba(255,255,255,0.16)_100%)]"
-        />
+        <PageHeroImage image={getAboutHeroImage()} />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/65" />
         <div
           aria-hidden="true"
           className="absolute inset-0 opacity-35"
@@ -177,7 +174,6 @@ export default async function CenterAboutPage({ params }: Args) {
             backgroundSize: '96px 96px',
           }}
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/65" />
         <PageDeco className="-left-24 top-[20%] md:-left-36" icon={decoIcons[0]} />
         <PageDeco className="-right-20 bottom-[-8%] md:-right-28" icon={decoIcons[1]} />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">

@@ -42,7 +42,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
     <main className="page page-light page-casting-status" data-center={center}>
       <section
         aria-labelledby="casting-status-hero-title"
-        className="section-casting-status-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-casting-status-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
         <CastingStatusHeroVisual items={heroItems} />
@@ -59,7 +59,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
           className="right-[18%] bottom-[8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
           <div
             className="section-casting-status-hero__title page-hero-label"
             id="casting-status-hero-title"

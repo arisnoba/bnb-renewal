@@ -134,11 +134,8 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
       data-page-tone="dark"
     >
       <section className="section-rookies-hero" aria-labelledby="rookies-hero-title">
-        <PageHeroImage
-          image={getArtistHeroImage(center)}
-          className="section-rookies-hero__background"
-        />
-        <div aria-hidden="true" className="section-rookies-hero__overlay" />
+        <PageHeroImage image={getArtistHeroImage(center)} className="section-rookies-hero__background" />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco
           className="section-rookies-hero__deco section-rookies-hero__deco--left"
           icon={decoIcons[0]}

@@ -83,10 +83,10 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
     <main className="page page-light page-exam-results" data-center="exam">
       <section
         aria-labelledby="exam-results-hero-title"
-        className="section-exam-results-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
+        className="section-exam-results-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getExamResultsHeroImage()} className="opacity-60" />
+        <PageHeroImage image={getExamResultsHeroImage()} />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
           className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"
@@ -100,7 +100,7 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
           className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
           icon={decoIcons[2]}
         />
-        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
+        <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <div className="section-exam-results-hero__title-wrap">
             <div
               className="section-exam-results-hero__title page-hero-label"

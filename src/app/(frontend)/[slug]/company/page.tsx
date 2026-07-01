@@ -180,15 +180,15 @@ export default async function CompanyPage({ params }: Args) {
         className="section-company-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
         data-page-tone="dark"
       >
-        <PageHeroImage image={getAboutHeroImage()} className="opacity-60 grayscale" />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
+        <PageHeroImage image={getAboutHeroImage()} />
+        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco
           className="absolute -left-18 top-24 hidden md:block"
           icon={decoIcons[0]}
           size="clamp(260px, 26vw, 360px)"
         />
         <PageDeco
-          className="absolute -right-20 bottom-[-56px] hidden md:block"
+          className="absolute -right-20 -bottom-14 hidden md:block"
           icon={decoIcons[1]}
           size="clamp(288px, 26vw, 360px)"
         />
