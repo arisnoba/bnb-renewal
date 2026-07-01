@@ -33,6 +33,7 @@ import { Teachers } from './src/collections/Teachers'
 import { Terms } from './src/collections/Terms'
 import { Users } from './src/collections/Users'
 import { applyAdminCenterListFilter } from './src/collections/adminCenterListFilter'
+import { applyAdminListSelectOptimization } from './src/collections/adminListSelectOptimization'
 import { applyAdminTimestampFields } from './src/collections/adminTimestampFields'
 import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoints'
 import { Footer } from './src/Footer/config'
@@ -84,36 +85,38 @@ export default buildConfig({
   },
   collections: applyReliableBulkEndpoints(
     applyAdminCenterListFilter(
-      applyAdminTimestampFields([
-        MainBanners,
-        SocialLinks,
-        Histories,
-        Terms,
-        Teachers,
-        Curriculums,
-        Classrooms,
-        HighteenSpecialClasses,
-        Agencies,
-        AuditionSchedules,
-        CastingDirectors,
-        DirectCastings,
-        CastingAppearances,
-        ScreenAppearances,
-        BroadcastStations,
-        Profiles,
-        ArtistPress,
-        ArtistPressAgencies,
-        ExamPassedReviews,
-        ExamPassedVideos,
-        ExamResults,
-        ExamSchoolLogos,
-        News,
-        Faqs,
-        StarCards,
-        Inquiries,
-        Users,
-        Media,
-      ]),
+      applyAdminListSelectOptimization(
+        applyAdminTimestampFields([
+          MainBanners,
+          SocialLinks,
+          Histories,
+          Terms,
+          Teachers,
+          Curriculums,
+          Classrooms,
+          HighteenSpecialClasses,
+          Agencies,
+          AuditionSchedules,
+          CastingDirectors,
+          DirectCastings,
+          CastingAppearances,
+          ScreenAppearances,
+          BroadcastStations,
+          Profiles,
+          ArtistPress,
+          ArtistPressAgencies,
+          ExamPassedReviews,
+          ExamPassedVideos,
+          ExamResults,
+          ExamSchoolLogos,
+          News,
+          Faqs,
+          StarCards,
+          Inquiries,
+          Users,
+          Media,
+        ]),
+      ),
     ),
   ),
   db: postgresAdapter({
