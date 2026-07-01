@@ -3,6 +3,7 @@ import type {
   CollectionAfterDeleteHook,
   CollectionBeforeValidateHook,
   CollectionConfig,
+  DateField,
   PayloadRequest,
   SelectField,
   TypeWithID,
@@ -229,6 +230,11 @@ export const newsBodyEditor = lexicalEditor({
     InlineToolbarFeature(),
   ],
 });
+
+const newsPublishedAtField = {
+  ...(publishedAtField as DateField),
+  index: true,
+} satisfies DateField;
 
 function selectedNewsCenters(value: unknown) {
   const values = Array.isArray(value) ? value : value ? [value] : [];
@@ -480,6 +486,7 @@ export const News: CollectionConfig = {
       "publishedAt",
       "updatedAt",
     ],
+    enableListViewSelectAPI: true,
     group: "운영/소식",
     useAsTitle: "title",
   },
@@ -534,12 +541,22 @@ export const News: CollectionConfig = {
             type: "upload",
             label: "대표 이미지",
             relationTo: "media",
+            admin: {
+              disableGroupBy: true,
+              disableListColumn: true,
+              disableListFilter: true,
+            },
           },
           {
             name: "body",
             type: "richText",
             editor: newsBodyEditor,
             label: "본문",
+            admin: {
+              disableGroupBy: true,
+              disableListColumn: true,
+              disableListFilter: true,
+            },
           },
           {
             name: "excerpt",
@@ -580,7 +597,7 @@ export const News: CollectionConfig = {
         options: displayStatusOptions,
         admin: publishingStatusSelectAdmin(),
       },
-      publishedAtField,
+      newsPublishedAtField,
       authorNameField,
     ]),
     {

@@ -129,6 +129,7 @@ import * as migration_20260624_120000_social_links_sns_type from './20260624_120
 import * as migration_20260624_130000_media_uploads_prefix from './20260624_130000_media_uploads_prefix'
 import * as migration_20260630_191800_admin_center_history_access from './20260630_191800_admin_center_history_access'
 import * as migration_20260701_142500_news_category_select from './20260701_142500_news_category_select'
+import * as migration_20260701_153000_news_admin_performance_indexes from './20260701_153000_news_admin_performance_indexes'
 
 export const migrations = [
   {
@@ -785,5 +786,10 @@ export const migrations = [
     up: migration_20260701_142500_news_category_select.up,
     down: migration_20260701_142500_news_category_select.down,
     name: '20260701_142500_news_category_select',
+  },
+  {
+    up: migration_20260701_153000_news_admin_performance_indexes.up,
+    down: migration_20260701_153000_news_admin_performance_indexes.down,
+    name: '20260701_153000_news_admin_performance_indexes',
   },
 ]

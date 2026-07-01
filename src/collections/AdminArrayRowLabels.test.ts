@@ -43,6 +43,9 @@ type FieldWithName = Field & {
     };
     condition?: (data: Record<string, unknown>, siblingData?: Record<string, unknown>) => boolean;
     description?: unknown;
+    disableGroupBy?: boolean;
+    disableListColumn?: boolean;
+    disableListFilter?: boolean;
     hidden?: boolean;
     initCollapsed?: boolean;
   };
@@ -366,15 +369,27 @@ test("news uses content and SEO tabs with thumbnail above body", () => {
     .filter((field): field is FieldWithName => "name" in field)
     .map((field) => field.name);
   const thumbnailMedia = getTabField(News, "콘텐츠", "thumbnailMedia");
+  const body = getTabField(News, "콘텐츠", "body");
+  const publishedAt = getTopLevelField(News, "publishedAt") as FieldWithName & {
+    index?: boolean;
+  };
 
   assert.deepEqual(
     tabs.map((tab) => tab.label),
     ["콘텐츠", "SEO"],
   );
+  assert.equal(News.admin?.enableListViewSelectAPI, true);
   assert.deepEqual(fieldNames, ["category", "thumbnailMedia", "body", "excerpt"]);
   assert.equal(thumbnailMedia.type, "upload");
   assert.equal(thumbnailMedia.label, "대표 이미지");
   assert.equal(thumbnailMedia.relationTo, "media");
+  assert.equal(thumbnailMedia.admin?.disableGroupBy, true);
+  assert.equal(thumbnailMedia.admin?.disableListColumn, true);
+  assert.equal(thumbnailMedia.admin?.disableListFilter, true);
+  assert.equal(body.admin?.disableGroupBy, true);
+  assert.equal(body.admin?.disableListColumn, true);
+  assert.equal(body.admin?.disableListFilter, true);
+  assert.equal(publishedAt.index, true);
 });
 
 test("artist press agency settings use slug and omit legacy filenames", () => {
