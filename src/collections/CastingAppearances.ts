@@ -67,7 +67,7 @@ export const CastingAppearances: CollectionConfig = {
       {
         label: "작품 정보",
         fields: [
-          imagePathField("thumbnailPath", "썸네일"),
+          imagePathField("thumbnailPath", "대표 이미지"),
           { name: "castingStatus", type: "text", label: "캐스팅 상태" },
           adminRow([
             { name: "broadcaster", type: "text", label: "방송사" },

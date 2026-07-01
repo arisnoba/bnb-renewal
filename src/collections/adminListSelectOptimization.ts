@@ -10,7 +10,34 @@ const hiddenListFieldTypes = new Set(['array', 'richText', 'textarea', 'upload']
 const legacyMetricFieldNames = new Set(['reviewCount', 'viewCount'])
 
 const collectionHiddenFieldNames: Record<string, Set<string>> = {
+  'casting-appearances': new Set([
+    'directors',
+    'productionCompany',
+    'slug',
+    'thumbnailPath',
+    'writers',
+  ]),
+  curriculums: new Set(['capacity', 'slug']),
+  'exam-passed-reviews': new Set(['studentImagePath']),
+  'exam-results': new Set(['thumbnailPath']),
+  faqs: new Set(['answerMode', 'displayOrder', 'slug']),
+  'highteen-special-classes': new Set(['slug']),
   'main-banners': new Set(['broadcaster']),
+  media: new Set(['caption', 'externalUrl']),
+  profiles: new Set(['height', 'weight']),
+  'screen-appearances': new Set([
+    'actorInputMode',
+    'airDateLabel',
+    'appearanceType',
+    'broadcastStation',
+    'className',
+    'linkedProfiles',
+    'performerName',
+    'profileImagePath',
+    'roleName',
+    'thumbnailPath',
+  ]),
+  'star-cards': new Set(['mapUrl', 'slug']),
 }
 
 type OptimizeContext = {

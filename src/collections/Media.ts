@@ -24,6 +24,11 @@ const imageFormatOptions = {
     quality: 80,
   },
 }
+const hiddenMediaImageSizeListAdmin = {
+  disableGroupBy: true,
+  disableListColumn: true,
+  disableListFilter: true,
+} as const
 const mediaImageSizes = [
   {
     name: 'thumbnail',
@@ -58,6 +63,7 @@ const mediaImageSizes = [
   },
 ].map((size) => ({
   ...size,
+  admin: hiddenMediaImageSizeListAdmin,
   formatOptions: imageFormatOptions,
 }))
 
@@ -235,6 +241,9 @@ export const Media: CollectionConfig = {
   hooks: {
     afterChange: [removeGeneratedImageVariantsAfterChange],
     afterRead: [applyExternalUrlAfterRead],
+  },
+  admin: {
+    defaultColumns: ['filename', 'alt', 'updatedAt'],
   },
   fields: [
     {

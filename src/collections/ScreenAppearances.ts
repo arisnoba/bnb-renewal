@@ -408,7 +408,7 @@ export const ScreenAppearances: CollectionConfig = {
         label: "미디어",
         fields: [
           adminRow([manualActorOnlyField(imagePathField("profileImagePath", "프로필 이미지"))]),
-          adminRow([imagePathField("thumbnailPath", "썸네일")]),
+          adminRow([imagePathField("thumbnailPath", "대표 이미지")]),
           {
             name: "bodyImages",
             type: "array",
