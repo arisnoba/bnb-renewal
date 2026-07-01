@@ -14,7 +14,7 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import {
@@ -26,13 +26,18 @@ import {
   DetailPager,
 } from '../../../_components/DetailLayout'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 86400
+export const dynamicParams = true
 
 type Args = {
   params: Promise<{
     newsSlug?: string
     slug: string
   }>
+}
+
+export async function generateStaticParams() {
+  return []
 }
 
 export default async function CenterNewsDetail({ params: paramsPromise }: Args) {
@@ -48,7 +53,11 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
   const media = getNewsThumbnailMedia(news)
   const description = getNewsDescription(news)
   const body = hasLexicalContent(news.body) ? news.body : undefined
-  const adjacent = await queryAdjacentNews({ center, slug: news.slug })
+  const adjacent = await queryAdjacentNews({
+    center,
+    id: news.id,
+    publishedAt: news.publishedAt,
+  })
   const backHref = `/${center}/news`
   const backLabel = 'NEWS&NOTICE'
 
@@ -163,51 +172,131 @@ const queryNewsBySlug = cache(async ({ center, slug }: { center: string; slug: s
   return (result.docs?.[0] as News | undefined) || null
 })
 
-const queryAdjacentNews = cache(async ({ center, slug }: { center: string; slug: string }) => {
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload
-    .find({
-      collection: 'news',
-      depth: 0,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
+const queryAdjacentNews = cache(
+  async ({
+    center,
+    id,
+    publishedAt,
+  }: {
+    center: string
+    id: number
+    publishedAt?: string | null
+  }) => {
+    const publishedAtValue = publishedAt?.trim()
+
+    if (!publishedAtValue) {
+      return {
+        nextHref: null,
+        previousHref: null,
+      }
+    }
+
+    const payload = await getPayload({ config: configPromise })
+    const [previous, next] = await Promise.all([
+      queryAdjacentNewsItem({
+        center,
+        direction: 'previous',
+        id,
+        payload,
+        publishedAt: publishedAtValue,
+      }),
+      queryAdjacentNewsItem({
+        center,
+        direction: 'next',
+        id,
+        payload,
+        publishedAt: publishedAtValue,
+      }),
+    ]).catch(() => [null, null] as const)
+
+    return {
+      nextHref: next?.slug ? `/${center}/news/${encodeURIComponent(next.slug)}` : null,
+      previousHref: previous?.slug ? `/${center}/news/${encodeURIComponent(previous.slug)}` : null,
+    }
+  },
+)
+
+async function queryAdjacentNewsItem({
+  center,
+  direction,
+  id,
+  payload,
+  publishedAt,
+}: {
+  center: string
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+}) {
+  const isNext = direction === 'next'
+  const dateOperator = isNext ? 'greater_than' : 'less_than'
+  const idOperator = isNext ? 'greater_than' : 'less_than'
+  const result = await payload.find({
+    collection: 'news',
+    depth: 0,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
+    },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where: {
+      and: [
+        publishedNewsWhere(center),
+        {
+          or: [
+            {
+              publishedAt: {
+                [dateOperator]: publishedAt,
+              },
+            },
+            {
+              and: [
+                {
+                  publishedAt: {
+                    equals: publishedAt,
+                  },
+                },
+                {
+                  id: {
+                    [idOperator]: id,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  })
+
+  return result.docs[0] as Pick<News, 'slug'> | undefined
+}
+
+function publishedNewsWhere(center: string): Where {
+  return {
+    and: [
+      {
+        displayStatus: {
+          equals: 'published',
+        },
       },
-      sort: '-publishedAt',
-      where: {
-        and: [
+      {
+        or: [
           {
-            displayStatus: {
-              equals: 'published',
+            centers: {
+              contains: center,
             },
           },
           {
-            or: [
-              {
-                centers: {
-                  contains: center,
-                },
-              },
-              {
-                centers: {
-                  contains: 'all',
-                },
-              },
-            ],
+            centers: {
+              contains: 'all',
+            },
           },
         ],
       },
-    })
-    .catch(() => ({ docs: [] }))
-
-  const index = result.docs.findIndex((item) => item.slug === slug)
-  const previous = index >= 0 ? result.docs[index + 1] : undefined
-  const next = index > 0 ? result.docs[index - 1] : undefined
-
-  return {
-    nextHref: next?.slug ? `/${center}/news/${encodeURIComponent(next.slug)}` : null,
-    previousHref: previous?.slug ? `/${center}/news/${encodeURIComponent(previous.slug)}` : null,
+    ],
   }
-})
+}

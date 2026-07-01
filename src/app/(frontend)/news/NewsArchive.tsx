@@ -139,7 +139,7 @@ function getCachedNewsArchivePage({
     () => queryNewsArchivePage({ categoryKey, center, page }),
     ['frontend-news', center, categoryKey ?? 'all', String(page)],
     {
-      revalidate: 600,
+      revalidate: 86400,
       tags: [`frontend_news_${center}`],
     },
   )()

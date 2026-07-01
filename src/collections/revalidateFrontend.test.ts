@@ -7,7 +7,7 @@ import { Curriculums } from './Curriculums'
 import { DirectCastings } from './DirectCastings'
 import { ExamPassedReviews } from './ExamPassedReviews'
 import { ExamPassedVideos } from './ExamPassedVideos'
-import { News } from './News'
+import { News, newsDetailFrontendPaths } from './News'
 import { ScreenAppearances } from './ScreenAppearances'
 import { SocialLinks } from './SocialLinks'
 import { centerFrontendPaths } from './revalidateFrontend'
@@ -20,6 +20,38 @@ test('center frontend paths include home and section suffixes without duplicates
       suffixes: ['', 'news'],
     }),
     ['/art', '/art/news'],
+  )
+})
+
+test('news detail frontend paths include current and previous slugs', () => {
+  assert.deepEqual(
+    newsDetailFrontendPaths({
+      centers: ['art'],
+      previousCenters: ['kids'],
+      slugs: ['news-new', 'news-old', 'news-new'],
+    }),
+    [
+      '/art/news/news-new',
+      '/art/news/news-old',
+      '/kids/news/news-new',
+      '/kids/news/news-old',
+    ],
+  )
+})
+
+test('news detail frontend paths expand all centers', () => {
+  assert.deepEqual(
+    newsDetailFrontendPaths({
+      centers: ['all'],
+      slugs: ['news-all'],
+    }),
+    [
+      '/art/news/news-all',
+      '/exam/news/news-all',
+      '/kids/news/news-all',
+      '/highteen/news/news-all',
+      '/avenue/news/news-all',
+    ],
   )
 })
 

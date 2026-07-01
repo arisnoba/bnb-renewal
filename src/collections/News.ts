@@ -1,4 +1,12 @@
-import type { CollectionConfig, SelectField, Validate } from "payload";
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  CollectionConfig,
+  PayloadRequest,
+  SelectField,
+  TypeWithID,
+  Validate,
+} from "payload";
 
 import {
   MetaDescriptionField,
@@ -14,6 +22,7 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
+import { revalidateTag } from "next/cache";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import {
   getNewsCategoriesForCenters,
@@ -25,8 +34,11 @@ import {
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
+  centerFrontendPaths,
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
+  revalidateFrontendPaths,
+  selectedFrontendCenters,
 } from "./revalidateFrontend";
 import {
   adminTabs,
@@ -50,6 +62,128 @@ const revalidateNewsAfterDelete = createCenterRevalidationAfterDelete({
   reason: "news",
   suffixes: ["", "news"],
 });
+
+type NewsRevalidationDoc = TypeWithID & {
+  centers?: unknown;
+  slug?: unknown;
+};
+
+export function newsDetailFrontendPaths({
+  centers,
+  previousCenters,
+  slugs,
+}: {
+  centers: unknown;
+  previousCenters?: unknown;
+  slugs: unknown[];
+}) {
+  const suffixes = Array.from(
+    new Set(
+      slugs
+        .map((slug) => String(slug ?? "").trim())
+        .filter(Boolean)
+        .map((slug) => `news/${encodeURIComponent(slug)}`),
+    ),
+  );
+
+  if (suffixes.length === 0) {
+    return [];
+  }
+
+  return centerFrontendPaths({
+    centers,
+    previousCenters,
+    suffixes,
+  });
+}
+
+function newsDetailFrontendPathsForDocs(
+  doc?: NewsRevalidationDoc | null,
+  previousDoc?: NewsRevalidationDoc | null,
+) {
+  return newsDetailFrontendPaths({
+    centers: doc?.centers,
+    previousCenters: previousDoc?.centers,
+    slugs: [doc?.slug, previousDoc?.slug],
+  });
+}
+
+function newsArchiveCacheTagsForDocs(
+  doc?: NewsRevalidationDoc | null,
+  previousDoc?: NewsRevalidationDoc | null,
+) {
+  const centers = [
+    ...selectedFrontendCenters(doc?.centers),
+    ...selectedFrontendCenters(previousDoc?.centers),
+  ];
+
+  return Array.from(new Set(centers.map((center) => `frontend_news_${center}`)));
+}
+
+function revalidateNewsArchiveCacheTags({
+  doc,
+  previousDoc,
+  req,
+}: {
+  doc?: NewsRevalidationDoc | null;
+  previousDoc?: NewsRevalidationDoc | null;
+  req: PayloadRequest;
+}) {
+  if (req.context.disableRevalidate) {
+    return;
+  }
+
+  for (const tag of newsArchiveCacheTagsForDocs(doc, previousDoc)) {
+    req.payload.logger.info(`Revalidating news cache tag ${tag}`);
+    revalidateTag(tag, "max");
+  }
+}
+
+const revalidateNewsCacheTagsAfterChange: CollectionAfterChangeHook<NewsRevalidationDoc> = ({
+  doc,
+  previousDoc,
+  req,
+}) => {
+  revalidateNewsArchiveCacheTags({ doc, previousDoc, req });
+
+  return doc;
+};
+
+const revalidateNewsCacheTagsAfterDelete: CollectionAfterDeleteHook<NewsRevalidationDoc> = ({
+  doc,
+  req,
+}) => {
+  revalidateNewsArchiveCacheTags({ doc, req });
+
+  return doc;
+};
+
+const revalidateNewsDetailAfterChange: CollectionAfterChangeHook<NewsRevalidationDoc> = ({
+  doc,
+  previousDoc,
+  req,
+}) => {
+  revalidateFrontendPaths({
+    paths: newsDetailFrontendPathsForDocs(doc, previousDoc),
+    reason: "news detail",
+    req,
+  });
+
+  return doc;
+};
+
+const revalidateNewsDetailAfterDelete: CollectionAfterDeleteHook<NewsRevalidationDoc> = ({
+  doc,
+  req,
+}) => {
+  revalidateFrontendPaths({
+    paths: newsDetailFrontendPathsForDocs(doc),
+    reason: "news detail",
+    req,
+  });
+
+  return doc;
+};
 
 export const newsBodyEditor = lexicalEditor({
   admin: {
@@ -194,12 +328,18 @@ export const News: CollectionConfig = {
   hooks: {
     afterChange: [
       revalidateNewsAfterChange,
+      revalidateNewsCacheTagsAfterChange,
+      revalidateNewsDetailAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "thumbnailMedia", role: "news.thumbnail" },
         { path: "body", role: "news.body-image", type: "richText" },
       ]),
     ],
-    afterDelete: [revalidateNewsAfterDelete],
+    afterDelete: [
+      revalidateNewsAfterDelete,
+      revalidateNewsCacheTagsAfterDelete,
+      revalidateNewsDetailAfterDelete,
+    ],
     beforeValidate: [syncSeoMetaImageFromUpload("thumbnailMedia"), centerScopedBeforeValidate],
   },
   fields: [
