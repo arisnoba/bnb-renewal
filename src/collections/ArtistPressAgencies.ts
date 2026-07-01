@@ -1,6 +1,5 @@
-import type { CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
+import type { Access, CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
 
-import { centerScopedCollectionAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   authorNameField,
@@ -107,6 +106,14 @@ type ArtistPressAgencySlugDoc = {
 
 const isArtistAdminMenuHidden = ({ user }: { user?: unknown }) => {
   return !isGlobalAdminUser(user) && userCenterValue(user) !== 'art'
+}
+
+const artistPressAgencyAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return false
+  }
+
+  return isGlobalAdminUser(req.user) || userCenterValue(req.user) === 'art'
 }
 
 function sameId(left: unknown, right: unknown) {
@@ -260,7 +267,12 @@ export const ArtistPressAgencies: CollectionConfig = {
     plural: '소속사 로고 설정',
     singular: '소속사 로고 설정',
   },
-  access: centerScopedCollectionAccess,
+  access: {
+    create: artistPressAgencyAccess,
+    delete: artistPressAgencyAccess,
+    read: artistPressAgencyAccess,
+    update: artistPressAgencyAccess,
+  },
   admin: {
     defaultColumns: ['agencyName', 'logoMedia', 'authorName', 'updatedAt'],
     group: '아티스트',

@@ -1,6 +1,12 @@
-import type { CollectionBeforeValidateHook, CollectionConfig, Field, SelectField, Validate } from "payload";
+import type {
+  Access,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+  Field,
+  SelectField,
+  Validate,
+} from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   createCenterRevalidationAfterChange,
@@ -22,6 +28,44 @@ import {
   userCenterValue,
 } from "./shared";
 import { createUniqueSlugBeforeValidate } from "./slugUtils";
+
+const screenAppearanceCenterAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return false;
+  }
+
+  if (isGlobalAdminUser(req.user)) {
+    return true;
+  }
+
+  const center = userCenterValue(req.user);
+
+  if (!center) {
+    return false;
+  }
+
+  return {
+    centers: {
+      equals: center,
+    },
+  };
+};
+
+const screenAppearanceCreateAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return false;
+  }
+
+  return isGlobalAdminUser(req.user) || Boolean(userCenterValue(req.user));
+};
+
+export const screenAppearanceReadAccess: Access = ({ req }) => {
+  if (!req.user) {
+    return true;
+  }
+
+  return screenAppearanceCenterAccess({ req });
+};
 
 const screenAppearanceBeforeValidate: CollectionBeforeValidateHook = ({
   data,
@@ -201,7 +245,12 @@ export const ScreenAppearances: CollectionConfig = {
     plural: "드라마/영화/광고 출연장면",
     singular: "드라마/영화/광고 출연장면",
   },
-  access: centerScopedCollectionAccess,
+  access: {
+    create: screenAppearanceCreateAccess,
+    delete: screenAppearanceCenterAccess,
+    read: screenAppearanceReadAccess,
+    update: screenAppearanceCenterAccess,
+  },
   admin: {
     defaultColumns: [
       "title",
