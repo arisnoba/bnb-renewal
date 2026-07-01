@@ -26,7 +26,7 @@ import {
   DetailPager,
 } from '../../../_components/DetailLayout'
 
-export const revalidate = 86400
+export const revalidate = 600
 export const dynamicParams = true
 
 type Args = {
@@ -44,7 +44,7 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
   const { newsSlug = '', slug } = await paramsPromise
   const center = assertCenter(slug)
   const decodedNewsSlug = decodeURIComponent(newsSlug)
-  const news = await queryNewsBySlug({ center, slug: decodedNewsSlug }).catch(() => null)
+  const news = await queryNewsBySlug({ center, slug: decodedNewsSlug })
 
   if (!news) {
     notFound()
@@ -105,7 +105,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { newsSlug = '', slug } = await paramsPromise
   const center = assertCenter(slug)
   const decodedNewsSlug = decodeURIComponent(newsSlug)
-  const news = await queryNewsBySlug({ center, slug: decodedNewsSlug }).catch(() => null)
+  const news = await queryNewsBySlug({ center, slug: decodedNewsSlug })
   const description = news ? getNewsDescription(news) : undefined
   const imageUrl = news ? getNewsMetaImageUrl(news) : undefined
   const title = news?.meta?.title || news?.title || '뉴스'
@@ -207,7 +207,7 @@ const queryAdjacentNews = cache(
         payload,
         publishedAt: publishedAtValue,
       }),
-    ]).catch(() => [null, null] as const)
+    ])
 
     return {
       nextHref: next?.slug ? `/${center}/news/${encodeURIComponent(next.slug)}` : null,

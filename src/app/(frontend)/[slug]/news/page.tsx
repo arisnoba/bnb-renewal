@@ -14,7 +14,7 @@ type Args = {
   }>
 }
 
-export const revalidate = 86400
+export const revalidate = 600
 
 export function generateStaticParams() {
   return Object.keys(centers).map((slug) => ({ slug }))
