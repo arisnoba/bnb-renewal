@@ -29,7 +29,7 @@ const generateURL: GenerateURL<SeoDocument> = ({ doc }) => {
 
 const r2Enabled = hasR2Config()
 const mediaPrefix = 'media/uploads'
-const localMediaFallbackEnabled = process.env.NODE_ENV !== 'production'
+const localMediaFallbackEnabled = !r2Enabled && process.env.NODE_ENV !== 'production'
 const mediaIdScopedPrefixes = new Set([mediaPrefix, ...Object.values(R2_MEDIA_PREFIX_BY_ROLE)])
 type LocalMediaFallback = typeof import('./localMediaFallback')
 

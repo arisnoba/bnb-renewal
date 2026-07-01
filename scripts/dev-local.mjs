@@ -1,21 +1,41 @@
 import { spawn } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import net from 'node:net'
 import { resolve } from 'node:path'
 
-const ENV_FILE = 'config/env/local-postgres.env'
+const SHARED_ENV_FILE = '.env.local'
+const LOCAL_ENV_FILE = 'config/env/local-postgres.env'
 const NEXT_BIN = './node_modules/next/dist/bin/next'
 const POSTGRES_HOST = '127.0.0.1'
 const POSTGRES_PORT = 5432
 
-const env = loadEnvFile(ENV_FILE)
+const env = loadEnvFiles([SHARED_ENV_FILE, LOCAL_ENV_FILE])
 
 await ensureLocalPostgres()
 runNextDev()
 
-function loadEnvFile(path) {
+function loadEnvFiles(paths) {
   const loadedEnv = { ...process.env }
-  const contents = readFileSync(resolve(path), 'utf8')
+
+  for (const path of paths) {
+    loadEnvFile(path, loadedEnv)
+  }
+
+  return loadedEnv
+}
+
+function loadEnvFile(path, loadedEnv) {
+  const resolvedPath = resolve(path)
+
+  if (!existsSync(resolvedPath)) {
+    if (path === LOCAL_ENV_FILE) {
+      fail(`${LOCAL_ENV_FILE} 파일이 필요합니다.`)
+    }
+
+    return
+  }
+
+  const contents = readFileSync(resolvedPath, 'utf8')
 
   for (const rawLine of contents.split(/\r?\n/)) {
     const line = rawLine.trim()
@@ -42,8 +62,6 @@ function loadEnvFile(path) {
 
     loadedEnv[key] = value
   }
-
-  return loadedEnv
 }
 
 async function ensureLocalPostgres() {

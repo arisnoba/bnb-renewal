@@ -5,13 +5,25 @@ import { resolveMediaPublicUrl } from './resolveMediaPublicUrl'
 
 const r2PublicBaseUrl = 'https://cdn.example.com'
 
-test('keeps local media API URLs unchanged outside production', () => {
+test('resolves local media API URLs through R2 when the public base is configured', () => {
   assert.equal(
     resolveMediaPublicUrl({
       filename: 'image.jpg',
       isProduction: false,
       prefix: 'media/screen-appearances/body-images/123',
       publicBaseUrl: r2PublicBaseUrl,
+      value: '/api/media/file/image.jpg',
+    }),
+    'https://cdn.example.com/media/screen-appearances/body-images/123/image.jpg',
+  )
+})
+
+test('keeps local media API URLs unchanged outside production without the public base', () => {
+  assert.equal(
+    resolveMediaPublicUrl({
+      filename: 'image.jpg',
+      isProduction: false,
+      prefix: 'media/screen-appearances/body-images/123',
       value: '/api/media/file/image.jpg',
     }),
     '/api/media/file/image.jpg',

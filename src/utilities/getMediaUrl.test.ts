@@ -16,13 +16,33 @@ test('getMediaUrl rewrites local media paths to the R2 public base in production
   )
 })
 
-test('getMediaUrl preserves local media paths in development', () => {
+test('getMediaUrl rewrites local media paths to the R2 public base in development', () => {
   setNodeEnv('development')
   process.env.R2_PUBLIC_BASE_URL = 'https://pub.example.r2.dev/'
 
   assert.equal(
     getMediaUrl('/media/exam-results/images/6/exam-result-image-6-large.jpg'),
-    '/media/exam-results/images/6/exam-result-image-6-large.jpg',
+    'https://pub.example.r2.dev/media/exam-results/images/6/exam-result-image-6-large.jpg',
+  )
+})
+
+test('getMediaUrl keeps the local media fallback in development without R2 config', () => {
+  setNodeEnv('development')
+  delete process.env.R2_PUBLIC_BASE_URL
+
+  assert.equal(
+    getMediaUrl('/api/media/file/image.jpg?prefix=media%2Fuploads%2F12'),
+    '/media/image.jpg',
+  )
+})
+
+test('getMediaUrl rewrites local media API paths with prefixes to the R2 public base', () => {
+  setNodeEnv('development')
+  process.env.R2_PUBLIC_BASE_URL = 'https://pub.example.r2.dev/'
+
+  assert.equal(
+    getMediaUrl('/api/media/file/image.jpg?prefix=media%2Fuploads%2F12'),
+    'https://pub.example.r2.dev/media/uploads/12/image.jpg',
   )
 })
 

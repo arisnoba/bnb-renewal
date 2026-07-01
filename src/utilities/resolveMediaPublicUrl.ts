@@ -71,22 +71,17 @@ export function resolveMediaPublicUrl({
   try {
     const parsed = new URL(src, 'http://local.test')
     const isApiMediaUrl = parsed.pathname.startsWith('/api/media/file/')
+    const baseUrl = publicBaseUrl(publicBaseUrlInput)
 
     if (/^(https?:)?\/\//.test(src)) {
       if (!isApiMediaUrl) {
         return src
       }
 
-      if (!isProduction) {
+      if (!baseUrl && !isProduction) {
         return parsed.pathname
       }
     }
-
-    if (!isProduction) {
-      return src
-    }
-
-    const baseUrl = publicBaseUrl(publicBaseUrlInput)
 
     if (!baseUrl) {
       return src

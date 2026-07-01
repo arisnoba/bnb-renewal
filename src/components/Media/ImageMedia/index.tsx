@@ -20,14 +20,13 @@ const placeholderBlur =
 /**
  * ImageMedia
  *
- * This component passes a **relative** `src` (e.g. `/media/...`) to Next.js Image.
- * The `getMediaUrl` utility constructs the full URL by prepending the base URL from env vars
- * (NEXT_PUBLIC_SERVER_URL). Next.js then optimizes this using `remotePatterns` configured
- * in next.config.js — no custom `loader` needed.
+ * This component accepts app-managed media paths (e.g. `/media/...`).
+ * The `getMediaUrl` utility resolves those paths to R2_PUBLIC_BASE_URL when configured.
+ * Next.js then optimizes remote images through `remotePatterns` in next.config.mjs.
  *
  * Flow:
  *   1. Resource URL from Payload: `/media/image-123.jpg`
- *   2. getMediaUrl() adds base URL: `https://yourdomain.com/media/image-123.jpg`
+ *   2. getMediaUrl() adds base URL: `https://your-r2-public-base/media/image-123.jpg`
  *   3. Next.js Image optimizes via remotePatterns: `/_next/image?url=...&w=1200&q=75`
  *
  * If your storage/plugin returns **external CDN URLs** (e.g. `https://cdn.example.com/...`),
@@ -41,8 +40,8 @@ const placeholderBlur =
  *   C) Skip optimization:
  *      <Image unoptimized src="https://cdn.example.com/hero.jpg" width={1200} height={600} alt="" />
  *
- * TL;DR: Template uses relative URLs + getMediaUrl() to construct full URLs, then relies on
- * remotePatterns for optimization. Only add `loader` if using external CDNs with custom transforms.
+ * TL;DR: Media paths flow through getMediaUrl(), then rely on remotePatterns for optimization.
+ * Only add `loader` if using external CDNs with custom transforms.
  */
 
 export const ImageMedia: React.FC<MediaProps> = (props) => {
