@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, SelectField, Validate } from "payload";
 
 import {
   MetaDescriptionField,
@@ -15,6 +15,12 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
+import {
+  getNewsCategoriesForCenters,
+  getNewsCategoryOptions,
+  newsCategoryOptions,
+  normalizeNewsCategory,
+} from "../lib/newsCategories";
 
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
@@ -58,6 +64,111 @@ export const newsBodyEditor = lexicalEditor({
     InlineToolbarFeature(),
   ],
 });
+
+function selectedNewsCenters(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+
+  return values
+    .map((item) => String(item ?? "").trim())
+    .filter(Boolean);
+}
+
+function newsCategoryValuesForCenters(value: unknown) {
+  return new Set(
+    getNewsCategoryOptions(getNewsCategoriesForCenters(selectedNewsCenters(value))).map(
+      (option) => option.value,
+    ),
+  );
+}
+
+function optionValue(option: SelectField["options"][number]) {
+  return typeof option === "string" ? option : option.value;
+}
+
+function valuesEqual(left: unknown, right: unknown) {
+  if (Object.is(left, right)) {
+    return true;
+  }
+
+  try {
+    return JSON.stringify(left) === JSON.stringify(right);
+  } catch {
+    return false;
+  }
+}
+
+function isNewsBulkUpdateRequest({
+  operation,
+  req,
+}: {
+  operation?: unknown;
+  req?: { url?: string };
+}) {
+  if (operation !== "update") {
+    return false;
+  }
+
+  const url = req?.url;
+
+  if (typeof url !== "string") {
+    return false;
+  }
+
+  try {
+    return Array.from(new URL(url, "http://payload.local").searchParams.keys()).some(
+      (key) => key === "where" || key.startsWith("where["),
+    );
+  } catch {
+    return url.includes("where=") || url.includes("where[") || url.includes("where%5B");
+  }
+}
+
+function isUnchangedNewsBulkUpdateValue({
+  operation,
+  previousValue,
+  req,
+  value,
+}: {
+  operation?: unknown;
+  previousValue?: unknown;
+  req?: { url?: string };
+  value: unknown;
+}) {
+  return isNewsBulkUpdateRequest({ operation, req }) && valuesEqual(value, previousValue);
+}
+
+const filterNewsCategoryOptions: NonNullable<SelectField["filterOptions"]> = ({
+  data,
+  options,
+  siblingData,
+}) => {
+  const selectedValues = newsCategoryValuesForCenters(siblingData?.centers ?? data?.centers);
+
+  return options.filter((option) => selectedValues.has(optionValue(option)));
+};
+
+const validateNewsCategory: Validate<unknown> = (
+  value,
+  { operation, previousValue, req, siblingData },
+) => {
+  if (isUnchangedNewsBulkUpdateValue({ operation, previousValue, req, value })) {
+    return true;
+  }
+
+  const category = String(value ?? "").trim();
+
+  if (!category) {
+    return "분류를 선택해야 합니다.";
+  }
+
+  const selectedCategories = getNewsCategoriesForCenters(
+    selectedNewsCenters(siblingData?.centers),
+  );
+
+  return normalizeNewsCategory(category, selectedCategories)
+    ? true
+    : "선택한 센터에서 사용할 수 없는 분류입니다.";
+};
 
 export const News: CollectionConfig = {
   slug: "news",
@@ -104,8 +215,16 @@ export const News: CollectionConfig = {
         fields: [
           {
             name: "category",
-            type: "text",
+            type: "select",
             label: "분류",
+            filterOptions: filterNewsCategoryOptions,
+            options: newsCategoryOptions,
+            validate: validateNewsCategory,
+            admin: {
+              className: "bnb-admin-required-field",
+              isClearable: false,
+              placeholder: "선택해 주세요",
+            },
           },
           {
             name: "thumbnailMedia",

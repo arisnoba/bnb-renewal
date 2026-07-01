@@ -6,7 +6,13 @@ import {
   PaginationEllipsis,
   PaginationItem,
 } from '@/components/ui/pagination'
-import type { CenterSlug } from '@/lib/centers'
+import {
+  getNewsCategoriesForCenter,
+  getNewsCategoryByKey,
+  getNewsCategoryLabel,
+  normalizeNewsCategory,
+} from '@/lib/newsCategories'
+import type { NewsCategory } from '@/lib/newsCategories'
 import type { News } from '@/payload-types'
 import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
@@ -16,63 +22,6 @@ import Link from 'next/link'
 import React from 'react'
 
 import { FilterChips } from '../_components/FilterChips'
-
-type NewsCategory = {
-  key: string
-  label: string
-  match: readonly string[]
-  matchMode?: 'contains' | 'exact'
-  legacyKeys?: readonly string[]
-}
-
-const defaultNewsCategories = [
-  {
-    key: 'audition-casting',
-    label: '오디션 · 캐스팅공지',
-    match: ['오디션', '캐스팅공지', '캐스팅진행'],
-  },
-  {
-    key: 'casting-confirmed',
-    label: '캐스팅 확정',
-    match: ['캐스팅확정'],
-  },
-  {
-    key: 'casting-onair',
-    label: '캐스팅 OnAir',
-    match: ['OnAir'],
-  },
-  {
-    key: 'education-news',
-    label: '교육 · 운영 · 소식',
-    match: ['교육', '운영', '소식'],
-  },
-] as const satisfies readonly NewsCategory[]
-
-const examNewsCategories = [
-  {
-    key: 'pass-results',
-    label: '합격현황',
-    match: ['합격현황', '대학합격현황', '예고합격현황'],
-    matchMode: 'exact',
-    legacyKeys: ['university-results', 'arts-high-results'],
-  },
-  {
-    key: 'admission-schedule',
-    label: '수시·정시 일정',
-    match: ['수시·정시 일정', '수시ㆍ정시일정공지', '수시전형일정', '정시전형일정'],
-    matchMode: 'exact',
-  },
-  {
-    key: 'education-news',
-    label: '교육·운영·소식',
-    match: ['교육·운영·소식', '교육', '운영', '교육ㆍ운영ㆍ소식', '공지'],
-    matchMode: 'exact',
-  },
-] as const satisfies readonly NewsCategory[]
-
-const newsCategoriesByCenter: Partial<Record<CenterSlug, readonly NewsCategory[]>> = {
-  exam: examNewsCategories,
-}
 
 const pageSize = 5
 type NewsPageResult = {
@@ -411,43 +360,18 @@ function formatDate(value: string | null | undefined) {
   return `${year}.${month}.${day}`
 }
 
-export function getNewsCategoriesForCenter(center: string): readonly NewsCategory[] {
-  return newsCategoriesByCenter[center as CenterSlug] ?? defaultNewsCategories
-}
-
 function normalizeCategory(
   value: string | null | undefined,
   newsCategories: readonly NewsCategory[],
 ) {
-  if (!value) {
-    return null
-  }
-
-  const normalizedValue = normalizeCategoryText(value)
-
-  return (
-    newsCategories.find((category) => categoryMatches(normalizedValue, category)) ?? null
-  )
+  return normalizeNewsCategory(value, newsCategories)
 }
 
 function getCategoryByKey(
   value: string | null | undefined,
   newsCategories: readonly NewsCategory[],
 ) {
-  return (
-    newsCategories.find(
-      (category) => category.key === value || category.legacyKeys?.includes(value ?? ''),
-    ) ?? null
-  )
-}
-
-function getNewsCategoryLabel(
-  value: string | null | undefined,
-  newsCategories: readonly NewsCategory[],
-) {
-  const category = normalizeCategory(value, newsCategories)
-
-  return category?.label
+  return getNewsCategoryByKey(value, newsCategories)
 }
 
 async function findNewsPage({
@@ -503,22 +427,6 @@ export function buildCategoryWhere(category: NewsCategory): Where {
   }))
 
   return conditions.length === 1 ? conditions[0] : { or: conditions }
-}
-
-function categoryMatches(value: string | null | undefined, category: NewsCategory) {
-  const normalizedValue = normalizeCategoryText(value ?? '')
-
-  return category.match.some((categoryValue) => {
-    const normalizedCategory = normalizeCategoryText(categoryValue)
-
-    return category.matchMode === 'exact'
-      ? normalizedValue === normalizedCategory
-      : normalizedValue.includes(normalizedCategory)
-  })
-}
-
-function normalizeCategoryText(value: string) {
-  return value.replace(/[\s·ㆍ・.]+/g, '').toLowerCase()
 }
 
 function newsArchiveHref({

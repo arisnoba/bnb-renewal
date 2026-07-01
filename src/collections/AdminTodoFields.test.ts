@@ -10,6 +10,7 @@ import { BroadcastStations } from './BroadcastStations'
 import { DirectCastings } from './DirectCastings'
 import { ExamResults } from './ExamResults'
 import { Faqs } from './Faqs'
+import { News } from './News'
 import { ScreenAppearances } from './ScreenAppearances'
 import { StarCards } from './StarCards'
 
@@ -21,10 +22,12 @@ type FieldWithName = Field & {
     }
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => boolean
     description?: string
+    isClearable?: boolean
     placeholder?: string
   }
   defaultValue?: unknown
   fields?: Field[]
+  filterOptions?: unknown
   label?: unknown
   labels?: unknown
   minRows?: number
@@ -236,6 +239,66 @@ test('faq bulk edits do not clear existing centers with empty transient form val
 
   assert.deepEqual(data?.centers, ['art', 'exam'])
   assert.equal(data?.answerMode, 'centerVariants')
+})
+
+test('news category uses center-specific required select options', async () => {
+  const category = getField(News, 'category')
+  const categoryOptions = category.options as { label: string; value: string }[]
+  const filterOptions = category.filterOptions as
+    | ((args: {
+        data: Record<string, unknown>
+        options: { label: string; value: string }[]
+        req: unknown
+        siblingData: Record<string, unknown>
+      }) => { label: string; value: string }[])
+    | undefined
+
+  assert.equal(category.type, 'select')
+  assert.deepEqual(
+    categoryOptions.map((option) => option.value),
+    [
+      '오디션ㆍ캐스팅공지',
+      '캐스팅확정',
+      '캐스팅OnAir',
+      '교육ㆍ운영ㆍ소식',
+      '합격현황',
+      '수시·정시 일정',
+      '교육·운영·소식',
+    ],
+  )
+  assert.equal(await category.validate?.('', validationOptions()), '분류를 선택해야 합니다.')
+  assert.equal(
+    await category.validate?.(
+      '합격현황',
+      validationOptions({ siblingData: { centers: ['exam'] } }),
+    ),
+    true,
+  )
+  assert.equal(
+    await category.validate?.(
+      '합격현황',
+      validationOptions({ siblingData: { centers: ['art'] } }),
+    ),
+    '선택한 센터에서 사용할 수 없는 분류입니다.',
+  )
+  assert.equal(
+    await category.validate?.(
+      '캐스팅확정',
+      validationOptions({ siblingData: { centers: ['art'] } }),
+    ),
+    true,
+  )
+  assert.equal(category.admin?.className, 'bnb-admin-required-field')
+  assert.equal(category.admin?.isClearable, false)
+  assert.deepEqual(
+    filterOptions?.({
+      data: {},
+      options: categoryOptions,
+      req: {},
+      siblingData: { centers: ['exam'] },
+    }).map((option) => option.value),
+    ['합격현황', '수시·정시 일정', '교육·운영·소식'],
+  )
 })
 
 test('star cards require at least one image and default centers to all', async () => {

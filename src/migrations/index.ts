@@ -128,6 +128,7 @@ import * as migration_20260623_191500_direct_casting_multi_company_merge from '.
 import * as migration_20260624_120000_social_links_sns_type from './20260624_120000_social_links_sns_type'
 import * as migration_20260624_130000_media_uploads_prefix from './20260624_130000_media_uploads_prefix'
 import * as migration_20260630_191800_admin_center_history_access from './20260630_191800_admin_center_history_access'
+import * as migration_20260701_142500_news_category_select from './20260701_142500_news_category_select'
 
 export const migrations = [
   {
@@ -779,5 +780,10 @@ export const migrations = [
     up: migration_20260630_191800_admin_center_history_access.up,
     down: migration_20260630_191800_admin_center_history_access.down,
     name: '20260630_191800_admin_center_history_access',
+  },
+  {
+    up: migration_20260701_142500_news_category_select.up,
+    down: migration_20260701_142500_news_category_select.down,
+    name: '20260701_142500_news_category_select',
   },
 ]
