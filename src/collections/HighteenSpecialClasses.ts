@@ -24,10 +24,9 @@ const highteenOnlyCreateAccess: Access = ({ req }) => {
     return false
   }
 
-  const role = (req.user as { role?: unknown }).role
   const center = (req.user as { center?: unknown }).center
 
-  return role === 'master' || role === 'admin' || center === 'highteen'
+  return isGlobalAdminUser(req.user) || center === 'highteen'
 }
 
 const isHighteenAdminMenuHidden = ({ user }: { user?: unknown }) => {

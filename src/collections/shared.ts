@@ -66,8 +66,13 @@ export function isGlobalAdminUser(user: unknown) {
   }
 
   const role = (user as { role?: unknown }).role;
+  const permissionLevel = (user as { permissionLevel?: unknown }).permissionLevel;
 
-  return role === "master" || role === "admin";
+  return (
+    role === "master" ||
+    role === "admin" ||
+    (typeof permissionLevel === "number" && permissionLevel >= 80)
+  );
 }
 
 export function isExamAdminMenuHidden(user: unknown) {

@@ -94,6 +94,7 @@ test('main statistics are configured as one settings global with center-specific
       assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center } } }), true)
       assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center: 'exam' } } }), center === 'exam')
       assert.equal(await field.access?.update?.({ req: { user: { role: 'admin', center: 'exam' } } }), true)
+      assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', permissionLevel: 80, center: 'exam' } } }), true)
       assert.equal(field.defaultValue, 0)
       assert.equal(field.min, 0)
       assert.equal(await field.validate?.(0), true)
@@ -119,6 +120,10 @@ test('main statistics center tabs open only the manager center for center manage
   )
   assert.equal(
     highteenTab.admin?.condition?.({}, {}, { user: { role: 'admin', center: 'art' } } as never),
+    true,
+  )
+  assert.equal(
+    highteenTab.admin?.condition?.({}, {}, { user: { role: 'manager', permissionLevel: 80, center: 'art' } } as never),
     true,
   )
 })

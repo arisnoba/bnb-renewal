@@ -106,6 +106,7 @@ test('main global exposes center-specific banner order arrays', async () => {
     assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'manager', center } } }), true)
     assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'manager', center: 'exam' } } }), center === 'exam')
     assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'admin', center: 'exam' } } }), true)
+    assert.equal(await autoplay.access?.update?.({ req: { user: { role: 'manager', permissionLevel: 80, center: 'exam' } } }), true)
     assert.equal(autoplay.label, '오토플레이')
     assert.equal(autoplay.defaultValue, true)
     assert.equal(autoplayDelay.name, fieldName.replace('Banners', 'BannerAutoplayDelay'))
@@ -124,6 +125,7 @@ test('main global exposes center-specific banner order arrays', async () => {
     assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center } } }), true)
     assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center: 'exam' } } }), center === 'exam')
     assert.equal(await field.access?.update?.({ req: { user: { role: 'admin', center: 'exam' } } }), true)
+    assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', permissionLevel: 80, center: 'exam' } } }), true)
     assert.equal(field.admin?.initCollapsed, true)
     assert.equal(field.admin?.components?.RowLabel, '@/Main/RowLabel#MainBannerOrderRowLabel')
     assert.equal(banner.type, 'relationship')
@@ -146,6 +148,10 @@ test('main global center tabs open only the manager center for center managers',
   )
   assert.equal(
     examTab.admin?.condition?.({}, {}, { user: { role: 'admin', center: 'art' } } as never),
+    true,
+  )
+  assert.equal(
+    examTab.admin?.condition?.({}, {}, { user: { role: 'manager', permissionLevel: 80, center: 'art' } } as never),
     true,
   )
 })
