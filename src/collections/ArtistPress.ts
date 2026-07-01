@@ -36,7 +36,7 @@ import {
   slugField,
   userCenterValue,
 } from "./shared";
-import { seoTitleField } from "./seoFields";
+import { seoTitleField, syncSeoMetaImageFromUpload } from "./seoFields";
 
 const artistPressSlugify = createKoreanSlugifyWithFallback("artist-press");
 const revalidateArtistPressAfterChange = createCenterRevalidationAfterChange({
@@ -102,7 +102,7 @@ export const ArtistPress: CollectionConfig = {
       ]),
     ],
     afterDelete: [revalidateArtistPressAfterDelete],
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [syncSeoMetaImageFromUpload("thumbnailMedia"), centerScopedBeforeValidate],
   },
   fields: [
     {

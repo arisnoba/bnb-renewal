@@ -39,7 +39,7 @@ import {
   sidebarFields,
   slugField,
 } from "./shared";
-import { seoTitleField } from "./seoFields";
+import { seoTitleField, syncSeoMetaImageFromUpload } from "./seoFields";
 
 const newsSlugify = createKoreanSlugifyWithFallback("news");
 const revalidateNewsAfterChange = createCenterRevalidationAfterChange({
@@ -200,7 +200,7 @@ export const News: CollectionConfig = {
       ]),
     ],
     afterDelete: [revalidateNewsAfterDelete],
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [syncSeoMetaImageFromUpload("thumbnailMedia"), centerScopedBeforeValidate],
   },
   fields: [
     {

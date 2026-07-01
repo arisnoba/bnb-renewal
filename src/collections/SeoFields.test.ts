@@ -47,3 +47,69 @@ test("SEO title fields use the 30 to 50 character range", () => {
     assert.equal(titleField.maxLength, seoTitleLength.maxLength);
   }
 });
+
+async function runSeoSyncHook(collection: CollectionConfig, args: Record<string, unknown>) {
+  const hook = collection.hooks?.beforeValidate?.[0];
+
+  assert.ok(hook, `${collection.slug} 컬렉션에 beforeValidate hook이 있어야 합니다.`);
+
+  return (await hook(args as never)) as {
+    meta?: {
+      image?: unknown;
+      title?: unknown;
+    };
+    thumbnailMedia?: unknown;
+  };
+}
+
+test("SEO meta image is filled from representative image when empty", async () => {
+  for (const collection of [ArtistPress, News]) {
+    const data = await runSeoSyncHook(collection, {
+      data: {
+        meta: {
+          title: "SEO 제목",
+        },
+        thumbnailMedia: 10,
+      },
+      originalDoc: undefined,
+    });
+
+    assert.equal(data.meta?.image, 10);
+    assert.equal(data.meta?.title, "SEO 제목");
+  }
+});
+
+test("SEO meta image follows representative image only while auto-synced", async () => {
+  const autoSynced = await runSeoSyncHook(News, {
+    data: {
+      meta: {},
+      thumbnailMedia: 11,
+    },
+    originalDoc: {
+      meta: {
+        image: 10,
+      },
+      thumbnailMedia: 10,
+    },
+  });
+
+  assert.equal(autoSynced.meta?.image, 11);
+
+  const customMeta = await runSeoSyncHook(News, {
+    data: {
+      meta: {
+        title: "수동 SEO",
+      },
+      thumbnailMedia: 11,
+    },
+    originalDoc: {
+      meta: {
+        image: 99,
+      },
+      thumbnailMedia: 10,
+    },
+  });
+
+  assert.equal(customMeta.meta?.image, 99);
+  assert.equal(customMeta.meta?.title, "수동 SEO");
+});
