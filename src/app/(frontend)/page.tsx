@@ -49,13 +49,14 @@ const gateCenters: ImageGalleryItem[] = [
   },
 ]
 
+const gateDescription =
+  '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터, 애비뉴센터의 교육과 캐스팅, 매니지먼트 과정을 선택해 확인하세요.'
+
 export const metadata: Metadata = {
   title: '센터 선택 - 배우앤배움',
-  description:
-    '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터를 선택하는 게이트 페이지입니다.',
+  description: gateDescription,
   openGraph: mergeOpenGraph({
-    description:
-      '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터를 선택하는 게이트 페이지입니다.',
+    description: gateDescription,
     images: [commonOpenGraphImage()],
     title: '센터 선택 - 배우앤배움',
   }),
