@@ -17,6 +17,10 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       WHEN duplicate_object THEN NULL;
     END $$;
 
+    ALTER TABLE "news"
+      ALTER COLUMN "category" TYPE varchar
+      USING "category"::varchar;
+
     WITH normalized AS (
       SELECT
         "news"."id",

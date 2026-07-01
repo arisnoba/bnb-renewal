@@ -10,6 +10,7 @@ import type {
   Validate,
 } from "payload";
 
+import { randomUUID } from "node:crypto";
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -25,7 +26,6 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 import { revalidateTag } from "next/cache";
-import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import {
   getNewsCategoriesForCenters,
   getNewsCategoryOptions,
@@ -51,12 +51,9 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
 } from "./shared";
 import { seoTitleField, syncSeoMetaImageFromUpload } from "./seoFields";
 
-const newsSlugify = createKoreanSlugifyWithFallback("news");
-const newsSlugPageSize = 100;
 const newsSlugCenters = new Set(["all", "art", "avenue", "exam", "highteen", "kids"]);
 const revalidateNewsAfterChange = createCenterRevalidationAfterChange({
   reason: "news",
@@ -70,34 +67,6 @@ const revalidateNewsAfterDelete = createCenterRevalidationAfterDelete({
 type NewsRevalidationDoc = TypeWithID & {
   centers?: unknown;
   slug?: unknown;
-};
-
-type NewsSlugDoc = {
-  id?: unknown;
-  slug?: unknown;
-};
-
-type NewsSlugFindResult = {
-  docs: NewsSlugDoc[];
-  nextPage?: number | null;
-};
-
-type NewsSlugPayload = {
-  find: (args: {
-    collection: "news";
-    depth: 0;
-    limit: number;
-    overrideAccess: true;
-    page: number;
-    select: {
-      slug: true;
-    };
-    where: {
-      slug: {
-        like: string;
-      };
-    };
-  }) => Promise<NewsSlugFindResult>;
 };
 
 export function newsDetailFrontendPaths({
@@ -255,84 +224,18 @@ export function newsSlugPrefixFromCenters(value: unknown) {
   return `news-${newsSlugCenterFromCenters(value)}`;
 }
 
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+export function newsSlugForId({ centers, id }: { centers: unknown; id: unknown }) {
+  const normalizedId = String(id ?? "").trim();
 
-function numericSuffixFromNewsSlug(slug: unknown, prefix: string) {
-  const match = new RegExp(`^${escapeRegExp(prefix)}-(\\d+)$`).exec(
-    String(slug ?? "").trim(),
-  );
-
-  if (!match) {
-    return undefined;
+  if (!normalizedId) {
+    return "";
   }
 
-  const suffix = Number(match[1]);
-
-  return Number.isSafeInteger(suffix) ? suffix : undefined;
+  return `${newsSlugPrefixFromCenters(centers)}-${normalizedId}`;
 }
 
-async function maxNewsSlugNumber({
-  payload,
-  prefix,
-}: {
-  payload?: NewsSlugPayload;
-  prefix: string;
-}) {
-  if (!payload) {
-    return 0;
-  }
-
-  let max = 0;
-  let page = 1;
-
-  while (page) {
-    const result = await payload.find({
-      collection: "news",
-      depth: 0,
-      limit: newsSlugPageSize,
-      overrideAccess: true,
-      page,
-      select: {
-        slug: true,
-      },
-      where: {
-        slug: {
-          like: `${prefix}-`,
-        },
-      },
-    });
-
-    for (const doc of result.docs) {
-      const suffix = numericSuffixFromNewsSlug(doc.slug, prefix);
-
-      if (suffix !== undefined && suffix > max) {
-        max = suffix;
-      }
-    }
-
-    if (!result.nextPage || result.nextPage === page) {
-      break;
-    }
-
-    page = result.nextPage;
-  }
-
-  return max;
-}
-
-export async function nextNewsSlugForCenters({
-  centers,
-  payload,
-}: {
-  centers: unknown;
-  payload?: NewsSlugPayload;
-}) {
-  const prefix = newsSlugPrefixFromCenters(centers);
-  const nextNumber = (await maxNewsSlugNumber({ payload, prefix })) + 1;
-
-  return `${prefix}-${nextNumber}`;
+export function pendingNewsSlugForCenters(centers: unknown) {
+  return `${newsSlugPrefixFromCenters(centers)}-pending-${randomUUID()}`;
 }
 
 export const setNewsSlugBeforeValidate: CollectionBeforeValidateHook = async ({
@@ -345,24 +248,71 @@ export const setNewsSlugBeforeValidate: CollectionBeforeValidateHook = async ({
     return data;
   }
 
+  const nextData = { ...(data as Record<string, unknown>) };
+  delete nextData.generateSlug;
   const existingSlug = String(originalDoc?.slug ?? "").trim();
 
+  if (req.context.finalizeNewsSlug && nextData.slug) {
+    return nextData;
+  }
+
   if (operation === "update" && existingSlug) {
+    const idSlug = newsSlugForId({
+      centers: nextData.centers ?? originalDoc?.centers,
+      id: originalDoc?.id,
+    });
+
     return {
-      ...data,
-      generateSlug: true,
-      slug: existingSlug,
+      ...nextData,
+      slug: idSlug || existingSlug,
     };
   }
 
   return {
-    ...data,
-    generateSlug: true,
-    slug: await nextNewsSlugForCenters({
-      centers: data.centers,
-      payload: req.payload as unknown as NewsSlugPayload,
-    }),
+    ...nextData,
+    slug: pendingNewsSlugForCenters(nextData.centers),
   };
+};
+
+const finalizeNewsSlugAfterCreate: CollectionAfterChangeHook<NewsRevalidationDoc> = async ({
+  doc,
+  operation,
+  req,
+}) => {
+  if (operation !== "create" || req.context.finalizeNewsSlug) {
+    return doc;
+  }
+
+  const slug = newsSlugForId({ centers: doc.centers, id: doc.id });
+
+  if (!slug || doc.slug === slug) {
+    return doc;
+  }
+
+  const previousDisableRevalidate = req.context.disableRevalidate;
+  const previousFinalizeNewsSlug = req.context.finalizeNewsSlug;
+
+  req.context = {
+    ...req.context,
+    disableRevalidate: true,
+    finalizeNewsSlug: true,
+  };
+
+  try {
+    return (await req.payload.update({
+      collection: "news",
+      data: {
+        slug,
+      },
+      depth: 0,
+      id: doc.id,
+      overrideAccess: true,
+      req,
+    })) as NewsRevalidationDoc;
+  } finally {
+    req.context.disableRevalidate = previousDisableRevalidate;
+    req.context.finalizeNewsSlug = previousFinalizeNewsSlug;
+  }
 };
 
 function newsCategoryValuesForCenters(value: unknown) {
@@ -486,6 +436,7 @@ export const News: CollectionConfig = {
   defaultSort: "-publishedAt",
   hooks: {
     afterChange: [
+      finalizeNewsSlugAfterCreate,
       revalidateNewsAfterChange,
       revalidateNewsCacheTagsAfterChange,
       revalidateNewsDetailAfterChange,
@@ -602,9 +553,16 @@ export const News: CollectionConfig = {
         hidden: true,
       },
     },
-    slugField({
-      slugify: newsSlugify,
-    }),
+    ...sidebarFields([
+      {
+        name: "slug",
+        type: "text",
+        label: "슬러그",
+        required: true,
+        unique: true,
+        index: true,
+      },
+    ]),
   ],
   versions: {
     maxPerDoc: 15,
