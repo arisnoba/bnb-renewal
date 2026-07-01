@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import { Media } from '@/components/Media/Renderer'
 import RichText from '@/components/RichText'
 import type { CenterSlug } from '@/lib/centers'
 import type { ArtistPress } from '@/payload-types'
@@ -20,6 +19,7 @@ import {
   DetailBackLink,
   DetailContainer,
   DetailHeader,
+  DetailMedia,
   DetailPage,
   DetailPager,
 } from '../../_components/DetailLayout'
@@ -97,15 +97,12 @@ export async function ArtistPressDetailPage({
         />
 
         {media && (
-          <div className="mx-auto mb-10 max-w-[600px] overflow-hidden bg-muted md:mb-16">
-            <Media
-              imgClassName="h-auto w-full object-cover"
-              pictureClassName="block w-full"
-              priority
-              resource={media}
-              size="(max-width: 767px) 100vw, 600px"
-            />
-          </div>
+          <DetailMedia
+            className="mx-auto mb-10 max-w-[600px] md:mb-16"
+            priority
+            resource={media}
+            size="(max-width: 767px) 100vw, 600px"
+          />
         )}
 
         {body ? (

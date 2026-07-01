@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import { Media } from '@/components/Media/Renderer'
 import RichText from '@/components/RichText'
 import { assertCenter } from '@/lib/centers'
 import type { News } from '@/payload-types'
@@ -22,6 +21,7 @@ import {
   DetailBackLink,
   DetailContainer,
   DetailHeader,
+  DetailMedia,
   DetailPage,
   DetailPager,
 } from '../../../_components/DetailLayout'
@@ -65,15 +65,12 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
         />
 
         {media && (
-          <div className="mb-10 overflow-hidden bg-muted md:mb-16">
-            <Media
-              imgClassName="aspect-video h-auto w-full object-cover"
-              pictureClassName="block w-full"
-              priority
-              resource={media}
-              size="(max-width: 767px) 100vw, 800px"
-            />
-          </div>
+          <DetailMedia
+            className="mb-10 md:mb-16"
+            priority
+            resource={media}
+            size="(max-width: 767px) 100vw, 800px"
+          />
         )}
 
         {body ? (

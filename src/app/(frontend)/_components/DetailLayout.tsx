@@ -2,7 +2,9 @@ import Link from 'next/link'
 import React from 'react'
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 
+import { Media } from '@/components/Media/Renderer'
 import type { CenterSlug } from '@/lib/centers'
+import type { Media as PayloadMedia } from '@/payload-types'
 import { cn } from '@/utilities/ui'
 import { FloatingDock } from './FloatingDock.client'
 
@@ -114,6 +116,41 @@ export function DetailHeader({
         </div>
       )}
     </header>
+  )
+}
+
+type DetailMediaProps = {
+  alt?: string
+  className?: string
+  imageClassName?: string
+  pictureClassName?: string
+  priority?: boolean
+  resource: PayloadMedia
+  size: string
+}
+
+export function DetailMedia({
+  alt,
+  className,
+  imageClassName,
+  pictureClassName,
+  priority,
+  resource,
+  size,
+}: DetailMediaProps) {
+  return (
+    <Media
+      alt={alt}
+      htmlElement={null}
+      imgClassName={cn(
+        'mx-auto h-auto max-h-[min(80vh,900px)] w-auto max-w-full object-contain',
+        imageClassName,
+      )}
+      pictureClassName={cn('block w-full', className, pictureClassName)}
+      priority={priority}
+      resource={resource}
+      size={size}
+    />
   )
 }
 

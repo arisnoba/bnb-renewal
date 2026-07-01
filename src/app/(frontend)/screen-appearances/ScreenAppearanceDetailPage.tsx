@@ -18,6 +18,7 @@ import {
   DetailBackLink,
   DetailContainer,
   DetailHeader,
+  DetailMedia,
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
@@ -117,18 +118,13 @@ export async function ScreenAppearanceDetailPage({
         <div className="section-screen-appearance-detail__content grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
           <div className="section-screen-appearance-detail__media space-y-5">
             {mainImage ? (
-              <div className="relative aspect-video overflow-hidden rounded-xl bg-muted">
-                <Media
-                  alt={projectTitle}
-                  fill
-                  htmlElement={null}
-                  imgClassName="size-full object-cover"
-                  pictureClassName="block size-full"
-                  priority
-                  resource={mainImage}
-                  size="(max-width: 1023px) 100vw, 760px"
-                />
-              </div>
+              <DetailMedia
+                alt={projectTitle}
+                className="rounded-xl"
+                priority
+                resource={mainImage}
+                size="(max-width: 1023px) 100vw, 760px"
+              />
             ) : (
               <div className="flex aspect-video items-center justify-center rounded-xl bg-muted type-label-l font-semibold text-muted-foreground">
                 NO IMAGE
@@ -138,20 +134,13 @@ export async function ScreenAppearanceDetailPage({
             {secondaryImages.length > 0 && (
               <div className="grid gap-5 sm:grid-cols-2">
                 {secondaryImages.map((image, index) => (
-                  <div
-                    className="relative aspect-video overflow-hidden rounded-xl bg-muted"
+                  <DetailMedia
+                    alt={`${projectTitle} 출연장면 ${index + 2}`}
+                    className="rounded-xl"
                     key={`${image.id}-${index}`}
-                  >
-                    <Media
-                      alt={`${projectTitle} 출연장면 ${index + 2}`}
-                      fill
-                      htmlElement={null}
-                      imgClassName="size-full object-cover"
-                      pictureClassName="block size-full"
-                      resource={image}
-                      size="(max-width: 639px) 100vw, 380px"
-                    />
-                  </div>
+                    resource={image}
+                    size="(max-width: 639px) 100vw, 380px"
+                  />
                 ))}
               </div>
             )}
