@@ -1789,16 +1789,16 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
         <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
             <tr className="bg-[#343434] text-white">
-              <th className="w-[18%] border border-[#444] px-5 py-4 font-bold" scope="col">
+              <th className="w-[18%] border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 년도
               </th>
-              <th className="w-[22%] border border-[#444] px-5 py-4 font-bold" scope="col">
+              <th className="w-[22%] border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 입학 분류
               </th>
-              <th className="border border-[#444] px-5 py-4 font-bold" scope="col">
+              <th className="border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 입학 날짜
               </th>
-              <th className="w-[18%] border border-[#444] px-5 py-4 font-bold" scope="col">
+              <th className="w-[18%] border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 기수
               </th>
             </tr>
@@ -1815,7 +1815,7 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
                     <td
                       data-cohort-year="true"
                       className={cn(
-                        'border border-[#363636] bg-[#262626] px-5 py-4 font-bold leading-[1.55] text-white/72',
+                        'border border-[#363636] bg-[#262626] px-2.5 py-2 md:px-5 md:py-4 font-bold leading-[1.55] text-white/72',
                         index % 2 === 1 && 'bg-[#222]',
                       )}
                       rowSpan={yearSpan}
