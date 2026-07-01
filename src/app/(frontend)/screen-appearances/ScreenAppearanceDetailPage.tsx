@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import { Media } from '@/components/Media/Renderer'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type {
   Media as PayloadMedia,
@@ -22,6 +21,8 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { ScreenAppearanceProfileAvatar } from './ScreenAppearanceProfileAvatar.client'
+import { screenAppearanceProfileImageUrl } from './screenAppearanceProfileImage'
 
 type PerformerInfo = {
   name: string
@@ -148,7 +149,10 @@ export async function ScreenAppearanceDetailPage({
 
           <aside className="section-screen-appearance-detail__aside rounded-xl border border-border bg-white p-6 md:p-8">
             <div className="flex items-center gap-4 border-b border-border pb-6">
-              <ProfileAvatar performer={performer} />
+              <ScreenAppearanceProfileAvatar
+                imageUrl={screenAppearanceProfileImageUrl(performer.profileImageMedia)}
+                size="detail"
+              />
               <div className="min-w-0">
                 <p className="type-label-m font-bold leading-[1.35] text-brand">출연자</p>
                 <h2 className="line-clamp-2 type-title-m font-extrabold leading-[1.35] text-foreground">
@@ -320,32 +324,6 @@ const queryAdjacentScreenAppearances = cache(
     }
   },
 )
-
-function ProfileAvatar({ performer }: { performer: PerformerInfo }) {
-  if (performer.profileImageMedia) {
-    return (
-      <div className="relative size-14 shrink-0 overflow-hidden rounded-full bg-muted">
-        <Media
-          fill
-          htmlElement={null}
-          imgClassName="size-full object-cover object-center"
-          pictureClassName="block size-full"
-          resource={performer.profileImageMedia}
-          size="56px"
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div
-      aria-hidden="true"
-      className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted type-label-l font-bold text-brand"
-    >
-      {performer.name.slice(0, 1)}
-    </div>
-  )
-}
 
 function getPerformer(appearance: ScreenAppearance): PerformerInfo {
   if (appearance.actorInputMode === 'manual') {

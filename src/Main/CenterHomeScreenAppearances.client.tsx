@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Play, UserRound } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
@@ -160,7 +160,6 @@ export function CenterHomeScreenAppearances({
                     <span className="mt-5 inline-flex items-center gap-4 type-label-m font-bold leading-[1.2] text-white">
                       <ActorThumb
                         imageUrl={item.profileImageUrl}
-                        name={item.performerName}
                         size="small"
                       />
                       <span className="grid gap-1">
@@ -266,7 +265,6 @@ export function CenterHomeScreenAppearances({
                       <ActorThumb
                         imageUrl={item.profileImageUrl}
                         isActive={isActive}
-                        name={item.performerName}
                         size="large"
                       />
                     </span>
@@ -284,26 +282,16 @@ export function CenterHomeScreenAppearances({
 function ActorThumb({
   imageUrl,
   isActive = true,
-  name,
   size,
 }: {
   imageUrl: string
   isActive?: boolean
-  name: string
   size: 'large' | 'small'
 }) {
-  if (!imageUrl) {
-    return (
-      <span
-        className={
-          size === 'small'
-            ? 'flex size-11 shrink-0 items-center justify-center rounded-full bg-white type-label-m font-bold text-brand'
-            : 'flex size-full items-center justify-center bg-neutral-800 type-title-l font-bold text-white/45'
-        }
-      >
-        {name.slice(0, 1)}
-      </span>
-    )
+  const [failedImageUrl, setFailedImageUrl] = useState('')
+
+  if (!imageUrl || failedImageUrl === imageUrl) {
+    return <ActorThumbFallback isActive={isActive} size={size} />
   }
 
   return (
@@ -321,11 +309,42 @@ function ActorThumb({
       fill={size === 'large'}
       height={size === 'small' ? 44 : undefined}
       loading="lazy"
+      onError={() => setFailedImageUrl(imageUrl)}
       sizes={size === 'small' ? '44px' : '(max-width: 767px) 190px, 225px'}
       src={imageUrl}
       unoptimized
       width={size === 'small' ? 44 : undefined}
     />
+  )
+}
+
+function ActorThumbFallback({
+  isActive,
+  size,
+}: {
+  isActive: boolean
+  size: 'large' | 'small'
+}) {
+  if (size === 'small') {
+    return (
+      <span
+        aria-hidden="true"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-brand"
+      >
+        <UserRound aria-hidden="true" className="size-5" strokeWidth={1.8} />
+      </span>
+    )
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className={`flex size-full items-center justify-center bg-neutral-800 text-white/45 transition duration-300 ${
+        isActive ? 'opacity-100' : 'opacity-45 group-hover/thumb:opacity-85'
+      }`}
+    >
+      <UserRound aria-hidden="true" className="size-9 md:size-11" strokeWidth={1.6} />
+    </span>
   )
 }
 

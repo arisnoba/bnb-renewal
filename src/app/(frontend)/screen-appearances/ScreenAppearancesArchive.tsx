@@ -26,6 +26,8 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
 import { HeroMosaicDim } from '../_components/HeroMosaicDim'
+import { ScreenAppearanceProfileAvatar } from './ScreenAppearanceProfileAvatar.client'
+import { screenAppearanceProfileImageUrl } from './screenAppearanceProfileImage'
 
 type ScreenAppearancesArchiveProps = {
   center: CenterSlug
@@ -332,7 +334,9 @@ function ScreenAppearanceCard({
 
       <div className="section-screen-appearances-card__body flex flex-1 flex-col">
         <div className="section-screen-appearances-card__performer flex flex-1 gap-3 p-5">
-          <ProfileAvatar performer={performer} />
+          <ScreenAppearanceProfileAvatar
+            imageUrl={screenAppearanceProfileImageUrl(performer.profileImageMedia)}
+          />
           <div className="min-w-0 flex-1 space-y-1 type-body-s font-medium leading-[1.6] text-neutral-500">
             <p className="line-clamp-1">이름 : {performer.name}</p>
             {appearance.className && (
@@ -357,32 +361,6 @@ function ScreenAppearanceCard({
         </div>
       </div>
     </Link>
-  )
-}
-
-function ProfileAvatar({ performer }: { performer: PerformerInfo }) {
-  if (performer.profileImageMedia) {
-    return (
-      <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
-        <Media
-          fill
-          htmlElement={null}
-          imgClassName="size-full object-cover object-center"
-          pictureClassName="block size-full"
-          resource={performer.profileImageMedia}
-          size="48px"
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div
-      aria-hidden="true"
-      className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white type-label-m font-bold text-brand"
-    >
-      {performer.name.slice(0, 1)}
-    </div>
   )
 }
 
