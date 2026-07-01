@@ -25,6 +25,6 @@ export function getNewsMetaImageUrl(news: NewsLike) {
   return metadataImageUrlFromMedia(getNewsSeoImageMedia(news))
 }
 
-export function getNewsUrl(news: Pick<News, 'slug'>, center: string) {
-  return `/${encodeURIComponent(center)}/news/${encodeURIComponent(news.slug)}`
+export function getNewsUrl(news: Pick<News, 'id'>, center: string) {
+  return `/${encodeURIComponent(center)}/news/${encodeURIComponent(String(news.id))}`
 }

@@ -1,6 +1,5 @@
 import type { CollectionConfig, SelectField, Validate } from 'payload'
 
-import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedCollectionAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
@@ -13,11 +12,13 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
 } from './shared'
 import { newsBodyEditor } from './News'
-
-const starCardSlugify = createKoreanSlugifyWithFallback('star-card')
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from './slugUtils'
 
 const validateStarCardImages: Validate<unknown[] | null | undefined> = (value) => {
   const rows = Array.isArray(value) ? value : []
@@ -54,6 +55,9 @@ const validateStarCardCategory: Validate<unknown> = (value) => {
   return value ? true : '분류를 선택해야 합니다.'
 }
 
+const setStarCardSlug = createIdSlugBeforeValidate()
+const finalizeStarCardSlugAfterCreate = createFinalizeIdSlugAfterCreate('star-cards')
+
 export const StarCards: CollectionConfig = {
   slug: 'star-cards',
   labels: {
@@ -76,11 +80,12 @@ export const StarCards: CollectionConfig = {
   defaultSort: 'displayOrder',
   hooks: {
     afterChange: [
+      finalizeStarCardSlugAfterCreate,
       normalizeUploadedMediaPrefixes([
         { path: 'bodyImages.*.imageMedia', role: 'star-cards.image' },
       ]),
     ],
-    beforeValidate: [centerScopedBeforeValidate],
+    beforeValidate: [centerScopedBeforeValidate, setStarCardSlug],
   },
   fields: [
     {
@@ -187,8 +192,6 @@ export const StarCards: CollectionConfig = {
       publishedAtField,
       authorNameField,
     ]),
-    slugField({
-      slugify: starCardSlugify,
-    }),
+    idSlugField,
   ],
 }

@@ -284,7 +284,7 @@ function ScreenAppearanceCard({
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
   const airDate = formatDate(appearance.airDateLabel)
-  const detailHref = `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`
+  const detailHref = `/${center}/screen-appearances/${encodeURIComponent(String(appearance.id))}`
 
   return (
     <Link

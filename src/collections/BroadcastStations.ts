@@ -1,7 +1,12 @@
-import type { CollectionBeforeValidateHook, CollectionConfig, Validate } from "payload";
+import type { CollectionBeforeValidateHook, CollectionConfig, Field, Validate } from "payload";
 
 import { allowAll, loggedInOnly } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
 function validateBroadcastStationSlug(value: unknown) {
   const slug = String(value ?? "").trim();
@@ -27,25 +32,16 @@ const normalizeBroadcastStation: CollectionBeforeValidateHook = ({ data }) => {
   }
 
   const stationName = String(data.stationName ?? "").trim();
-  const slug = String(data.slug ?? "").trim();
 
   return {
     ...data,
     stationName,
-    slug: slug || slugFromStationName(stationName),
   };
 };
 
-function slugFromStationName(value: string) {
-  const normalized = value
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/&/g, " and ")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  return normalized || "";
-}
+const setBroadcastStationSlug = createIdSlugBeforeValidate();
+const finalizeBroadcastStationSlugAfterCreate =
+  createFinalizeIdSlugAfterCreate("broadcast-stations");
 
 export const BroadcastStations: CollectionConfig = {
   slug: "broadcast-stations",
@@ -67,9 +63,10 @@ export const BroadcastStations: CollectionConfig = {
   defaultSort: "stationName",
   hooks: {
     afterChange: [
+      finalizeBroadcastStationSlugAfterCreate,
       normalizeUploadedMediaPrefixes([{ path: "logoMedia", role: "broadcast-stations.logo" }]),
     ],
-    beforeValidate: [normalizeBroadcastStation],
+    beforeValidate: [normalizeBroadcastStation, setBroadcastStationSlug],
   },
   fields: [
     {
@@ -82,16 +79,9 @@ export const BroadcastStations: CollectionConfig = {
       },
     },
     {
-      name: "slug",
-      type: "text",
-      label: "슬러그",
-      required: true,
-      unique: true,
-      admin: {
-        description: "영문 소문자, 숫자, 하이픈(-)만 입력하세요. 예: sbs, mbc, tvn",
-      },
+      ...idSlugField,
       validate: validateBroadcastStationSlug,
-    },
+    } as Field,
     {
       name: "logoMedia",
       type: "upload",

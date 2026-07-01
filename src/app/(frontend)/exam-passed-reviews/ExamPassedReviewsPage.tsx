@@ -212,7 +212,7 @@ function ExamPassedReviewCard({ item }: { item: ExamPassedReviewListItem }) {
   const schoolLogoUrl = logoUrlFromSchool(school)
   const resultText = normalizeText(item.resultSummary) || normalizeText(item.title) || '합격후기'
   const studentName = normalizeText(item.studentName) || '합격생'
-  const href = examPassedReviewDetailHref(item.slug)
+  const href = examPassedReviewDetailHref(item.id)
 
   return (
     <article className="section-exam-passed-review-card overflow-hidden rounded-xl border border-neutral-200 bg-white">
@@ -399,8 +399,8 @@ function examPassedReviewsHref({ page }: { page?: number }) {
   return `${pathname}?page=${page}#${listAnchorId}`
 }
 
-function examPassedReviewDetailHref(slug: string) {
-  return `/exam/passed-reviews/${encodeURIComponent(slug)}`
+function examPassedReviewDetailHref(id: number) {
+  return `/exam/passed-reviews/${encodeURIComponent(String(id))}`
 }
 
 function paginationWindow(page: number, totalPages: number) {

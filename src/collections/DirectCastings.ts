@@ -1,6 +1,5 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
 
-import { createKoreanSlugifyWithFallback, koreanSlugify } from '../utilities/koreanSlugify'
 import {
   adminRow,
   adminTabs,
@@ -11,7 +10,6 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
   userCenterValue,
 } from './shared'
 import { newsBodyEditor } from './News'
@@ -20,8 +18,11 @@ import {
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
 } from './revalidateFrontend'
-
-const directCastingSlugify = createKoreanSlugifyWithFallback('direct-casting')
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from './slugUtils'
 
 const companyOptions = [
   { label: 'ARKO Lab', value: 'arko-lab' },
@@ -160,36 +161,8 @@ const setDirectCastingAuthorName: CollectionBeforeValidateHook = ({ data, origin
   }
 }
 
-const setDirectCastingSlug: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
-  if (!data) {
-    return data
-  }
-
-  const shouldGenerateSlug = data.generateSlug ?? originalDoc?.generateSlug ?? true
-
-  if (shouldGenerateSlug === false && (data.slug || originalDoc?.slug)) {
-    return data
-  }
-
-  const title = String(data.title ?? originalDoc?.title ?? '').trim()
-  const company = normalizeDirectCastingCompanyValues(data.company ?? originalDoc?.company)[0] ?? ''
-  const titleSlug = directCastingSlugify({ valueToSlugify: title })
-  const companySlug = koreanSlugify({ valueToSlugify: company })
-  const originalId = originalDoc?.id
-  const titleCandidate = titleSlug || `direct-casting-${Date.now()}`
-
-  const slug = await nextUniqueDirectCastingSlug({
-    baseSlug: titleCandidate,
-    fallbackSlug: companySlug ? `${titleCandidate}-${companySlug}` : titleCandidate,
-    originalId,
-    req,
-  })
-
-  return {
-    ...data,
-    slug,
-  }
-}
+const setDirectCastingSlug = createIdSlugBeforeValidate()
+const finalizeDirectCastingSlugAfterCreate = createFinalizeIdSlugAfterCreate('direct-castings')
 
 const normalizeDirectCastingTitle: CollectionBeforeValidateHook = ({ data }) => {
   if (!data || typeof data.title !== 'string') {
@@ -221,18 +194,6 @@ function normalizeDirectCastingCenters(value: unknown) {
   }
 
   return Array.from(new Set(centers))
-}
-
-function normalizeDirectCastingCompanyValues(value: unknown) {
-  const values = Array.isArray(value) ? value : value ? [value] : []
-
-  return Array.from(
-    new Set(
-      values
-        .map((item) => String(item ?? '').trim())
-        .filter((item) => directCastingCompanyValues.has(item)),
-    ),
-  )
 }
 
 const validateDirectCastingCompanies: Validate<unknown> = (value) => {
@@ -303,6 +264,7 @@ export const DirectCastings: CollectionConfig = {
   defaultSort: '-publishedAt',
   hooks: {
     afterChange: [
+      finalizeDirectCastingSlugAfterCreate,
       revalidateDirectCastingAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: 'thumbnailMedia', role: 'direct-castings.thumbnail' },
@@ -415,63 +377,6 @@ export const DirectCastings: CollectionConfig = {
       publishedAtField,
       authorNameField,
     ]),
-    slugField({
-      slugify: directCastingSlugify,
-    }),
+    idSlugField,
   ],
-}
-
-async function nextUniqueDirectCastingSlug({
-  baseSlug,
-  fallbackSlug,
-  originalId,
-  req,
-}: {
-  baseSlug: string
-  fallbackSlug: string
-  originalId?: unknown
-  req: Parameters<CollectionBeforeValidateHook>[0]['req']
-}) {
-  if (!(await directCastingSlugExists({ originalId, req, slug: baseSlug }))) {
-    return baseSlug
-  }
-
-  if (!(await directCastingSlugExists({ originalId, req, slug: fallbackSlug }))) {
-    return fallbackSlug
-  }
-
-  for (let suffix = 2; suffix < 100; suffix += 1) {
-    const slug = `${fallbackSlug}-${suffix}`
-
-    if (!(await directCastingSlugExists({ originalId, req, slug }))) {
-      return slug
-    }
-  }
-
-  return `${fallbackSlug}-${Date.now().toString(36)}`
-}
-
-async function directCastingSlugExists({
-  originalId,
-  req,
-  slug,
-}: {
-  originalId?: unknown
-  req: Parameters<CollectionBeforeValidateHook>[0]['req']
-  slug: string
-}) {
-  const result = await req.payload.find({
-    collection: 'direct-castings',
-    depth: 0,
-    limit: 2,
-    overrideAccess: true,
-    pagination: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return result.docs.some((doc) => String(doc.id) !== String(originalId ?? ''))
 }

@@ -14,10 +14,13 @@ import {
   centerOptions,
   isGlobalAdminUser,
   sidebarFields,
-  slugField,
   userCenterValue,
 } from "./shared";
-import { createUniqueSlugBeforeValidate } from "./slugUtils";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 import {
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
@@ -105,11 +108,8 @@ const validateEducationDays = (_value: unknown, { siblingData }: { siblingData?:
   return hasEducationDay ? true : "수업요일을 하나 이상 선택해야 합니다.";
 };
 
-const setCurriculumSlug = createUniqueSlugBeforeValidate({
-  collection: "curriculums",
-  fallbackPrefix: "curriculum",
-  getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
-});
+const setCurriculumSlug = createIdSlugBeforeValidate();
+const finalizeCurriculumSlugAfterCreate = createFinalizeIdSlugAfterCreate("curriculums");
 
 function teacherFilterForSelectedCenter({
   data,
@@ -283,7 +283,7 @@ export const Curriculums: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    afterChange: [revalidateCurriculumAfterChange],
+    afterChange: [finalizeCurriculumSlugAfterCreate, revalidateCurriculumAfterChange],
     afterDelete: [revalidateCurriculumAfterDelete],
     beforeValidate: [curriculumBeforeValidate, setCurriculumSlug],
   },
@@ -518,6 +518,6 @@ export const Curriculums: CollectionConfig = {
       },
     ]),
     ...sidebarFields([authorNameField]),
-    slugField(),
+    idSlugField,
   ],
 };

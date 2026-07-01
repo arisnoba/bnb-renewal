@@ -10,19 +10,20 @@ import {
   imagePathField,
   publishingFields,
   sidebarFields,
-  slugField,
 } from "./shared";
-import { createUniqueSlugBeforeValidate } from "./slugUtils";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 import {
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
 } from "./revalidateFrontend";
 
-const setCastingAppearanceSlug = createUniqueSlugBeforeValidate({
-  collection: "casting-appearances",
-  fallbackPrefix: "casting-appearance",
-  getSlugParts: ({ data, originalDoc }) => [data.title ?? originalDoc?.title],
-});
+const setCastingAppearanceSlug = createIdSlugBeforeValidate();
+const finalizeCastingAppearanceSlugAfterCreate =
+  createFinalizeIdSlugAfterCreate("casting-appearances");
 
 const revalidateCastingStatusAfterChange = createCenterRevalidationAfterChange({
   reason: "casting status",
@@ -56,7 +57,7 @@ export const CastingAppearances: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterChange: [revalidateCastingStatusAfterChange],
+    afterChange: [finalizeCastingAppearanceSlugAfterCreate, revalidateCastingStatusAfterChange],
     afterDelete: [revalidateCastingStatusAfterDelete],
     beforeValidate: [centerScopedBeforeValidate, setCastingAppearanceSlug],
   },
@@ -116,6 +117,6 @@ export const CastingAppearances: CollectionConfig = {
       },
     ]),
     ...sidebarFields([centersField, ...publishingFields, authorNameField]),
-    slugField(),
+    idSlugField,
   ],
 };

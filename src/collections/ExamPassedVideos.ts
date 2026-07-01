@@ -2,7 +2,6 @@ import type { CollectionBeforeValidateHook, CollectionConfig, Field } from "payl
 
 import { centerScopedCollectionAccess } from "./access";
 import { extractYouTubeVideoId, youtubeWatchUrl } from "@/lib/youtube";
-import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import {
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
@@ -14,10 +13,13 @@ import {
   isExamAdminMenuHidden,
   publishingFields,
   sidebarFields,
-  slugField,
 } from "./shared";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
-const examPassedVideoSlugify = createKoreanSlugifyWithFallback("passedvideo");
 const revalidateExamPassedVideoAfterChange = createCenterRevalidationAfterChange({
   reason: "exam passed video",
   suffixes: ["", "passed-videos", "exam-passed-videos"],
@@ -108,6 +110,10 @@ const examCentersField = {
   },
 } as Field;
 
+const setExamPassedVideoSlug = createIdSlugBeforeValidate();
+const finalizeExamPassedVideoSlugAfterCreate =
+  createFinalizeIdSlugAfterCreate("exam-passed-videos");
+
 export const ExamPassedVideos: CollectionConfig = {
   slug: "exam-passed-videos",
   labels: {
@@ -123,12 +129,13 @@ export const ExamPassedVideos: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterChange: [revalidateExamPassedVideoAfterChange],
+    afterChange: [finalizeExamPassedVideoSlugAfterCreate, revalidateExamPassedVideoAfterChange],
     afterDelete: [revalidateExamPassedVideoAfterDelete],
     beforeValidate: [
       syncYouTubeFields,
       syncCreatedAtToPublishedAt,
       setExamPassedVideoCenterBeforeValidate,
+      setExamPassedVideoSlug,
     ],
   },
   fields: [
@@ -172,9 +179,7 @@ export const ExamPassedVideos: CollectionConfig = {
       examCentersField,
       ...publishingFields,
       authorNameField,
-      slugField({
-        slugify: examPassedVideoSlugify,
-      }),
+      idSlugField,
     ]),
   ],
 };

@@ -14,7 +14,6 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
@@ -33,12 +32,15 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
   userCenterValue,
 } from "./shared";
 import { seoTitleField, syncSeoMetaImageFromUpload } from "./seoFields";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
-const artistPressSlugify = createKoreanSlugifyWithFallback("artist-press");
 const revalidateArtistPressAfterChange = createCenterRevalidationAfterChange({
   reason: "artist press",
   suffixes: ["", "artist-press"],
@@ -70,6 +72,9 @@ const artistPressBodyEditor = lexicalEditor({
   ],
 });
 
+const setArtistPressSlug = createIdSlugBeforeValidate();
+const finalizeArtistPressSlugAfterCreate = createFinalizeIdSlugAfterCreate("artist-press");
+
 export const ArtistPress: CollectionConfig = {
   slug: "artist-press",
   labels: {
@@ -94,6 +99,7 @@ export const ArtistPress: CollectionConfig = {
   defaultSort: "-publishedAt",
   hooks: {
     afterChange: [
+      finalizeArtistPressSlugAfterCreate,
       revalidateArtistPressAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "thumbnailMedia", role: "artist-press.thumbnail" },
@@ -102,7 +108,11 @@ export const ArtistPress: CollectionConfig = {
       ]),
     ],
     afterDelete: [revalidateArtistPressAfterDelete],
-    beforeValidate: [syncSeoMetaImageFromUpload("thumbnailMedia"), centerScopedBeforeValidate],
+    beforeValidate: [
+      syncSeoMetaImageFromUpload("thumbnailMedia"),
+      centerScopedBeforeValidate,
+      setArtistPressSlug,
+    ],
   },
   fields: [
     {
@@ -206,9 +216,7 @@ export const ArtistPress: CollectionConfig = {
       publishedAtField,
       authorNameField,
     ]),
-    slugField({
-      slugify: artistPressSlugify,
-    }),
+    idSlugField,
   ],
   versions: {
     maxPerDoc: 15,

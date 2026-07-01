@@ -44,11 +44,11 @@ export async function generateDirectCastingStaticParams() {
       const visibleCenters = casting.centers ?? []
 
       return visibleCenters.flatMap((center) => {
-        if (!casting.slug || !(center in centers)) {
+        if (!casting.id || !(center in centers)) {
           return []
         }
 
-        return [{ directCastingSlug: casting.slug, slug: center }]
+        return [{ directCastingSlug: String(casting.id), slug: center }]
       })
     })
   } catch {
@@ -78,7 +78,7 @@ export async function DirectCastingDetailPage({
   const adjacent = await queryAdjacentDirectCastings({
     center,
     company: primaryCompany,
-    slug: casting.slug,
+    id: casting.id,
   })
 
   return (
@@ -150,7 +150,7 @@ const queryDirectCastingBySlug = cache(
       where: {
         and: [
           {
-            slug: {
+            id: {
               equals: slug,
             },
           },
@@ -180,11 +180,11 @@ const queryAdjacentDirectCastings = cache(
   async ({
     center,
     company,
-    slug,
+    id,
   }: {
     center: CenterSlug
     company?: ReturnType<typeof directCastingCompanyValues>[number]
-    slug: string
+    id: number
   }) => {
     const payload = await getPayload({ config: configPromise })
     const where: Where = {
@@ -226,15 +226,15 @@ const queryAdjacentDirectCastings = cache(
       })
       .catch(() => ({ docs: [] }))
 
-    const index = result.docs.findIndex((item) => item.slug === slug)
+    const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined
     const next = index > 0 ? result.docs[index - 1] : undefined
     const pathPrefix = `/${center}/direct-castings`
 
     return {
-      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
       nextLabel: next?.title || '다음 다이렉트 캐스팅',
-      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+      previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
       previousLabel: previous?.title || '이전 다이렉트 캐스팅',
     }
   },

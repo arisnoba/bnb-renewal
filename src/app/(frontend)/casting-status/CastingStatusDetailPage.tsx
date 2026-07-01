@@ -40,15 +40,15 @@ export async function generateCastingStatusStaticParams() {
     })
 
     return result.docs.flatMap((appearance) => {
-      const slug = appearance.slug
+      const id = appearance.id
       const centerSlugs = getStaticParamCenters(appearance.centers)
 
-      if (!slug) {
+      if (!id) {
         return []
       }
 
       return centerSlugs.map((center) => ({
-        castingStatusSlug: slug,
+        castingStatusSlug: String(id),
         slug: center,
       }))
     })
@@ -79,7 +79,7 @@ export async function CastingStatusDetailPage({
     { label: '캐스팅', value: casting.castingCompany },
   ].filter((item) => normalizeText(item.value))
   const castMembers = normalizeCastMembers(casting.castMembers)
-  const adjacent = await queryAdjacentCastingStatus({ center, slug: casting.slug })
+  const adjacent = await queryAdjacentCastingStatus({ center, id: casting.id })
   const backHref = `/${center}/casting-status`
   const backLabel = '진행중인 캐스팅 출연현황'
 
@@ -217,7 +217,7 @@ const queryCastingStatusBySlug = cache(
       where: {
         and: [
           {
-            slug: {
+            id: {
               equals: slug,
             },
           },
@@ -240,7 +240,7 @@ const queryCastingStatusBySlug = cache(
 )
 
 const queryAdjacentCastingStatus = cache(
-  async ({ center, slug }: { center: CenterSlug; slug: string }) => {
+  async ({ center, id }: { center: CenterSlug; id: number }) => {
     const payload = await getPayload({ config: configPromise })
     const result = await payload
       .find({
@@ -267,15 +267,15 @@ const queryAdjacentCastingStatus = cache(
       })
       .catch(() => ({ docs: [] }))
 
-    const index = result.docs.findIndex((item) => item.slug === slug)
+    const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined
     const next = index > 0 ? result.docs[index - 1] : undefined
     const pathPrefix = `/${center}/casting-status`
 
     return {
-      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
       nextLabel: next?.title || '다음 캐스팅',
-      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+      previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
       previousLabel: previous?.title || '이전 캐스팅',
     }
   },

@@ -24,10 +24,13 @@ import {
   isGlobalAdminUser,
   publishingFields,
   sidebarFields,
-  slugField,
   userCenterValue,
 } from "./shared";
-import { createUniqueSlugBeforeValidate } from "./slugUtils";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
 const screenAppearanceCenterAccess: Access = ({ req }) => {
   if (!req.user) {
@@ -230,14 +233,9 @@ const validateManualPerformerName: Validate<
     : "직접 입력 방식에서는 출연자명을 입력해야 합니다.";
 };
 
-const setScreenAppearanceSlug = createUniqueSlugBeforeValidate({
-  collection: "screen-appearances",
-  fallbackPrefix: "screen-appearance",
-  getSlugParts: ({ data, originalDoc }) => [
-    data.centers ?? originalDoc?.centers,
-    data.projectTitle ?? originalDoc?.projectTitle ?? data.title ?? originalDoc?.title,
-  ],
-});
+const setScreenAppearanceSlug = createIdSlugBeforeValidate();
+const finalizeScreenAppearanceSlugAfterCreate =
+  createFinalizeIdSlugAfterCreate("screen-appearances");
 
 export const ScreenAppearances: CollectionConfig = {
   slug: "screen-appearances",
@@ -267,6 +265,7 @@ export const ScreenAppearances: CollectionConfig = {
   defaultSort: "-publishedAt",
   hooks: {
     afterChange: [
+      finalizeScreenAppearanceSlugAfterCreate,
       revalidateScreenAppearanceAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "bodyImages.*.image", role: "screen-appearances.body-image" },
@@ -443,6 +442,6 @@ export const ScreenAppearances: CollectionConfig = {
       },
     ]),
     ...sidebarFields([...publishingFields, authorNameField]),
-    slugField(),
+    idSlugField,
   ],
 };

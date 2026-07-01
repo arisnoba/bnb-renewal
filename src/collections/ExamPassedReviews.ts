@@ -13,7 +13,6 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 
-import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
   createCenterRevalidationAfterChange,
@@ -28,10 +27,13 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
 } from "./shared";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
-const examPassedReviewSlugify = createKoreanSlugifyWithFallback("review");
 const revalidateExamPassedReviewAfterChange = createCenterRevalidationAfterChange({
   reason: "exam passed review",
   suffixes: ["", "passed-reviews", "exam-passed-reviews"],
@@ -87,6 +89,10 @@ const setExamPassedReviewCenterBeforeValidate: CollectionBeforeValidateHook =
     };
   };
 
+const setExamPassedReviewSlug = createIdSlugBeforeValidate();
+const finalizeExamPassedReviewSlugAfterCreate =
+  createFinalizeIdSlugAfterCreate("exam-passed-reviews");
+
 const examCentersField = {
   ...centersField,
   defaultValue: ["exam"],
@@ -112,9 +118,9 @@ export const ExamPassedReviews: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterChange: [revalidateExamPassedReviewAfterChange],
+    afterChange: [finalizeExamPassedReviewSlugAfterCreate, revalidateExamPassedReviewAfterChange],
     afterDelete: [revalidateExamPassedReviewAfterDelete],
-    beforeValidate: [setExamPassedReviewCenterBeforeValidate],
+    beforeValidate: [setExamPassedReviewCenterBeforeValidate, setExamPassedReviewSlug],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -195,9 +201,7 @@ export const ExamPassedReviews: CollectionConfig = {
           readOnly: true,
         },
       },
-      slugField({
-        slugify: examPassedReviewSlugify,
-      }),
+      idSlugField,
     ]),
   ],
   versions: {

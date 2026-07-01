@@ -109,7 +109,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const description = news ? getNewsDescription(news) : undefined
   const imageUrl = news ? getNewsMetaImageUrl(news) : undefined
   const title = news?.meta?.title || news?.title || '뉴스'
-  const canonicalPath = news?.slug ? getNewsUrl({ slug: news.slug }, center) : `/${center}/news`
+  const canonicalPath = news ? getNewsUrl({ id: news.id }, center) : `/${center}/news`
 
   return {
     description,
@@ -138,7 +138,7 @@ const queryNewsBySlug = cache(async ({ center, slug }: { center: string; slug: s
     where: {
       and: [
         {
-          slug: {
+          id: {
             equals: slug,
           },
         },
@@ -210,8 +210,8 @@ const queryAdjacentNews = cache(
     ])
 
     return {
-      nextHref: next?.slug ? `/${center}/news/${encodeURIComponent(next.slug)}` : null,
-      previousHref: previous?.slug ? `/${center}/news/${encodeURIComponent(previous.slug)}` : null,
+      nextHref: next?.id ? `/${center}/news/${encodeURIComponent(String(next.id))}` : null,
+      previousHref: previous?.id ? `/${center}/news/${encodeURIComponent(String(previous.id))}` : null,
     }
   },
 )
@@ -238,9 +238,6 @@ async function queryAdjacentNewsItem({
     limit: 1,
     overrideAccess: false,
     pagination: false,
-    select: {
-      slug: true,
-    },
     sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
     where: {
       and: [
@@ -272,7 +269,7 @@ async function queryAdjacentNewsItem({
     },
   })
 
-  return result.docs[0] as Pick<News, 'slug'> | undefined
+  return result.docs[0] as Pick<News, 'id'> | undefined
 }
 
 function publishedNewsWhere(center: string): Where {

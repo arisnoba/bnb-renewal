@@ -62,7 +62,7 @@ export async function generateExamPassedReviewStaticParams() {
       },
     })
 
-    return result.docs.flatMap(({ slug }) => (slug ? [{ reviewSlug: slug, slug: center }] : []))
+    return result.docs.flatMap(({ id }) => (id ? [{ reviewSlug: String(id), slug: center }] : []))
   } catch {
     return []
   }
@@ -80,7 +80,7 @@ export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
   const imageUrl = normalizeImageUrl(review.studentImagePath)
   const interviews = getInterviews(review)
   const body = hasLexicalContent(review.body) ? review.body : null
-  const adjacent = await queryAdjacentExamPassedReviews(review.slug)
+  const adjacent = await queryAdjacentExamPassedReviews(review.id)
   const backLabel = '수강생 합격후기'
 
   return (
@@ -190,7 +190,7 @@ const queryExamPassedReviewBySlug = cache(async (slug: string) => {
     where: {
       and: [
         {
-          slug: {
+          id: {
             equals: slug,
           },
         },
@@ -224,7 +224,7 @@ const queryExamPassedReviewBySlug = cache(async (slug: string) => {
   return (result.docs?.[0] as ExamPassedReviewDetail | undefined) || null
 })
 
-const queryAdjacentExamPassedReviews = cache(async (slug: string) => {
+const queryAdjacentExamPassedReviews = cache(async (id: number) => {
   const payload = await getPayload({ config: configPromise })
   const result = await payload
     .find({
@@ -266,13 +266,13 @@ const queryAdjacentExamPassedReviews = cache(async (slug: string) => {
     })
     .catch(() => ({ docs: [] }))
 
-  const index = result.docs.findIndex((item) => item.slug === slug)
+  const index = result.docs.findIndex((item) => item.id === id)
   const previous = index >= 0 ? result.docs[index + 1] : undefined
   const next = index > 0 ? result.docs[index - 1] : undefined
 
   return {
-    nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
-    previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+    nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
+    previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
   }
 })
 

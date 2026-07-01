@@ -40,9 +40,6 @@ export async function generateStaticParams() {
       limit: 1000,
       overrideAccess: false,
       pagination: false,
-      select: {
-        slug: true,
-      },
       where: {
         displayStatus: {
           equals: 'published',
@@ -50,7 +47,7 @@ export async function generateStaticParams() {
       },
     })
 
-    return result.docs.map(({ slug }) => ({ slug }))
+    return result.docs.map(({ id }) => ({ slug: String(id) }))
   } catch {
     return []
   }
@@ -80,7 +77,7 @@ export async function ArtistPressDetailPage({
   const description = artistPress.meta?.description?.trim() || undefined
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
   const eyebrow = [artistPress.actorName, artistPress.generation].filter(Boolean).join(' ')
-  const adjacent = await queryAdjacentArtistPress({ center, slug: artistPress.slug })
+  const adjacent = await queryAdjacentArtistPress({ center, id: artistPress.id })
   const backHref = center ? `/${center}/artist-press` : '/artist-press'
   const backLabel = 'BNB출신 아티스트'
 
@@ -152,7 +149,7 @@ const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
     where: {
       and: [
         {
-          slug: {
+          id: {
             equals: slug,
           },
         },
@@ -173,7 +170,7 @@ const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
 })
 
 const queryAdjacentArtistPress = cache(
-  async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
+  async ({ center, id }: { center?: CenterSlug; id: number }) => {
     const payload = await getPayload({ config: configPromise })
     const result = await payload
       .find({
@@ -190,14 +187,14 @@ const queryAdjacentArtistPress = cache(
       })
       .catch(() => ({ docs: [] }))
 
-    const index = result.docs.findIndex((item) => item.slug === slug)
+    const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined
     const next = index > 0 ? result.docs[index - 1] : undefined
     const pathPrefix = center ? `/${center}/artist-press` : '/artist-press'
 
     return {
-      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
-      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+      nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
+      previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
     }
   },
 )

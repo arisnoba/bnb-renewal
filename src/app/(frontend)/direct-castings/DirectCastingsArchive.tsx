@@ -248,7 +248,7 @@ function DirectCastingCard({
   const media = getThumbnailMedia(casting.thumbnailMedia)
   const projectInfo = projectInfoLines(casting.projectInfo)
   const companyLabel = getDirectCastingCompanyLabels(casting.company).join(' · ')
-  const href = `/${center}/direct-castings/${encodeURIComponent(casting.slug)}`
+  const href = `/${center}/direct-castings/${encodeURIComponent(String(casting.id))}`
 
   return (
     <Link

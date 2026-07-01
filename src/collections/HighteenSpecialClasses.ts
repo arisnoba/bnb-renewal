@@ -1,6 +1,5 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
-import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedAccess, centerScopedReadAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
@@ -13,12 +12,14 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
   userCenterValue,
 } from './shared'
 import { newsBodyEditor } from './News'
-
-const highteenSpecialClassSlugify = createKoreanSlugifyWithFallback('class')
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from './slugUtils'
 
 const highteenOnlyCreateAccess: Access = ({ req }) => {
   if (!req.user || typeof req.user !== 'object') {
@@ -45,6 +46,10 @@ const forceHighteenCenter: CollectionBeforeValidateHook = ({ data }) => {
     centers: ['highteen'],
   }
 }
+
+const setHighteenSpecialClassSlug = createIdSlugBeforeValidate()
+const finalizeHighteenSpecialClassSlugAfterCreate =
+  createFinalizeIdSlugAfterCreate('highteen-special-classes')
 
 export const HighteenSpecialClasses: CollectionConfig = {
   slug: 'highteen-special-classes',
@@ -73,12 +78,13 @@ export const HighteenSpecialClasses: CollectionConfig = {
   defaultSort: '-publishedAt',
   hooks: {
     afterChange: [
+      finalizeHighteenSpecialClassSlugAfterCreate,
       normalizeUploadedMediaPrefixes([
         { path: 'thumbnailMedia', role: 'highteen-special-classes.image' },
         { path: 'body', role: 'highteen-special-classes.image', type: 'richText' },
       ]),
     ],
-    beforeValidate: [forceHighteenCenter],
+    beforeValidate: [forceHighteenCenter, setHighteenSpecialClassSlug],
   },
   fields: [
     {
@@ -151,8 +157,6 @@ export const HighteenSpecialClasses: CollectionConfig = {
       publishedAtField,
       authorNameField,
     ]),
-    slugField({
-      slugify: highteenSpecialClassSlugify,
-    }),
+    idSlugField,
   ],
 }

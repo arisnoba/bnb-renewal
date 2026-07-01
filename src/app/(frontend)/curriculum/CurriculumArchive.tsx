@@ -154,7 +154,7 @@ function CurriculumCard({
   center: SearchableCurriculumCenter
   item: CurriculumCardItem
 }) {
-  const detailHref = `/${center}/curriculum/${encodeURIComponent(item.slug)}`
+  const detailHref = `/${center}/curriculum/${encodeURIComponent(String(item.id))}`
 
   return (
     <article className="section-curriculum-card group/card flex min-h-[429px] flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-8">

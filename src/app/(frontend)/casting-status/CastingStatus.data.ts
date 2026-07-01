@@ -234,7 +234,7 @@ function toCastingStatusPosterItem(item: CastingStatusListItem): CastingStatusPo
     date: item.publishedAt ?? item.createdAt,
     id: item.id,
     imageUrl: normalizeImageUrl(item.thumbnailPath),
-    slug: item.slug,
+    slug: String(item.id),
     title: normalizeText(item.title) || '캐스팅 출연현황',
   }
 }

@@ -26,7 +26,7 @@ export async function generateStaticParams() {
   return docs
     .filter((doc) => doc.centers && isCurriculumCenter(doc.centers as CenterSlug))
     .map((doc) => ({
-      curriculumSlug: doc.slug,
+      curriculumSlug: String(doc.id),
       slug: doc.centers,
     }))
 }

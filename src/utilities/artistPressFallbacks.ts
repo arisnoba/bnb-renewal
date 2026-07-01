@@ -32,8 +32,8 @@ export function getArtistPressSeoImageMedia(artistPress: ArtistPressLike) {
   return asMedia(artistPress.meta?.image) || asMedia(artistPress.thumbnailMedia)
 }
 
-export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'slug'>, center?: string) {
-  const path = `/artist-press/${encodeURIComponent(artistPress.slug)}`
+export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'id'>, center?: string) {
+  const path = `/artist-press/${encodeURIComponent(String(artistPress.id))}`
 
   return center ? `/${center}${path}` : path
 }
@@ -45,8 +45,8 @@ export function generateArtistPressMeta(
   const title = artistPress?.meta?.title || artistPress?.title || '출신 아티스트'
   const description = artistPress ? getArtistPressDescription(artistPress) : undefined
   const imageUrl = artistPress ? getArtistPressMetaImageUrl(artistPress) : undefined
-  const canonicalPath = artistPress?.slug
-    ? getArtistPressUrl({ slug: artistPress.slug }, center)
+  const canonicalPath = artistPress?.id
+    ? getArtistPressUrl({ id: artistPress.id }, center)
     : center
       ? `/${center}/artist-press`
       : '/artist-press'

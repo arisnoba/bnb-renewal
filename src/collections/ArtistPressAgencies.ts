@@ -9,6 +9,10 @@ import {
   sidebarFields,
   userCenterValue,
 } from './shared'
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+} from './slugUtils'
 
 const forceArtCenter: CollectionBeforeValidateHook = ({ data }) => {
   if (!data) {
@@ -20,88 +24,6 @@ const forceArtCenter: CollectionBeforeValidateHook = ({ data }) => {
     authorName: data.authorName ?? authorNameFromCenters(['art']),
     centers: ['art'],
   }
-}
-
-const HANGUL_INITIALS = [
-  'g',
-  'kk',
-  'n',
-  'd',
-  'tt',
-  'r',
-  'm',
-  'b',
-  'pp',
-  's',
-  'ss',
-  '',
-  'j',
-  'jj',
-  'ch',
-  'k',
-  't',
-  'p',
-  'h',
-]
-
-const HANGUL_MEDIALS = [
-  'a',
-  'ae',
-  'ya',
-  'yae',
-  'eo',
-  'e',
-  'yeo',
-  'ye',
-  'o',
-  'wa',
-  'wae',
-  'oe',
-  'yo',
-  'u',
-  'wo',
-  'we',
-  'wi',
-  'yu',
-  'eu',
-  'ui',
-  'i',
-]
-
-const HANGUL_FINALS = [
-  '',
-  'k',
-  'k',
-  'ks',
-  'n',
-  'nj',
-  'nh',
-  't',
-  'l',
-  'lk',
-  'lm',
-  'lb',
-  'ls',
-  'lt',
-  'lp',
-  'lh',
-  'm',
-  'p',
-  'ps',
-  't',
-  't',
-  'ng',
-  't',
-  't',
-  'k',
-  't',
-  'p',
-  't',
-]
-
-type ArtistPressAgencySlugDoc = {
-  id?: number | string
-  slug?: unknown
 }
 
 const isArtistAdminMenuHidden = ({ user }: { user?: unknown }) => {
@@ -116,132 +38,8 @@ const artistPressAgencyAccess: Access = ({ req }) => {
   return isGlobalAdminUser(req.user) || userCenterValue(req.user) === 'art'
 }
 
-function sameId(left: unknown, right: unknown) {
-  return left != null && right != null && String(left) === String(right)
-}
-
-function normalizeKeyValue(value: unknown) {
-  return String(value ?? '')
-    .trim()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function romanizeHangul(value: string) {
-  return Array.from(value).map((char) => {
-    const code = char.charCodeAt(0)
-
-    if (code < 0xac00 || code > 0xd7a3) {
-      return char
-    }
-
-    const offset = code - 0xac00
-    const initialIndex = Math.floor(offset / 588)
-    const medialIndex = Math.floor((offset % 588) / 28)
-    const finalIndex = offset % 28
-
-    return `${HANGUL_INITIALS[initialIndex]}${HANGUL_MEDIALS[medialIndex]}${HANGUL_FINALS[finalIndex]}`
-  }).join('')
-}
-
-function slugFromAgencyName(value: unknown) {
-  const agencyName = String(value ?? '').trim()
-  const latinKey = normalizeKeyValue(agencyName.replace(/[가-힣]+/g, ' '))
-
-  if (latinKey) {
-    return latinKey
-  }
-
-  return normalizeKeyValue(romanizeHangul(agencyName)) || 'agency'
-}
-
-function isGeneratedSlug(value: unknown) {
-  const key = String(value ?? '').trim()
-
-  return !key || key.startsWith('legacy-') || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key)
-}
-
-async function nextUniqueSlug({
-  baseSlug,
-  currentId,
-  payload,
-}: {
-  baseSlug: string
-  currentId?: unknown
-  payload?: {
-    find: (args: {
-      collection: 'artist-press-agencies'
-      depth: number
-      limit: number
-      overrideAccess: boolean
-      pagination: false
-    }) => Promise<{ docs: ArtistPressAgencySlugDoc[] }>
-  }
-}) {
-  if (!payload) {
-    return baseSlug
-  }
-
-  const result = await payload.find({
-    collection: 'artist-press-agencies',
-    depth: 0,
-    limit: 10000,
-    overrideAccess: true,
-    pagination: false,
-  })
-  const usedKeys = new Set(
-    result.docs
-      .filter((doc) => !sameId(doc.id, currentId))
-      .map((doc) => String(doc.slug ?? '').trim())
-      .filter(Boolean),
-  )
-
-  if (!usedKeys.has(baseSlug)) {
-    return baseSlug
-  }
-
-  let suffix = 2
-
-  while (usedKeys.has(`${baseSlug}-${suffix}`)) {
-    suffix += 1
-  }
-
-  return `${baseSlug}-${suffix}`
-}
-
-const normalizeAgencySlug: CollectionBeforeValidateHook = async ({
-  data,
-  operation,
-  originalDoc,
-  req,
-}) => {
-  if (!data) {
-    return data
-  }
-
-  const currentSlug = data.slug ?? originalDoc?.slug
-  const shouldGenerateSlug = operation === 'create' || isGeneratedSlug(currentSlug)
-
-  if (!shouldGenerateSlug) {
-    return data
-  }
-
-  const baseSlug = slugFromAgencyName(data.agencyName ?? originalDoc?.agencyName)
-
-  return {
-    ...data,
-    slug: await nextUniqueSlug({
-      baseSlug,
-      currentId: data.id ?? originalDoc?.id,
-      payload: req.payload,
-    }),
-  }
-}
+const normalizeAgencySlug = createIdSlugBeforeValidate()
+const finalizeAgencySlugAfterCreate = createFinalizeIdSlugAfterCreate('artist-press-agencies')
 
 function validateSlug(value: unknown) {
   const slug = String(value ?? '').trim()
@@ -282,6 +80,7 @@ export const ArtistPressAgencies: CollectionConfig = {
   defaultSort: 'agencyName',
   hooks: {
     afterChange: [
+      finalizeAgencySlugAfterCreate,
       normalizeUploadedMediaPrefixes([{ path: 'logoMedia', role: 'artist-press.agency-logo' }]),
     ],
     beforeValidate: [normalizeAgencySlug, forceArtCenter],

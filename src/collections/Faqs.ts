@@ -5,7 +5,6 @@ import type {
   Validate,
 } from 'payload'
 
-import { createKoreanSlugifyWithFallback } from '../utilities/koreanSlugify'
 import { centerScopedCollectionAccess } from './access'
 import {
   adminRow,
@@ -16,10 +15,12 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
 } from './shared'
-
-const faqSlugify = createKoreanSlugifyWithFallback('faq')
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from './slugUtils'
 
 const faqCategoryOptions = [
   { label: '입학/상담', value: 'admission' },
@@ -266,6 +267,9 @@ const normalizeFaqData: CollectionBeforeValidateHook = (args) => {
   return nextData
 }
 
+const setFaqSlug = createIdSlugBeforeValidate()
+const finalizeFaqSlugAfterCreate = createFinalizeIdSlugAfterCreate('faqs')
+
 export const Faqs: CollectionConfig = {
   slug: 'faqs',
   labels: {
@@ -287,7 +291,8 @@ export const Faqs: CollectionConfig = {
   },
   defaultSort: 'displayOrder',
   hooks: {
-    beforeValidate: [normalizeFaqData, centerScopedBeforeValidate],
+    afterChange: [finalizeFaqSlugAfterCreate],
+    beforeValidate: [normalizeFaqData, centerScopedBeforeValidate, setFaqSlug],
   },
   fields: [
     {
@@ -449,8 +454,6 @@ export const Faqs: CollectionConfig = {
       publishedAtField,
       authorNameField,
     ]),
-    slugField({
-      slugify: faqSlugify,
-    }),
+    idSlugField,
   ],
 }

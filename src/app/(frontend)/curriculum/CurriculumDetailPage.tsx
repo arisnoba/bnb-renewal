@@ -211,7 +211,7 @@ export const queryCurriculumBySlug = cache(
       where: {
         and: [
           {
-            slug: {
+            id: {
               equals: slug,
             },
           },
@@ -242,7 +242,7 @@ export const queryCurriculumStaticParams = cache(async () => {
     },
   })
 
-  return result.docs as Pick<Curriculum, 'centers' | 'slug'>[]
+  return result.docs as Pick<Curriculum, 'centers' | 'id' | 'slug'>[]
 })
 
 function CurriculumOverview({ model }: { model: DetailModel }) {
@@ -435,7 +435,7 @@ function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps
     classroomName: classroom?.title ?? '문의',
     classroomPhotos: normalizeClassroomPhotos(classroom),
     classroomTitle: classroom?.title ?? '강의실',
-    consultHref: `/${center}/consult?curriculum=${encodeURIComponent(curriculum.slug)}`,
+    consultHref: `/${center}/consult?curriculum=${encodeURIComponent(String(curriculum.id))}`,
     dayLabel: days.length > 0 ? days.join('') : '요일 문의',
     educationDate: formatEducationDate(curriculum.educationStartDate),
     lessonCount: lessons.length > 0 ? `${lessons.length}회` : '문의',

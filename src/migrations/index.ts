@@ -134,6 +134,7 @@ import * as migration_20260701_183000_news_slug_policy_cleanup from './20260701_
 import * as migration_20260701_194000_media_filename_compound_index from './20260701_194000_media_filename_compound_index'
 import * as migration_20260701_201500_news_remove_generate_slug from './20260701_201500_news_remove_generate_slug'
 import * as migration_20260701_202500_news_id_slugs from './20260701_202500_news_id_slugs'
+import * as migration_20260701_204500_id_only_slugs from './20260701_204500_id_only_slugs'
 
 export const migrations = [
   {
@@ -815,5 +816,10 @@ export const migrations = [
     up: migration_20260701_202500_news_id_slugs.up,
     down: migration_20260701_202500_news_id_slugs.down,
     name: '20260701_202500_news_id_slugs',
+  },
+  {
+    up: migration_20260701_204500_id_only_slugs.up,
+    down: migration_20260701_204500_id_only_slugs.down,
+    name: '20260701_204500_id_only_slugs',
   },
 ]

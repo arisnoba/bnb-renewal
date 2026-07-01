@@ -1,11 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import {
-  newsSlugForId,
-  newsSlugPrefixFromCenters,
-  setNewsSlugBeforeValidate,
-} from './News'
+import { setNewsSlugBeforeValidate } from './News'
 
 async function runNewsSlugHook({
   data,
@@ -31,19 +27,6 @@ async function runNewsSlugHook({
   } as never)) as Record<string, unknown>
 }
 
-test('news slug prefix uses selected center', () => {
-  assert.equal(newsSlugPrefixFromCenters(['highteen']), 'news-highteen')
-  assert.equal(newsSlugPrefixFromCenters(['all']), 'news-all')
-  assert.equal(newsSlugPrefixFromCenters(['unknown', 'exam']), 'news-exam')
-  assert.equal(newsSlugPrefixFromCenters([]), 'news-art')
-})
-
-test('news slug for id uses the selected center and document id', () => {
-  assert.equal(newsSlugForId({ centers: ['art'], id: 6257 }), 'news-art-6257')
-  assert.equal(newsSlugForId({ centers: ['exam'], id: '42' }), 'news-exam-42')
-  assert.equal(newsSlugForId({ centers: [], id: 11 }), 'news-art-11')
-})
-
 test('news beforeValidate hook uses pending create slugs without querying existing slugs', async () => {
   const data = await runNewsSlugHook({
     data: {
@@ -53,7 +36,7 @@ test('news beforeValidate hook uses pending create slugs without querying existi
     },
   })
 
-  assert.match(String(data.slug), /^news-highteen-pending-[0-9a-f-]{36}$/)
+  assert.match(String(data.slug), /^pending-[0-9a-f-]{36}$/)
 })
 
 test('news beforeValidate hook ignores manually supplied create slugs', async () => {
@@ -67,7 +50,7 @@ test('news beforeValidate hook ignores manually supplied create slugs', async ()
   })
 
   assert.equal('generateSlug' in data, false)
-  assert.match(String(data.slug), /^news-kids-pending-[0-9a-f-]{36}$/)
+  assert.match(String(data.slug), /^pending-[0-9a-f-]{36}$/)
 })
 
 test('news beforeValidate hook keeps existing update slugs stable', async () => {
@@ -80,12 +63,12 @@ test('news beforeValidate hook keeps existing update slugs stable', async () => 
     operation: 'update',
     originalDoc: {
       id: 7,
-      slug: 'news-exam-7',
+      slug: '7',
     },
   })
 
   assert.equal('generateSlug' in data, false)
-  assert.equal(data.slug, 'news-exam-7')
+  assert.equal(data.slug, '7')
 })
 
 test('news beforeValidate hook ignores manually supplied update slugs', async () => {
@@ -100,15 +83,15 @@ test('news beforeValidate hook ignores manually supplied update slugs', async ()
     originalDoc: {
       id: 12,
       generateSlug: false,
-      slug: 'news-kids-12',
+      slug: '12',
     },
   })
 
   assert.equal('generateSlug' in data, false)
-  assert.equal(data.slug, 'news-kids-12')
+  assert.equal(data.slug, '12')
 })
 
-test('news beforeValidate hook recalculates update slugs from current centers and id', async () => {
+test('news beforeValidate hook keeps update slugs based on document id', async () => {
   const data = await runNewsSlugHook({
     data: {
       centers: ['exam'],
@@ -118,30 +101,30 @@ test('news beforeValidate hook recalculates update slugs from current centers an
     operation: 'update',
     originalDoc: {
       id: 12,
-      slug: 'news-kids-12',
+      slug: '12',
     },
   })
 
-  assert.equal(data.slug, 'news-exam-12')
+  assert.equal(data.slug, '12')
 })
 
 test('news beforeValidate hook allows final id slug during create finalization', async () => {
   const data = await runNewsSlugHook({
     context: {
-      finalizeNewsSlug: true,
+      finalizeIdSlug: true,
     },
     data: {
       centers: ['art'],
       generateSlug: false,
-      slug: 'news-art-6257',
+      slug: '6257',
     },
     operation: 'update',
     originalDoc: {
       id: 6257,
-      slug: 'news-art-pending-2f09bdba-3b47-4a45-8b82-79f14ef5c111',
+      slug: 'pending-2f09bdba-3b47-4a45-8b82-79f14ef5c111',
     },
   })
 
   assert.equal('generateSlug' in data, false)
-  assert.equal(data.slug, 'news-art-6257')
+  assert.equal(data.slug, '6257')
 })

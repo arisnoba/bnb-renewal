@@ -362,7 +362,7 @@ function CastingStatusPosterCard({
   center: CenterSlug
   item: CastingStatusPosterItem
 }) {
-  const href = `/${center}/casting-status/${encodeURIComponent(item.slug)}`
+  const href = `/${center}/casting-status/${encodeURIComponent(String(item.id))}`
 
   return (
     <Link

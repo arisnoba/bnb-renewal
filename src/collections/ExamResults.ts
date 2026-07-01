@@ -8,7 +8,6 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { createKoreanSlugifyWithFallback } from "../utilities/koreanSlugify";
 import { centerScopedCollectionAccess } from "./access";
 import {
   authorNameField,
@@ -20,8 +19,12 @@ import {
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
-  slugField,
 } from "./shared";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
 const examResultBodyEditor = lexicalEditor({
   admin: {
@@ -41,8 +44,6 @@ const resultTypeOptions = [
   { label: "대학", value: "university" },
   { label: "예술고", value: "arts_high_school" },
 ];
-
-const examResultSlugify = createKoreanSlugifyWithFallback("exam-result");
 
 const examCentersField = {
   ...centersField,
@@ -85,6 +86,9 @@ const setExamResultCenterBeforeValidate: CollectionBeforeValidateHook = ({ data,
   };
 };
 
+const setExamResultSlug = createIdSlugBeforeValidate();
+const finalizeExamResultSlugAfterCreate = createFinalizeIdSlugAfterCreate("exam-results");
+
 export const ExamResults: CollectionConfig = {
   slug: "exam-results",
   labels: {
@@ -100,7 +104,8 @@ export const ExamResults: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    beforeValidate: [setExamResultCenterBeforeValidate],
+    afterChange: [finalizeExamResultSlugAfterCreate],
+    beforeValidate: [setExamResultCenterBeforeValidate, setExamResultSlug],
   },
   fields: [
     { name: "title", type: "text", label: "제목", required: true },
@@ -130,9 +135,7 @@ export const ExamResults: CollectionConfig = {
         admin: publishingStatusSelectAdmin(),
       },
       authorNameField,
-      slugField({
-        slugify: examResultSlugify,
-      }),
+      idSlugField,
     ]),
   ],
 };

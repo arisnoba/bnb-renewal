@@ -1,7 +1,6 @@
 import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
-  CollectionBeforeValidateHook,
   CollectionConfig,
   DateField,
   PayloadRequest,
@@ -9,8 +8,6 @@ import type {
   TypeWithID,
   Validate,
 } from "payload";
-
-import { randomUUID } from "node:crypto";
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -53,8 +50,12 @@ import {
   sidebarFields,
 } from "./shared";
 import { seoTitleField, syncSeoMetaImageFromUpload } from "./seoFields";
+import {
+  createFinalizeIdSlugAfterCreate,
+  createIdSlugBeforeValidate,
+  idSlugField,
+} from "./slugUtils";
 
-const newsSlugCenters = new Set(["all", "art", "avenue", "exam", "highteen", "kids"]);
 const revalidateNewsAfterChange = createCenterRevalidationAfterChange({
   reason: "news",
   suffixes: ["", "news"],
@@ -213,107 +214,8 @@ function selectedNewsCenters(value: unknown) {
     .filter(Boolean);
 }
 
-function newsSlugCenterFromCenters(value: unknown) {
-  return (
-    selectedNewsCenters(value).find((center) => newsSlugCenters.has(center)) ??
-    "art"
-  );
-}
-
-export function newsSlugPrefixFromCenters(value: unknown) {
-  return `news-${newsSlugCenterFromCenters(value)}`;
-}
-
-export function newsSlugForId({ centers, id }: { centers: unknown; id: unknown }) {
-  const normalizedId = String(id ?? "").trim();
-
-  if (!normalizedId) {
-    return "";
-  }
-
-  return `${newsSlugPrefixFromCenters(centers)}-${normalizedId}`;
-}
-
-export function pendingNewsSlugForCenters(centers: unknown) {
-  return `${newsSlugPrefixFromCenters(centers)}-pending-${randomUUID()}`;
-}
-
-export const setNewsSlugBeforeValidate: CollectionBeforeValidateHook = async ({
-  data,
-  operation,
-  originalDoc,
-  req,
-}) => {
-  if (!data) {
-    return data;
-  }
-
-  const nextData = { ...(data as Record<string, unknown>) };
-  delete nextData.generateSlug;
-  const existingSlug = String(originalDoc?.slug ?? "").trim();
-
-  if (req.context.finalizeNewsSlug && nextData.slug) {
-    return nextData;
-  }
-
-  if (operation === "update" && existingSlug) {
-    const idSlug = newsSlugForId({
-      centers: nextData.centers ?? originalDoc?.centers,
-      id: originalDoc?.id,
-    });
-
-    return {
-      ...nextData,
-      slug: idSlug || existingSlug,
-    };
-  }
-
-  return {
-    ...nextData,
-    slug: pendingNewsSlugForCenters(nextData.centers),
-  };
-};
-
-const finalizeNewsSlugAfterCreate: CollectionAfterChangeHook<NewsRevalidationDoc> = async ({
-  doc,
-  operation,
-  req,
-}) => {
-  if (operation !== "create" || req.context.finalizeNewsSlug) {
-    return doc;
-  }
-
-  const slug = newsSlugForId({ centers: doc.centers, id: doc.id });
-
-  if (!slug || doc.slug === slug) {
-    return doc;
-  }
-
-  const previousDisableRevalidate = req.context.disableRevalidate;
-  const previousFinalizeNewsSlug = req.context.finalizeNewsSlug;
-
-  req.context = {
-    ...req.context,
-    disableRevalidate: true,
-    finalizeNewsSlug: true,
-  };
-
-  try {
-    return (await req.payload.update({
-      collection: "news",
-      data: {
-        slug,
-      },
-      depth: 0,
-      id: doc.id,
-      overrideAccess: true,
-      req,
-    })) as NewsRevalidationDoc;
-  } finally {
-    req.context.disableRevalidate = previousDisableRevalidate;
-    req.context.finalizeNewsSlug = previousFinalizeNewsSlug;
-  }
-};
+export const setNewsSlugBeforeValidate = createIdSlugBeforeValidate();
+const finalizeNewsSlugAfterCreate = createFinalizeIdSlugAfterCreate("news");
 
 function newsCategoryValuesForCenters(value: unknown) {
   return new Set(
@@ -554,14 +456,7 @@ export const News: CollectionConfig = {
       },
     },
     ...sidebarFields([
-      {
-        name: "slug",
-        type: "text",
-        label: "슬러그",
-        required: true,
-        unique: true,
-        index: true,
-      },
+      idSlugField,
     ]),
   ],
   versions: {

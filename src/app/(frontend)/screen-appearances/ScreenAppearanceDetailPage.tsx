@@ -57,13 +57,13 @@ export async function generateScreenAppearanceStaticParams() {
 
     return result.docs.flatMap((appearance) => {
       const center = appearance.centers
-      const slug = appearance.slug
+      const id = appearance.id
 
-      if (!slug || !(center in centers)) {
+      if (!id || !(center in centers)) {
         return []
       }
 
-      return [{ screenAppearanceSlug: slug, slug: center }]
+      return [{ screenAppearanceSlug: String(id), slug: center }]
     })
   } catch {
     return []
@@ -100,7 +100,7 @@ export async function ScreenAppearanceDetailPage({
     { label: '방영일', value: formatDate(appearance.airDateLabel) },
   ].filter((item) => item.value)
   const careerGroups = getCareerGroups(appearance)
-  const adjacent = await queryAdjacentScreenAppearances({ center, slug: appearance.slug })
+  const adjacent = await queryAdjacentScreenAppearances({ center, id: appearance.id })
   const backHref = `/${center}/screen-appearances`
   const backLabel = 'BNB 출연장면'
 
@@ -249,7 +249,7 @@ const queryScreenAppearanceBySlug = cache(
       where: {
         and: [
           {
-            slug: {
+            id: {
               equals: slug,
             },
           },
@@ -276,7 +276,7 @@ const queryScreenAppearanceBySlug = cache(
 )
 
 const queryAdjacentScreenAppearances = cache(
-  async ({ center, slug }: { center: CenterSlug; slug: string }) => {
+  async ({ center, id }: { center: CenterSlug; id: number }) => {
     const payload = await getPayload({ config: configPromise })
     const result = await payload
       .find({
@@ -311,15 +311,15 @@ const queryAdjacentScreenAppearances = cache(
       })
       .catch(() => ({ docs: [] }))
 
-    const index = result.docs.findIndex((item) => item.slug === slug)
+    const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined
     const next = index > 0 ? result.docs[index - 1] : undefined
     const pathPrefix = `/${center}/screen-appearances`
 
     return {
-      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
       nextLabel: next ? formatAdjacentLabel(next, '다음 출연장면') : '다음 출연장면',
-      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+      previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
       previousLabel: previous ? formatAdjacentLabel(previous, '이전 출연장면') : '이전 출연장면',
     }
   },
