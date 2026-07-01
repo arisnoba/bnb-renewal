@@ -41,6 +41,7 @@ type FieldWithName = Field & {
     components?: {
       RowLabel?: unknown;
     };
+    condition?: (data: Record<string, unknown>, siblingData?: Record<string, unknown>) => boolean;
     description?: unknown;
     hidden?: boolean;
     initCollapsed?: boolean;
@@ -283,6 +284,13 @@ test("screen appearances use requested work information field order", () => {
     "roleName",
   ]);
   assert.ok(topLevelFieldNames.indexOf("airDateLabel") < topLevelFieldNames.indexOf("introText"));
+});
+
+test("screen appearances hide profile image field when a profile is linked", () => {
+  const profileImagePath = getFieldDeep(ScreenAppearances, "profileImagePath");
+
+  assert.equal(profileImagePath.admin?.condition?.({}, { actorInputMode: "profile" }), false);
+  assert.equal(profileImagePath.admin?.condition?.({}, { actorInputMode: "manual" }), true);
 });
 
 test("screen appearances can relate to a broadcast station", () => {

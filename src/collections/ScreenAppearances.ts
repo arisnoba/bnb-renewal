@@ -1,4 +1,4 @@
-import type { CollectionBeforeValidateHook, CollectionConfig, SelectField, Validate } from "payload";
+import type { CollectionBeforeValidateHook, CollectionConfig, Field, SelectField, Validate } from "payload";
 
 import { centerScopedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
@@ -91,6 +91,21 @@ type ScreenAppearanceData = {
 
 function hasRelationshipValue(value: unknown) {
   return Array.isArray(value) ? value.length > 0 : Boolean(value);
+}
+
+function manualActorOnlyField(field: Field): Field {
+  const fieldWithAdmin = field as Field & {
+    admin?: Record<string, unknown>;
+  };
+
+  return {
+    ...field,
+    admin: {
+      ...fieldWithAdmin.admin,
+      condition: (_data: unknown, siblingData?: ScreenAppearanceData) =>
+        siblingData?.actorInputMode === "manual",
+    },
+  } as Field;
 }
 
 function selectedCenterValues(value: unknown) {
@@ -344,7 +359,7 @@ export const ScreenAppearances: CollectionConfig = {
       {
         label: "미디어",
         fields: [
-          adminRow([imagePathField("profileImagePath", "프로필 이미지")]),
+          adminRow([manualActorOnlyField(imagePathField("profileImagePath", "프로필 이미지"))]),
           adminRow([imagePathField("thumbnailPath", "썸네일")]),
           {
             name: "bodyImages",
