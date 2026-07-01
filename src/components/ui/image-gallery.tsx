@@ -1,62 +1,81 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 
+import { PageDeco, type DecoIcon } from '@/components/PageDeco'
+import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
 export type ImageGalleryItem = {
-  label: string
+  center: CenterSlug
   title: string
   description: string
   href: string
-  image: string
-  enabled?: boolean
+  cta: string
+  desktopImage: string
+  mobileImage: string
+  decoIcon: DecoIcon
+  textTone?: 'dark' | 'light'
 }
-
-const images = [
-  'https://images.unsplash.com/photo-1719368472026-dc26f70a9b76?q=80&h=800&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1649265825072-f7dd6942baed?q=80&h=800&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1555212697-194d092e3b8f?q=80&h=800&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1729086046027-09979ade13fd?q=80&h=800&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1601568494843-772eb04aca5d?q=80&h=800&w=800&auto=format&fit=crop',
-]
 
 const defaultItems: ImageGalleryItem[] = [
   {
-    label: 'ART CENTER',
+    center: 'art',
     title: '아트센터',
-    description: '연기 교육과 현장 캐스팅을 연결하는 배우 과정',
+    description:
+      '실전 중심의 전문 교육으로 배우의 꿈을 키우고 현장 경험을 담은 체계적인 커리큘럼으로 연기의 기본부터 작품 활동까지 성장을 함께하는 아티스트 교육을 제공합니다.',
     href: '/art',
-    image: images[0]!,
+    cta: '아트센터 바로가기',
+    desktopImage: '/assets/gate/art-desktop.png',
+    mobileImage: '/assets/gate/art-mobile.png',
+    decoIcon: 'icon-b.svg',
+    textTone: 'dark',
   },
   {
-    label: 'EXAM CENTER',
+    center: 'exam',
     title: '입시센터',
-    description: '예고, 대학 입시를 위한 단계별 실기 준비',
+    description:
+      '예고·예대 입시를 위한 체계적인 커리큘럼과 실전 중심의 맞춤형 입시 전략으로 학생 개개인의 가능성을 극대화하며 목표 대학 합격을 함께 만들어갑니다.',
     href: '/exam',
-    image: images[1]!,
+    cta: '입시센터 바로가기',
+    desktopImage: '/assets/gate/exam-desktop.png',
+    mobileImage: '/assets/gate/exam-mobile.png',
+    decoIcon: 'icon-ae.svg',
   },
   {
-    label: 'HIGH TEEN CENTER',
+    center: 'highteen',
     title: '하이틴센터',
-    description: '청소년 배우를 위한 연기, 매니지먼트, 캐스팅 과정',
+    description:
+      '청소년의 가능성과 재능을 발견하고 즐겁고 체계적인 연기 교육을 통해 자신감과 표현력을 자연스럽게 키우며 배우로 성장하는 첫걸음을 함께합니다.',
     href: '/highteen',
-    image: images[2]!,
+    cta: '하이틴센터 바로가기',
+    desktopImage: '/assets/gate/highteen-desktop.png',
+    mobileImage: '/assets/gate/highteen-mobile.png',
+    decoIcon: 'icon-ng.svg',
   },
   {
-    label: 'KIDS CENTER',
+    center: 'kids',
     title: '키즈센터',
-    description: '아역 배우 성장에 맞춘 교육과 현장 경험',
+    description:
+      '아이들의 상상력과 자신감을 키워주는 놀이와 교육이 어우러진 연기 프로그램으로 창의적인 표현력과 바른 인성을 함께 배우며 즐겁게 성장하는 시간을 만들어갑니다.',
     href: '/kids',
-    image: images[3]!,
+    cta: '키즈센터 바로가기',
+    desktopImage: '/assets/gate/kids-desktop.png',
+    mobileImage: '/assets/gate/kids-mobile.png',
+    decoIcon: 'icon-u.svg',
   },
   {
-    label: 'AVENUE CENTER',
+    center: 'avenue',
     title: '애비뉴센터',
-    description: '제휴와 프로필, 캐스팅을 연결하는 확장 과정',
+    description:
+      '오디션과 작품 활동을 위한 실전 교육으로 현장에서 요구하는 역량을 체계적으로 익히고 다양한 캐스팅 기회와 경험을 통해 배우의 가능성을 현실로 연결합니다.',
     href: '/avenue',
-    image: images[4]!,
-    enabled: false,
+    cta: '애비뉴센터 바로가기',
+    desktopImage: '/assets/gate/avenue-desktop.png',
+    mobileImage: '/assets/gate/avenue-mobile.png',
+    decoIcon: 'icon-m.svg',
   },
 ]
 
@@ -68,73 +87,137 @@ export default function ImageGallery({
   items = defaultItems,
 }: ImageGalleryProps) {
   return (
-    <section className="flex min-h-screen w-full flex-col items-center justify-center bg-black py-12 text-white">
-      <div className="flex w-full max-w-7xl flex-col gap-10 px-4 md:px-6">
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-bold uppercase leading-none text-white/55">
-            BNB INDUSTRY
-          </p>
-          <h1 className="text-[40px] font-extrabold leading-[1.08] tracking-normal text-balance md:text-[56px]">
-            배우앤배움 센터 선택
-          </h1>
-        </div>
-
-        <div className="flex h-auto w-full flex-col items-stretch gap-3 lg:h-[520px] lg:flex-row">
-          {items.map((item) => {
-            const isEnabled = item.enabled !== false
-            const cardClassName = cn(
-              'group relative h-[320px] w-full flex-grow overflow-hidden rounded-lg bg-[#111] text-left transition-all duration-500 lg:h-full lg:w-56 hover:lg:w-full',
-              isEnabled ? 'cursor-pointer' : 'cursor-default',
-            )
-            const content = (
-              <>
-                <span
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 group-focus-visible:scale-105"
-                  style={{ backgroundImage: `url(${item.image})` }}
-                />
-                <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5" />
-                {!isEnabled ? (
-                  <span className="absolute inset-0 bg-black/45" />
-                ) : null}
-                <span className="absolute inset-x-0 bottom-0 flex min-h-[172px] flex-col items-start justify-end gap-3 p-5 text-white md:p-6">
-                  <span className="whitespace-nowrap text-[11px] font-extrabold uppercase leading-none text-white/70">
-                    {item.label}
-                  </span>
-                  <span className="whitespace-nowrap text-[26px] font-extrabold leading-tight tracking-normal">
-                    {item.title}
-                  </span>
-                  <span className="max-w-[25rem] text-sm font-medium leading-[1.55] text-white/82 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-                    {item.description}
-                  </span>
-                  {!isEnabled ? (
-                    <span className="w-fit rounded-full bg-white/90 px-3 py-1 text-xs font-extrabold text-[#111]">
-                      준비중
-                    </span>
-                  ) : null}
-                </span>
-              </>
-            )
-
-            if (!isEnabled) {
-              return (
-                <div
-                  aria-disabled="true"
-                  className={cardClassName}
-                  key={item.href}
-                >
-                  {content}
-                </div>
-              )
-            }
-
-            return (
-              <Link className={cardClassName} href={item.href} key={item.href}>
-                {content}
-              </Link>
-            )
-          })}
-        </div>
+    <main className="page page-dark page-landing page-gate bg-black text-white" data-center="art">
+      <div className="section-gate-shell mx-auto flex w-full max-w-[1920px] flex-col gap-3 px-3 py-3 md:gap-6 md:px-6 md:py-6">
+        <GateHero />
+        <section className="section-gate-centers flex flex-col gap-3 md:gap-6">
+          {items.map((item) => (
+            <GateCenterCard item={item} key={item.href} />
+          ))}
+        </section>
       </div>
+    </main>
+  )
+}
+
+function GateHero() {
+  return (
+    <section
+      className="section-gate-hero relative h-[460px] overflow-hidden bg-[#111] md:h-[calc(100svh-48px)] md:max-h-[1023px] md:min-h-[720px]"
+      data-center="art"
+      data-page-tone="dark"
+    >
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="object-cover object-center md:hidden"
+        fill
+        priority
+        sizes="100vw"
+        src="/assets/gate/hero-mobile.png"
+      />
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="hidden object-cover object-center md:block"
+        fill
+        priority
+        sizes="100vw"
+        src="/assets/gate/hero-desktop.png"
+      />
+      <PageDeco
+        className="section-gate-hero__deco section-gate-hero__deco--top-left -left-17 -top-3 z-1 [--page-deco-size:146px] md:-left-44 md:-top-8 md:[--page-deco-size:400px]"
+        icon="icon-ae.svg"
+      />
+      <PageDeco
+        className="section-gate-hero__deco section-gate-hero__deco--bottom-right -right-16 -bottom-9 z-1 [--page-deco-size:146px] md:-right-43 md:-bottom-25 md:[--page-deco-size:420px]"
+        icon="icon-ng.svg"
+      />
+      <Image
+        alt="배우앤배움 ENM"
+        className="section-gate-hero__logo absolute right-0 top-0 z-2 h-6 w-[69px] object-contain md:right-10 md:top-10 md:h-[55px] md:w-[161px]"
+        height={55}
+        priority
+        src="/assets/gate/logo-enm.png"
+        width={161}
+      />
+      <div className="section-gate-hero__content absolute left-1/2 top-[151px] z-2 w-60 -translate-x-1/2 text-center md:top-[330px] md:w-[693px]">
+        <h1 className="type-display-l md:type-display-xl text-balance font-extrabold leading-tight tracking-normal text-white">
+          꿈을 발견하고,
+          <br />
+          가능성을 키워가는 곳
+        </h1>
+        <p className="type-caption-l mt-7 font-semibold text-white md:mt-10 md:type-title-s">
+          배우앤배움의 모든 교육 과정을 만나보세요
+        </p>
+      </div>
+      <ChevronDown
+        aria-hidden="true"
+        className="section-gate-hero__scroll hidden absolute bottom-20 left-1/2 z-2 size-8 -translate-x-1/2 text-white md:block"
+        strokeWidth={2.4}
+      />
     </section>
+  )
+}
+
+function GateCenterCard({ item }: { item: ImageGalleryItem }) {
+  const isDarkText = item.textTone === 'dark'
+  const title = `배우앤배움 ${item.title}`
+
+  return (
+    <Link
+      className="section-gate-card group relative block h-[460px] overflow-hidden bg-[#111] text-left outline-none md:h-[800px]"
+      data-center={item.center}
+      href={item.href}
+    >
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="object-cover transition-transform duration-500 group-hover:scale-[1.02] group-focus-visible:scale-[1.02] md:hidden"
+        fill
+        loading="eager"
+        sizes="100vw"
+        src={item.mobileImage}
+      />
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="hidden object-cover transition-transform duration-500 group-hover:scale-[1.02] group-focus-visible:scale-[1.02] md:block"
+        fill
+        loading="eager"
+        sizes="100vw"
+        src={item.desktopImage}
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          'absolute inset-0 z-1 transition-opacity duration-500 group-hover:opacity-80 group-focus-visible:opacity-80',
+          isDarkText
+            ? 'bg-gradient-to-r from-white/10 via-transparent to-transparent'
+            : 'bg-gradient-to-r from-black/12 via-transparent to-transparent',
+        )}
+      />
+      <div className="section-gate-card__headline absolute left-4 top-6 z-3 w-52 md:left-20 md:top-20 md:w-[420px]">
+        <h2 className="type-display-l md:type-display-xl whitespace-pre-line font-extrabold leading-tight tracking-normal text-brand">
+          {title.replace(' ', '\n')}
+        </h2>
+        <span className="type-label-s mt-8 inline-flex items-center gap-1.5 font-bold text-brand md:mt-10">
+          {item.cta}
+          <ArrowRight aria-hidden="true" className="size-3.5" strokeWidth={2.4} />
+        </span>
+      </div>
+      <p
+        className={cn(
+          'section-gate-card__description type-caption-s absolute bottom-5 left-4 z-3 max-w-[21rem] font-medium leading-normal md:bottom-20 md:left-20 md:type-body-s md:max-w-[42rem]',
+          isDarkText ? 'text-white/90 md:text-neutral-700' : 'text-white/90',
+        )}
+      >
+        {item.description}
+      </p>
+      <PageDeco
+        className="section-gate-card__deco bottom-1.5 right-1.5 z-2 opacity-95 [--page-deco-size:100px] md:-right-[30px] md:-bottom-[30px] md:[--page-deco-size:338px]"
+        icon={item.decoIcon}
+      />
+    </Link>
   )
 }

@@ -7,45 +7,60 @@ import { commonOpenGraphImage, mergeOpenGraph } from '@/utilities/mergeOpenGraph
 
 const gateCenters: ImageGalleryItem[] = [
   {
-    label: 'ART CENTER',
+    center: 'art',
     title: '아트센터',
-    description: '연기 교육과 현장 캐스팅을 연결하는 배우 과정',
+    description:
+      '실전 중심의 전문 교육으로 배우의 꿈을 키우고 현장 경험을 담은 체계적인 커리큘럼으로 연기의 기본부터 작품 활동까지 성장을 함께하는 아티스트 교육을 제공합니다.',
     href: '/art',
-    image:
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80',
+    cta: '아트센터 바로가기',
+    desktopImage: '/assets/gate/art-desktop.png',
+    mobileImage: '/assets/gate/art-mobile.png',
+    decoIcon: 'icon-b.svg',
+    textTone: 'dark',
   },
   {
-    label: 'EXAM CENTER',
+    center: 'exam',
     title: '입시센터',
-    description: '예고, 대학 입시를 위한 단계별 실기 준비',
+    description:
+      '예고·예대 입시를 위한 체계적인 커리큘럼과 실전 중심의 맞춤형 입시 전략으로 학생 개개인의 가능성을 극대화하며 목표 대학 합격을 함께 만들어갑니다.',
     href: '/exam',
-    image:
-      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80',
+    cta: '입시센터 바로가기',
+    desktopImage: '/assets/gate/exam-desktop.png',
+    mobileImage: '/assets/gate/exam-mobile.png',
+    decoIcon: 'icon-ae.svg',
   },
   {
-    label: 'HIGH TEEN CENTER',
+    center: 'highteen',
     title: '하이틴센터',
-    description: '청소년 배우를 위한 연기, 매니지먼트, 캐스팅 과정',
+    description:
+      '청소년의 가능성과 재능을 발견하고 즐겁고 체계적인 연기 교육을 통해 자신감과 표현력을 자연스럽게 키우며 배우로 성장하는 첫걸음을 함께합니다.',
     href: '/highteen',
-    image:
-      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80',
+    cta: '하이틴센터 바로가기',
+    desktopImage: '/assets/gate/highteen-desktop.png',
+    mobileImage: '/assets/gate/highteen-mobile.png',
+    decoIcon: 'icon-ng.svg',
   },
   {
-    label: 'KIDS CENTER',
+    center: 'kids',
     title: '키즈센터',
-    description: '아역 배우 성장에 맞춘 교육과 현장 경험',
+    description:
+      '아이들의 상상력과 자신감을 키워주는 놀이와 교육이 어우러진 연기 프로그램으로 창의적인 표현력과 바른 인성을 함께 배우며 즐겁게 성장하는 시간을 만들어갑니다.',
     href: '/kids',
-    image:
-      'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=900&q=80',
+    cta: '키즈센터 바로가기',
+    desktopImage: '/assets/gate/kids-desktop.png',
+    mobileImage: '/assets/gate/kids-mobile.png',
+    decoIcon: 'icon-u.svg',
   },
   {
-    label: 'AVENUE CENTER',
+    center: 'avenue',
     title: '애비뉴센터',
-    description: '제휴와 프로필, 캐스팅을 연결하는 확장 과정',
+    description:
+      '오디션과 작품 활동을 위한 실전 교육으로 현장에서 요구하는 역량을 체계적으로 익히고 다양한 캐스팅 기회와 경험을 통해 배우의 가능성을 현실로 연결합니다.',
     href: '/avenue',
-    image:
-      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80',
-    enabled: false,
+    cta: '애비뉴센터 바로가기',
+    desktopImage: '/assets/gate/avenue-desktop.png',
+    mobileImage: '/assets/gate/avenue-mobile.png',
+    decoIcon: 'icon-m.svg',
   },
 ]
 
