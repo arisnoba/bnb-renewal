@@ -29,6 +29,7 @@ import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
 import { FloatingDock } from '../../_components/FloatingDock.client'
+import { SmoothAnchorLink } from '../../_components/SmoothAnchorLink.client'
 
 type TabKey = 'steps' | 'criteria' | 'cohorts'
 type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
@@ -1020,7 +1021,7 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
               const isActive = activeSection === tab.key
 
               return (
-                <a
+                <SmoothAnchorLink
                   aria-current={isActive ? 'true' : undefined}
                   className={cn(
                     'relative flex h-14 shrink-0 items-center type-label-l font-bold leading-none text-white/35 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950',
@@ -1033,7 +1034,7 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
                   {isActive ? (
                     <span className="absolute inset-x-0 bottom-0 h-[3px] bg-brand" />
                   ) : null}
-                </a>
+                </SmoothAnchorLink>
               )
             })}
           </div>

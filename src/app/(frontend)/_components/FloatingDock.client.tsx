@@ -1,12 +1,13 @@
 'use client'
 
-import type { MouseEvent } from 'react'
 import { useEffect, useState } from 'react'
 
 import { ChevronLeft, ChevronRight, List } from 'lucide-react'
 import Link from 'next/link'
 
 import { cn } from '@/utilities/ui'
+
+import { handleSmoothAnchorClick } from './SmoothAnchorLink.client'
 
 type FloatingDockItemKind = 'list' | 'next' | 'previous'
 
@@ -161,7 +162,7 @@ export function FloatingDock({
               className={itemClassName}
               href={href}
               key={href}
-              onClick={handleAnchorClick}
+              onClick={handleSmoothAnchorClick}
             >
               {content}
             </a>
@@ -197,41 +198,6 @@ function DockIcon({ kind }: { kind?: FloatingDockItemKind }) {
   }
 
   return null
-}
-
-function handleAnchorClick(event: MouseEvent<HTMLAnchorElement>) {
-  if (
-    event.defaultPrevented ||
-    event.button !== 0 ||
-    event.metaKey ||
-    event.altKey ||
-    event.ctrlKey ||
-    event.shiftKey
-  ) {
-    return
-  }
-
-  const href = event.currentTarget.getAttribute('href')
-
-  if (!href?.startsWith('#')) {
-    return
-  }
-
-  const targetId = decodeURIComponent(href.slice(1))
-  const target = document.getElementById(targetId)
-
-  if (!target) {
-    return
-  }
-
-  event.preventDefault()
-  window.history.pushState(null, '', href)
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  target.scrollIntoView({
-    behavior: prefersReducedMotion ? 'auto' : 'smooth',
-    block: 'start',
-  })
 }
 
 function getPageTopOffset() {

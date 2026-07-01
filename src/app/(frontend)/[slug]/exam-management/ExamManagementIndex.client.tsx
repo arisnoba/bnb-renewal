@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 
 import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+
+import { SmoothAnchorLink } from '../../_components/SmoothAnchorLink.client'
 
 type ExamManagementIndexItem = {
   id: string
@@ -81,7 +82,7 @@ export function ExamManagementIndex({ items }: ExamManagementIndexProps) {
         const isActive = activeId === item.id
 
         return (
-          <Link
+          <SmoothAnchorLink
             aria-current={isActive ? 'true' : undefined}
             className={[
               'section-exam-management-list__nav-link group relative inline-flex w-fit items-center py-1 type-label-m font-semibold transition-[color,padding] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand',
@@ -99,7 +100,7 @@ export function ExamManagementIndex({ items }: ExamManagementIndexProps) {
               strokeWidth={2.3}
             />
             <span>{item.title}</span>
-          </Link>
+          </SmoothAnchorLink>
         )
       })}
     </nav>
