@@ -29,6 +29,7 @@ import {
   centersField,
   displayStatusOptions,
   publishedAtField,
+  publishingStatusSelectAdmin,
   sidebarFields,
   slugField,
 } from "./shared";
@@ -155,6 +156,7 @@ export const News: CollectionConfig = {
         label: "상태",
         defaultValue: "archived",
         options: displayStatusOptions,
+        admin: publishingStatusSelectAdmin(),
       },
       publishedAtField,
       authorNameField,

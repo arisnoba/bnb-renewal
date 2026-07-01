@@ -9,6 +9,7 @@ import {
   centersField,
   displayStatusOptions,
   publishedAtField,
+  publishingStatusSelectAdmin,
   sidebarFields,
 } from "./shared";
 
@@ -116,6 +117,7 @@ export const CastingDirectors: CollectionConfig = {
         label: "상태",
         defaultValue: "archived",
         options: displayStatusOptions,
+        admin: publishingStatusSelectAdmin(),
       },
       authorNameField,
     ]),

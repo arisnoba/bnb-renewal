@@ -14,6 +14,7 @@ import {
   centersField,
   displayStatusOptions,
   publishedAtField,
+  publishingStatusSelectAdmin,
   sidebarFields,
   slugField,
 } from './shared'
@@ -437,6 +438,7 @@ export const Faqs: CollectionConfig = {
         label: '상태',
         defaultValue: 'published',
         options: displayStatusOptions,
+        admin: publishingStatusSelectAdmin(),
       },
       {
         name: 'displayOrder',

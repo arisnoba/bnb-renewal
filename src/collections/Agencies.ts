@@ -8,6 +8,7 @@ import {
   authorNameField,
   centersField,
   displayStatusOptions,
+  publishingStatusSelectAdmin,
   sidebarFields,
 } from "./shared";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
@@ -117,6 +118,7 @@ export const Agencies: CollectionConfig = {
         label: "상태",
         defaultValue: "archived",
         options: displayStatusOptions,
+        admin: publishingStatusSelectAdmin(),
       },
       {
         name: "displayOrder",

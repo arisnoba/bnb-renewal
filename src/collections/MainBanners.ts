@@ -11,7 +11,13 @@ import { revalidatePath } from 'next/cache'
 
 import type { MainBanner } from '@/payload-types'
 
-import { centerOptions, type CenterValue, isGlobalAdminUser, userCenterValue } from './shared'
+import {
+  centerOptions,
+  type CenterValue,
+  isGlobalAdminUser,
+  publishingStatusSelectAdmin,
+  userCenterValue,
+} from './shared'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 
 type MainBannerData = {
@@ -556,9 +562,9 @@ export const MainBanners: CollectionConfig = {
       defaultValue: 'draft',
       options: statusOptions,
       validate: requiredValue('상태를 선택해야 합니다.'),
-      admin: {
+      admin: publishingStatusSelectAdmin({
         position: 'sidebar',
-      },
+      }),
     },
     {
       name: 'useReservation',

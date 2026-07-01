@@ -1,5 +1,6 @@
 import { MainBannerProfileItemRowLabel as MainBannerProfileItemRowLabel_61d6a8b511fb8512e197feab19aa1a04 } from '@/components/payload/MainBannerProfileItemRowLabel'
 import { MainBannerExamReviewItemRowLabel as MainBannerExamReviewItemRowLabel_f7311788e7704ada130e7ce22f3ee48f } from '@/components/payload/MainBannerExamReviewItemRowLabel'
+import { PublishingStatusSelectField as PublishingStatusSelectField_0d8c46f63e81c9e9c0e335cf9c116b5b } from '@/components/payload/PublishingStatusSelectField'
 import { AdminCenterListFilter as AdminCenterListFilter_8505cbc6e33dd336f497ea8ccda317cf } from '@/components/payload/AdminCenterListFilter'
 import { SocialLinkImagePreviewField as SocialLinkImagePreviewField_ad630b611e20c4e31bd53349dd0bb29b } from '@/components/payload/SocialLinkImagePreviewField'
 import { HistoryMonthItemRowLabel as HistoryMonthItemRowLabel_4e0cc1a03b1062528e5e10e749266102 } from '@/components/payload/HistoryMonthItemRowLabel'
@@ -78,6 +79,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "@/components/payload/MainBannerProfileItemRowLabel#MainBannerProfileItemRowLabel": MainBannerProfileItemRowLabel_61d6a8b511fb8512e197feab19aa1a04,
   "@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel": MainBannerExamReviewItemRowLabel_f7311788e7704ada130e7ce22f3ee48f,
+  "@/components/payload/PublishingStatusSelectField#PublishingStatusSelectField": PublishingStatusSelectField_0d8c46f63e81c9e9c0e335cf9c116b5b,
   "@/components/payload/AdminCenterListFilter#AdminCenterListFilter": AdminCenterListFilter_8505cbc6e33dd336f497ea8ccda317cf,
   "@/components/payload/SocialLinkImagePreviewField#SocialLinkImagePreviewField": SocialLinkImagePreviewField_ad630b611e20c4e31bd53349dd0bb29b,
   "@/components/payload/HistoryMonthItemRowLabel#HistoryMonthItemRowLabel": HistoryMonthItemRowLabel_4e0cc1a03b1062528e5e10e749266102,

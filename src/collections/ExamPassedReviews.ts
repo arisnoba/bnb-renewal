@@ -26,6 +26,7 @@ import {
   imagePathField,
   isExamAdminMenuHidden,
   publishedAtField,
+  publishingStatusSelectAdmin,
   sidebarFields,
   slugField,
 } from "./shared";
@@ -184,6 +185,7 @@ export const ExamPassedReviews: CollectionConfig = {
         label: "상태",
         defaultValue: "archived",
         options: displayStatusOptions,
+        admin: publishingStatusSelectAdmin(),
       },
       {
         name: "authorName",

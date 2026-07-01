@@ -5,7 +5,14 @@ import type {
   Validate,
 } from 'payload'
 
-import { adminRow, centerOptions, displayStatusOptions, isGlobalAdminUser, userCenterValue } from './shared'
+import {
+  adminRow,
+  centerOptions,
+  displayStatusOptions,
+  isGlobalAdminUser,
+  publishingStatusSelectAdmin,
+  userCenterValue,
+} from './shared'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import { extractYouTubeVideoId } from '@/lib/youtube'
 import {
@@ -275,9 +282,9 @@ export const SocialLinks: CollectionConfig = {
       defaultValue: 'published',
       options: displayStatusOptions,
       validate: requiredValue('상태를 선택해야 합니다.'),
-      admin: {
+      admin: publishingStatusSelectAdmin({
         position: 'sidebar',
-      },
+      }),
     },
     {
       name: 'createdAt',

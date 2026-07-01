@@ -17,6 +17,7 @@ import {
   authorNameField,
   centerScopedBeforeValidate,
   centersField,
+  publishingStatusSelectAdmin,
   sidebarFields,
   slugField,
 } from "./shared";
@@ -326,6 +327,7 @@ export const Teachers: CollectionConfig = {
           { label: "공개", value: "published" },
           { label: "비공개", value: "archived" },
         ],
+        admin: publishingStatusSelectAdmin(),
       },
     ]),
     slugField({ slugify: koreanSlugify, useAsSlug: "name" }),

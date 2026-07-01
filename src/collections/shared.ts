@@ -1,4 +1,4 @@
-import type { CollectionBeforeValidateHook, Field } from "payload";
+import type { CollectionBeforeValidateHook, Field, SelectField } from "payload";
 import { slugField as payloadSlugField } from "payload";
 
 import { koreanSlugify } from "../utilities/koreanSlugify";
@@ -140,6 +140,21 @@ export const displayStatusOptions = [
   { label: "공개", value: "published" },
   { label: "비공개", value: "archived" },
 ];
+
+const publishingStatusSelectField =
+  "@/components/payload/PublishingStatusSelectField#PublishingStatusSelectField";
+
+export function publishingStatusSelectAdmin(
+  admin: SelectField["admin"] = {},
+): SelectField["admin"] {
+  return {
+    ...admin,
+    components: {
+      ...(admin?.components ?? {}),
+      Field: publishingStatusSelectField,
+    },
+  };
+}
 
 export const centersField: Field = {
   name: "centers",
@@ -314,6 +329,7 @@ export const displayStatusField: Field = {
   label: "상태",
   defaultValue: "archived",
   options: displayStatusOptions,
+  admin: publishingStatusSelectAdmin(),
 };
 
 export const publishingFields: Field[] = [publishedAtField, displayStatusField];
