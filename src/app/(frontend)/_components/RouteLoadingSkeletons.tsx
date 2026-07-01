@@ -5,6 +5,7 @@ import {
   getExamResultsHeroImage,
   PageHeroImage,
 } from "@/app/(frontend)/_components/PageHeroImage";
+import { HeroMosaicDim } from "@/app/(frontend)/_components/HeroMosaicDim";
 import { getPageDecoIcons, PageDeco } from "@/components/PageDeco";
 import type { CenterSlug } from "@/lib/centers";
 import { cn } from "@/utilities/ui";
@@ -545,6 +546,12 @@ export function HeroArchiveLoadingSkeleton({
     "direct-castings": "page-direct-castings",
     "screen-appearances": "page-screen-appearances",
   };
+  const usesMosaicDim =
+    kind === "direct-castings" || kind === "screen-appearances";
+  const heroHeightClassName =
+    kind === "artist-press"
+      ? "min-h-[620px] md:min-h-[800px]"
+      : "min-h-[560px] md:min-h-[800px]";
 
   return (
     <main
@@ -554,7 +561,7 @@ export function HeroArchiveLoadingSkeleton({
       <LoadingLabel />
       <section
         aria-label="페이지 상단 콘텐츠 로딩"
-        className="relative min-h-[520px] overflow-hidden bg-black md:min-h-[760px]"
+        className={cn("relative overflow-hidden bg-black", heroHeightClassName)}
         data-page-tone="dark"
       >
         <div
@@ -569,8 +576,17 @@ export function HeroArchiveLoadingSkeleton({
             />
           ))}
         </div>
-        <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
-        <div className="container relative z-10 flex min-h-[520px] items-end pb-18 pt-32 md:min-h-[760px] md:pb-[120px]">
+        {usesMosaicDim ? (
+          <HeroMosaicDim />
+        ) : (
+          <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
+        )}
+        <div
+          className={cn(
+            "container relative z-10 flex items-end pb-20 pt-32 md:pb-[120px]",
+            heroHeightClassName,
+          )}
+        >
           <div className="space-y-4">
             <SkeletonBlock className="h-9 w-32" tone="dark" />
             <SkeletonBlock className="h-14 w-[min(70vw,420px)]" tone="dark" />

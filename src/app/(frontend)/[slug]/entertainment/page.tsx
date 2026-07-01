@@ -9,6 +9,7 @@ import React, { cache } from 'react'
 import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { Media } from '@/components/Media/Renderer'
 import { PageIntro } from '@/components/PageIntro'
+import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { assertCenter, centers, type CenterSlug } from '@/lib/centers'
 import type { Agency } from '@/payload-types'
@@ -72,19 +73,21 @@ export default async function EntertainmentEducationPage({ params }: Args) {
 }
 
 function EntertainmentHero({ center }: { center: EntertainmentCenter }) {
+  const decoIcons = getPageDecoIcons(2, `entertainment-${center}`)
+
   return (
-    <section className="section-entertainment-hero relative min-h-[520px] overflow-hidden md:min-h-[740px]">
+    <section className="section-entertainment-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]">
       <PageHeroImage image={getEducationHeroImage(center)} className="opacity-55 grayscale" />
-      <div className="absolute inset-0 bg-black/55" />
-      <div
-        aria-hidden="true"
-        className="absolute left-[-72px] top-[34%] size-[170px] rounded-full border-[48px] border-brand md:left-[-94px] md:size-[240px] md:border-[68px]"
+      <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
+      <PageDeco
+        className="-left-20 top-[22%] md:-left-28"
+        icon={decoIcons[0]}
       />
-      <div
-        aria-hidden="true"
-        className="absolute bottom-[-64px] right-[-52px] size-[190px] border-[58px] border-brand md:bottom-[-78px] md:right-[-70px] md:size-[260px] md:border-[78px]"
+      <PageDeco
+        className="-right-12 bottom-[10%] md:-right-20"
+        icon={decoIcons[1]}
       />
-      <div className="container relative flex min-h-[520px] items-end pb-[72px] pt-[calc(var(--admin-bar-height,0px)+118px)] md:min-h-[740px] md:pb-[126px] md:pt-[calc(var(--admin-bar-height,0px)+144px)]">
+      <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[142px]">
         <div className="page-hero-label">
           <span className="block text-brand">교육</span>
           <span className="block">엔터테인먼트</span>

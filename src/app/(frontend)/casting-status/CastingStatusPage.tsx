@@ -5,6 +5,7 @@ import configPromise from '@payload-config'
 import Image from 'next/image'
 import { getPayload } from 'payload'
 
+import { HeroMosaicDim } from '../_components/HeroMosaicDim'
 import {
   findCastingStatusOverview,
   getEmptyCastingStatusOverview,
@@ -45,7 +46,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
         data-page-tone="dark"
       >
         <CastingStatusHeroVisual items={heroItems} />
-        <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
+        <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[36%] max-md:hidden! md:block md:-left-28"
           icon={decoIcons[0]}
@@ -109,7 +110,7 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
   if (items.length === 0) {
     return (
       <div
-        className="hero-pattern hero-pattern--edge-dim section-casting-status-hero__visual absolute inset-0 bg-neutral-950"
+        className="section-casting-status-hero__visual absolute inset-0 bg-neutral-950"
         aria-hidden="true"
       />
     )
@@ -118,12 +119,12 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
   return (
     <div
       aria-hidden="true"
-      className="hero-pattern hero-pattern--edge-dim section-casting-status-hero__visual absolute inset-0 overflow-hidden"
+      className="section-casting-status-hero__visual absolute inset-0 overflow-hidden"
     >
-      <div className="hero-pattern__grid section-casting-status-hero__poster-grid absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
+      <div className="section-casting-status-hero__poster-grid absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
         {items.map((item, index) => (
           <div
-            className="hero-pattern__item section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
+            className="section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
             key={`${item.id}-${index}`}
           >
             <Image

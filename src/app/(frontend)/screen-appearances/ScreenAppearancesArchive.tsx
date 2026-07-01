@@ -25,6 +25,8 @@ import React from 'react'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
+import { HeroMosaicDim } from '../_components/HeroMosaicDim'
+
 type ScreenAppearancesArchiveProps = {
   center: CenterSlug
   page?: number
@@ -86,7 +88,7 @@ export async function ScreenAppearancesArchive({
         data-page-tone="dark"
       >
         <HeroImageWall images={heroImages} />
-        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[36%] md:-left-28"
           icon={decoIcons[0]}

@@ -14,6 +14,8 @@ import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { getPayload, type Where } from 'payload'
 
+import { HeroMosaicDim } from '../_components/HeroMosaicDim'
+
 type DirectCastingsArchiveProps = {
   center: CenterSlug
   company?: string
@@ -111,12 +113,12 @@ export async function DirectCastingsArchive({
     <main className="page page-light page-direct-castings" data-center={center}>
       <section
         aria-labelledby="direct-castings-hero-title"
-        className="section-direct-castings-hero relative min-h-[520px] overflow-hidden bg-black md:min-h-[760px]"
+        className="section-direct-castings-hero relative min-h-[560px] overflow-hidden bg-black md:min-h-[800px]"
         data-page-tone="dark"
       >
         <DirectCastingsHero images={heroImages} />
-        <div className="absolute inset-0 bg-black/65" aria-hidden="true" />
-        <div className="container relative z-10 flex min-h-[520px] items-end pb-18 pt-32 md:min-h-[760px] md:pb-[120px]">
+        <HeroMosaicDim />
+        <div className="container relative z-10 flex min-h-[560px] items-end pb-20 pt-32 md:min-h-[800px] md:pb-[120px]">
           <div
             className="section-direct-castings-hero__title page-hero-label"
             id="direct-castings-hero-title"
@@ -364,7 +366,7 @@ function DirectCastingsHero({ images }: { images: DirectCastingHeroImage[] }) {
   return (
     <div
       aria-hidden="true"
-      className="hero-pattern hero-pattern--edge-dim section-direct-castings-hero__visual absolute -inset-x-10 -top-12 grid grid-cols-3 gap-2 opacity-55 md:-inset-x-16 md:-top-28 md:grid-cols-6 md:rotate-[-5deg] md:scale-110 md:gap-4"
+      className="section-direct-castings-hero__visual absolute -inset-x-10 -top-12 grid grid-cols-3 gap-2 opacity-55 md:-inset-x-16 md:-top-28 md:grid-cols-6 md:rotate-[-5deg] md:scale-110 md:gap-4"
     >
       {images.map((image, index) => (
         <div
