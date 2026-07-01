@@ -1,6 +1,7 @@
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -182,4 +183,49 @@ export async function deleteR2Object(objectKey: string) {
       Key: objectKey,
     }),
   );
+}
+
+export type R2ObjectSummary = {
+  etag?: string;
+  key: string;
+  lastModified?: Date;
+  size?: number;
+};
+
+export async function listR2Objects(prefix: string) {
+  const config = getR2Config();
+  const objects: R2ObjectSummary[] = [];
+  let continuationToken: string | undefined;
+
+  do {
+    const response = await getR2Client().send(
+      new ListObjectsV2Command({
+        Bucket: config.bucket,
+        ContinuationToken: continuationToken,
+        Prefix: prefix,
+      }),
+    );
+
+    for (const object of response.Contents ?? []) {
+      if (!object.Key) {
+        continue;
+      }
+
+      objects.push({
+        etag: object.ETag,
+        key: object.Key,
+        lastModified: object.LastModified,
+        size: object.Size,
+      });
+    }
+
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return objects;
+}
+
+export function destroyR2Client() {
+  r2Client?.destroy();
+  r2Client = null;
 }
