@@ -130,6 +130,7 @@ import * as migration_20260624_130000_media_uploads_prefix from './20260624_1300
 import * as migration_20260630_191800_admin_center_history_access from './20260630_191800_admin_center_history_access'
 import * as migration_20260701_142500_news_category_select from './20260701_142500_news_category_select'
 import * as migration_20260701_153000_news_admin_performance_indexes from './20260701_153000_news_admin_performance_indexes'
+import * as migration_20260701_183000_news_slug_policy_cleanup from './20260701_183000_news_slug_policy_cleanup'
 
 export const migrations = [
   {
@@ -791,5 +792,10 @@ export const migrations = [
     up: migration_20260701_153000_news_admin_performance_indexes.up,
     down: migration_20260701_153000_news_admin_performance_indexes.down,
     name: '20260701_153000_news_admin_performance_indexes',
+  },
+  {
+    up: migration_20260701_183000_news_slug_policy_cleanup.up,
+    down: migration_20260701_183000_news_slug_policy_cleanup.down,
+    name: '20260701_183000_news_slug_policy_cleanup',
   },
 ]

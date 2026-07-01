@@ -345,26 +345,19 @@ export const setNewsSlugBeforeValidate: CollectionBeforeValidateHook = async ({
     return data;
   }
 
-  const shouldGenerateSlug = data.generateSlug ?? originalDoc?.generateSlug ?? true;
   const existingSlug = String(originalDoc?.slug ?? "").trim();
 
   if (operation === "update" && existingSlug) {
-    if (shouldGenerateSlug === false && data.slug) {
-      return data;
-    }
-
     return {
       ...data,
+      generateSlug: true,
       slug: existingSlug,
     };
   }
 
-  if (shouldGenerateSlug === false && data.slug) {
-    return data;
-  }
-
   return {
     ...data,
+    generateSlug: true,
     slug: await nextNewsSlugForCenters({
       centers: data.centers,
       payload: req.payload as unknown as NewsSlugPayload,

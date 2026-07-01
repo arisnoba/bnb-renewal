@@ -104,6 +104,23 @@ test('news beforeValidate hook replaces title-based create slugs', async () => {
   assert.equal(data.slug, 'news-highteen-3')
 })
 
+test('news beforeValidate hook ignores manually supplied create slugs', async () => {
+  const { payload } = payloadWithSlugs(['news-kids-1'])
+
+  const data = await runNewsSlugHook({
+    data: {
+      centers: ['kids'],
+      generateSlug: false,
+      slug: '배우-박새봄-sbs-드라마-신이랑-법률사무소-onair',
+      title: '배우 박새봄 SBS 드라마 신이랑 법률사무소 ONAIR',
+    },
+    payload,
+  })
+
+  assert.equal(data.generateSlug, true)
+  assert.equal(data.slug, 'news-kids-2')
+})
+
 test('news beforeValidate hook keeps existing update slugs stable', async () => {
   const { payload } = payloadWithSlugs(['news-exam-7', 'news-exam-8'])
 
@@ -122,4 +139,27 @@ test('news beforeValidate hook keeps existing update slugs stable', async () => 
   })
 
   assert.equal(data.slug, 'news-exam-7')
+})
+
+test('news beforeValidate hook ignores manually supplied update slugs', async () => {
+  const { payload } = payloadWithSlugs(['news-kids-12', 'news-kids-13'])
+
+  const data = await runNewsSlugHook({
+    data: {
+      centers: ['kids'],
+      generateSlug: false,
+      slug: '변경된-제목',
+      title: '변경된 제목',
+    },
+    operation: 'update',
+    originalDoc: {
+      id: 12,
+      generateSlug: false,
+      slug: 'news-kids-12',
+    },
+    payload,
+  })
+
+  assert.equal(data.generateSlug, true)
+  assert.equal(data.slug, 'news-kids-12')
 })
