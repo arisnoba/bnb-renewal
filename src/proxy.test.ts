@@ -13,7 +13,7 @@ test('single-center admin lists rewrite stale contains center filters', () => {
   assert.equal(normalized.searchParams.get('where[or][0][centers][contains]'), null)
   assert.equal(normalized.searchParams.get('where[or][0][centers][equals]'), 'art')
   assert.equal(normalized.searchParams.get('where[or][1][centers][contains]'), null)
-  assert.equal(normalized.searchParams.get('where[or][1][centers][equals]'), 'all')
+  assert.equal(normalized.searchParams.get('where[or][1][centers][equals]'), null)
   assert.equal(normalized.searchParams.get('sort'), 'name')
 
   const curriculumURL = new URL(
@@ -24,6 +24,18 @@ test('single-center admin lists rewrite stale contains center filters', () => {
   assert.ok(normalizedCurriculumURL)
   assert.equal(normalizedCurriculumURL.searchParams.get('where[centers][contains]'), null)
   assert.equal(normalizedCurriculumURL.searchParams.get('where[centers][equals]'), 'exam')
+})
+
+test('single-center admin lists drop stale all-center contains filters', () => {
+  const url = new URL(
+    'http://localhost:3000/admin/collections/screen-appearances?where[centers][contains]=all&sort=-publishedAt',
+  )
+  const normalized = normalizeAdminListURL(url)
+
+  assert.ok(normalized)
+  assert.equal(normalized.searchParams.get('where[centers][contains]'), null)
+  assert.equal(normalized.searchParams.get('where[centers][equals]'), null)
+  assert.equal(normalized.searchParams.get('sort'), '-publishedAt')
 })
 
 test('multi-center admin list URLs are left unchanged', () => {

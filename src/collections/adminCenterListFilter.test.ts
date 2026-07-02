@@ -139,6 +139,21 @@ test('center list filter preserves other list filters while replacing prior cent
 
   assert.deepEqual(
     buildCenterListWhere({
+      center: 'kids',
+      existingWhere: {
+        or: {
+          0: { centers: { contains: 'art' } },
+          1: { centers: { contains: 'all' } },
+        },
+      },
+      fieldName: 'centers',
+      hasMany: false,
+    }),
+    { centers: { equals: 'kids' } },
+  )
+
+  assert.deepEqual(
+    buildCenterListWhere({
       center: 'all',
       existingWhere: {
         displayStatus: { equals: 'draft' },

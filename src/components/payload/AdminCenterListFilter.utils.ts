@@ -109,8 +109,11 @@ function omitCenterListWhere(value: unknown): Record<string, unknown> | undefine
       continue
     }
 
-    if ((key === 'and' || key === 'or') && Array.isArray(item)) {
-      const filtered = item
+    if (key === 'and' || key === 'or') {
+      const children = Array.isArray(item)
+        ? item
+        : Object.values(objectValue(item) ?? {})
+      const filtered = children
         .map(omitCenterListWhere)
         .filter((entry): entry is Record<string, unknown> => Boolean(entry && Object.keys(entry).length))
 

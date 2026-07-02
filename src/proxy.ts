@@ -37,7 +37,11 @@ export function normalizeAdminListURL(url: URL) {
     }
 
     nextURL.searchParams.delete(key, value)
-    nextURL.searchParams.append(nextKey, trimmedValue)
+
+    if (trimmedValue !== 'all') {
+      nextURL.searchParams.append(nextKey, trimmedValue)
+    }
+
     changed = true
   }
 
