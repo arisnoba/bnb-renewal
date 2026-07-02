@@ -25,6 +25,18 @@ import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
 const ITEMS_PER_PAGE = 16
+export const artistPressArchiveDepth = 2
+export const artistPressArchiveSelect = {
+  actorName: true,
+  agency: true,
+  agencyLogoMedia: true,
+  generation: true,
+  meta: true,
+  publishedAt: true,
+  slug: true,
+  thumbnailMedia: true,
+  title: true,
+} as const
 
 type ArtistPressArchiveProps = {
   center: CenterSlug
@@ -139,20 +151,11 @@ async function queryArtistPressPage(center: CenterSlug, page: number) {
   return payload
     .find({
       collection: 'artist-press',
-      depth: 1,
+      depth: artistPressArchiveDepth,
       limit: ITEMS_PER_PAGE,
       overrideAccess: false,
       page,
-      select: {
-        actorName: true,
-        agencyLogoMedia: true,
-        generation: true,
-        meta: true,
-        publishedAt: true,
-        slug: true,
-        thumbnailMedia: true,
-        title: true,
-      },
+      select: artistPressArchiveSelect,
       where,
     })
     .catch(() => ({

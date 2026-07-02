@@ -1,5 +1,6 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
 
+import { anyone } from '@/access/anyone'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   authorNameField,
@@ -68,7 +69,7 @@ export const ArtistPressAgencies: CollectionConfig = {
   access: {
     create: artistPressAgencyAccess,
     delete: artistPressAgencyAccess,
-    read: artistPressAgencyAccess,
+    read: anyone,
     update: artistPressAgencyAccess,
   },
   admin: {

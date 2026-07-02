@@ -25,7 +25,7 @@ export function getArtistPressThumbnailMedia(artistPress: ArtistPressLike) {
 }
 
 export function getArtistPressAgencyLogoMedia(artistPress: ArtistPressLike) {
-  return asMedia(artistPress.agencyLogoMedia)
+  return asMedia(artistPress.agencyLogoMedia) || asMedia(agencyLogoMedia(artistPress.agency))
 }
 
 export function getArtistPressSeoImageMedia(artistPress: ArtistPressLike) {
@@ -68,4 +68,12 @@ export function generateArtistPressMeta(
 
 function getArtistPressMetaImageUrl(artistPress: ArtistPressLike) {
   return metadataImageUrlFromMedia(getArtistPressSeoImageMedia(artistPress))
+}
+
+function agencyLogoMedia(agency: ArtistPressLike['agency']) {
+  if (!agency || typeof agency !== 'object') {
+    return undefined
+  }
+
+  return agency.logoMedia
 }

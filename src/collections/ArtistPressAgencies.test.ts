@@ -15,6 +15,10 @@ async function runAccess(user: unknown) {
   } as never)
 }
 
+test('artist press agency settings keep public read access for frontend rendering', async () => {
+  assert.equal(await runAccess(undefined), true)
+})
+
 test('artist press agency settings are readable by art managers without a center row filter', async () => {
   const result = await runAccess({
     center: 'art',
@@ -23,18 +27,4 @@ test('artist press agency settings are readable by art managers without a center
   })
 
   assert.equal(result, true)
-})
-
-test('artist press agency settings are hidden from non-art center managers', async () => {
-  const result = await runAccess({
-    center: 'exam',
-    permissionLevel: 50,
-    role: 'manager',
-  })
-
-  assert.equal(result, false)
-})
-
-test('artist press agency settings require an authenticated admin user', async () => {
-  assert.equal(await runAccess(undefined), false)
 })
