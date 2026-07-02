@@ -139,12 +139,13 @@ async function queryArtistPressPage(center: CenterSlug, page: number) {
   return payload
     .find({
       collection: 'artist-press',
-      depth: 1,
+      depth: 2,
       limit: ITEMS_PER_PAGE,
       overrideAccess: false,
       page,
       select: {
         actorName: true,
+        agency: true,
         agencyLogoMedia: true,
         generation: true,
         meta: true,
