@@ -2,7 +2,7 @@
 
 import type { ChangeEvent, DragEvent } from 'react';
 
-import { useField } from '@payloadcms/ui';
+import { LoadingOverlayToggle, useField } from '@payloadcms/ui';
 import { ArrowDown, ArrowUp, ImagePlus, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
@@ -225,11 +225,18 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 
 	return (
 		<section
+			aria-busy={isProcessing}
 			style={{
 				display: 'grid',
 				gap: 'calc(var(--base) * 0.75)',
 				marginBottom: 'var(--base)',
 			}}>
+			<LoadingOverlayToggle
+				loadingText="이미지를 R2에 업로드하는 중입니다."
+				name="additional-photos-upload"
+				show={isProcessing}
+				type="withoutNav"
+			/>
 			<div>
 				<div
 					style={{
