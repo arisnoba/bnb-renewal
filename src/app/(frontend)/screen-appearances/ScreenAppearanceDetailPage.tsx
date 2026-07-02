@@ -122,7 +122,7 @@ export async function ScreenAppearanceDetailPage({
             {mainImage ? (
               <DetailMedia
                 alt={projectTitle}
-                className="rounded-xl"
+                className="rounded-xl overflow-hidden"
                 priority
                 resource={mainImage}
                 size="(max-width: 1023px) 100vw, 760px"
@@ -138,7 +138,7 @@ export async function ScreenAppearanceDetailPage({
                 {secondaryImages.map((image, index) => (
                   <DetailMedia
                     alt={`${projectTitle} 출연장면 ${index + 2}`}
-                    className="rounded-xl"
+                    className="rounded-xl overflow-hidden"
                     key={`${image.id}-${index}`}
                     resource={image}
                     size="(max-width: 639px) 100vw, 380px"
