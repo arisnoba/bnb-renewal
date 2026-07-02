@@ -166,11 +166,11 @@ function GateCenterCard({
       style={{ zIndex: index + 1 }}
     >
       <motion.div
-        className="section-gate-card-motion relative w-full max-w-[1500px] origin-top"
+        className="section-gate-card-motion relative w-full max-w-480 origin-top"
         style={{ scale }}
       >
         <Link
-          className="section-gate-card group relative block h-[72svh] min-h-[460px] overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:h-[76svh] md:min-h-[640px]"
+          className="section-gate-card group relative block h-[72svh] min-h-128 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:h-[76svh] md:min-h-160"
           data-center={item.center}
           href={item.href}
         >
@@ -197,7 +197,7 @@ function GateCenterCard({
             className={cn(
               'absolute inset-0 z-1',
               isDarkText
-                ? 'bg-linear-to-r from-white/30 via-transparent to-transparent'
+                ? 'bg-linear-to-r from-white/20 via-transparent to-transparent'
                 : 'bg-linear-to-r from-black/30 via-transparent to-transparent',
             )}
           />
@@ -213,15 +213,15 @@ function GateCenterCard({
             </div>
             <p
               className={cn(
-                'section-gate-card__description max-w-84 font-medium leading-relaxed text-base md:text-lg lg:text-xl xl:text-2xl',
-                isDarkText ? 'text-white/90 md:text-neutral-700' : 'text-white/90',
+                'section-gate-card__description max-w-1/2 leading-relaxed text-base md:text-lg lg:text-xl xl:text-2xl',
+                isDarkText ? 'text-white/90' : 'text-white/90',
               )}
             >
               {item.description}
             </p>
           </div>
           <PageDeco
-            className="section-gate-card__deco bottom-1.5 right-1.5 z-2 opacity-95 [--page-deco-size:100px] md:-right-7 md:-bottom-7 md:[--page-deco-size:338px]"
+            className="section-gate-card__deco bottom-2 right-2 z-2 opacity-95 [--page-deco-size:100px] md:right-0 md:bottom-0 md:[--page-deco-size:320px]"
             icon={item.decoIcon}
           />
           <span className="section-gate-card__count type-label-s absolute right-4 top-4 z-3 text-white/80 md:right-8 md:top-8">
