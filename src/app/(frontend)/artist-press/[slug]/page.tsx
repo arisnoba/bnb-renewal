@@ -107,6 +107,7 @@ export async function ArtistPressDetailPage({
             className="[&_img]:mx-auto [&_picture]:mx-auto"
             data={body}
             enableGutter={false}
+            linksOpenInNewTab
           />
         ) : null}
       </DetailContainer>
