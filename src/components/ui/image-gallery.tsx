@@ -1,8 +1,10 @@
 'use client'
 
+import { motion, type MotionValue, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
+import { useRef } from 'react'
 
 import { PageDeco, type DecoIcon } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
@@ -20,72 +22,17 @@ export type ImageGalleryItem = {
   textTone?: 'dark' | 'light'
 }
 
-const defaultItems: ImageGalleryItem[] = [
-  {
-    center: 'art',
-    title: '아트센터',
-    description:
-      '실전 중심의 전문 교육으로 배우의 꿈을 키우고 현장 경험을 담은 체계적인 커리큘럼으로 연기의 기본부터 작품 활동까지 성장을 함께하는 아티스트 교육을 제공합니다.',
-    href: '/art',
-    cta: '아트센터 바로가기',
-    desktopImage: '/assets/gate/art-desktop.png',
-    mobileImage: '/assets/gate/art-mobile.png',
-    decoIcon: 'icon-b.svg',
-    textTone: 'dark',
-  },
-  {
-    center: 'exam',
-    title: '입시센터',
-    description:
-      '예고·예대 입시를 위한 체계적인 커리큘럼과 실전 중심의 맞춤형 입시 전략으로 학생 개개인의 가능성을 극대화하며 목표 대학 합격을 함께 만들어갑니다.',
-    href: '/exam',
-    cta: '입시센터 바로가기',
-    desktopImage: '/assets/gate/exam-desktop.png',
-    mobileImage: '/assets/gate/exam-mobile.png',
-    decoIcon: 'icon-ae.svg',
-  },
-  {
-    center: 'highteen',
-    title: '하이틴센터',
-    description:
-      '청소년의 가능성과 재능을 발견하고 즐겁고 체계적인 연기 교육을 통해 자신감과 표현력을 자연스럽게 키우며 배우로 성장하는 첫걸음을 함께합니다.',
-    href: '/highteen',
-    cta: '하이틴센터 바로가기',
-    desktopImage: '/assets/gate/highteen-desktop.png',
-    mobileImage: '/assets/gate/highteen-mobile.png',
-    decoIcon: 'icon-ng.svg',
-  },
-  {
-    center: 'kids',
-    title: '키즈센터',
-    description:
-      '아이들의 상상력과 자신감을 키워주는 놀이와 교육이 어우러진 연기 프로그램으로 창의적인 표현력과 바른 인성을 함께 배우며 즐겁게 성장하는 시간을 만들어갑니다.',
-    href: '/kids',
-    cta: '키즈센터 바로가기',
-    desktopImage: '/assets/gate/kids-desktop.png',
-    mobileImage: '/assets/gate/kids-mobile.png',
-    decoIcon: 'icon-u.svg',
-  },
-  {
-    center: 'avenue',
-    title: '애비뉴센터',
-    description:
-      '오디션과 작품 활동을 위한 실전 교육으로 현장에서 요구하는 역량을 체계적으로 익히고 다양한 캐스팅 기회와 경험을 통해 배우의 가능성을 현실로 연결합니다.',
-    href: '/avenue',
-    cta: '애비뉴센터 바로가기',
-    desktopImage: '/assets/gate/avenue-desktop.png',
-    mobileImage: '/assets/gate/avenue-mobile.png',
-    decoIcon: 'icon-m.svg',
-  },
-]
-
 type ImageGalleryProps = {
-  items?: ImageGalleryItem[]
+  items: ImageGalleryItem[]
 }
 
-export default function ImageGallery({
-  items = defaultItems,
-}: ImageGalleryProps) {
+export default function ImageGallery({ items }: ImageGalleryProps) {
+  const centersContainer = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: centersContainer,
+    offset: ['start start', 'end end'],
+  })
+
   return (
     <main
       className="page page-dark page-landing page-gate relative isolate overflow-x-hidden bg-black text-white"
@@ -93,10 +40,25 @@ export default function ImageGallery({
     >
       <div className="section-gate-shell relative z-0 mx-auto flex w-full flex-col">
         <GateHero />
-        <section className="section-gate-centers relative z-10 mx-auto mt-[100svh] flex w-full max-w-480 flex-col gap-3 bg-black px-3 py-3 md:gap-6 md:px-6 md:py-6">
-          {items.map((item) => (
-            <GateCenterCard item={item} key={item.href} />
-          ))}
+        <section
+          className="section-gate-centers relative z-10 mt-[100svh] w-full"
+          ref={centersContainer}
+        >
+          {items.map((item, index) => {
+            const targetScale = Math.max(0.72, 1 - (items.length - index - 1) * 0.055)
+
+            return (
+              <GateCenterCard
+                index={index}
+                item={item}
+                key={item.href}
+                progress={scrollYProgress}
+                range={[index / items.length, 1]}
+                targetScale={targetScale}
+                total={items.length}
+              />
+            )
+          })}
         </section>
       </div>
     </main>
@@ -104,16 +66,19 @@ export default function ImageGallery({
 }
 
 function GateHero() {
+  const { scrollY } = useScroll()
+  const scrollIndicatorOpacity = useTransform(scrollY, [0, 32], [1, 0])
+
   return (
     <section
-      className="section-gate-hero fixed inset-x-0 top-0 z-0 h-[100svh] overflow-hidden bg-[#111]"
+      className="section-gate-hero fixed inset-x-0 top-0 z-0 h-svh overflow-hidden"
       data-center="art"
       data-page-tone="dark"
     >
       <Image
         alt=""
         aria-hidden="true"
-        className="object-cover object-center md:hidden"
+        className="object-cover object-center md:hidden pointer-events-none"
         fill
         priority
         sizes="100vw"
@@ -122,7 +87,7 @@ function GateHero() {
       <Image
         alt=""
         aria-hidden="true"
-        className="hidden object-cover object-center md:block"
+        className="hidden object-cover object-top md:block pointer-events-none"
         fill
         priority
         sizes="100vw"
@@ -138,13 +103,13 @@ function GateHero() {
       />
       <Image
         alt="배우앤배움 ENM"
-        className="section-gate-hero__logo absolute right-0 top-0 z-2 h-6 w-[69px] object-contain md:right-10 md:top-10 md:h-[55px] md:w-[161px]"
+        className="section-gate-hero__logo absolute right-4 top-4 z-2 h-8 w-auto object-contain md:right-10 md:top-10 md:h-12"
         height={55}
         priority
         src="/assets/gate/logo-enm.png"
         width={161}
       />
-      <div className="section-gate-hero__content absolute left-1/2 top-[151px] z-2 w-60 -translate-x-1/2 text-center md:top-[330px] md:w-[693px]">
+      <div className="section-gate-hero__content absolute left-1/2 top-1/2 z-2 -translate-x-1/2 -translate-y-1/2 text-center">
         <h1 className="type-display-l md:type-display-xl text-balance font-extrabold leading-tight tracking-normal text-white">
           꿈을 발견하고,
           <br />
@@ -154,73 +119,116 @@ function GateHero() {
           배우앤배움의 모든 교육 과정을 만나보세요
         </p>
       </div>
-      <ChevronDown
+      <motion.div
         aria-hidden="true"
-        className="section-gate-hero__scroll hidden absolute bottom-20 left-1/2 z-2 size-8 -translate-x-1/2 text-white md:block"
-        strokeWidth={2.4}
-      />
+        className="section-gate-hero__scroll pointer-events-none absolute bottom-8 left-1/2 z-2 -translate-x-1/2 text-white md:bottom-20"
+        style={{ opacity: scrollIndicatorOpacity }}
+      >
+        <motion.div
+          animate={{ y: [0, 12, 0] }}
+          transition={{
+            duration: 1.45,
+            ease: 'easeInOut',
+            repeat: Infinity,
+          }}
+        >
+          <ChevronDown className="size-7 md:size-8" strokeWidth={2.4} />
+        </motion.div>
+      </motion.div>
     </section>
   )
 }
 
-function GateCenterCard({ item }: { item: ImageGalleryItem }) {
+type GateCenterCardProps = {
+  index: number
+  item: ImageGalleryItem
+  progress: MotionValue<number>
+  range: [number, number]
+  targetScale: number
+  total: number
+}
+
+function GateCenterCard({
+  index,
+  item,
+  progress,
+  range,
+  targetScale,
+  total,
+}: GateCenterCardProps) {
   const isDarkText = item.textTone === 'dark'
   const title = `배우앤배움 ${item.title}`
+  const scale = useTransform(progress, range, [1, targetScale])
 
   return (
-    <Link
-      className="section-gate-card group relative block h-[460px] overflow-hidden bg-[#111] text-left outline-none md:h-[800px]"
-      data-center={item.center}
-      href={item.href}
+    <div
+      className="section-gate-card-stack sticky top-0 flex h-svh items-center justify-center px-3 py-8 md:px-6 md:py-10"
+      style={{ zIndex: index + 1 }}
     >
-      <Image
-        alt=""
-        aria-hidden="true"
-        className="object-cover transition-transform duration-500 group-hover:scale-[1.02] group-focus-visible:scale-[1.02] md:hidden"
-        fill
-        loading="eager"
-        sizes="100vw"
-        src={item.mobileImage}
-      />
-      <Image
-        alt=""
-        aria-hidden="true"
-        className="hidden object-cover transition-transform duration-500 group-hover:scale-[1.02] group-focus-visible:scale-[1.02] md:block"
-        fill
-        loading="eager"
-        sizes="100vw"
-        src={item.desktopImage}
-      />
-      <span
-        aria-hidden="true"
-        className={cn(
-          'absolute inset-0 z-1 transition-opacity duration-500 group-hover:opacity-80 group-focus-visible:opacity-80',
-          isDarkText
-            ? 'bg-gradient-to-r from-white/10 via-transparent to-transparent'
-            : 'bg-gradient-to-r from-black/12 via-transparent to-transparent',
-        )}
-      />
-      <div className="section-gate-card__headline absolute left-4 top-6 z-3 w-52 md:left-20 md:top-20 md:w-[420px]">
-        <h2 className="type-display-l md:type-display-xl whitespace-pre-line font-extrabold leading-tight tracking-normal text-brand">
-          {title.replace(' ', '\n')}
-        </h2>
-        <span className="type-label-s mt-8 inline-flex items-center gap-1.5 font-bold text-brand md:mt-10">
-          {item.cta}
-          <ArrowRight aria-hidden="true" className="size-3.5" strokeWidth={2.4} />
-        </span>
-      </div>
-      <p
-        className={cn(
-          'section-gate-card__description type-caption-s absolute bottom-5 left-4 z-3 max-w-[21rem] font-medium leading-normal md:bottom-20 md:left-20 md:type-body-s md:max-w-[42rem]',
-          isDarkText ? 'text-white/90 md:text-neutral-700' : 'text-white/90',
-        )}
+      <motion.div
+        className="section-gate-card-motion relative w-full max-w-[1500px] origin-top"
+        style={{ scale }}
       >
-        {item.description}
-      </p>
-      <PageDeco
-        className="section-gate-card__deco bottom-1.5 right-1.5 z-2 opacity-95 [--page-deco-size:100px] md:-right-[30px] md:-bottom-[30px] md:[--page-deco-size:338px]"
-        icon={item.decoIcon}
-      />
-    </Link>
+        <Link
+          className="section-gate-card group relative block h-[72svh] min-h-[460px] overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:h-[76svh] md:min-h-[640px]"
+          data-center={item.center}
+          href={item.href}
+        >
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="object-cover md:hidden pointer-events-none"
+            fill
+            loading={index === 0 ? 'eager' : 'lazy'}
+            sizes="100vw"
+            src={item.mobileImage}
+          />
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="hidden object-cover md:block pointer-events-none"
+            fill
+            loading={index === 0 ? 'eager' : 'lazy'}
+            sizes="(min-width: 1920px) 1920px, 100vw"
+            src={item.desktopImage}
+          />
+          <span
+            aria-hidden="true"
+            className={cn(
+              'absolute inset-0 z-1',
+              isDarkText
+                ? 'bg-linear-to-r from-white/30 via-transparent to-transparent'
+                : 'bg-linear-to-r from-black/30 via-transparent to-transparent',
+            )}
+          />
+          <div className="pointer-events-none w-full h-full relative z-3 p-6 md:p-12 lg:p-14 xl:p-20 flex flex-col justify-between">
+            <div className="section-gate-card__headline">
+              <h2 className="whitespace-pre-line font-extrabold leading-tight tracking-normal text-brand text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+                {title.replace(' ', '\n')}
+              </h2>
+              <span className="mt-8 inline-flex items-center gap-1.5 font-bold text-brand md:mt-10">
+                {item.cta}
+                <ArrowRight aria-hidden="true" className="size-3.5" strokeWidth={2.4} />
+              </span>
+            </div>
+            <p
+              className={cn(
+                'section-gate-card__description max-w-84 font-medium leading-relaxed text-base md:text-lg lg:text-xl xl:text-2xl',
+                isDarkText ? 'text-white/90 md:text-neutral-700' : 'text-white/90',
+              )}
+            >
+              {item.description}
+            </p>
+          </div>
+          <PageDeco
+            className="section-gate-card__deco bottom-1.5 right-1.5 z-2 opacity-95 [--page-deco-size:100px] md:-right-7 md:-bottom-7 md:[--page-deco-size:338px]"
+            icon={item.decoIcon}
+          />
+          <span className="section-gate-card__count type-label-s absolute right-4 top-4 z-3 text-white/80 md:right-8 md:top-8">
+            {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+          </span>
+        </Link>
+      </motion.div>
+    </div>
   )
 }

@@ -39,6 +39,7 @@ const gateCenters: ImageGalleryItem[] = [
     desktopImage: '/assets/gate/highteen-desktop.png',
     mobileImage: '/assets/gate/highteen-mobile.png',
     decoIcon: 'icon-ng.svg',
+    textTone: 'dark',
   },
   {
     center: 'kids',
