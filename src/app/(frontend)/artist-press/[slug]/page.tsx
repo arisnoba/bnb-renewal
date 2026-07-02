@@ -5,7 +5,6 @@ import type { CenterSlug } from '@/lib/centers'
 import type { ArtistPress } from '@/payload-types'
 import {
   generateArtistPressMeta,
-  getArtistPressThumbnailMedia,
   hasArtistPressLexicalContent,
 } from '@/utilities/artistPressFallbacks'
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
@@ -19,7 +18,6 @@ import {
   DetailBackLink,
   DetailContainer,
   DetailHeader,
-  DetailMedia,
   DetailPage,
   DetailPager,
 } from '../../_components/DetailLayout'
@@ -73,7 +71,6 @@ export async function ArtistPressDetailPage({
     notFound()
   }
 
-  const media = getArtistPressThumbnailMedia(artistPress)
   const description = artistPress.meta?.description?.trim() || undefined
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
   const eyebrow = [artistPress.actorName, artistPress.generation].filter(Boolean).join(' ')
@@ -92,15 +89,6 @@ export async function ArtistPressDetailPage({
           eyebrow={eyebrow}
           title={artistPress.title}
         />
-
-        {media && (
-          <DetailMedia
-            className="mx-auto mb-10 max-w-[600px] md:mb-16"
-            priority
-            resource={media}
-            size="(max-width: 767px) 100vw, 600px"
-          />
-        )}
 
         {body ? (
           <RichText
