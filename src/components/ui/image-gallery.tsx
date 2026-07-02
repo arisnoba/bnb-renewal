@@ -87,10 +87,13 @@ export default function ImageGallery({
   items = defaultItems,
 }: ImageGalleryProps) {
   return (
-    <main className="page page-dark page-landing page-gate bg-black text-white" data-center="art">
-      <div className="section-gate-shell mx-auto flex w-full max-w-[1920px] flex-col gap-3 px-3 py-3 md:gap-6 md:px-6 md:py-6">
+    <main
+      className="page page-dark page-landing page-gate relative isolate overflow-x-hidden bg-black text-white"
+      data-center="art"
+    >
+      <div className="section-gate-shell relative z-0 mx-auto flex w-full flex-col">
         <GateHero />
-        <section className="section-gate-centers flex flex-col gap-3 md:gap-6">
+        <section className="section-gate-centers relative z-10 mx-auto mt-[100svh] flex w-full max-w-480 flex-col gap-3 bg-black px-3 py-3 md:gap-6 md:px-6 md:py-6">
           {items.map((item) => (
             <GateCenterCard item={item} key={item.href} />
           ))}
@@ -103,7 +106,7 @@ export default function ImageGallery({
 function GateHero() {
   return (
     <section
-      className="section-gate-hero relative h-[460px] overflow-hidden bg-[#111] md:h-[calc(100svh-48px)] md:max-h-[1023px] md:min-h-[720px]"
+      className="section-gate-hero fixed inset-x-0 top-0 z-0 h-[100svh] overflow-hidden bg-[#111]"
       data-center="art"
       data-page-tone="dark"
     >
