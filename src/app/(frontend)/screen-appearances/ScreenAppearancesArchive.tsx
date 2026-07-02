@@ -339,8 +339,8 @@ function ScreenAppearanceCard({
           />
           <div className="min-w-0 flex-1 space-y-1 type-body-s font-medium leading-[1.6] text-neutral-500">
             <p className="line-clamp-1">이름 : {performer.name}</p>
-            {appearance.className && (
-              <p className="line-clamp-1">클래스 : {appearance.className}</p>
+            {performer.className && (
+              <p className="line-clamp-1">클래스 : {performer.className}</p>
             )}
             {appearance.roleName && <p className="line-clamp-1">{appearance.roleName}</p>}
             {airDate && <p className="line-clamp-1">방영일 : {airDate}</p>}
@@ -548,6 +548,7 @@ const screenAppearancesArchiveSelect = {
 } as const
 
 type PerformerInfo = {
+  className?: string | null
   name: string
   profileImageMedia?: PayloadMedia | null
 }
@@ -584,6 +585,7 @@ function getBroadcastStation(value: ScreenAppearanceListItem['broadcastStation']
 function getPerformer(appearance: ScreenAppearanceListItem): PerformerInfo {
   if (appearance.actorInputMode === 'manual') {
     return {
+      className: normalizeText(appearance.className),
       name: appearance.performerName?.trim() || '배우앤배움 수강생',
     }
   }
@@ -595,12 +597,25 @@ function getPerformer(appearance: ScreenAppearanceListItem): PerformerInfo {
   const names = profiles?.map((item) => item.name).join(', ')
 
   return {
+    className: getProfileClassName(profiles) || normalizeText(appearance.className),
     name: names || appearance.performerName?.trim() || '배우앤배움 수강생',
     profileImageMedia:
       profile?.profileImageMedia && typeof profile.profileImageMedia === 'object'
         ? profile.profileImageMedia
         : null,
   }
+}
+
+function getProfileClassName(profiles: Profile[] | undefined) {
+  const classNames = profiles
+    ?.map((profile) => normalizeText(profile.className))
+    .filter((className): className is string => Boolean(className))
+
+  return classNames && classNames.length > 0 ? Array.from(new Set(classNames)).join(', ') : null
+}
+
+function normalizeText(value: string | null | undefined) {
+  return value?.trim() || null
 }
 
 function getScreenImage(

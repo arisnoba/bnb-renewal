@@ -25,6 +25,7 @@ import { ScreenAppearanceProfileAvatar } from './ScreenAppearanceProfileAvatar.c
 import { screenAppearanceProfileImageUrl } from './screenAppearanceProfileImage'
 
 type PerformerInfo = {
+  className?: string | null
   name: string
   profileImageMedia?: PayloadMedia | null
 }
@@ -96,7 +97,7 @@ export async function ScreenAppearanceDetailPage({
     // { label: '출연자', value: performer.name },
     { label: '작품명', value: appearance.projectTitle },
     { label: '역할', value: appearance.roleName },
-    { label: '반/클래스', value: appearance.className },
+    { label: '반/클래스', value: performer.className },
     { label: '방영일', value: formatDate(appearance.airDateLabel) },
   ].filter((item) => item.value)
   const careerGroups = getCareerGroups(appearance)
@@ -328,6 +329,7 @@ const queryAdjacentScreenAppearances = cache(
 function getPerformer(appearance: ScreenAppearance): PerformerInfo {
   if (appearance.actorInputMode === 'manual') {
     return {
+      className: normalizeText(appearance.className),
       name: appearance.performerName?.trim() || '배우앤배움 수강생',
     }
   }
@@ -339,12 +341,25 @@ function getPerformer(appearance: ScreenAppearance): PerformerInfo {
   const names = profiles?.map((item) => item.name).join(', ')
 
   return {
+    className: getProfileClassName(profiles) || normalizeText(appearance.className),
     name: names || appearance.performerName?.trim() || '배우앤배움 수강생',
     profileImageMedia:
       profile?.profileImageMedia && typeof profile.profileImageMedia === 'object'
         ? profile.profileImageMedia
         : null,
   }
+}
+
+function getProfileClassName(profiles: Profile[] | undefined) {
+  const classNames = profiles
+    ?.map((profile) => normalizeText(profile.className))
+    .filter((className): className is string => Boolean(className))
+
+  return classNames && classNames.length > 0 ? Array.from(new Set(classNames)).join(', ') : null
+}
+
+function normalizeText(value: string | null | undefined) {
+  return value?.trim() || null
 }
 
 function getCareerGroups(appearance: ScreenAppearance): CareerGroup[] {

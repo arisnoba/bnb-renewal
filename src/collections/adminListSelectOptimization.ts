@@ -32,7 +32,6 @@ const collectionHiddenFieldNames: Record<string, Set<string>> = {
     'broadcastStation',
     'className',
     'linkedProfiles',
-    'performerName',
     'profileImagePath',
     'roleName',
     'thumbnailPath',
