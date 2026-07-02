@@ -143,7 +143,7 @@ export function DetailMedia({
       alt={alt}
       htmlElement={null}
       imgClassName={cn(
-        'mx-auto w-auto max-w-[min(80vw,800px)] h-auto max-h-full object-contain',
+        'mx-auto w-full max-w-full h-auto max-h-full object-contain',
         imageClassName,
       )}
       pictureClassName={cn('block w-full', className, pictureClassName)}
