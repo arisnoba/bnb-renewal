@@ -110,12 +110,12 @@ function GateHero() {
         width={161}
       />
       <div className="section-gate-hero__content absolute left-1/2 top-1/2 z-2 -translate-x-1/2 -translate-y-1/2 text-center">
-        <h1 className="type-display-l md:type-display-xl text-balance font-extrabold leading-tight tracking-normal text-white">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-balance font-extrabold leading-tight tracking-normal text-white">
           꿈을 발견하고,
           <br />
           가능성을 키워가는 곳
         </h1>
-        <p className="type-caption-l mt-7 font-semibold text-white md:mt-10 md:type-title-s">
+        <p className="mt-7 text-xl font-semibold text-white md:mt-10 lg:text-2xl xl:text-3xl">
           배우앤배움의 모든 교육 과정을 만나보세요
         </p>
       </div>
@@ -213,7 +213,7 @@ function GateCenterCard({
             </div>
             <p
               className={cn(
-                'section-gate-card__description max-w-1/2 leading-relaxed text-base md:text-lg lg:text-xl xl:text-2xl',
+                'section-gate-card__description max-w-2/3 md:max-w-1/2 leading-relaxed text-base md:text-lg lg:text-xl xl:text-2xl',
                 isDarkText ? 'text-white/90' : 'text-white/90',
               )}
             >
@@ -224,9 +224,9 @@ function GateCenterCard({
             className="section-gate-card__deco bottom-2 right-2 z-2 opacity-95 [--page-deco-size:100px] md:right-0 md:bottom-0 md:[--page-deco-size:320px]"
             icon={item.decoIcon}
           />
-          <span className="section-gate-card__count type-label-s absolute right-4 top-4 z-3 text-white/80 md:right-8 md:top-8">
+          {/* <span className="section-gate-card__count type-label-s absolute right-4 top-4 z-3 text-white/80 md:right-8 md:top-8">
             {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-          </span>
+          </span> */}
         </Link>
       </motion.div>
     </div>

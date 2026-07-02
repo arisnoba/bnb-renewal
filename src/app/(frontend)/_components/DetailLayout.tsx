@@ -186,7 +186,7 @@ export function DetailPager({
           <DetailPagerLink direction="next" href={nextHref} label={nextLabel} />
         </nav>
       </DetailContainer>
-      <div aria-hidden="true" className="h-24 md:h-28" />
+      {/* <div aria-hidden="true" className="h-24 md:h-28" /> */}
       <FloatingDock
         ariaLabel="상세 페이지 빠른 이동"
         className="section-detail__dock"
