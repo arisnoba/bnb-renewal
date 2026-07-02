@@ -59,7 +59,7 @@ export function FaqArchiveClient({
   ]
   const categoryFilteredFaqs = useMemo(() => {
     if (!activeCategory) {
-      return [...faqs].reverse()
+      return faqs
     }
 
     return faqs.filter((faq) => faq.category === activeCategory)

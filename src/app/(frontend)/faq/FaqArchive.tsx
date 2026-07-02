@@ -138,7 +138,7 @@ async function queryFaqs(center: CenterSlug) {
       depth: 0,
       limit: 100,
       overrideAccess: false,
-      sort: 'displayOrder',
+      sort: ['createdAt', 'id'],
       where,
     })
     .catch(() => ({
