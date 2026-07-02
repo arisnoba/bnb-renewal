@@ -39,7 +39,7 @@ export function DetailPage({
       )}
       data-center={center}
     >
-      <section className={cn('section-detail section-p-block-base', sectionClassName)}>
+      <section className={cn('section-detail section-p-t-sm section-p-b-lg', sectionClassName)}>
         {children}
       </section>
     </article>
