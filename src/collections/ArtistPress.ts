@@ -42,10 +42,12 @@ import {
 } from "./slugUtils";
 
 const revalidateArtistPressAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ["frontend_artist_press"],
   reason: "artist press",
   suffixes: ["", "artist-press"],
 });
 const revalidateArtistPressAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ["frontend_artist_press"],
   reason: "artist press",
   suffixes: ["", "artist-press"],
 });

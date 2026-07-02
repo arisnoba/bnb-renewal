@@ -25,6 +25,10 @@ import {
   createIdSlugBeforeValidate,
   idSlugField,
 } from "./slugUtils";
+import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
 
 const examResultBodyEditor = lexicalEditor({
   admin: {
@@ -88,6 +92,22 @@ const setExamResultCenterBeforeValidate: CollectionBeforeValidateHook = ({ data,
 
 const setExamResultSlug = createIdSlugBeforeValidate();
 const finalizeExamResultSlugAfterCreate = createFinalizeIdSlugAfterCreate("exam-results");
+const revalidateExamResultAfterChange = createCenterRevalidationAfterChange({
+  cacheTags: [
+    "frontend_exam_results_university",
+    "frontend_exam_results_arts_high_school",
+  ],
+  reason: "exam result",
+  suffixes: ["", "university-results", "arts-high-results"],
+});
+const revalidateExamResultAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTags: [
+    "frontend_exam_results_university",
+    "frontend_exam_results_arts_high_school",
+  ],
+  reason: "exam result",
+  suffixes: ["", "university-results", "arts-high-results"],
+});
 
 export const ExamResults: CollectionConfig = {
   slug: "exam-results",
@@ -104,7 +124,8 @@ export const ExamResults: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterChange: [finalizeExamResultSlugAfterCreate],
+    afterChange: [finalizeExamResultSlugAfterCreate, revalidateExamResultAfterChange],
+    afterDelete: [revalidateExamResultAfterDelete],
     beforeValidate: [setExamResultCenterBeforeValidate, setExamResultSlug],
   },
   fields: [

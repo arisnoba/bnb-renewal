@@ -21,10 +21,12 @@ import {
 } from "./slugUtils";
 
 const revalidateExamPassedVideoAfterChange = createCenterRevalidationAfterChange({
+  cacheTags: ["frontend_exam_passed_videos"],
   reason: "exam passed video",
   suffixes: ["", "passed-videos", "exam-passed-videos"],
 });
 const revalidateExamPassedVideoAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTags: ["frontend_exam_passed_videos"],
   reason: "exam passed video",
   suffixes: ["", "passed-videos", "exam-passed-videos"],
 });

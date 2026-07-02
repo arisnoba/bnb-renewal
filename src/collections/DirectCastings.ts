@@ -227,11 +227,13 @@ const validateDirectCastingCenters: Validate<unknown> = (value) => {
 }
 
 const revalidateDirectCastingAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ['frontend_direct_castings'],
   reason: 'direct casting',
   suffixes: ['direct-castings'],
 })
 
 const revalidateDirectCastingAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ['frontend_direct_castings'],
   reason: 'direct casting',
   suffixes: ['direct-castings'],
 })

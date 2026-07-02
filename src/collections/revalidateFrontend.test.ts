@@ -5,12 +5,18 @@ import { MainStatistics } from '../Main/Statistics'
 import { ArtistPress } from './ArtistPress'
 import { Curriculums } from './Curriculums'
 import { DirectCastings } from './DirectCastings'
+import { ExamResults } from './ExamResults'
 import { ExamPassedReviews } from './ExamPassedReviews'
 import { ExamPassedVideos } from './ExamPassedVideos'
+import { Faqs } from './Faqs'
 import { News, newsDetailFrontendPaths } from './News'
 import { ScreenAppearances } from './ScreenAppearances'
 import { SocialLinks } from './SocialLinks'
-import { centerFrontendPaths } from './revalidateFrontend'
+import {
+  centerFrontendCacheTags,
+  centerFrontendPaths,
+  revalidateFrontendPaths,
+} from './revalidateFrontend'
 
 test('center frontend paths include home and section suffixes without duplicates', () => {
   assert.deepEqual(
@@ -55,13 +61,60 @@ test('news detail frontend paths expand all centers', () => {
   )
 })
 
+test('center frontend cache tags include current and previous centers without duplicates', () => {
+  assert.deepEqual(
+    centerFrontendCacheTags({
+      centers: ['art', 'all'],
+      prefixes: ['frontend_artist_press'],
+      previousCenters: ['kids', 'art'],
+    }),
+    [
+      'frontend_artist_press_art',
+      'frontend_artist_press_exam',
+      'frontend_artist_press_kids',
+      'frontend_artist_press_highteen',
+      'frontend_artist_press_avenue',
+    ],
+  )
+})
+
+test('frontend revalidation clears paths and cache tags', () => {
+  const pathCalls: string[] = []
+  const tagCalls: string[] = []
+
+  revalidateFrontendPaths({
+    paths: ['/art/artist-press'],
+    reason: 'artist press',
+    req: {
+      context: {},
+      payload: {
+        logger: {
+          info: () => undefined,
+        },
+      },
+    } as never,
+    revalidate: ((path: string, type: 'page' | 'layout') => {
+      pathCalls.push(`${path}:${type}`)
+    }) as never,
+    revalidateCacheTag: ((tag: string, profile: string) => {
+      tagCalls.push(`${tag}:${profile}`)
+    }) as never,
+    tags: ['frontend_artist_press_art', 'frontend_artist_press_art', ''],
+  })
+
+  assert.deepEqual(pathCalls, ['/art/artist-press:page'])
+  assert.deepEqual(tagCalls, ['frontend_artist_press_art:max'])
+})
+
 test('center content collections revalidate after change and delete', () => {
   for (const collection of [
     ArtistPress,
     Curriculums,
     DirectCastings,
+    ExamResults,
     ExamPassedReviews,
     ExamPassedVideos,
+    Faqs,
     News,
     ScreenAppearances,
     SocialLinks,

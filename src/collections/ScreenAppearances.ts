@@ -118,10 +118,12 @@ const screenAppearanceTypeOptions = [
   { label: "광고", value: "commercial" },
 ];
 const revalidateScreenAppearanceAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ["frontend_screen_appearances"],
   reason: "screen appearance",
   suffixes: ["", "screen-appearances"],
 });
 const revalidateScreenAppearanceAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ["frontend_screen_appearances"],
   reason: "screen appearance",
   suffixes: ["", "screen-appearances"],
 });

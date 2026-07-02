@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
@@ -9,6 +9,7 @@ import type {
 import { centerOptions, type CenterValue } from './shared'
 
 type RevalidatePath = typeof revalidatePath
+type RevalidateTag = typeof revalidateTag
 
 type CenterScopedDoc = TypeWithID & {
   center?: unknown
@@ -62,16 +63,41 @@ export function centerFrontendPaths({
   return Array.from(new Set(paths))
 }
 
+export function centerFrontendCacheTags({
+  centers,
+  prefixes,
+  previousCenters,
+}: {
+  centers: unknown
+  prefixes: string[]
+  previousCenters?: unknown
+}) {
+  const centerValues = [
+    ...selectedFrontendCenters(centers),
+    ...selectedFrontendCenters(previousCenters),
+  ]
+  const normalizedPrefixes = prefixes.map((prefix) => prefix.trim()).filter(Boolean)
+  const tags = centerValues.flatMap((center) =>
+    normalizedPrefixes.map((prefix) => `${prefix}_${center}`),
+  )
+
+  return Array.from(new Set(tags))
+}
+
 export function revalidateFrontendPaths({
   paths,
   reason,
   req,
   revalidate = revalidatePath,
+  revalidateCacheTag = revalidateTag,
+  tags = [],
 }: {
   paths: string[]
   reason: string
   req: PayloadRequest
   revalidate?: RevalidatePath
+  revalidateCacheTag?: RevalidateTag
+  tags?: string[]
 }) {
   if (req.context.disableRevalidate) {
     return
@@ -81,24 +107,44 @@ export function revalidateFrontendPaths({
     req.payload.logger.info(`Revalidating ${reason} path ${path}`)
     revalidate(path, 'page')
   }
+
+  for (const tag of Array.from(new Set(tags.map((item) => item.trim()).filter(Boolean)))) {
+    req.payload.logger.info(`Revalidating ${reason} cache tag ${tag}`)
+    revalidateCacheTag(tag, 'max')
+  }
 }
 
 export function createCenterRevalidationAfterChange({
+  cacheTagPrefixes = [],
+  cacheTags = [],
   reason,
   suffixes,
 }: {
+  cacheTagPrefixes?: string[]
+  cacheTags?: string[]
   reason: string
   suffixes: string[]
 }): CollectionAfterChangeHook<CenterScopedDoc> {
   return ({ doc, previousDoc, req }) => {
+    const centers = centerValueFromDoc(doc)
+    const previousCenters = centerValueFromDoc(previousDoc)
+
     revalidateFrontendPaths({
       paths: centerFrontendPaths({
-        centers: centerValueFromDoc(doc),
-        previousCenters: centerValueFromDoc(previousDoc),
+        centers,
+        previousCenters,
         suffixes,
       }),
       reason,
       req,
+      tags: [
+        ...cacheTags,
+        ...centerFrontendCacheTags({
+          centers,
+          prefixes: cacheTagPrefixes,
+          previousCenters,
+        }),
+      ],
     })
 
     return doc
@@ -106,20 +152,33 @@ export function createCenterRevalidationAfterChange({
 }
 
 export function createCenterRevalidationAfterDelete({
+  cacheTagPrefixes = [],
+  cacheTags = [],
   reason,
   suffixes,
 }: {
+  cacheTagPrefixes?: string[]
+  cacheTags?: string[]
   reason: string
   suffixes: string[]
 }): CollectionAfterDeleteHook<CenterScopedDoc> {
   return ({ doc, req }) => {
+    const centers = centerValueFromDoc(doc)
+
     revalidateFrontendPaths({
       paths: centerFrontendPaths({
-        centers: centerValueFromDoc(doc),
+        centers,
         suffixes,
       }),
       reason,
       req,
+      tags: [
+        ...cacheTags,
+        ...centerFrontendCacheTags({
+          centers,
+          prefixes: cacheTagPrefixes,
+        }),
+      ],
     })
 
     return doc

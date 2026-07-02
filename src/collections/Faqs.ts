@@ -21,6 +21,10 @@ import {
   createIdSlugBeforeValidate,
   idSlugField,
 } from './slugUtils'
+import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from './revalidateFrontend'
 
 const faqCategoryOptions = [
   { label: '입학/상담', value: 'admission' },
@@ -269,6 +273,16 @@ const normalizeFaqData: CollectionBeforeValidateHook = (args) => {
 
 const setFaqSlug = createIdSlugBeforeValidate()
 const finalizeFaqSlugAfterCreate = createFinalizeIdSlugAfterCreate('faqs')
+const revalidateFaqAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ['frontend_faqs'],
+  reason: 'faq',
+  suffixes: ['faq'],
+})
+const revalidateFaqAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ['frontend_faqs'],
+  reason: 'faq',
+  suffixes: ['faq'],
+})
 
 export const Faqs: CollectionConfig = {
   slug: 'faqs',
@@ -291,7 +305,8 @@ export const Faqs: CollectionConfig = {
   },
   defaultSort: 'displayOrder',
   hooks: {
-    afterChange: [finalizeFaqSlugAfterCreate],
+    afterChange: [finalizeFaqSlugAfterCreate, revalidateFaqAfterChange],
+    afterDelete: [revalidateFaqAfterDelete],
     beforeValidate: [normalizeFaqData, centerScopedBeforeValidate, setFaqSlug],
   },
   fields: [

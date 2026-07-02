@@ -35,10 +35,12 @@ import {
 } from "./slugUtils";
 
 const revalidateExamPassedReviewAfterChange = createCenterRevalidationAfterChange({
+  cacheTags: ["frontend_exam_passed_reviews"],
   reason: "exam passed review",
   suffixes: ["", "passed-reviews", "exam-passed-reviews"],
 });
 const revalidateExamPassedReviewAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTags: ["frontend_exam_passed_reviews"],
   reason: "exam passed review",
   suffixes: ["", "passed-reviews", "exam-passed-reviews"],
 });
