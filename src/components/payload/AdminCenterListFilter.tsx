@@ -6,7 +6,7 @@ import { Button, useAuth, useConfig, useListQuery } from '@payloadcms/ui'
 
 import {
   buildCenterListWhere,
-  centerListFilterFieldName,
+  centerListFilterConfig,
   selectedCenterFromWhere,
   type CenterListFilterValue,
 } from './AdminCenterListFilter.utils'
@@ -45,13 +45,16 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
   }
 
   const collectionConfig = getEntityConfig({ collectionSlug })
-  const fieldName = centerListFilterFieldName(collectionConfig.fields)
+  const centerFilterConfig = centerListFilterConfig(collectionConfig.fields)
 
-  if (!fieldName) {
+  if (!centerFilterConfig) {
     return null
   }
 
-  const activeCenter = selectedCenterFromWhere(query?.where, fieldName) ?? 'all'
+  const activeCenter =
+    selectedCenterFromWhere(query?.where, centerFilterConfig.fieldName) ??
+    selectedCenterFromWhere(query, centerFilterConfig.fieldName) ??
+    'all'
 
   return (
     <div
@@ -88,7 +91,7 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
                 where: buildCenterListWhere({
                   center: option.value,
                   existingWhere: query?.where,
-                  fieldName,
+                  ...centerFilterConfig,
                 }),
               })
             }}

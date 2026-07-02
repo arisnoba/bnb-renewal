@@ -5,6 +5,7 @@ import configPromise from '../../payload.config'
 import {
   adminCenterListFilterComponentPath,
   buildCenterListWhere,
+  centerListFilterConfig,
   centerListFilterFieldName,
   selectedCenterFromWhere,
 } from '../components/payload/AdminCenterListFilter.utils'
@@ -49,14 +50,30 @@ test('center-aware collections receive the global admin quick center filter', as
 test('center list filter detects single and multi center fields', async () => {
   const config = await configPromise
   const socialLinks = config.collections.find((collection) => collection.slug === 'social-links')
+  const curriculums = config.collections.find((collection) => collection.slug === 'curriculums')
   const faqs = config.collections.find((collection) => collection.slug === 'faqs')
+  const screenAppearances = config.collections.find((collection) => collection.slug === 'screen-appearances')
   const media = config.collections.find((collection) => collection.slug === 'media')
 
   assert.ok(socialLinks)
+  assert.ok(curriculums)
   assert.ok(faqs)
+  assert.ok(screenAppearances)
   assert.ok(media)
   assert.equal(centerListFilterFieldName(socialLinks.fields), 'center')
+  assert.deepEqual(centerListFilterConfig(curriculums.fields), {
+    fieldName: 'centers',
+    hasMany: false,
+  })
   assert.equal(centerListFilterFieldName(faqs.fields), 'centers')
+  assert.deepEqual(centerListFilterConfig(faqs.fields), {
+    fieldName: 'centers',
+    hasMany: true,
+  })
+  assert.deepEqual(centerListFilterConfig(screenAppearances.fields), {
+    fieldName: 'centers',
+    hasMany: false,
+  })
   assert.equal(centerListFilterFieldName(media.fields), undefined)
 })
 
@@ -104,6 +121,24 @@ test('center list filter preserves other list filters while replacing prior cent
 
   assert.deepEqual(
     buildCenterListWhere({
+      center: 'highteen',
+      existingWhere: {
+        displayStatus: { equals: 'published' },
+        centers: { equals: 'art' },
+      },
+      fieldName: 'centers',
+      hasMany: false,
+    }),
+    {
+      and: [
+        { displayStatus: { equals: 'published' } },
+        { centers: { equals: 'highteen' } },
+      ],
+    },
+  )
+
+  assert.deepEqual(
+    buildCenterListWhere({
       center: 'all',
       existingWhere: {
         displayStatus: { equals: 'draft' },
@@ -139,5 +174,36 @@ test('center list filter reads the active center from list where clauses', () =>
       'centers',
     ),
     'highteen',
+  )
+  assert.equal(
+    selectedCenterFromWhere(
+      {
+        sort: 'name',
+        where: {
+          or: {
+            0: { centers: { contains: 'kids' } },
+            1: { centers: { contains: 'all' } },
+          },
+        },
+      },
+      'centers',
+    ),
+    'kids',
+  )
+  assert.equal(
+    selectedCenterFromWhere(
+      {
+        page: 1,
+        sort: '-id',
+        where: {
+          and: {
+            0: { displayStatus: { equals: 'published' } },
+            1: { centers: { equals: 'art' } },
+          },
+        },
+      },
+      'centers',
+    ),
+    'art',
   )
 })

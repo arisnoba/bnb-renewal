@@ -7,6 +7,10 @@ export const centerListFilterFields = ['center', 'centers'] as const
 
 export type CenterListFilterField = (typeof centerListFilterFields)[number]
 export type CenterListFilterValue = 'all' | 'art' | 'avenue' | 'exam' | 'highteen' | 'kids'
+export type CenterListFilterConfig = {
+  fieldName: CenterListFilterField
+  hasMany: boolean
+}
 
 const validCenterValues = new Set<CenterListFilterValue>([
   'all',
@@ -44,28 +48,51 @@ function nestedFields(field: unknown): unknown[] {
   return [...fields, ...tabs, ...blocks]
 }
 
-function hasFieldNamed(fields: unknown[], fieldName: CenterListFilterField): boolean {
+function findFieldNamed(
+  fields: unknown[],
+  fieldName: CenterListFilterField,
+): Record<string, unknown> | undefined {
   for (const field of fields) {
     const record = objectValue(field)
 
     if (record?.name === fieldName) {
-      return true
+      return record
     }
 
-    if (hasFieldNamed(nestedFields(field), fieldName)) {
-      return true
+    const nestedField = findFieldNamed(nestedFields(field), fieldName)
+
+    if (nestedField) {
+      return nestedField
     }
   }
 
-  return false
+  return undefined
+}
+
+export function centerListFilterConfig(fields: unknown[]): CenterListFilterConfig | undefined {
+  const centerField = findFieldNamed(fields, 'center')
+
+  if (centerField) {
+    return {
+      fieldName: 'center',
+      hasMany: false,
+    }
+  }
+
+  const centersField = findFieldNamed(fields, 'centers')
+
+  if (!centersField) {
+    return undefined
+  }
+
+  return {
+    fieldName: 'centers',
+    hasMany: centersField.hasMany === true,
+  }
 }
 
 export function centerListFilterFieldName(fields: unknown[]): CenterListFilterField | undefined {
-  if (hasFieldNamed(fields, 'center')) {
-    return 'center'
-  }
-
-  return hasFieldNamed(fields, 'centers') ? 'centers' : undefined
+  return centerListFilterConfig(fields)?.fieldName
 }
 
 function omitCenterListWhere(value: unknown): Record<string, unknown> | undefined {
@@ -114,14 +141,22 @@ function omitCenterListWhere(value: unknown): Record<string, unknown> | undefine
   return next
 }
 
-function centerWhere(fieldName: CenterListFilterField, center: CenterListFilterValue): Where | undefined {
+function centerWhere({
+  center,
+  fieldName,
+  hasMany,
+}: {
+  center: CenterListFilterValue
+  fieldName: CenterListFilterField
+  hasMany: boolean
+}): Where | undefined {
   if (center === 'all') {
     return undefined
   }
 
-  if (fieldName === 'center') {
+  if (!hasMany) {
     return {
-      center: {
+      [fieldName]: {
         equals: center,
       },
     }
@@ -147,13 +182,15 @@ export function buildCenterListWhere({
   center,
   existingWhere,
   fieldName,
+  hasMany = fieldName === 'centers',
 }: {
   center: CenterListFilterValue
   existingWhere?: unknown
   fieldName: CenterListFilterField
+  hasMany?: boolean
 }): Where {
   const baseWhere = omitCenterListWhere(existingWhere)
-  const nextCenterWhere = centerWhere(fieldName, center)
+  const nextCenterWhere = centerWhere({ center, fieldName, hasMany })
 
   if (!baseWhere && !nextCenterWhere) {
     return {}
@@ -174,11 +211,21 @@ export function buildCenterListWhere({
 
 function centerValueFromCondition(fieldName: CenterListFilterField, value: unknown) {
   const condition = objectValue(value)
-  const operatorValue = fieldName === 'center' ? condition?.equals : condition?.contains
+  const operatorValue = condition?.equals ?? condition?.contains
 
   return typeof operatorValue === 'string' && validCenterValues.has(operatorValue as CenterListFilterValue)
     ? (operatorValue as CenterListFilterValue)
     : undefined
+}
+
+function iterableWhereChildren(value: unknown) {
+  if (Array.isArray(value)) {
+    return value
+  }
+
+  const record = objectValue(value)
+
+  return record ? Object.values(record) : []
 }
 
 export function selectedCenterFromWhere(
@@ -198,13 +245,17 @@ export function selectedCenterFromWhere(
   }
 
   for (const item of Object.values(record)) {
-    if (Array.isArray(item)) {
-      for (const child of item) {
-        const childValue = selectedCenterFromWhere(child, fieldName)
+    const itemValue = selectedCenterFromWhere(item, fieldName)
 
-        if (childValue && childValue !== 'all') {
-          return childValue
-        }
+    if (itemValue && itemValue !== 'all') {
+      return itemValue
+    }
+
+    for (const child of iterableWhereChildren(item)) {
+      const childValue = selectedCenterFromWhere(child, fieldName)
+
+      if (childValue && childValue !== 'all') {
+        return childValue
       }
     }
   }
