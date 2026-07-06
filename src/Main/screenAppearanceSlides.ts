@@ -47,7 +47,7 @@ export function screenAppearanceSlide(
 }
 
 function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return screenAppearanceImageUrl(appearance) || screenAppearanceBodyImageUrl(appearance)
+  return screenAppearanceBodyImageUrl(appearance) || screenAppearanceImageUrl(appearance)
 }
 
 function screenAppearanceBodyImageUrl(appearance: HomeScreenAppearance | null | undefined) {
