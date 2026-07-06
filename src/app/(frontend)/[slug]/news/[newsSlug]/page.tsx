@@ -6,7 +6,6 @@ import type { News } from '@/payload-types'
 import {
   getNewsDescription,
   getNewsMetaImageUrl,
-  getNewsThumbnailMedia,
   getNewsUrl,
   hasLexicalContent,
 } from '@/utilities/newsFallbacks'
@@ -21,7 +20,6 @@ import {
   DetailBackLink,
   DetailContainer,
   DetailHeader,
-  DetailMedia,
   DetailPage,
   DetailPager,
 } from '../../../_components/DetailLayout'
@@ -50,7 +48,6 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
     notFound()
   }
 
-  const media = getNewsThumbnailMedia(news)
   const description = getNewsDescription(news)
   const body = hasLexicalContent(news.body) ? news.body : undefined
   const adjacent = await queryAdjacentNews({
@@ -72,15 +69,6 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
           eyebrow={news.category}
           title={news.title}
         />
-
-        {media && (
-          <DetailMedia
-            className="mb-10 md:mb-16"
-            priority
-            resource={media}
-            size="(max-width: 767px) 100vw, 800px"
-          />
-        )}
 
         {body ? (
           <RichText
