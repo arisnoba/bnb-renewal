@@ -143,6 +143,64 @@ const uniqueRelationshipRows =
     return true
   }
 
+const uniqueNestedRelationshipRows =
+  (arrayFieldName: string, relationshipFieldName: string, message: string): Validate<unknown[]> =>
+  (value) => {
+    if (!Array.isArray(value)) {
+      return true
+    }
+
+    const seen = new Set<string>()
+
+    for (const row of value) {
+      if (!row || typeof row !== 'object') {
+        continue
+      }
+
+      const nestedRows = (row as Record<string, unknown>)[arrayFieldName]
+
+      if (!Array.isArray(nestedRows)) {
+        continue
+      }
+
+      for (const nestedRow of nestedRows) {
+        if (!nestedRow || typeof nestedRow !== 'object') {
+          continue
+        }
+
+        const id = relationshipId((nestedRow as Record<string, unknown>)[relationshipFieldName])
+
+        if (!id) {
+          continue
+        }
+
+        if (seen.has(id)) {
+          return message
+        }
+
+        seen.add(id)
+      }
+    }
+
+    return true
+  }
+
+const requiredManualResultLabel: Validate<unknown> = (value, { siblingData }) => {
+  const school = relationshipId(
+    siblingData && typeof siblingData === 'object'
+      ? (siblingData as Record<string, unknown>).school
+      : undefined,
+  )
+
+  if (school) {
+    return true
+  }
+
+  return typeof value === 'string' && value.trim()
+    ? true
+    : '대학교를 선택하거나 직접 노출 문구를 입력해야 합니다.'
+}
+
 const requiredWhenReserved =
   (message: string): Validate<unknown, unknown, MainBannerData> =>
   (value, { siblingData }) => {
@@ -220,6 +278,28 @@ function profileFilterForSelectedCenter({
   return {
     centers: {
       contains: center,
+    },
+  }
+}
+
+function examReviewFilterForSelectedSchool({
+  siblingData,
+}: {
+  siblingData?: unknown
+}): Where {
+  const school = relationshipId(
+    siblingData && typeof siblingData === 'object'
+      ? (siblingData as Record<string, unknown>).school
+      : undefined,
+  )
+
+  if (!school) {
+    return {}
+  }
+
+  return {
+    school: {
+      equals: school,
     },
   }
 }
@@ -436,9 +516,25 @@ export const MainBanners: CollectionConfig = {
               validate: requiredText('제목을 입력해야 합니다.'),
             },
             {
+              name: 'center',
+              type: 'select',
+              label: '센터',
+              admin: {
+                components: {
+                  Field:
+                    '@/components/payload/MainBannerCenterField#MainBannerCenterField',
+                },
+              },
+              options: centerOptions,
+              validate: requiredValue('센터를 선택해야 합니다.'),
+            },
+            {
               name: 'broadcaster',
               type: 'text',
               label: '방송사/출처',
+              admin: {
+                condition: (_data, siblingData) => siblingData?.center !== 'exam',
+              },
             },
             {
               name: 'description',
@@ -486,19 +582,6 @@ export const MainBanners: CollectionConfig = {
         {
           label: '연결 콘텐츠',
           fields: [
-            {
-              name: 'center',
-              type: 'select',
-              label: '센터',
-              admin: {
-                components: {
-                  Field:
-                    '@/components/payload/MainBannerCenterField#MainBannerCenterField',
-                },
-              },
-              options: centerOptions,
-              validate: requiredValue('센터를 선택해야 합니다.'),
-            },
             {
               name: 'linkedProfileItems',
               type: 'array',
@@ -554,28 +637,81 @@ export const MainBanners: CollectionConfig = {
                   RowLabel:
                     '@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel',
                 },
-                description: '입시센터 배너는 합격후기를 연결합니다.',
+                description:
+                  '입시센터 배너는 대학교 그룹별로 여러 학생 후기를 연결합니다.',
               },
-              validate: uniqueRelationshipRows(
+              validate: uniqueNestedRelationshipRows(
+                'reviews',
                 'review',
                 '같은 합격후기는 한 번만 연결할 수 있습니다.',
               ),
               fields: [
                 {
-                  name: 'review',
+                  name: 'school',
                   type: 'relationship',
-                  label: '합격후기',
-                  relationTo: 'exam-passed-reviews',
-                  validate: requiredValue('합격후기를 선택해야 합니다.'),
+                  label: '대학교',
+                  relationTo: 'exam-school-logos',
+                  admin: {
+                    description:
+                      '선택하면 대학명과 로고를 메인 슬라이드 데코에 사용하고, 아래 학생 후기 선택지가 해당 대학 합격자로 제한됩니다.',
+                  },
                 },
                 {
                   name: 'resultLabel',
                   type: 'text',
-                  label: '합격 대학/노출 문구',
+                  label: '직접 노출 문구',
                   admin: {
-                    description: '예: 한예종, 세종대, 건국대',
+                    description:
+                      '예: 세종대 최종합격. 대학 로고 설정을 선택하지 않았을 때 사용합니다.',
                   },
-                  validate: requiredText('합격 대학/노출 문구를 입력해야 합니다.'),
+                  validate: requiredManualResultLabel,
+                },
+                {
+                  name: 'reviewPicker',
+                  type: 'relationship',
+                  label: '학생 후기',
+                  relationTo: 'exam-passed-reviews',
+                  hasMany: true,
+                  virtual: true,
+                  filterOptions: examReviewFilterForSelectedSchool,
+                  admin: {
+                    components: {
+                      Field:
+                        '@/components/payload/MainBannerExamReviewsPickerField#MainBannerExamReviewsPickerField',
+                    },
+                    description:
+                      '여러 학생 후기를 한 번에 선택하면 저장용 학생 후기 목록에 자동 반영됩니다.',
+                  },
+                  validate: (value) =>
+                    Array.isArray(value) && value.length > 0
+                      ? true
+                      : '학생 후기를 하나 이상 선택해야 합니다.',
+                },
+                {
+                  name: 'reviews',
+                  type: 'array',
+                  label: '학생 후기',
+                  labels: {
+                    plural: '학생 후기',
+                    singular: '학생 후기',
+                  },
+                  admin: {
+                    hidden: true,
+                    description: '위 대학교에 해당하는 합격 학생 후기를 추가하세요.',
+                  },
+                  fields: [
+                    {
+                      name: 'review',
+                      type: 'relationship',
+                      label: '합격후기',
+                      relationTo: 'exam-passed-reviews',
+                      validate: requiredValue('합격후기를 선택해야 합니다.'),
+                    },
+                  ],
+                  validate: (value) =>
+                    Array.isArray(value) && value.length > 0
+                      ? true
+                      : '학생 후기를 하나 이상 선택해야 합니다.',
                 },
               ],
             },

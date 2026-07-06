@@ -17,20 +17,24 @@ type NamedField = Field & {
   name: string
   admin?: {
     components?: {
+      Field?: unknown
       RowLabel?: unknown
     }
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => unknown
+    hidden?: unknown
     position?: unknown
   }
   defaultValue?: unknown
   fields?: Field[]
   filterOptions?: unknown
+  hasMany?: unknown
   hooks?: {
     beforeDuplicate?: Array<(args: { value?: unknown }) => unknown>
   }
   label?: unknown
   relationTo?: unknown
   validate?: (value: unknown, options: { siblingData?: Record<string, unknown> }) => unknown
+  virtual?: unknown
 }
 
 function getTabs(collection: CollectionConfig) {
@@ -93,6 +97,9 @@ test('main banners are managed as center-scoped posts', () => {
   const linkedExamReviewItems = getField(MainBanners, 'linkedExamReviewItems')
   const profile = getField(MainBanners, 'profile')
   const roleLabel = getField(MainBanners, 'roleLabel')
+  const school = getField(MainBanners, 'school')
+  const reviewPicker = getField(MainBanners, 'reviewPicker')
+  const reviews = getField(MainBanners, 'reviews')
   const review = getField(MainBanners, 'review')
   const resultLabel = getField(MainBanners, 'resultLabel')
 
@@ -109,8 +116,20 @@ test('main banners are managed as center-scoped posts', () => {
     linkedExamReviewItems.admin?.components?.RowLabel,
     '@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel',
   )
+  assert.equal(school.label, '대학교')
+  assert.equal(school.relationTo, 'exam-school-logos')
+  assert.equal(reviewPicker.label, '학생 후기')
+  assert.equal(reviewPicker.relationTo, 'exam-passed-reviews')
+  assert.equal(reviewPicker.hasMany, true)
+  assert.equal(reviewPicker.virtual, true)
+  assert.equal(
+    reviewPicker.admin?.components?.Field,
+    '@/components/payload/MainBannerExamReviewsPickerField#MainBannerExamReviewsPickerField',
+  )
+  assert.equal(reviews.type, 'array')
+  assert.equal(reviews.admin?.hidden, true)
   assert.equal(review.relationTo, 'exam-passed-reviews')
-  assert.equal(resultLabel.label, '합격 대학/노출 문구')
+  assert.equal(resultLabel.label, '직접 노출 문구')
   assert.equal(
     linkedProfileItems.admin?.condition?.({}, { center: 'art' }),
     true,
@@ -253,13 +272,14 @@ test('main banner save prepends new banner to its center order', async () => {
   )
 })
 
-test('main banners expose center at the top of linked content tab', async () => {
-  const linkedContentTab = getTabs(MainBanners).find((tab) => tab.label === '연결 콘텐츠')
+test('main banners expose center below title in content tab', async () => {
+  const contentTab = getTabs(MainBanners).find((tab) => tab.label === '내용')
 
-  assert.ok(linkedContentTab, '연결 콘텐츠 탭이 있어야 합니다.')
+  assert.ok(contentTab, '내용 탭이 있어야 합니다.')
 
-  const [center] = linkedContentTab.fields as NamedField[]
+  const [title, center, broadcaster] = contentTab.fields as NamedField[]
 
+  assert.equal(title?.name, 'title')
   assert.equal(center?.name, 'center')
   assert.equal(center.type, 'select')
   assert.equal(center.label, '센터')
@@ -268,6 +288,9 @@ test('main banners expose center at the top of linked content tab', async () => 
     '@/components/payload/MainBannerCenterField#MainBannerCenterField',
   )
   assert.equal(await center.validate?.('', {}), '센터를 선택해야 합니다.')
+  assert.equal(broadcaster?.name, 'broadcaster')
+  assert.equal(broadcaster.admin?.condition?.({}, { center: 'exam' }), false)
+  assert.equal(broadcaster.admin?.condition?.({}, { center: 'art' }), true)
 })
 
 test('main banners validate required fields and reservation range', async () => {
@@ -277,6 +300,9 @@ test('main banners validate required fields and reservation range', async () => 
   const desktopImage = getField(MainBanners, 'desktopImage')
   const linkedProfileItems = getField(MainBanners, 'linkedProfileItems')
   const linkedExamReviewItems = getField(MainBanners, 'linkedExamReviewItems')
+  const resultLabel = getField(MainBanners, 'resultLabel')
+  const reviewPicker = getField(MainBanners, 'reviewPicker')
+  const reviews = getField(MainBanners, 'reviews')
   const publishStartAt = getField(MainBanners, 'publishStartAt')
   const publishEndAt = getField(MainBanners, 'publishEndAt')
 
@@ -293,11 +319,34 @@ test('main banners validate required fields and reservation range', async () => 
   )
   assert.equal(
     await linkedExamReviewItems.validate?.(
-      [{ review: 7 }, { review: { id: 7, title: '중복 합격후기' } }],
+      [
+        { reviews: [{ review: 7 }] },
+        { reviews: [{ review: { id: 7, title: '중복 합격후기' } }] },
+      ],
       {},
     ),
     '같은 합격후기는 한 번만 연결할 수 있습니다.',
   )
+  assert.equal(
+    await reviewPicker.validate?.([], {}),
+    '학생 후기를 하나 이상 선택해야 합니다.',
+  )
+  assert.equal(await reviewPicker.validate?.([3, 5], {}), true)
+  assert.equal(
+    await resultLabel.validate?.('', {
+      siblingData: {},
+    }),
+    '대학교를 선택하거나 직접 노출 문구를 입력해야 합니다.',
+  )
+  assert.equal(
+    await resultLabel.validate?.('', {
+      siblingData: {
+        school: 3,
+      },
+    }),
+    true,
+  )
+  assert.equal(await reviews.validate?.([], {}), '학생 후기를 하나 이상 선택해야 합니다.')
   assert.equal(publishStartAt.defaultValue instanceof Function, true)
   assert.equal(
     await publishStartAt.validate?.(null, {

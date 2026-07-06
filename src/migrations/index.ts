@@ -136,6 +136,7 @@ import * as migration_20260701_201500_news_remove_generate_slug from './20260701
 import * as migration_20260701_202500_news_id_slugs from './20260701_202500_news_id_slugs'
 import * as migration_20260701_204500_id_only_slugs from './20260701_204500_id_only_slugs'
 import * as migration_20260706_150000_screen_appearance_media_fields from './20260706_150000_screen_appearance_media_fields'
+import * as migration_20260706_180000_main_banner_exam_review_groups from './20260706_180000_main_banner_exam_review_groups'
 
 export const migrations = [
   {
@@ -827,5 +828,10 @@ export const migrations = [
     up: migration_20260706_150000_screen_appearance_media_fields.up,
     down: migration_20260706_150000_screen_appearance_media_fields.down,
     name: '20260706_150000_screen_appearance_media_fields',
+  },
+  {
+    up: migration_20260706_180000_main_banner_exam_review_groups.up,
+    down: migration_20260706_180000_main_banner_exam_review_groups.down,
+    name: '20260706_180000_main_banner_exam_review_groups',
   },
 ]

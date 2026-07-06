@@ -1,4 +1,11 @@
-import type { ExamPassedReview, Main, MainBanner, MainStatistic, Profile } from '@/payload-types'
+import type {
+  ExamPassedReview,
+  ExamSchoolLogo,
+  Main,
+  MainBanner,
+  MainStatistic,
+  Profile,
+} from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -7,6 +14,7 @@ import {
   DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
   MainBannerSlider,
   type MainBannerCardItem,
+  type MainBannerDecorImage,
   type MainBannerMarqueeItem,
   type MainBannerSlide,
   type MainBannerStatisticGroup,
@@ -21,6 +29,12 @@ type MainBannerSectionProps = {
 
 type LinkedExamReviewItem = NonNullable<MainBanner['linkedExamReviewItems']>[number]
 type LinkedProfileItem = NonNullable<MainBanner['linkedProfileItems']>[number]
+type LinkedExamReviewGroup = LinkedExamReviewItem & {
+  review?: ExamPassedReview | number | string | null
+  reviews?: { review?: ExamPassedReview | number | string | null }[] | null
+  school?: ExamSchoolLogo | number | string | null
+  universityResult?: unknown
+}
 type MainBannerOrderField = `${CenterSlug}Banners`
 type MainBannerOrderRow = NonNullable<Main[MainBannerOrderField]>[number]
 type MainBannerAutoplayField = `${CenterSlug}BannerAutoplay`
@@ -131,7 +145,11 @@ function isProfile(value: LinkedProfileItem['profile']): value is Profile {
   return Boolean(value && typeof value === 'object')
 }
 
-function isExamReview(value: LinkedExamReviewItem['review']): value is ExamPassedReview {
+function isExamReview(value: unknown): value is ExamPassedReview {
+  return Boolean(value && typeof value === 'object')
+}
+
+function isExamSchoolLogo(value: unknown): value is ExamSchoolLogo {
   return Boolean(value && typeof value === 'object')
 }
 
@@ -179,10 +197,55 @@ function mainBannerExamReviewImage(review: ExamPassedReview) {
   return mainBannerPathImage(review.studentImagePath) || null
 }
 
+function mainBannerExamSchoolLogo(school: unknown) {
+  return isExamSchoolLogo(school) ? school.logoMedia || null : null
+}
+
 function mainBannerPathImage(value: unknown) {
   const src = publishedImageSrc(textValue(value))
 
   return src ? getMediaUrl(src) : ''
+}
+
+function mainBannerExamResultLabel(item: LinkedExamReviewGroup) {
+  return textValue(item.resultLabel, isExamSchoolLogo(item.school) ? item.school.schoolName : '')
+}
+
+function mainBannerExamReviews(item: LinkedExamReviewGroup) {
+  if (Array.isArray(item.reviews) && item.reviews.length > 0) {
+    return item.reviews.map((row) => row.review)
+  }
+
+  return item.review ? [item.review] : []
+}
+
+function mainBannerExamResultDecorImages(banner: MainBanner): MainBannerDecorImage[] {
+  const seen = new Set<string>()
+  const images: MainBannerDecorImage[] = []
+
+  for (const item of banner.linkedExamReviewItems ?? []) {
+    const group = item as LinkedExamReviewGroup
+    const logo = mainBannerExamSchoolLogo(group.school)
+
+    if (!logo) {
+      continue
+    }
+
+    const label = mainBannerExamResultLabel(group)
+    const key = `${label}:${typeof logo === 'string' ? logo : JSON.stringify(logo)}`
+
+    if (seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+    images.push({
+      alt: label,
+      image: logo,
+    })
+  }
+
+  return images
 }
 
 export function mainBannerMarqueeItems(
@@ -191,29 +254,32 @@ export function mainBannerMarqueeItems(
 ): MainBannerMarqueeItem[] {
   if (center === 'exam') {
     return (banner.linkedExamReviewItems ?? [])
-      .map((item) => {
-        const review = item.review
+      .flatMap((item) => {
+        const group = item as LinkedExamReviewGroup
+        const resultLabel = mainBannerExamResultLabel(group)
 
-        if (!isExamReview(review)) {
-          return null
-        }
+        return mainBannerExamReviews(group).map((review) => {
+          if (!isExamReview(review)) {
+            return null
+          }
 
-        const cardItem: MainBannerCardItem = {
-          type: 'card',
-          buttonLabel: '후기 보기',
-          href: mainBannerExamReviewHref(review),
-          image: mainBannerExamReviewImage(review),
-          imageAlt: textValue(review.studentName, review.title) || '합격후기',
-          label: labelWithDetail(
-            textValue(review.studentName, review.title),
-            item.resultLabel,
-            '합격후기',
-          ),
-          name: textValue(review.studentName, review.title) || '합격후기',
-          roleLabel: textValue(item.resultLabel),
-        }
+          const cardItem: MainBannerCardItem = {
+            type: 'card',
+            buttonLabel: '후기 보기',
+            href: mainBannerExamReviewHref(review),
+            image: mainBannerExamReviewImage(review),
+            imageAlt: textValue(review.studentName, review.title) || '합격후기',
+            label: labelWithDetail(
+              textValue(review.studentName, review.title),
+              resultLabel,
+              '합격후기',
+            ),
+            name: textValue(review.studentName, review.title) || '합격후기',
+            roleLabel: resultLabel,
+          }
 
-        return cardItem
+          return cardItem
+        })
       })
       .filter((item): item is MainBannerCardItem => Boolean(item))
   }
@@ -247,6 +313,7 @@ export function mainBannerMarqueeItems(
 export function toSlide(banner: MainBanner, center: CenterSlug): MainBannerSlide {
   return {
     broadcaster: banner.broadcaster,
+    decorImages: center === 'exam' ? mainBannerExamResultDecorImages(banner) : [],
     description: banner.description,
     desktopImage: banner.desktopImage,
     desktopVideo: banner.desktopVideo,

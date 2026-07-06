@@ -24,6 +24,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export type MainBannerSlide = {
   broadcaster?: string | null
+  decorImages?: MainBannerDecorImage[]
   description?: string | null
   desktopImage?: Media | number | string | null
   desktopVideo?: Media | number | string | null
@@ -51,6 +52,11 @@ export type MainBannerCardItem = {
 }
 
 export type MainBannerMarqueeItem = MainBannerLinkItem | MainBannerCardItem
+
+export type MainBannerDecorImage = {
+  alt?: string | null
+  image?: Media | number | string | null
+}
 
 export type MainBannerStatisticItem = {
   label: string
@@ -550,6 +556,55 @@ function BannerDecoLayer({ center }: { center?: CenterSlug }) {
   )
 }
 
+const logoDecoPositions = [
+  'right-[8vw] top-[17%] rotate-[-8deg]',
+  'right-[18vw] top-[30%] rotate-[7deg]',
+  'right-[6vw] top-[43%] rotate-[5deg]',
+  'right-[22vw] top-[52%] rotate-[-5deg]',
+]
+
+function BannerLogoDecoLayer({ images }: { images?: MainBannerDecorImage[] }) {
+  const logoItems = (images ?? [])
+    .map((item) => ({
+      alt: String(item.alt ?? '').trim(),
+      src: itemImageUrl(item.image),
+    }))
+    .filter((item) => item.src)
+    .slice(0, 4)
+
+  if (logoItems.length === 0) {
+    return null
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="section-main-banner__logo-deco-layer pointer-events-none absolute inset-0 z-2 overflow-hidden"
+    >
+      {logoItems.map((item, index) => (
+        <div
+          className={cn(
+            'section-main-banner__logo-deco absolute grid size-24 place-items-center rounded-full',
+            'bg-white/90 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.26)] ring-1 ring-black/5',
+            'max-[768.98px]:size-18 max-[768.98px]:p-3',
+            'max-[640px]:size-15 max-[640px]:p-2.5',
+            logoDecoPositions[index % logoDecoPositions.length],
+          )}
+          key={`${item.src}-${index}`}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt=""
+            className="h-full w-full object-contain"
+            loading={index < 2 ? 'eager' : 'lazy'}
+            src={item.src}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function BannerSlide({
   banner,
   center,
@@ -577,6 +632,7 @@ function BannerSlide({
         style={mainBannerOverlayStyle}
       />
       <BannerDecoLayer center={center} />
+      <BannerLogoDecoLayer images={banner.decorImages} />
       <div
         className={cn(
           'container section-main-banner__content relative z-3 grid min-h-svh items-end',
