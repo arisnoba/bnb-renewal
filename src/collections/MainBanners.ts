@@ -22,6 +22,8 @@ import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 
 type MainBannerData = {
   center?: unknown
+  linkedExamReviewItems?: unknown
+  linkedProfileItems?: unknown
   publishStartAt?: unknown
   useReservation?: unknown
 }
@@ -143,14 +145,12 @@ const uniqueRelationshipRows =
     return true
   }
 
-const uniqueNestedRelationshipRows =
+const uniqueNestedRelationshipRowsWithinEachParent =
   (arrayFieldName: string, relationshipFieldName: string, message: string): Validate<unknown[]> =>
   (value) => {
     if (!Array.isArray(value)) {
       return true
     }
-
-    const seen = new Set<string>()
 
     for (const row of value) {
       if (!row || typeof row !== 'object') {
@@ -163,12 +163,16 @@ const uniqueNestedRelationshipRows =
         continue
       }
 
+      const seen = new Set<string>()
+
       for (const nestedRow of nestedRows) {
         if (!nestedRow || typeof nestedRow !== 'object') {
           continue
         }
 
-        const id = relationshipId((nestedRow as Record<string, unknown>)[relationshipFieldName])
+        const id = relationshipId(
+          (nestedRow as Record<string, unknown>)[relationshipFieldName],
+        )
 
         if (!id) {
           continue
@@ -206,6 +210,47 @@ const requiredWhenReserved =
   (value, { siblingData }) => {
     return siblingData?.useReservation && !value ? message : true
   }
+
+function dedupeExamReviewRowsWithinEachGroup(value: unknown) {
+  if (!Array.isArray(value)) {
+    return value
+  }
+
+  return value.map((group) => {
+    if (!group || typeof group !== 'object') {
+      return group
+    }
+
+    const groupRecord = group as Record<string, unknown>
+    const reviews = groupRecord.reviews
+
+    if (!Array.isArray(reviews)) {
+      return group
+    }
+
+    const seen = new Set<string>()
+    const dedupedReviews = reviews.filter((row) => {
+      if (!row || typeof row !== 'object') {
+        return false
+      }
+
+      const id = relationshipId((row as Record<string, unknown>).review)
+
+      if (!id || seen.has(id)) {
+        return false
+      }
+
+      seen.add(id)
+
+      return true
+    })
+
+    return {
+      ...groupRecord,
+      reviews: dedupedReviews,
+    }
+  })
+}
 
 function dateValue(value: unknown) {
   if (!value) {
@@ -282,28 +327,6 @@ function profileFilterForSelectedCenter({
   }
 }
 
-function examReviewFilterForSelectedSchool({
-  siblingData,
-}: {
-  siblingData?: unknown
-}): Where {
-  const school = relationshipId(
-    siblingData && typeof siblingData === 'object'
-      ? (siblingData as Record<string, unknown>).school
-      : undefined,
-  )
-
-  if (!school) {
-    return {}
-  }
-
-  return {
-    school: {
-      equals: school,
-    },
-  }
-}
-
 const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
   if (!data) {
     return data
@@ -318,6 +341,9 @@ const normalizeMainBannerData: CollectionBeforeValidateHook = ({ data, originalD
 
   if (nextData.center === 'exam') {
     nextData.linkedProfileItems = []
+    nextData.linkedExamReviewItems = dedupeExamReviewRowsWithinEachGroup(
+      nextData.linkedExamReviewItems,
+    )
   } else {
     nextData.linkedExamReviewItems = []
   }
@@ -640,10 +666,10 @@ export const MainBanners: CollectionConfig = {
                 description:
                   '입시센터 배너는 대학교 그룹별로 여러 학생 후기를 연결합니다.',
               },
-              validate: uniqueNestedRelationshipRows(
+              validate: uniqueNestedRelationshipRowsWithinEachParent(
                 'reviews',
                 'review',
-                '같은 합격후기는 한 번만 연결할 수 있습니다.',
+                '같은 대학교 그룹 안에서는 같은 합격후기를 한 번만 연결할 수 있습니다.',
               ),
               fields: [
                 {
@@ -653,7 +679,7 @@ export const MainBanners: CollectionConfig = {
                   relationTo: 'exam-school-logos',
                   admin: {
                     description:
-                      '선택하면 대학명과 로고를 메인 슬라이드 데코에 사용하고, 아래 학생 후기 선택지가 해당 대학 합격자로 제한됩니다.',
+                      '선택하면 대학명과 로고를 메인 슬라이드 데코에 사용합니다.',
                   },
                 },
                 {
@@ -673,7 +699,6 @@ export const MainBanners: CollectionConfig = {
                   relationTo: 'exam-passed-reviews',
                   hasMany: true,
                   virtual: true,
-                  filterOptions: examReviewFilterForSelectedSchool,
                   admin: {
                     components: {
                       Field:
@@ -697,7 +722,7 @@ export const MainBanners: CollectionConfig = {
                   },
                   admin: {
                     hidden: true,
-                    description: '위 대학교에 해당하는 합격 학생 후기를 추가하세요.',
+                    description: '이 대학교 그룹에 노출할 합격 학생 후기를 추가하세요.',
                   },
                   fields: [
                     {

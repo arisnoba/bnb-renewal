@@ -272,6 +272,49 @@ test('main banner save prepends new banner to its center order', async () => {
   )
 })
 
+test('main banner exam review groups dedupe hidden review rows per university group', () => {
+  const beforeValidate = MainBanners.hooks?.beforeValidate?.[0] as (args: {
+    data?: Record<string, unknown>
+    originalDoc?: Record<string, unknown>
+    req: { user?: unknown }
+  }) => Record<string, unknown> | undefined
+
+  assert.equal(typeof beforeValidate, 'function')
+
+  const data = beforeValidate({
+    data: {
+      center: 'exam',
+      linkedExamReviewItems: [
+        {
+          school: 1,
+          reviews: [
+            { id: 'a', review: 7 },
+            { id: 'b', review: { id: 7, title: '중복 합격후기' } },
+            { id: 'empty', review: null },
+          ],
+        },
+        {
+          school: 2,
+          reviews: [{ id: 'c', review: 7 }],
+        },
+      ],
+      useReservation: false,
+    },
+    req: {},
+  })
+
+  assert.deepEqual(data?.linkedExamReviewItems, [
+    {
+      school: 1,
+      reviews: [{ id: 'a', review: 7 }],
+    },
+    {
+      school: 2,
+      reviews: [{ id: 'c', review: 7 }],
+    },
+  ])
+})
+
 test('main banners expose center below title in content tab', async () => {
   const contentTab = getTabs(MainBanners).find((tab) => tab.label === '내용')
 
@@ -320,12 +363,26 @@ test('main banners validate required fields and reservation range', async () => 
   assert.equal(
     await linkedExamReviewItems.validate?.(
       [
-        { reviews: [{ review: 7 }] },
-        { reviews: [{ review: { id: 7, title: '중복 합격후기' } }] },
+        {
+          reviews: [
+            { review: 7 },
+            { review: { id: 7, title: '중복 합격후기' } },
+          ],
+        },
       ],
       {},
     ),
-    '같은 합격후기는 한 번만 연결할 수 있습니다.',
+    '같은 대학교 그룹 안에서는 같은 합격후기를 한 번만 연결할 수 있습니다.',
+  )
+  assert.equal(
+    await linkedExamReviewItems.validate?.(
+      [
+        { school: 1, reviews: [{ review: 7 }] },
+        { school: 2, reviews: [{ review: { id: 7, title: '다른 대학 합격후기' } }] },
+      ],
+      {},
+    ),
+    true,
   )
   assert.equal(
     await reviewPicker.validate?.([], {}),
