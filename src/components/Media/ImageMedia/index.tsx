@@ -76,8 +76,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   if (!src && resource && typeof resource === 'object') {
     const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
 
-    width = fullWidth!
-    height = fullHeight!
+    width = toPositiveNumber(fullWidth)
+    height = toPositiveNumber(fullHeight)
     alt = altFromResource || ''
 
     const cacheTag = resource.updatedAt
@@ -93,6 +93,33 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     : Object.entries(breakpoints)
         .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
         .join(', ')
+
+  if (!fill && (!width || !height) && typeof src === 'string') {
+    return (
+      <picture className={pictureClassName}>
+        <img
+          ref={imgRef}
+          alt={alt || ''}
+          className={cn(
+            fadeIn && 'transition-opacity duration-300 ease-in-out',
+            fadeIn && (isLoaded ? 'opacity-100' : 'opacity-0'),
+            imgClassName
+          )}
+          loading={loading}
+          sizes={sizes}
+          src={src}
+          onLoad={() => {
+            if (fadeIn) {
+              setIsLoaded(true)
+            }
+            if (props.onLoad) {
+              props.onLoad()
+            }
+          }}
+        />
+      </picture>
+    )
+  }
 
   return (
     <picture className={cn(fill && 'relative block', pictureClassName)}>
@@ -125,4 +152,10 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       />
     </picture>
   )
+}
+
+function toPositiveNumber(value: unknown) {
+  const number = Number(value)
+
+  return Number.isFinite(number) && number > 0 ? number : undefined
 }

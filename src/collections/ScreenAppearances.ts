@@ -20,7 +20,6 @@ import {
   authorNameFromCenters,
   centerOptions,
   centersField,
-  imagePathField,
   isGlobalAdminUser,
   publishingFields,
   sidebarFields,
@@ -270,6 +269,11 @@ export const ScreenAppearances: CollectionConfig = {
       finalizeScreenAppearanceSlugAfterCreate,
       revalidateScreenAppearanceAfterChange,
       normalizeUploadedMediaPrefixes([
+        { path: "thumbnailMedia", role: "screen-appearances.thumbnail" },
+        {
+          path: "profileImageMedia",
+          role: "screen-appearances.profile-image",
+        },
         { path: "bodyImages.*.image", role: "screen-appearances.body-image" },
       ]),
     ],
@@ -409,8 +413,42 @@ export const ScreenAppearances: CollectionConfig = {
       {
         label: "미디어",
         fields: [
-          adminRow([manualActorOnlyField(imagePathField("profileImagePath", "프로필 이미지"))]),
-          adminRow([imagePathField("thumbnailPath", "대표 이미지")]),
+          adminRow([
+            manualActorOnlyField({
+              name: "profileImageMedia",
+              type: "upload",
+              label: "프로필 이미지",
+              relationTo: "media",
+              admin: {
+                width: "50%",
+              },
+            }),
+            {
+              name: "thumbnailMedia",
+              type: "upload",
+              label: "대표 이미지",
+              relationTo: "media",
+              admin: {
+                width: "50%",
+              },
+            },
+          ]),
+          {
+            name: "profileImagePath",
+            type: "text",
+            label: "레거시 프로필 이미지",
+            admin: {
+              hidden: true,
+            },
+          },
+          {
+            name: "thumbnailPath",
+            type: "text",
+            label: "레거시 대표 이미지",
+            admin: {
+              hidden: true,
+            },
+          },
           {
             name: "bodyImages",
             type: "array",

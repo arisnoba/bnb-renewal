@@ -15,11 +15,13 @@ export type HomeScreenAppearance = Pick<
   | 'className'
   | 'linkedProfiles'
   | 'performerName'
+  | 'profileImageMedia'
   | 'profileImagePath'
   | 'projectTitle'
   | 'publishedAt'
   | 'roleName'
   | 'slug'
+  | 'thumbnailMedia'
   | 'thumbnailPath'
   | 'title'
 >
@@ -45,7 +47,7 @@ export function screenAppearanceSlide(
 }
 
 function screenAppearanceSceneImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return screenAppearanceBodyImageUrl(appearance) || screenAppearanceImageUrl(appearance)
+  return screenAppearanceImageUrl(appearance) || screenAppearanceBodyImageUrl(appearance)
 }
 
 function screenAppearanceBodyImageUrl(appearance: HomeScreenAppearance | null | undefined) {
@@ -57,7 +59,11 @@ function screenAppearanceBodyImageUrl(appearance: HomeScreenAppearance | null | 
 }
 
 function screenAppearanceProfileImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return screenAppearanceLinkedProfileImageUrl(appearance) || normalizeImageUrl(appearance?.profileImagePath)
+  return (
+    screenAppearanceLinkedProfileImageUrl(appearance) ||
+    mediaUrl(appearance?.profileImageMedia) ||
+    normalizeImageUrl(appearance?.profileImagePath)
+  )
 }
 
 function screenAppearanceLinkedProfileImageUrl(
@@ -79,7 +85,7 @@ function screenAppearanceBroadcastLogoUrl(station: BroadcastStation | null | und
 }
 
 function screenAppearanceImageUrl(appearance: HomeScreenAppearance | null | undefined) {
-  return normalizeImageUrl(appearance?.thumbnailPath)
+  return mediaUrl(appearance?.thumbnailMedia) || normalizeImageUrl(appearance?.thumbnailPath)
 }
 
 function mediaUrl(value: number | null | Media | undefined) {

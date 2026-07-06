@@ -8,7 +8,9 @@ import type {
 } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
+import { ChevronRight } from 'lucide-react'
 import { draftMode } from 'next/headers'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import React, { cache } from 'react'
@@ -27,6 +29,7 @@ import { screenAppearanceProfileImageUrl } from './screenAppearanceProfileImage'
 type PerformerInfo = {
   className?: string | null
   name: string
+  profileHref?: string | null
   profileImageMedia?: PayloadMedia | null
 }
 
@@ -89,7 +92,7 @@ export async function ScreenAppearanceDetailPage({
   const meta = [broadcastStation?.stationName, getAppearanceTypeLabel(appearance.appearanceType)]
     .filter(Boolean)
     .join(' · ')
-  const performer = getPerformer(appearance)
+  const performer = getPerformer(appearance, center)
   const bodyImages = getBodyImages(appearance)
   const mainImage = bodyImages[0]
   const secondaryImages = bodyImages.slice(1)
@@ -156,8 +159,19 @@ export async function ScreenAppearanceDetailPage({
               />
               <div className="min-w-0">
                 <p className="type-label-m font-bold leading-[1.35] text-brand">출연자</p>
-                <h2 className="line-clamp-2 type-title-m font-extrabold leading-[1.35] text-foreground">
-                  {performer.name}
+                <h2 className="type-title-m font-extrabold leading-[1.35] text-foreground">
+                  {performer.profileHref ? (
+                    <Link
+                      aria-label={`${performer.name} 프로필 보기`}
+                      className="inline-flex max-w-full items-center gap-1 transition-colors hover:text-brand"
+                      href={performer.profileHref}
+                    >
+                      <span className="line-clamp-2 min-w-0">{performer.name}</span>
+                      <ChevronRight aria-hidden="true" className="size-4 shrink-0" strokeWidth={2.4} />
+                    </Link>
+                  ) : (
+                    <span className="line-clamp-2">{performer.name}</span>
+                  )}
                 </h2>
               </div>
             </div>
@@ -326,11 +340,15 @@ const queryAdjacentScreenAppearances = cache(
   },
 )
 
-function getPerformer(appearance: ScreenAppearance): PerformerInfo {
+function getPerformer(appearance: ScreenAppearance, center: CenterSlug): PerformerInfo {
   if (appearance.actorInputMode === 'manual') {
     return {
       className: normalizeText(appearance.className),
       name: appearance.performerName?.trim() || '배우앤배움 수강생',
+      profileImageMedia:
+        appearance.profileImageMedia && typeof appearance.profileImageMedia === 'object'
+          ? appearance.profileImageMedia
+          : null,
     }
   }
 
@@ -343,6 +361,7 @@ function getPerformer(appearance: ScreenAppearance): PerformerInfo {
   return {
     className: getProfileClassName(profiles) || normalizeText(appearance.className),
     name: names || appearance.performerName?.trim() || '배우앤배움 수강생',
+    profileHref: profile?.slug ? `/${center}/profiles/${encodeURIComponent(profile.slug)}` : null,
     profileImageMedia:
       profile?.profileImageMedia && typeof profile.profileImageMedia === 'object'
         ? profile.profileImageMedia

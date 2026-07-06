@@ -48,9 +48,11 @@ type ScreenAppearanceListItem = Pick<
   | 'linkedProfiles'
   | 'performerName'
   | 'projectTitle'
+  | 'profileImageMedia'
   | 'publishedAt'
   | 'roleName'
   | 'slug'
+  | 'thumbnailMedia'
   | 'thumbnailPath'
   | 'title'
 >
@@ -279,8 +281,8 @@ function ScreenAppearanceCard({
   const projectMeta = [broadcastStation?.stationName, getAppearanceTypeLabel(appearance.appearanceType)]
     .filter(Boolean)
     .join(' · ')
-  const screenImage = getScreenImage(appearance)
-  const thumbnailUrl = screenImage ? '' : normalizeImageUrl(appearance.thumbnailPath)
+  const thumbnailUrl = screenAppearanceImageUrl(appearance)
+  const screenImage = thumbnailUrl ? null : getScreenImage(appearance)
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
   const airDate = formatDate(appearance.airDateLabel)
@@ -502,6 +504,7 @@ async function findHeroImages({
       select: {
         bodyImages: true,
         id: true,
+        thumbnailMedia: true,
         thumbnailPath: true,
       },
       sort: '-publishedAt',
@@ -513,7 +516,10 @@ async function findHeroImages({
 
   return result.docs
     .map((appearance) => {
-      const item = appearance as Pick<ScreenAppearance, 'bodyImages' | 'id' | 'thumbnailPath'>
+      const item = appearance as Pick<
+        ScreenAppearance,
+        'bodyImages' | 'id' | 'thumbnailMedia' | 'thumbnailPath'
+      >
       const src = screenAppearanceImageUrl(item)
 
       if (!src) {
@@ -540,9 +546,11 @@ const screenAppearancesArchiveSelect = {
   linkedProfiles: true,
   performerName: true,
   projectTitle: true,
+  profileImageMedia: true,
   publishedAt: true,
   roleName: true,
   slug: true,
+  thumbnailMedia: true,
   thumbnailPath: true,
   title: true,
 } as const
@@ -587,6 +595,10 @@ function getPerformer(appearance: ScreenAppearanceListItem): PerformerInfo {
     return {
       className: normalizeText(appearance.className),
       name: appearance.performerName?.trim() || '배우앤배움 수강생',
+      profileImageMedia:
+        appearance.profileImageMedia && typeof appearance.profileImageMedia === 'object'
+          ? appearance.profileImageMedia
+          : null,
     }
   }
 
@@ -631,9 +643,20 @@ function mediaResourceUrl(resource: PayloadMedia | null | undefined) {
 }
 
 function screenAppearanceImageUrl(
-  appearance: Pick<ScreenAppearance, 'bodyImages' | 'thumbnailPath'> | ScreenAppearanceListItem,
+  appearance:
+    | Pick<ScreenAppearance, 'bodyImages' | 'thumbnailMedia' | 'thumbnailPath'>
+    | ScreenAppearanceListItem,
 ) {
-  return mediaResourceUrl(getScreenImage(appearance)) || normalizeImageUrl(appearance.thumbnailPath)
+  const thumbnailMedia =
+    appearance.thumbnailMedia && typeof appearance.thumbnailMedia === 'object'
+      ? appearance.thumbnailMedia
+      : null
+
+  return (
+    mediaResourceUrl(thumbnailMedia) ||
+    normalizeImageUrl(appearance.thumbnailPath) ||
+    mediaResourceUrl(getScreenImage(appearance))
+  )
 }
 
 function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
