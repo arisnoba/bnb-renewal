@@ -182,7 +182,7 @@ function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
       description: '프로필 사진과 영상 제작을 위한 전용 스튜디오',
       href: `/${center}/profile-production`,
       imageUrl: '/assets/artist-care/profile-video-production.jpg',
-      title: '프로필.영상제작',
+      title: '프로필·영상제작',
     },
     {
       category: artistCareGroups.membership,
