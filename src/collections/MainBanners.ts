@@ -557,10 +557,7 @@ export const MainBanners: CollectionConfig = {
             {
               name: 'broadcaster',
               type: 'text',
-              label: '방송사/출처',
-              admin: {
-                condition: (_data, siblingData) => siblingData?.center !== 'exam',
-              },
+              label: '타이틀',
             },
             {
               name: 'description',

@@ -700,10 +700,12 @@ function BannerSlide({
           {broadcaster && (
             <p
               className={cn(
-                'section-main-banner__badge mb-[22px] inline-flex min-h-8 items-center',
-                'rounded-full bg-[#78a8ff] px-[13px] py-[5px]',
-                'text-[22px] font-black leading-none text-[#050505]',
-                'max-[640px]:min-h-7 max-[640px]:text-base',
+                'section-main-banner__badge mb-[22px] inline-flex items-center',
+                'text-[22px] font-black leading-none',
+                center === 'exam'
+                  ? 'bg-transparent p-0 text-brand'
+                  : 'min-h-8 rounded-full bg-[#78a8ff] px-[13px] py-[5px] text-[#050505] max-[640px]:min-h-7',
+                'max-[640px]:text-base',
               )}
             >
               {broadcaster}

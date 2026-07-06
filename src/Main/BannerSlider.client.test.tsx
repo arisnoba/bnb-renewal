@@ -133,6 +133,26 @@ test('main banner renders exam review cards with review buttons', () => {
   assert.match(html, /href="\/exam\/passed-reviews\/seoul-art-pass"/)
 })
 
+test('main banner renders exam broadcaster as brand text without badge background', () => {
+  const html = renderToStaticMarkup(
+    <MainBannerSlider
+      banners={[
+        {
+          broadcaster: '배우앤배움 입시센터 합격자',
+          desktopImage: image,
+          title: '세종대 국민대',
+        },
+      ]}
+      center="exam"
+    />,
+  )
+
+  assert.match(html, /section-main-banner__badge[^"]*text-brand/)
+  assert.match(html, /section-main-banner__badge[^"]*bg-transparent/)
+  assert.doesNotMatch(html, /section-main-banner__badge[^"]*bg-\[#78a8ff\]/)
+  assert.doesNotMatch(html, /section-main-banner__badge[^"]*rounded-full/)
+})
+
 test('main banner skips marquee links when linked content is empty', () => {
   const html = render({
     desktopImage: image,

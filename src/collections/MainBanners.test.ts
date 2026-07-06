@@ -332,8 +332,7 @@ test('main banners expose center below title in content tab', async () => {
   )
   assert.equal(await center.validate?.('', {}), '센터를 선택해야 합니다.')
   assert.equal(broadcaster?.name, 'broadcaster')
-  assert.equal(broadcaster.admin?.condition?.({}, { center: 'exam' }), false)
-  assert.equal(broadcaster.admin?.condition?.({}, { center: 'art' }), true)
+  assert.equal(broadcaster?.label, '타이틀')
 })
 
 test('main banners validate required fields and reservation range', async () => {
