@@ -177,6 +177,7 @@ export const Profiles: CollectionConfig = {
 							hidden: true,
 						},
 					},
+					centersField,
 					{
 						name: 'filter',
 						type: 'text',
@@ -318,7 +319,6 @@ export const Profiles: CollectionConfig = {
 			},
 		]),
 		...sidebarFields([
-			centersField,
 			{
 				name: 'slug',
 				type: 'text',

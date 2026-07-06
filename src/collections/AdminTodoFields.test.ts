@@ -11,6 +11,7 @@ import { DirectCastings } from './DirectCastings'
 import { ExamResults } from './ExamResults'
 import { Faqs } from './Faqs'
 import { News } from './News'
+import { Profiles } from './Profiles'
 import { ScreenAppearances } from './ScreenAppearances'
 import { StarCards } from './StarCards'
 
@@ -97,6 +98,18 @@ function getField(collection: CollectionConfig, name: string) {
   assert.ok(field, `${collection.slug}.${name} 필드가 있어야 합니다.`)
 
   return field
+}
+
+function getTabFields(collection: CollectionConfig, label: string) {
+  const tabsField = collection.fields.find((field) => field.type === 'tabs')
+
+  assert.ok(tabsField, `${collection.slug} 탭 필드가 있어야 합니다.`)
+
+  const tab = tabsField.tabs.find((item) => item.label === label)
+
+  assert.ok(tab, `${collection.slug}.${label} 탭이 있어야 합니다.`)
+
+  return tab.fields
 }
 
 function validationOptions(
@@ -298,6 +311,37 @@ test('news category uses center-specific required select options', async () => {
       siblingData: { centers: ['exam'] },
     }).map((option) => option.value),
     ['합격현황', '수시·정시 일정', '교육·운영·소식'],
+  )
+})
+
+test('profiles expose required filter selection in the admin detail form', async () => {
+  const filter = getField(Profiles, 'filter')
+  const profileTabFields = getTabFields(Profiles, '프로필')
+
+  assert.equal(filter.type, 'text')
+  assert.equal(filter.label, '필터')
+  assert.equal(filter.required, true)
+  assert.deepEqual(
+    fieldNames(profileTabFields).slice(0, 5),
+    ['profileNameFields', 'name', 'englishName', 'centers', 'filter'],
+  )
+  assert.equal(
+    filter.admin?.components?.Field,
+    '@/components/payload/ProfileFilterField#ProfileFilterField',
+  )
+  assert.equal(
+    await filter.validate?.(
+      'women',
+      validationOptions({ siblingData: { centers: ['art'] } }),
+    ),
+    true,
+  )
+  assert.equal(
+    await filter.validate?.(
+      'invalid',
+      validationOptions({ siblingData: { centers: ['kids'] } }),
+    ),
+    '선택한 센터에서 사용할 수 없는 필터입니다.',
   )
 })
 

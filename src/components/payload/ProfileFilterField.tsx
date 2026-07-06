@@ -2,21 +2,19 @@
 
 import type { TextFieldClientComponent } from "payload";
 
-import { useField } from "@payloadcms/ui";
+import { FieldError, FieldLabel, useField, useFormFields } from "@payloadcms/ui";
 import { useEffect, useMemo } from "react";
 
 import { getProfileFilterOptions } from "@/lib/profileFilters";
 
 export const ProfileFilterField: TextFieldClientComponent = ({
+  field,
   path: pathFromProps,
 }) => {
-  const { disabled, errorMessage, setValue, showError, value } =
-    useField<string>({
-      potentiallyStalePath: pathFromProps,
-    });
-  const { value: centersValue } = useField<string[]>({
-    potentiallyStalePath: "centers",
+  const { disabled, path, setValue, showError, value } = useField<string>({
+    potentiallyStalePath: pathFromProps,
   });
+  const centersValue = useFormFields(([fields]) => fields.centers?.value);
   const options = useMemo(
     () => getProfileFilterOptions(centersValue),
     [centersValue],
@@ -33,59 +31,68 @@ export const ProfileFilterField: TextFieldClientComponent = ({
     }
   }, [fieldValue, options, setValue]);
 
-  if (options.length === 0 && !(showError && errorMessage)) {
-    return null;
-  }
-
   return (
-    <fieldset
+    <div
+      className={[
+        "field-type",
+        "text",
+        field.admin?.className,
+        showError ? "error" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       style={{
-        border: 0,
-        margin: 0,
-        padding: 0,
+        display: "grid",
+        gap: 8,
+        margin: "0 0 20px",
       }}
     >
-      {options.length > 0 ? (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 12,
-          }}
-        >
-          {options.map((option) => (
-            <label
-              key={option.value}
-              style={{
-                alignItems: "center",
-                display: "inline-flex",
-                gap: 6,
-              }}
-            >
-              <input
-                checked={fieldValue === option.value}
-                disabled={disabled}
-                name={pathFromProps}
-                onChange={() => setValue(option.value)}
-                type="radio"
-                value={option.value}
-              />
-              <span>{option.label}</span>
-            </label>
-          ))}
-        </div>
-      ) : null}
-      {showError && errorMessage ? (
-        <p
-          style={{
-            color: "var(--theme-error-500)",
-            fontSize: 12,
-            marginBottom: 0,
-          }}
-        >
-          {errorMessage}
-        </p>
-      ) : null}
-    </fieldset>
+      <FieldLabel label={field.label ?? "필터"} path={path} required={field.required} />
+      <div
+        className="field-type__wrap"
+        style={{
+          position: "relative",
+        }}
+      >
+        <FieldError path={path} showError={showError} />
+        {options.length > 0 ? (
+          <select
+            disabled={disabled}
+            onChange={(event) => setValue(event.currentTarget.value)}
+            style={{
+              appearance: "auto",
+              background: disabled
+                ? "var(--theme-elevation-100)"
+                : "var(--theme-input-bg)",
+              border: "1px solid var(--theme-elevation-150)",
+              borderRadius: "var(--style-radius-s)",
+              color: "var(--theme-text)",
+              fontFamily: "var(--font-body)",
+              fontSize: 14,
+              height: 40,
+              padding: "0 12px",
+              width: "100%",
+            }}
+            value={fieldValue}
+          >
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <p
+            style={{
+              color: "var(--theme-elevation-600)",
+              fontSize: 12,
+              margin: 0,
+            }}
+          >
+            센터를 선택하면 사용 가능한 필터가 표시됩니다.
+          </p>
+        )}
+      </div>
+    </div>
   );
 };
