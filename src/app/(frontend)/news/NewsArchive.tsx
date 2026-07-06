@@ -156,7 +156,7 @@ async function queryNewsArchivePage({
 }) {
   const payload = await getPayload({ config: configPromise })
   const newsCategories = getNewsCategoriesForCenter(center)
-  const category = categoryKey ? getCategoryByKey(categoryKey, newsCategories) : null
+  const categoryWhere = categoryKey ? buildCategoryWhere(categoryKey, newsCategories) : null
   const baseWhere: Where = {
     and: [
       {
@@ -181,12 +181,12 @@ async function queryNewsArchivePage({
     ],
   }
 
-  return category
+  return categoryWhere
     ? await findNewsPage({
         page,
         payload,
         where: {
-          and: [baseWhere, buildCategoryWhere(category)],
+          and: [baseWhere, categoryWhere],
         },
       })
     : await findNewsPage({
@@ -383,22 +383,15 @@ async function findNewsPage({
   payload: Awaited<ReturnType<typeof getPayload>>
   where: Where
 }): Promise<NewsPageResult> {
-  const result = await payload
-    .find({
-      collection: 'news',
-      depth: 1,
-      limit: pageSize,
-      overrideAccess: false,
-      page,
-      select: newsArchiveSelect,
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const result = await payload.find({
+    collection: 'news',
+    depth: 1,
+    limit: pageSize,
+    overrideAccess: false,
+    page,
+    select: newsArchiveSelect,
+    where,
+  })
 
   return {
     docs: result.docs,
@@ -418,15 +411,21 @@ const newsArchiveSelect = {
   title: true,
 } as const
 
-export function buildCategoryWhere(category: NewsCategory): Where {
-  const operator = category.matchMode === 'exact' ? 'equals' : 'like'
-  const conditions = category.match.map((categoryValue) => ({
-    category: {
-      [operator]: categoryValue,
-    },
-  }))
+export function buildCategoryWhere(
+  categoryKey: string,
+  newsCategories: readonly NewsCategory[],
+): Where | null {
+  const category = getCategoryByKey(categoryKey, newsCategories)
 
-  return conditions.length === 1 ? conditions[0] : { or: conditions }
+  if (!category) {
+    return null
+  }
+
+  return {
+    category: {
+      equals: category.value,
+    },
+  }
 }
 
 function newsArchiveHref({
