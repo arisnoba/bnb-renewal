@@ -20,9 +20,11 @@ export function resolvePayloadDatabaseURL(env: Env = process.env) {
     env.DATABASE_POSTGRES_URL_NON_POOLING,
   )
 
-  return env.VERCEL === '1'
+  const databaseURL = env.VERCEL === '1'
     ? (pooledURL ?? directURL ?? localDatabaseURL)
     : (directURL ?? pooledURL ?? localDatabaseURL)
+
+  return normalizePayloadDatabaseURL(databaseURL)
 }
 
 export function resolvePayloadDatabasePoolMax(env: Env = process.env) {
@@ -45,4 +47,11 @@ function parsePositiveInteger(value: string | undefined) {
   const parsed = Number(value)
 
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined
+}
+
+function normalizePayloadDatabaseURL(databaseURL: string) {
+  return databaseURL.replace(
+    /([?&]sslmode=)(prefer|require|verify-ca)(?=(&|$))/i,
+    '$1verify-full',
+  )
 }

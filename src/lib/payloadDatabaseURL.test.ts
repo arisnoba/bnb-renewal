@@ -34,6 +34,16 @@ test('falls back to local database URL without configured env', () => {
   )
 })
 
+test('normalizes deprecated pg SSL modes to verify-full', () => {
+  assert.equal(
+    resolvePayloadDatabaseURL({
+      DATABASE_URL: 'postgres://pooled.example/db?sslmode=require&connect_timeout=15',
+      VERCEL: '1',
+    }),
+    'postgres://pooled.example/db?sslmode=verify-full&connect_timeout=15',
+  )
+})
+
 test('uses conservative pooled connection count on Vercel runtime', () => {
   assert.equal(resolvePayloadDatabasePoolMax({ VERCEL: '1' }), 3)
 })
