@@ -556,39 +556,65 @@ function BannerDecoLayer({ center }: { center?: CenterSlug }) {
   )
 }
 
-const logoDecoPositions = [
-  'right-[8vw] top-[17%] rotate-[-8deg]',
-  'right-[18vw] top-[30%] rotate-[7deg]',
-  'right-[6vw] top-[43%] rotate-[5deg]',
-  'right-[22vw] top-[52%] rotate-[-5deg]',
-]
+type MainBannerLogoItem = {
+  alt: string
+  src: string
+}
 
-function BannerLogoDecoLayer({ images }: { images?: MainBannerDecorImage[] }) {
-  const logoItems = (images ?? [])
+function mainBannerLogoItems(images?: MainBannerDecorImage[]): MainBannerLogoItem[] {
+  return (images ?? [])
     .map((item) => ({
       alt: String(item.alt ?? '').trim(),
       src: itemImageUrl(item.image),
     }))
     .filter((item) => item.src)
-    .slice(0, 4)
+}
 
-  if (logoItems.length === 0) {
+function logoGridColumns(count: number) {
+  if (count <= 1) {
+    return 'grid-cols-1'
+  }
+
+  if (count <= 2) {
+    return 'grid-cols-2'
+  }
+
+  if (count <= 6) {
+    return 'grid-cols-3'
+  }
+
+  return 'grid-cols-4'
+}
+
+function BannerLogoGrid({
+  items,
+  placement,
+}: {
+  items: MainBannerLogoItem[]
+  placement: 'desktop' | 'mobile'
+}) {
+  if (items.length === 0) {
     return null
   }
 
   return (
     <div
-      aria-hidden="true"
-      className="section-main-banner__logo-deco-layer pointer-events-none absolute inset-0 z-2 overflow-hidden"
+      className={cn(
+        'section-main-banner__logo-deco-grid grid w-fit max-w-full place-items-center',
+        logoGridColumns(items.length),
+        placement === 'desktop'
+          ? 'gap-x-5 gap-y-4'
+          : 'mt-7 gap-x-4 gap-y-3 max-[640px]:mt-6 max-[640px]:gap-x-3 max-[640px]:gap-y-2.5',
+      )}
     >
-      {logoItems.map((item, index) => (
+      {items.map((item, index) => (
         <div
           className={cn(
-            'section-main-banner__logo-deco absolute grid size-24 place-items-center rounded-full',
-            'bg-white/90 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.26)] ring-1 ring-black/5',
-            'max-[768.98px]:size-18 max-[768.98px]:p-3',
-            'max-[640px]:size-15 max-[640px]:p-2.5',
-            logoDecoPositions[index % logoDecoPositions.length],
+            'section-main-banner__logo-deco grid place-items-center',
+            'drop-shadow-[0_10px_22px_rgba(0,0,0,0.28)]',
+            placement === 'desktop'
+              ? 'size-15 max-[980px]:size-14'
+              : 'size-12 max-[640px]:size-10',
           )}
           key={`${item.src}-${index}`}
         >
@@ -596,11 +622,34 @@ function BannerLogoDecoLayer({ images }: { images?: MainBannerDecorImage[] }) {
           <img
             alt=""
             className="h-full w-full object-contain"
-            loading={index < 2 ? 'eager' : 'lazy'}
+            loading={index < 4 ? 'eager' : 'lazy'}
             src={item.src}
           />
         </div>
       ))}
+    </div>
+  )
+}
+
+function BannerLogoDecoLayer({ items }: { items: MainBannerLogoItem[] }) {
+  if (items.length === 0) {
+    return null
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="section-main-banner__logo-deco-layer pointer-events-none absolute inset-0 z-2 overflow-hidden max-[768.98px]:hidden"
+    >
+      <div
+        className={cn(
+          'section-main-banner__logo-deco-wrap absolute right-[8vw] top-1/2 -translate-y-1/2',
+          'max-w-[min(30vw,340px)]',
+          'max-[980px]:right-8 max-[980px]:max-w-[280px]',
+        )}
+      >
+        <BannerLogoGrid items={items} placement="desktop" />
+      </div>
     </div>
   )
 }
@@ -617,6 +666,7 @@ function BannerSlide({
   const title = String(banner.title ?? '').trim()
   const broadcaster = String(banner.broadcaster ?? '').trim()
   const description = String(banner.description ?? '').trim()
+  const logoItems = mainBannerLogoItems(banner.decorImages)
 
   return (
     <section
@@ -632,7 +682,7 @@ function BannerSlide({
         style={mainBannerOverlayStyle}
       />
       <BannerDecoLayer center={center} />
-      <BannerLogoDecoLayer images={banner.decorImages} />
+      <BannerLogoDecoLayer items={logoItems} />
       <div
         className={cn(
           'container section-main-banner__content relative z-3 grid min-h-svh items-end',
@@ -678,6 +728,11 @@ function BannerSlide({
             >
               {description}
             </p>
+          )}
+          {logoItems.length > 0 && (
+            <div aria-hidden="true" className="section-main-banner__mobile-logo-deco min-[769px]:hidden">
+              <BannerLogoGrid items={logoItems} placement="mobile" />
+            </div>
           )}
         </div>
       </div>
