@@ -5,6 +5,8 @@ import type { CollectionConfig, Field, Tab } from 'payload'
 
 import {
   MainBanners,
+  duplicatedMainBannerStatus,
+  duplicatedMainBannerTitle,
   mainBannerCenterPaths,
   mainBannerOrderField,
   mainBannerOrderIncludes,
@@ -23,6 +25,9 @@ type NamedField = Field & {
   defaultValue?: unknown
   fields?: Field[]
   filterOptions?: unknown
+  hooks?: {
+    beforeDuplicate?: Array<(args: { value?: unknown }) => unknown>
+  }
   label?: unknown
   relationTo?: unknown
   validate?: (value: unknown, options: { siblingData?: Record<string, unknown> }) => unknown
@@ -119,6 +124,27 @@ test('main banners are managed as center-scoped posts', () => {
     true,
   )
   assert.equal(MainBanners.hooks?.afterChange?.length, 2)
+})
+
+test('main banner duplicates are marked as copied drafts', async () => {
+  const title = getField(MainBanners, 'title')
+  const status = getField(MainBanners, 'status')
+  const titleBeforeDuplicate = title.hooks?.beforeDuplicate?.[0]
+  const statusBeforeDuplicate = status.hooks?.beforeDuplicate?.[0]
+
+  assert.equal(typeof titleBeforeDuplicate, 'function')
+  assert.equal(typeof statusBeforeDuplicate, 'function')
+  assert.equal(duplicatedMainBannerTitle('키즈 메인 배너'), '키즈 메인 배너 - 복제됨')
+  assert.equal(
+    duplicatedMainBannerTitle('키즈 메인 배너 - 복제됨'),
+    '키즈 메인 배너 - 복제됨',
+  )
+  assert.equal(duplicatedMainBannerStatus(), 'draft')
+  assert.equal(
+    await titleBeforeDuplicate?.({ value: '키즈 메인 배너' } as never),
+    '키즈 메인 배너 - 복제됨',
+  )
+  assert.equal(await statusBeforeDuplicate?.({ value: 'published' } as never), 'draft')
 })
 
 test('main banner linked profiles are filtered by selected center', () => {
@@ -237,7 +263,10 @@ test('main banners expose center at the top of linked content tab', async () => 
   assert.equal(center?.name, 'center')
   assert.equal(center.type, 'select')
   assert.equal(center.label, '센터')
-  assert.equal(center.admin?.position, undefined)
+  assert.equal(
+    center.admin?.components?.Field,
+    '@/components/payload/MainBannerCenterField#MainBannerCenterField',
+  )
   assert.equal(await center.validate?.('', {}), '센터를 선택해야 합니다.')
 })
 

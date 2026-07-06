@@ -38,6 +38,7 @@ const statusOptions = [
   { label: '임시저장', value: 'draft' },
   { label: '공개', value: 'published' },
 ]
+const duplicatedTitleSuffix = ' - 복제됨'
 
 const centerValues = new Set(centerOptions.map((option) => option.value))
 const mainBannerOrderFieldByCenter = Object.fromEntries(
@@ -75,6 +76,24 @@ const requiredText =
   (value) => {
     return typeof value === 'string' && value.trim() ? true : message
   }
+
+export function duplicatedMainBannerTitle(value: unknown) {
+  if (typeof value !== 'string') {
+    return value
+  }
+
+  const title = value.trim()
+
+  if (!title || title.endsWith(duplicatedTitleSuffix)) {
+    return title
+  }
+
+  return `${title}${duplicatedTitleSuffix}`
+}
+
+export function duplicatedMainBannerStatus() {
+  return 'draft'
+}
 
 const requiredValue =
   (message: string): Validate<unknown> =>
@@ -411,6 +430,9 @@ export const MainBanners: CollectionConfig = {
               name: 'title',
               type: 'text',
               label: '제목',
+              hooks: {
+                beforeDuplicate: [({ value }) => duplicatedMainBannerTitle(value)],
+              },
               validate: requiredText('제목을 입력해야 합니다.'),
             },
             {
@@ -468,6 +490,12 @@ export const MainBanners: CollectionConfig = {
               name: 'center',
               type: 'select',
               label: '센터',
+              admin: {
+                components: {
+                  Field:
+                    '@/components/payload/MainBannerCenterField#MainBannerCenterField',
+                },
+              },
               options: centerOptions,
               validate: requiredValue('센터를 선택해야 합니다.'),
             },
@@ -560,6 +588,9 @@ export const MainBanners: CollectionConfig = {
       type: 'select',
       label: '상태',
       defaultValue: 'draft',
+      hooks: {
+        beforeDuplicate: [duplicatedMainBannerStatus],
+      },
       options: statusOptions,
       validate: requiredValue('상태를 선택해야 합니다.'),
       admin: publishingStatusSelectAdmin({

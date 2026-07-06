@@ -1,3 +1,4 @@
+import { MainBannerCenterField as MainBannerCenterField_0c541de80e5b859e8d396f43605d9868 } from '@/components/payload/MainBannerCenterField'
 import { MainBannerProfileItemRowLabel as MainBannerProfileItemRowLabel_61d6a8b511fb8512e197feab19aa1a04 } from '@/components/payload/MainBannerProfileItemRowLabel'
 import { MainBannerExamReviewItemRowLabel as MainBannerExamReviewItemRowLabel_f7311788e7704ada130e7ce22f3ee48f } from '@/components/payload/MainBannerExamReviewItemRowLabel'
 import { PublishingStatusSelectField as PublishingStatusSelectField_0d8c46f63e81c9e9c0e335cf9c116b5b } from '@/components/payload/PublishingStatusSelectField'
@@ -78,6 +79,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/payload/MainBannerCenterField#MainBannerCenterField": MainBannerCenterField_0c541de80e5b859e8d396f43605d9868,
   "@/components/payload/MainBannerProfileItemRowLabel#MainBannerProfileItemRowLabel": MainBannerProfileItemRowLabel_61d6a8b511fb8512e197feab19aa1a04,
   "@/components/payload/MainBannerExamReviewItemRowLabel#MainBannerExamReviewItemRowLabel": MainBannerExamReviewItemRowLabel_f7311788e7704ada130e7ce22f3ee48f,
   "@/components/payload/PublishingStatusSelectField#PublishingStatusSelectField": PublishingStatusSelectField_0d8c46f63e81c9e9c0e335cf9c116b5b,
