@@ -3,6 +3,7 @@ import test from 'node:test'
 
 import type { Media, Profile, ScreenAppearance } from '@/payload-types'
 
+import { hasSearchableHomeCurriculum } from './centerHomeCourseSearch'
 import { screenAppearanceSlide } from './screenAppearanceSlides'
 
 const profileImage = {
@@ -96,4 +97,12 @@ test('center home screen appearance labels fall back to linked profile names', (
   )
 
   assert.equal(slide.performerName, '임단우')
+})
+
+test('center home course search is only exposed for searchable curriculum centers', () => {
+  assert.equal(hasSearchableHomeCurriculum('art'), true)
+  assert.equal(hasSearchableHomeCurriculum('highteen'), true)
+  assert.equal(hasSearchableHomeCurriculum('exam'), false)
+  assert.equal(hasSearchableHomeCurriculum('kids'), false)
+  assert.equal(hasSearchableHomeCurriculum('avenue'), false)
 })

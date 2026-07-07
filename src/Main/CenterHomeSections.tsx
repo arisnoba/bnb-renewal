@@ -41,6 +41,10 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
 import { CenterHomeScreenAppearances } from './CenterHomeScreenAppearances.client'
 import { CenterHomeArtistCare, type CenterHomeArtistCareItem } from './CenterHomeArtistCare.client'
+import {
+  hasSearchableHomeCurriculum,
+  type SearchableHomeCurriculumCenter,
+} from './centerHomeCourseSearch'
 import { screenAppearanceSlide, type HomeScreenAppearance } from './screenAppearanceSlides'
 
 type CenterHomeSectionsProps = {
@@ -217,7 +221,9 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
 
   return (
     <>
-      <CourseSearchSection center={center} curriculums={data.curriculums} />
+      {hasSearchableHomeCurriculum(center) ? (
+        <CourseSearchSection center={center} curriculums={data.curriculums} />
+      ) : null}
       <ArtistCareSection center={center} />
       {center === 'exam' ? (
         <ExamPassedVideosHomeSection videos={data.examPassedVideos} />
@@ -244,7 +250,7 @@ function CourseSearchSection({
   center,
   curriculums,
 }: {
-  center: CenterSlug
+  center: SearchableHomeCurriculumCenter
   curriculums: HomeCurriculum[]
 }) {
   const searchFields = buildCurriculumSearchFields({
@@ -1229,6 +1235,7 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
   try {
     const payload = await getPayload({ config: configPromise })
+    const shouldQueryCurriculums = hasSearchableHomeCurriculum(center)
     const [
       screenAppearances,
       artistPress,
@@ -1370,30 +1377,32 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
           slug: 'footer',
           depth: 0,
         }),
-        payload
-          .find({
-            collection: 'curriculums',
-            depth: 0,
-            limit: 200,
-            overrideAccess: false,
-            pagination: false,
-            select: {
-              educationDayFriday: true,
-              educationDayMonday: true,
-              educationDaySaturday: true,
-              educationDaySunday: true,
-              educationDayThursday: true,
-              educationDayTuesday: true,
-              educationDayWednesday: true,
-              educationStartTime: true,
-            },
-            where: {
-              centers: {
-                equals: center,
-              },
-            } satisfies Where,
-          })
-          .catch(() => ({ docs: [] })),
+        shouldQueryCurriculums
+          ? payload
+              .find({
+                collection: 'curriculums',
+                depth: 0,
+                limit: 200,
+                overrideAccess: false,
+                pagination: false,
+                select: {
+                  educationDayFriday: true,
+                  educationDayMonday: true,
+                  educationDaySaturday: true,
+                  educationDaySunday: true,
+                  educationDayThursday: true,
+                  educationDayTuesday: true,
+                  educationDayWednesday: true,
+                  educationStartTime: true,
+                },
+                where: {
+                  centers: {
+                    equals: center,
+                  },
+                } satisfies Where,
+              })
+              .catch(() => ({ docs: [] }))
+          : Promise.resolve({ docs: [] }),
       ])
 
     return {

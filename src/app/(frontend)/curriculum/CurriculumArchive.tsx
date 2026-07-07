@@ -155,13 +155,14 @@ function CurriculumCard({
   item: CurriculumCardItem
 }) {
   const detailHref = `/${center}/curriculum/${encodeURIComponent(String(item.id))}`
+  const markBackground = classMarkBackground(item.className)
 
   return (
     <article className="section-curriculum-card group/card flex min-h-[429px] flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-8">
       <header className="section-curriculum-card__head flex items-center gap-4">
         <span
           aria-hidden="true"
-          className="grid size-8 shrink-0 place-items-center rounded-sm bg-brand/80 type-label-m font-black text-white"
+          className={`grid size-8 shrink-0 place-items-center rounded-sm ${markBackground} type-label-m font-black text-white`}
         >
           {classMark(item.className)}
         </span>
@@ -325,10 +326,10 @@ function curriculumSort(left: Curriculum, right: Curriculum, center: SearchableC
 }
 
 function classMark(label: string) {
-  const englishClass = label.match(/\b([A-Z])\s*CLASS\b/i)
+  const grade = classGrade(label)
 
-  if (englishClass) {
-    return englishClass[1].toUpperCase()
+  if (grade) {
+    return grade
   }
 
   if (label.includes('입시예비')) {
@@ -344,6 +345,44 @@ function classMark(label: string) {
   }
 
   return label.slice(0, 2)
+}
+
+function classMarkBackground(label: string) {
+  switch (classGrade(label)) {
+    case 'I':
+      return 'bg-brand/40'
+    case 'R':
+      return 'bg-brand/50'
+    case 'U':
+      return 'bg-brand/60'
+    case 'D':
+      return 'bg-brand/70'
+    case 'A':
+    case 'DA':
+      return 'bg-brand/80'
+    case 'S':
+      return 'bg-brand/90'
+    default:
+      break
+  }
+
+  if (label.includes('특강')) {
+    return 'bg-brand/90'
+  }
+
+  if (label.includes('입시예비')) {
+    return 'bg-brand/50'
+  }
+
+  if (label.includes('예고')) {
+    return 'bg-brand/70'
+  }
+
+  return 'bg-brand/80'
+}
+
+function classGrade(label: string) {
+  return label.match(/\b(DA|[IRUDAS])\s*CLASS\b/i)?.[1].toUpperCase()
 }
 
 function CurriculumPeriodTooltip({
