@@ -153,7 +153,7 @@ test('main banner renders exam broadcaster as brand text without badge backgroun
   assert.doesNotMatch(html, /section-main-banner__badge[^"]*rounded-full/)
 })
 
-test('main banner aligns exam decorative logos to the desktop statistics slot', () => {
+test('main banner aligns exam decorative logos in the desktop content slot', () => {
   const html = renderToStaticMarkup(
     <MainBannerSlider
       banners={[
@@ -167,17 +167,41 @@ test('main banner aligns exam decorative logos to the desktop statistics slot', 
     />,
   )
 
-  assert.match(html, /section-main-banner__logo-deco-layer/)
   assert.match(html, /grid-cols-\[minmax\(0,1fr\)_minmax\(240px,260px\)\]/)
-  assert.match(html, /section-main-banner__logo-deco-wrap[^"]*self-end/)
-  assert.match(html, /section-main-banner__logo-deco-wrap[^"]*items-end/)
+  assert.match(html, /section-main-banner__logo-deco-slot[^"]*self-end/)
+  assert.match(html, /section-main-banner__logo-deco-slot[^"]*items-end/)
   assert.match(
     html,
-    /section-main-banner__logo-deco-wrap[^"]*min-\[769px\]:mb-\[var\(--section-main-banner-copy-bottom-offset\)\]/,
+    /section-main-banner__logo-deco-slot[^"]*--section-main-banner-copy-bottom-offset/,
   )
-  assert.doesNotMatch(html, /section-main-banner__logo-deco-wrap[^"]*items-center/)
-  assert.doesNotMatch(html, /section-main-banner__logo-deco-wrap[^"]*right-\[8vw\]/)
-  assert.doesNotMatch(html, /section-main-banner__logo-deco-wrap[^"]*top-1\/2/)
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-layer/)
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-slot[^"]*items-center/)
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-slot[^"]*right-\[8vw\]/)
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-slot[^"]*top-1\/2/)
+})
+
+test('main banner renders mobile decorative logos as one horizontal row', () => {
+  const html = renderToStaticMarkup(
+    <MainBannerSlider
+      banners={[
+        {
+          decorImages: [
+            { alt: '홍익대', image },
+            { alt: '경기대', image },
+            { alt: '서경대', image },
+          ],
+          desktopImage: image,
+          title: '입시 배너',
+        },
+      ]}
+      center="exam"
+    />,
+  )
+
+  assert.match(html, /section-main-banner__mobile-logo-deco/)
+  assert.match(html, /section-main-banner__logo-deco-grid[^"]*flex/)
+  assert.match(html, /section-main-banner__logo-deco-grid[^"]*overflow-x-auto/)
+  assert.match(html, /section-main-banner__logo-deco[^"]*shrink-0/)
 })
 
 test('main banner skips marquee links when linked content is empty', () => {

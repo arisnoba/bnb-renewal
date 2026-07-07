@@ -287,10 +287,10 @@ function BannerStatisticsPanel({
                 className="section-main-banner__stat-item grid items-center gap-1 border border-white/10 px-2 py-3 text-center rounded-sm"
                 key={item.label}
               >
-                <span className="text-[14px] font-bold leading-[1.35] text-white/40">
+                <span className="text-sm font-bold leading-[1.35] text-white/40">
                   {item.label}
                 </span>
-                <strong className="text-[14px] font-black leading-[1.2]">
+                <strong className="text-sm font-black leading-[1.2]">
                   <AnimatedCounter duration={1.15} startOnMount value={item.value} />명
                 </strong>
               </div>
@@ -320,7 +320,7 @@ function BannerTotalStatCell({
     >
       <span
         className={cn(
-          isMobile ? 'text-[14px] font-bold leading-normal' : 'text-[16px] font-black',
+          isMobile ? 'text-sm font-bold leading-normal' : 'text-base font-black',
         )}
       >
         {isMobile ? '누적작품수' : '누적 작품수'}
@@ -352,7 +352,7 @@ function BannerStatisticGroupHead({
     <>
       <span
         className={cn(
-          isMobile ? 'text-[14px] font-bold leading-normal' : 'text-base font-bold',
+          isMobile ? 'text-sm font-bold leading-normal' : 'text-base font-bold',
         )}
       >
         {group.title}
@@ -393,7 +393,7 @@ function BannerScheduleStatRow({
       <span
         className={cn(
           isMobile
-            ? 'text-[14px] font-bold leading-normal'
+            ? 'text-sm font-bold leading-normal'
             : 'text-base font-black leading-[1.2]',
         )}
       >
@@ -473,7 +473,7 @@ function BannerMobileStatisticsPanel({
             key={group.title}
           >
             <BannerStatisticGroupHead center={center} group={group} variant="mobile" />
-            <div className="section-main-banner__mobile-stat-items flex w-full flex-col gap-1 text-[14px] font-normal leading-normal">
+            <div className="section-main-banner__mobile-stat-items flex w-full flex-col gap-1 text-sm font-normal leading-normal">
               {group.items.map((item) => (
                 <div
                   className="section-main-banner__mobile-stat-item flex w-full items-center justify-between rounded-lg"
@@ -570,20 +570,16 @@ function mainBannerLogoItems(images?: MainBannerDecorImage[]): MainBannerLogoIte
     .filter((item) => item.src)
 }
 
-function logoGridColumns(count: number) {
+function desktopLogoGridColumns(count: number) {
   if (count <= 1) {
     return 'grid-cols-1'
   }
 
-  if (count <= 2) {
+  if (count <= 4) {
     return 'grid-cols-2'
   }
 
-  if (count <= 6) {
-    return 'grid-cols-3'
-  }
-
-  return 'grid-cols-4'
+  return 'grid-cols-3'
 }
 
 function BannerLogoGrid({
@@ -600,21 +596,20 @@ function BannerLogoGrid({
   return (
     <div
       className={cn(
-        'section-main-banner__logo-deco-grid grid w-fit max-w-full place-items-center',
-        logoGridColumns(items.length),
+        'section-main-banner__logo-deco-grid max-w-full place-items-center',
         placement === 'desktop'
-          ? 'gap-x-5 gap-y-4'
-          : 'mt-7 gap-x-4 gap-y-3 max-[640px]:mt-6 max-[640px]:gap-x-3 max-[640px]:gap-y-2.5',
+          ? cn('grid w-fit gap-x-4 gap-y-4', desktopLogoGridColumns(items.length))
+          : 'mt-2 flex w-full items-center gap-x-3 overflow-x-auto py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[640px]:gap-x-2',
       )}
     >
       {items.map((item, index) => (
         <div
           className={cn(
-            'section-main-banner__logo-deco grid place-items-center rounded-full overflow-hidden',
+            'section-main-banner__logo-deco grid shrink-0 place-items-center rounded-full overflow-hidden',
             'drop-shadow-[0_10px_22px_rgba(0,0,0,0.28)]',
             placement === 'desktop'
-              ? 'size-20 max-[980px]:size-14'
-              : 'size-12 max-[640px]:size-10',
+              ? 'size-[68px] max-[980px]:size-14'
+              : 'size-12 max-[640px]:size-10 max-[420px]:size-8',
           )}
           key={`${item.src}-${index}`}
         >
@@ -627,34 +622,6 @@ function BannerLogoGrid({
           />
         </div>
       ))}
-    </div>
-  )
-}
-
-function BannerLogoDecoLayer({ items }: { items: MainBannerLogoItem[] }) {
-  if (items.length === 0) {
-    return null
-  }
-
-  return (
-    <div
-      aria-hidden="true"
-      className="section-main-banner__logo-deco-layer pointer-events-none absolute inset-0 z-2 overflow-hidden max-[768.98px]:hidden"
-    >
-      <div
-        className={cn(
-          'container grid min-h-svh items-end',
-          'grid-cols-[minmax(0,1fr)_minmax(240px,260px)]',
-          'gap-[var(--section-main-banner-content-gap)]',
-          'pb-[calc(var(--section-main-banner-marquee-height)+var(--section-main-banner-content-bottom-offset))]',
-          'pt-[calc(var(--admin-bar-height,0px)+120px)]',
-        )}
-      >
-        <div aria-hidden="true" />
-        <div className="section-main-banner__logo-deco-wrap flex min-h-[340px] w-full items-end justify-center self-end min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
-          <BannerLogoGrid items={items} placement="desktop" />
-        </div>
-      </div>
     </div>
   )
 }
@@ -687,7 +654,6 @@ function BannerSlide({
         style={mainBannerOverlayStyle}
       />
       <BannerDecoLayer center={center} />
-      <BannerLogoDecoLayer items={logoItems} />
       <div
         className={cn(
           'container section-main-banner__content relative z-3 grid min-h-svh items-end',
@@ -701,7 +667,7 @@ function BannerSlide({
           'max-[640px]:pb-[calc(var(--section-main-banner-marquee-height)+64px)]',
         )}
       >
-        <div className="section-main-banner__copy max-w-50vw max-[768.98px]:mb-6 max-[768.98px]:max-w-[620px] max-[640px]:mb-5 min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
+        <div className="section-main-banner__copy max-w-50vw max-[768.98px]:mb-6 max-[768.98px]:max-w-[620px] max-[640px]:mb-6 min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
           {broadcaster && (
             <p
               className={cn(
@@ -718,8 +684,8 @@ function BannerSlide({
           )}
           <h2
             className={cn(
-              'section-main-banner__title m-0 text-balance leading-tight font-black ',
-              'text-[length:var(--section-main-banner-title-size)] tracking-normal text-white',
+              'section-main-banner__title m-0 text-balance font-black ',
+              'text-[length:var(--section-main-banner-title-size)] leading-tight tracking-tight text-white',
               'max-[640px]:text-[length:var(--section-main-banner-title-size-mobile)]',
             )}
           >
@@ -730,7 +696,7 @@ function BannerSlide({
               className={cn(
                 'section-main-banner__description mt-[22px] max-w-[480px] font-semibold',
                 'text-[length:var(--section-main-banner-description-size)] leading-[1.65] text-white/80',
-                'max-[640px]:text-[14px]',
+                'max-[640px]:text-sm',
               )}
             >
               {description}
@@ -742,6 +708,14 @@ function BannerSlide({
             </div>
           )}
         </div>
+        {logoItems.length > 0 && (
+          <div
+            aria-hidden="true"
+            className="section-main-banner__logo-deco-slot pointer-events-none hidden min-h-85 w-full items-end justify-center self-end min-[769px]:mb-[calc(var(--section-main-banner-copy-bottom-offset)+0.8em)] min-[769px]:flex"
+          >
+            <BannerLogoGrid items={logoItems} placement="desktop" />
+          </div>
+        )}
       </div>
     </section>
   )
@@ -764,7 +738,7 @@ function BannerMarquee({ isActive, items }: { isActive: boolean; items: MainBann
               className={cn(
                 'section-main-banner__link-pill inline-flex h-10 max-w-[76vw] items-center',
                 'rounded-full border border-white/20 bg-white/10 px-4',
-                'text-[14px] font-bold text-white transition-colors',
+                'text-sm font-bold text-white transition-colors',
                 'hover:border-white/45 hover:bg-white/20',
               )}
               href={item.href}
@@ -902,7 +876,7 @@ function BannerProfileCard({
       </div>
       <div className="section-main-banner__profile-body flex min-w-0 flex-col items-start justify-between py-1">
         <div>
-          <h3 className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-[16px] font-black leading-normal">
+          <h3 className="mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-base font-black leading-normal">
             {name}
           </h3>
           {roleLabel && (

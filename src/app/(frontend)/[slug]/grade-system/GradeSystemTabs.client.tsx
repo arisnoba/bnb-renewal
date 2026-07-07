@@ -1175,7 +1175,7 @@ function ClassSection({
           const Icon = card.icon
 
           return (
-            <article className="min-h-[220px] rounded-[8px] bg-[#202020] p-8" key={card.title}>
+            <article className="min-h-55 rounded-xl bg-white/5 p-8" key={card.title}>
               <Icon
                 aria-hidden="true"
                 className="mb-12 text-white/25"
@@ -1340,7 +1340,7 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
       <div className="hidden overflow-x-auto lg:block">
         <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
-            <tr className="bg-[#343434] text-white">
+            <tr className="bg-white/10 text-white">
               <CriteriaHeader width="w-[8%]">
                 Class
               </CriteriaHeader>
@@ -1358,7 +1358,7 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
           <tbody>
             {data.gradeRows.map((row, index) => (
               <tr
-                className="bg-[#222] text-white/55 transition-colors hover:bg-[#262626]"
+                className="bg-white/5 text-white/55 transition-colors hover:bg-white/10"
                 key={`${index}-${row.className}`}
               >
                 <CriteriaCell
@@ -1374,7 +1374,7 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
                 </CriteriaCell>
                 <CriteriaCell
                   className={cn(
-                    'text-center align-top font-extrabold text-[#0d4f94]',
+                    'text-center align-top font-extrabold',
                     getProcessCellClassName(row.process),
                   )}
                 >
@@ -1407,12 +1407,12 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
       <div className="flex flex-col gap-4 lg:hidden">
         {data.gradeRows.map((card, index) => (
           <article
-            className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
+            className="overflow-hidden rounded-lg border border-white/10 bg-white/5"
             key={`${index}-${card.className}`}
           >
             <header
               className={cn(
-                'flex flex-wrap items-center gap-2 border-b border-[#363636] px-4 py-3',
+                'flex flex-wrap items-center gap-2 border-b border-white/10 px-4 py-3',
                 getGradeLevelCellClassName(index),
               )}
             >
@@ -1420,10 +1420,10 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
               <span className="type-label-m font-bold opacity-75">{card.level}</span>
               <ProcessBadge className="ml-auto" process={card.process} />
             </header>
-            <dl className="divide-y divide-[#2c2c2c] type-body-s">
+            <dl className="divide-y divide-white/10 type-body-s">
               <div className="flex gap-3 px-4 py-3">
                 <dt className="w-20 shrink-0 font-medium text-white/40">관리부서</dt>
-                <dd className="whitespace-pre-line leading-[1.55] text-white/70">
+                <dd className="whitespace-pre-line leading-normal text-white/70">
                   {card.department || '-'}
                 </dd>
               </div>
@@ -1433,7 +1433,7 @@ function GradeCriteriaTable({ data }: { data: GradeSystemContent }) {
                 return (
                   <div className="flex gap-3 px-4 py-3" key={entry.key}>
                     <dt className="w-20 shrink-0 font-medium text-white/40">{entry.label}</dt>
-                    <dd className="leading-[1.55] text-white/70">
+                    <dd className="leading-normal text-white/70">
                       <CriteriaText
                         highlightTerms={[
                           '외부작품',
@@ -1474,7 +1474,7 @@ function PromotionTable({ data }: { data: GradeSystemContent }) {
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
-            <tr className="bg-[#343434] text-white">
+            <tr className="bg-white/10 text-white">
               <CriteriaHeader width="w-[22%]">승급 경로</CriteriaHeader>
               <CriteriaHeader width="w-[12%]">방법</CriteriaHeader>
               <CriteriaHeader>조건</CriteriaHeader>
@@ -1487,8 +1487,8 @@ function PromotionTable({ data }: { data: GradeSystemContent }) {
                 return (
                   <tr
                     className={cn(
-                      'bg-[#222] text-white/55 transition-colors hover:bg-[#262626]',
-                      index === 0 && 'border-t border-[#444]',
+                      'bg-white/5 text-white/55 transition-colors hover:bg-white/10',
+                      index === 0 && 'border-t border-white/10',
                     )}
                     key={`${group.from.classCode}-${group.to.classCode}-${row.method}`}
                   >
@@ -1526,19 +1526,19 @@ function PromotionTable({ data }: { data: GradeSystemContent }) {
         {promotionGroups.map((group) => {
           return (
             <article
-              className="overflow-hidden rounded-lg border border-[#363636] bg-[#1c1c1c]"
+              className="overflow-hidden rounded-lg border border-white/10 bg-white/5"
               key={`${group.from.classCode}-${group.to.classCode}`}
             >
-              <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-[#363636] bg-[#262626] px-4 py-3 type-label-m">
+              <header className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-white/10 bg-white/10 px-4 py-3 type-label-m">
                 <GradeBadge code={group.from.classCode}>{group.from.label}</GradeBadge>
                 <ArrowRight aria-hidden="true" className="text-brand" size={15} />
                 <GradeBadge code={group.to.classCode}>{group.to.label}</GradeBadge>
               </header>
-              <ul className="divide-y divide-[#2c2c2c]">
+              <ul className="divide-y divide-white/10">
                 {group.rows.map((row) => (
                   <li className="flex flex-col gap-2 px-4 py-3" key={row.method}>
                     <CriteriaTypeBadge type={row.method} />
-                    <p className="type-body-s leading-[1.55] text-white/70">
+                    <p className="type-body-s leading-normal text-white/70">
                       {row.condition}
                     </p>
                     {row.note ? (
@@ -1579,7 +1579,7 @@ function CriteriaHeader({
   return (
     <th
       className={cn(
-        'border border-[#444] px-3 py-4 text-center type-caption-m font-bold leading-[1.55]',
+        'border border-white/10 px-3 py-4 text-center type-caption-m font-bold leading-normal',
         width,
         className,
       )}
@@ -1606,7 +1606,7 @@ function CriteriaCell({
   return (
     <td
       className={cn(
-        'border border-[#363636] px-3 py-4 type-body-s leading-normal text-left',
+        'border border-white/10 px-3 py-4 type-body-s leading-normal text-left',
         emphasis && 'font-medium text-white',
         className,
       )}
@@ -1645,7 +1645,7 @@ function CriteriaText({
           <span
             className={cn(
               hasBulletLines && !isBulletLine && !isSubNote && 'pl-3.5',
-          isSubNote && 'mt-1 type-caption-s text-white/45',
+              isSubNote && 'mt-1 type-caption-s text-white/45',
               (isHighlighted || emphasizeLine?.(line, lineIndex)) && 'font-medium text-white',
             )}
             key={`${line}-${lineIndex}`}
@@ -1788,17 +1788,17 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
       <div className="overflow-x-auto">
         <table className="w-full table-fixed border-collapse text-left type-body-s">
           <thead>
-            <tr className="bg-[#343434] text-white">
-              <th className="w-[18%] border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
+            <tr className="bg-white/10 text-white">
+              <th className="w-[18%] border border-white/10 px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 년도
               </th>
-              <th className="w-[22%] border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
+              <th className="w-[22%] border border-white/10 px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 입학 분류
               </th>
-              <th className="border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
+              <th className="border border-white/10 px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 입학 날짜
               </th>
-              <th className="w-[18%] border border-[#444] px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
+              <th className="w-[18%] border border-white/10 px-2.5 py-2 md:px-5 md:py-4 font-bold" scope="col">
                 기수
               </th>
             </tr>
@@ -1810,26 +1810,25 @@ function CohortTable({ cohorts }: { cohorts: CohortRow[] }) {
               const yearSpan = cohorts.filter((item) => item.year === cohort.year).length
 
               return (
-                <tr className="bg-[#222] text-white/62" key={`${cohort.year}-${cohort.half}`}>
+                <tr className="bg-white/5 text-white/62" key={`${cohort.year}-${cohort.half}`}>
                   {isFirstOfYear ? (
                     <td
                       data-cohort-year="true"
                       className={cn(
-                        'border border-[#363636] bg-[#262626] px-2.5 py-2 md:px-5 md:py-4 font-bold leading-[1.55] text-white/72',
-                        index % 2 === 1 && 'bg-[#222]',
+                        'border border-white/10 bg-white/10 px-2.5 py-2 md:px-5 md:py-4 font-bold leading-normal text-white/72',
                       )}
                       rowSpan={yearSpan}
                     >
                       {cohort.year}
                     </td>
                   ) : null}
-                  <td className="border border-[#363636] px-5 py-4 leading-[1.55]">
+                  <td className="border border-white/10 px-5 py-4 leading-normal">
                     {cohort.half}
                   </td>
-                  <td className="border border-[#363636] px-5 py-4 leading-[1.55]">
+                  <td className="border border-white/10 px-5 py-4 leading-normal">
                     {cohort.period}
                   </td>
-                  <td className="border border-[#363636] px-5 py-4 font-bold leading-[1.55]">
+                  <td className="border border-white/10 px-5 py-4 font-bold leading-normal">
                     {cohort.number}기
                   </td>
                 </tr>
