@@ -21,6 +21,7 @@ import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 
 import { FilterChips } from '../_components/FilterChips'
+import { RookiesSearchForm } from './RookiesSearchForm.client'
 
 const ITEMS_PER_PAGE = 16
 
@@ -46,13 +47,20 @@ type RookiesArchiveProps = {
   activeFilter?: string
   center: CenterSlug
   page?: number
+  search?: string
 }
 
-export async function RookiesArchive({ activeFilter, center, page = 1 }: RookiesArchiveProps) {
+export async function RookiesArchive({
+  activeFilter,
+  center,
+  page = 1,
+  search,
+}: RookiesArchiveProps) {
   const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
   const rookieFilters = getRookieFilters(center)
   const filter = normalizeRookieFilter(activeFilter, rookieFilters)
+  const searchQuery = normalizeRookieSearch(search)
   const decoIcons = getPageDecoIcons(3, `rookies-${center}`)
   const where: Where = {
     and: [
@@ -81,6 +89,24 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
               filter: {
                 equals: filter,
               },
+            },
+          ]
+        : []),
+      ...(searchQuery
+        ? [
+            {
+              or: [
+                {
+                  name: {
+                    like: searchQuery,
+                  },
+                },
+                {
+                  englishName: {
+                    like: searchQuery,
+                  },
+                },
+              ],
             },
           ]
         : []),
@@ -117,12 +143,12 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
   const filterItems = [
     {
       active: !filter,
-      href: rookiesArchiveHref({ center }),
+      href: rookiesArchiveHref({ center, search: searchQuery }),
       label: 'All',
     },
     ...rookieFilters.map((item) => ({
       active: filter === item.key,
-      href: rookiesArchiveHref({ center, filter: item.key }),
+      href: rookiesArchiveHref({ center, filter: item.key, search: searchQuery }),
       label: item.label,
     })),
   ]
@@ -173,17 +199,21 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
           />
 
           <div className="section-rookies-list__content">
-            <FilterChips
-              ariaLabel="BNB 루키 필터"
-              className="section-rookies-list__tabs"
-              itemClassName="section-rookies-list__tab type-title-m font-bold leading-[1.4]"
-              items={filterItems}
-              tone="brand"
-            />
+            <div className="section-rookies-list__tools">
+              <FilterChips
+                ariaLabel="BNB 루키 필터"
+                className="section-rookies-list__tabs"
+                itemClassName="section-rookies-list__tab type-title-m font-bold leading-[1.4]"
+                items={filterItems}
+                tone="brand"
+              />
+
+              <RookiesSearchForm center={center} filter={filter} search={searchQuery} />
+            </div>
 
             {rookies.docs.length === 0 ? (
               <p className="section-rookies-list__empty type-title-s font-semibold">
-                등록된 BNB 루키가 없습니다.
+                {searchQuery ? '검색 결과가 없습니다.' : '등록된 BNB 루키가 없습니다.'}
               </p>
             ) : (
               <div className="section-rookies-list__grid">
@@ -198,6 +228,7 @@ export async function RookiesArchive({ activeFilter, center, page = 1 }: Rookies
                 center={center}
                 filter={filter}
                 page={Math.min(rookies.page || currentPage, totalPages)}
+                search={searchQuery}
                 totalPages={totalPages}
               />
             )}
@@ -277,11 +308,13 @@ function RookiesPagination({
   center,
   filter,
   page,
+  search,
   totalPages,
 }: {
   center: CenterSlug
   filter?: RookieFilter
   page: number
+  search?: string
   totalPages: number
 }) {
   const pages = paginationItems(page, totalPages)
@@ -292,7 +325,7 @@ function RookiesPagination({
         <PaginationItem>
           <PaginationLink
             disabled={page <= 1}
-            href={rookiesArchiveHref({ center, filter, page: page - 1 })}
+            href={rookiesArchiveHref({ center, filter, page: page - 1, search })}
             label="이전"
           />
         </PaginationItem>
@@ -303,7 +336,7 @@ function RookiesPagination({
             ) : (
               <PaginationLink
                 active={item === page}
-                href={rookiesArchiveHref({ center, filter, page: item })}
+                href={rookiesArchiveHref({ center, filter, page: item, search })}
                 label={String(item)}
               />
             )}
@@ -312,7 +345,7 @@ function RookiesPagination({
         <PaginationItem>
           <PaginationLink
             disabled={page >= totalPages}
-            href={rookiesArchiveHref({ center, filter, page: page + 1 })}
+            href={rookiesArchiveHref({ center, filter, page: page + 1, search })}
             label="다음"
           />
         </PaginationItem>
@@ -360,15 +393,21 @@ function rookiesArchiveHref({
   center,
   filter,
   page,
+  search,
 }: {
   center: CenterSlug
   filter?: RookieFilter
   page?: number
+  search?: string
 }) {
   const params = new URLSearchParams()
 
   if (filter) {
     params.set('filter', filter)
+  }
+
+  if (search) {
+    params.set('search', search)
   }
 
   if (page && page > 1) {
@@ -394,6 +433,10 @@ function normalizeRookieFilter(
   rookieFilters: ReturnType<typeof getRookieFilters>,
 ): RookieFilter | undefined {
   return rookieFilters.some((filter) => filter.key === value) ? value : undefined
+}
+
+function normalizeRookieSearch(value: string | undefined) {
+  return value?.trim().replace(/\s+/g, ' ') || ''
 }
 
 function paginationItems(page: number, totalPages: number) {

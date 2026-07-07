@@ -6,7 +6,7 @@ import { RookiesArchive } from '../../rookies/RookiesArchive'
 
 type RookiesPageProps = {
   params: Promise<{ slug?: string }>
-  searchParams?: Promise<{ filter?: string; page?: string }>
+  searchParams?: Promise<{ filter?: string; page?: string; search?: string }>
 }
 
 export function generateStaticParams() {
@@ -31,6 +31,7 @@ export default async function RookiesPage({ params, searchParams }: RookiesPageP
       activeFilter={query.filter}
       center={center}
       page={parsePage(query.page)}
+      search={query.search}
     />
   )
 }
