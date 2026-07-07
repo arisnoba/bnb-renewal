@@ -88,7 +88,7 @@ export async function CurriculumDetailPage({
       className="page page-light page-curriculum-detail page-top-offset pb-30 text-neutral-900 lg:pb-0"
       data-center={center}
     >
-      <section className="section-curriculum-detail section-p-block-base bg-white">
+      <section className="section-curriculum-detail section-p-t-sm section-p-b-base bg-white">
         <div className="container">
           <div className="section-curriculum-detail__layout mx-auto grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-12">
 
@@ -110,12 +110,12 @@ export async function CurriculumDetailPage({
               aria-labelledby="curriculum-lessons-title"
               className="section-curriculum-detail__lessons order-5 mt-6 md:mt-10 lg:col-start-1"
             >
-              <div className="mb-8 border-b-[3px] border-neutral-900 pb-5 md:mb-10">
+              <div className="border-b-3 border-neutral-900 pb-5">
                 <p className="type-caption-m font-extrabold uppercase tracking-normal text-brand">
                   Curriculum
                 </p>
                 <h2
-                  className="mt-2 type-title-l font-black leading-tight text-neutral-900"
+                  className="mt-2 type-title-l font-bold leading-tight text-neutral-900"
                   id="curriculum-lessons-title"
                 >
                   주차별 커리큘럼
@@ -129,10 +129,10 @@ export async function CurriculumDetailPage({
                     key={`${lesson.topic}-${index}`}
                   >
                     <div className="flex items-end gap-2 md:block">
-                      <span className="block type-headline-l font-black leading-[1.1] text-brand">
+                      <span className="block type-headline-l font-black leading-tight text-brand text-center">
                         {index + 1}
                       </span>
-                      <span className="block pb-1 type-label-l font-bold text-neutral-400 md:pb-0">
+                      <span className="block pb-1 type-label-l font-bold text-neutral-400 md:pb-0 text-center">
                         주차
                       </span>
                     </div>
@@ -326,7 +326,7 @@ function OverviewItem({
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-2 text-black/45">
         {icon}
-        <p className="type-label-m font-bold">{label}</p>
+        <p className="type-label-m font-semibold">{label}</p>
       </div>
       <p className={cn('text-right font-bold text-neutral-900', valueClassName ?? 'type-title-s')}>
         {value}
@@ -349,18 +349,18 @@ function TeacherBrief({
   return (
     <section
       aria-labelledby="curriculum-teacher-title"
-      className={`section-curriculum-detail__teacher border border-neutral-200 bg-neutral-50 p-6 md:p-8 ${className}`}
+      className={`section-curriculum-detail__teacher border-b border-neutral-200 pb-8 md:pb-10 ${className}`}
     >
-      <div className="grid gap-6 md:grid-cols-[156px_minmax(0,1fr)] md:items-start">
+      <div className="grid gap-6 md:grid-cols-[100px_minmax(0,1fr)] md:items-start">
         <div className="relative aspect-square w-36 overflow-hidden bg-neutral-900 md:w-full">
           {hasImage ? (
             <Media
               fill
               htmlElement={null}
-              imgClassName="size-full object-cover object-center grayscale"
+              imgClassName="size-full object-cover object-center"
               pictureClassName="block size-full"
               resource={image}
-              size="156px"
+              size="100px"
             />
           ) : (
             <div className="grid size-full place-items-center type-headline-m font-black text-white">
@@ -381,15 +381,15 @@ function TeacherBrief({
               {teacher.name}
             </h2>
             {(teacher.role || teacher.summary) && (
-              <p className="mt-2 type-body-m font-semibold leading-[1.55] text-neutral-500">
+              <p className="mt-2 type-body-m font-medium leading-[1.55] text-neutral-500">
                 {[teacher.role, teacher.summary].filter(Boolean).join(' · ')}
               </p>
             )}
           </div>
 
           {careerItems.length > 0 ? (
-            <details className="group border-neutral-200 mt-4">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-4 type-label-m font-extrabold text-neutral-900 transition-colors hover:border-brand hover:text-brand [&::-webkit-details-marker]:hidden">
+            <details className="group border-neutral-200">
+              <summary className="flex min-h-10 cursor-pointer list-none items-center gap-2 type-label-m font-bold text-neutral-900 transition-colors hover:border-brand hover:text-brand [&::-webkit-details-marker]:hidden">
                 <span>프로필 자세히보기</span>
                 <ChevronDown
                   aria-hidden="true"
