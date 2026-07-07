@@ -1,10 +1,9 @@
 'use client'
 
-import { motion, type MotionValue, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
-import { useRef } from 'react'
 
 import { PageDeco, type DecoIcon } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
@@ -27,12 +26,6 @@ type ImageGalleryProps = {
 }
 
 export default function ImageGallery({ items }: ImageGalleryProps) {
-  const centersContainer = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: centersContainer,
-    offset: ['start start', 'end end'],
-  })
-
   return (
     <main
       className="page page-dark page-landing page-gate relative isolate overflow-x-hidden bg-black text-white"
@@ -40,25 +33,10 @@ export default function ImageGallery({ items }: ImageGalleryProps) {
     >
       <div className="section-gate-shell relative z-0 mx-auto flex w-full flex-col">
         <GateHero />
-        <section
-          className="section-gate-centers relative z-10 mt-[100svh] w-full"
-          ref={centersContainer}
-        >
-          {items.map((item, index) => {
-            const targetScale = Math.max(0.72, 1 - (items.length - index - 1) * 0.055)
-
-            return (
-              <GateCenterCard
-                index={index}
-                item={item}
-                key={item.href}
-                progress={scrollYProgress}
-                range={[index / items.length, 1]}
-                targetScale={targetScale}
-                total={items.length}
-              />
-            )
-          })}
+        <section className="section-gate-centers relative z-10 mt-[100svh] w-full px-6 space-y-6 pb-12">
+          {items.map((item, index) => (
+            <GateCenterCard index={index} item={item} key={item.href} />
+          ))}
         </section>
       </div>
     </main>
@@ -142,35 +120,17 @@ function GateHero() {
 type GateCenterCardProps = {
   index: number
   item: ImageGalleryItem
-  progress: MotionValue<number>
-  range: [number, number]
-  targetScale: number
-  total: number
 }
 
-function GateCenterCard({
-  index,
-  item,
-  progress,
-  range,
-  targetScale,
-  total,
-}: GateCenterCardProps) {
+function GateCenterCard({ index, item }: GateCenterCardProps) {
   const isDarkText = item.textTone === 'dark'
   const title = `배우앤배움 ${item.title}`
-  const scale = useTransform(progress, range, [1, targetScale])
 
   return (
-    <div
-      className="section-gate-card-stack sticky top-0 flex h-svh items-center justify-center px-3 py-8 md:px-6 md:py-10"
-      style={{ zIndex: index + 1 }}
-    >
-      <motion.div
-        className="section-gate-card-motion relative w-full max-w-480 origin-top"
-        style={{ scale }}
-      >
+    <div className="section-gate-card-stack flex items-center justify-center">
+      <div className="section-gate-card-motion relative w-full max-w-480 origin-top">
         <Link
-          className="section-gate-card group relative block h-[72svh] min-h-128 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:h-[76svh] md:min-h-160"
+          className="section-gate-card group relative block h-[72svh] min-h-128 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:h-[76svh] md:min-h-160 max-h-200"
           data-center={item.center}
           href={item.href}
         >
@@ -206,9 +166,9 @@ function GateCenterCard({
               <h2 className="whitespace-pre-line font-extrabold leading-tight tracking-normal text-brand text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
                 {title.replace(' ', '\n')}
               </h2>
-              <span className="mt-8 inline-flex items-center gap-1.5 font-bold text-brand md:mt-10">
+              <span className="mt-8 inline-flex items-center gap-1.5 font-bold text-brand md:mt-10 text-xl">
                 {item.cta}
-                <ArrowRight aria-hidden="true" className="size-3.5" strokeWidth={2.4} />
+                <ArrowRight aria-hidden="true" className="size-5" strokeWidth={2.4} />
               </span>
             </div>
             <p
@@ -224,11 +184,8 @@ function GateCenterCard({
             className="section-gate-card__deco bottom-2 right-2 z-2 opacity-95 [--page-deco-size:100px] md:right-0 md:bottom-0 md:[--page-deco-size:320px]"
             icon={item.decoIcon}
           />
-          {/* <span className="section-gate-card__count type-label-s absolute right-4 top-4 z-3 text-white/80 md:right-8 md:top-8">
-            {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-          </span> */}
         </Link>
-      </motion.div>
+      </div>
     </div>
   )
 }
