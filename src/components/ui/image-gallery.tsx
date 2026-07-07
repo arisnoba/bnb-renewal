@@ -33,7 +33,7 @@ export default function ImageGallery({ items }: ImageGalleryProps) {
     >
       <div className="section-gate-shell relative z-0 mx-auto flex w-full flex-col">
         <GateHero />
-        <section className="section-gate-centers relative z-10 mt-[100svh] w-full px-6 space-y-6 pb-12">
+        <section className="section-gate-centers relative z-10 mt-[100svh] grid w-full gap-3 px-6 pb-12">
           {items.map((item, index) => (
             <GateCenterCard index={index} item={item} key={item.href} />
           ))}
@@ -127,65 +127,56 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
   const title = `배우앤배움 ${item.title}`
 
   return (
-    <div className="section-gate-card-stack flex items-center justify-center">
-      <div className="section-gate-card-motion relative w-full max-w-480 origin-top">
-        <Link
-          className="section-gate-card group relative block h-[72svh] min-h-128 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:h-[76svh] md:min-h-160 max-h-200"
-          data-center={item.center}
-          href={item.href}
-        >
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="object-cover md:hidden pointer-events-none"
-            fill
-            loading={index === 0 ? 'eager' : 'lazy'}
-            sizes="100vw"
-            src={item.mobileImage}
-          />
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="hidden object-cover md:block pointer-events-none"
-            fill
-            loading={index === 0 ? 'eager' : 'lazy'}
-            sizes="(min-width: 1920px) 1920px, 100vw"
-            src={item.desktopImage}
-          />
-          <span
-            aria-hidden="true"
-            className={cn(
-              'absolute inset-0 z-1',
-              isDarkText
-                ? 'bg-linear-to-r from-white/20 via-transparent to-transparent'
-                : 'bg-linear-to-r from-black/30 via-transparent to-transparent',
-            )}
-          />
-          <div className="pointer-events-none w-full h-full relative z-3 p-6 md:p-12 lg:p-14 xl:p-20 flex flex-col justify-between">
-            <div className="section-gate-card__headline">
-              <h2 className="whitespace-pre-line font-extrabold leading-tight tracking-normal text-brand text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
-                {title.replace(' ', '\n')}
-              </h2>
-              <span className="mt-8 inline-flex items-center gap-1.5 font-bold text-brand md:mt-10 text-xl">
-                {item.cta}
-                <ArrowRight aria-hidden="true" className="size-5" strokeWidth={2.4} />
-              </span>
-            </div>
-            <p
-              className={cn(
-                'section-gate-card__description max-w-2/3 md:max-w-1/2 leading-relaxed text-base md:text-lg lg:text-xl xl:text-2xl',
-                isDarkText ? 'text-white/90' : 'text-white/90',
-              )}
-            >
-              {item.description}
-            </p>
-          </div>
-          <PageDeco
-            className="section-gate-card__deco bottom-2 right-2 z-2 opacity-95 [--page-deco-size:100px] md:right-0 md:bottom-0 md:[--page-deco-size:320px]"
-            icon={item.decoIcon}
-          />
-        </Link>
+    <Link
+      className="section-gate-card section-gate-card-stack group relative mx-auto block aspect-375/460 max-h-200 min-h-115 w-full max-w-480 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:aspect-auto lg:aspect-video xl:aspect-auto xl:min-h-160"
+      data-center={item.center}
+      href={item.href}
+    >
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none object-cover lg:hidden"
+        fill
+        loading={index === 0 ? 'eager' : 'lazy'}
+        sizes="100vw"
+        src={item.mobileImage}
+      />
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none hidden object-cover lg:block"
+        fill
+        loading={index === 0 ? 'eager' : 'lazy'}
+        sizes="(min-width: 1920px) 1920px, 100vw"
+        src={item.desktopImage}
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          'absolute inset-0 z-1',
+          isDarkText
+            ? 'bg-linear-to-r from-white/20 via-transparent to-transparent'
+            : 'bg-linear-to-r from-black/30 via-transparent to-transparent',
+        )}
+      />
+      <div className="pointer-events-none absolute inset-0 z-3 flex flex-col justify-between p-6 md:p-12 lg:p-14 xl:p-20">
+        <div className="section-gate-card__headline">
+          <h2 className="whitespace-pre-line text-4xl font-extrabold leading-tight tracking-normal text-brand md:text-5xl lg:text-6xl xl:text-7xl">
+            {title.replace(' ', '\n')}
+          </h2>
+          <span className="mt-8 inline-flex items-center gap-1.5 text-xl font-bold text-brand lg:mt-10">
+            {item.cta}
+            <ArrowRight aria-hidden="true" className="size-5" strokeWidth={2.4} />
+          </span>
+        </div>
+        <p className="section-gate-card__description max-w-2/3 text-xs leading-relaxed text-white/90 md:max-w-1/2 md:text-base lg:text-lg xl:text-2xl">
+          {item.description}
+        </p>
       </div>
-    </div>
+      <PageDeco
+        className="section-gate-card__deco bottom-2 right-2 z-2 opacity-95 [--page-deco-size:100px]! md:right-0 md:bottom-0 md:[--page-deco-size:180px]! lg:[--page-deco-size:220px]! xl:[--page-deco-size:320px]!"
+        icon={item.decoIcon}
+      />
+    </Link>
   )
 }
