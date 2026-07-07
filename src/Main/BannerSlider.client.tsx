@@ -705,7 +705,7 @@ function BannerSlide({
           {broadcaster && (
             <p
               className={cn(
-                'section-main-banner__badge mb-[22px] inline-flex items-center',
+                'section-main-banner__badge mb-5.5 inline-flex items-center',
                 'text-[22px] font-black leading-none',
                 center === 'exam'
                   ? 'bg-transparent p-0 text-brand'
@@ -755,7 +755,7 @@ function BannerMarquee({ isActive, items }: { isActive: boolean; items: MainBann
   }
 
   return (
-    <div className="section-main-banner__link-marquee absolute inset-x-0 bottom-0 z-3 min-h-[auto] overflow-hidden border-t border-white/10 bg-black/35 text-white backdrop-blur-md">
+    <div className="section-main-banner__link-marquee absolute inset-x-0 bottom-0 z-3 min-h-auto overflow-hidden border-t border-white/10 bg-black/35 text-white backdrop-blur-md">
       <div className="container overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="section-main-banner__link-track flex min-w-full w-max gap-2">
           {items.map((item, index) => (
