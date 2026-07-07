@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
@@ -8,6 +9,8 @@ import { ArrowRight, ChevronDown } from 'lucide-react'
 import { PageDeco, type DecoIcon } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
+
+const MotionPageDeco = motion.create(PageDeco)
 
 export type ImageGalleryItem = {
   center: CenterSlug
@@ -31,6 +34,7 @@ export default function ImageGallery({ items }: ImageGalleryProps) {
       className="page page-dark page-landing page-gate relative isolate overflow-x-hidden bg-black text-white"
       data-center="art"
     >
+      <GateSmoothScroll />
       <div className="section-gate-shell relative z-0 mx-auto flex w-full flex-col">
         <GateHero />
         <section className="section-gate-centers relative z-10 mt-[100svh] grid w-full gap-3 px-6 pb-12">
@@ -43,8 +47,51 @@ export default function ImageGallery({ items }: ImageGalleryProps) {
   )
 }
 
+function GateSmoothScroll() {
+  const prefersReducedMotion = useReducedMotion()
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      return
+    }
+
+    let frameId = 0
+    let isMounted = true
+    let lenis: { destroy: () => void; raf: (time: number) => void } | undefined
+
+    const tick = (time: number) => {
+      lenis?.raf(time)
+      frameId = window.requestAnimationFrame(tick)
+    }
+
+    void import('lenis').then(({ default: Lenis }) => {
+      if (!isMounted) {
+        return
+      }
+
+      lenis = new Lenis({
+        lerp: 0.08,
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+      })
+      frameId = window.requestAnimationFrame(tick)
+    })
+
+    return () => {
+      isMounted = false
+      if (frameId) {
+        window.cancelAnimationFrame(frameId)
+      }
+      lenis?.destroy()
+    }
+  }, [prefersReducedMotion])
+
+  return null
+}
+
 function GateHero() {
   const { scrollY } = useScroll()
+  const heroContentOpacity = useTransform(scrollY, [80, 420], [1, 0])
   const scrollIndicatorOpacity = useTransform(scrollY, [0, 32], [1, 0])
 
   return (
@@ -87,7 +134,10 @@ function GateHero() {
         src="/assets/gate/logo-enm.png"
         width={161}
       />
-      <div className="section-gate-hero__content absolute left-1/2 top-1/2 z-2 -translate-x-1/2 -translate-y-1/2 text-center">
+      <motion.div
+        className="section-gate-hero__content pointer-events-none absolute left-1/2 top-1/2 z-2 -translate-x-1/2 -translate-y-1/2 text-center"
+        style={{ opacity: heroContentOpacity }}
+      >
         <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-balance font-extrabold leading-tight tracking-normal text-white">
           꿈을 발견하고,
           <br />
@@ -96,7 +146,7 @@ function GateHero() {
         <p className="mt-7 text-xl font-semibold text-white md:mt-10 lg:text-2xl xl:text-3xl">
           배우앤배움의 모든 교육 과정을 만나보세요
         </p>
-      </div>
+      </motion.div>
       <motion.div
         aria-hidden="true"
         className="section-gate-hero__scroll pointer-events-none absolute bottom-8 left-1/2 z-2 -translate-x-1/2 text-white md:bottom-20"
@@ -123,7 +173,14 @@ type GateCenterCardProps = {
 }
 
 function GateCenterCard({ index, item }: GateCenterCardProps) {
+  const cardRef = useRef<HTMLAnchorElement>(null)
   const isDarkText = item.textTone === 'dark'
+  const prefersReducedMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({
+    offset: ['start end', 'end start'],
+    target: cardRef,
+  })
+  const decoY = useTransform(scrollYProgress, [0, 1], [-36, 48])
   const title = `배우앤배움 ${item.title}`
 
   return (
@@ -131,6 +188,7 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
       className="section-gate-card section-gate-card-stack group relative mx-auto block aspect-375/460 max-h-200 min-h-115 w-full max-w-480 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:aspect-auto lg:aspect-video xl:aspect-auto xl:min-h-160"
       data-center={item.center}
       href={item.href}
+      ref={cardRef}
     >
       <Image
         alt=""
@@ -173,9 +231,11 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
           {item.description}
         </p>
       </div>
-      <PageDeco
+      <MotionPageDeco
         className="section-gate-card__deco bottom-2 right-2 z-2 opacity-95 [--page-deco-size:100px]! md:right-0 md:bottom-0 md:[--page-deco-size:180px]! lg:[--page-deco-size:220px]! xl:[--page-deco-size:320px]!"
         icon={item.decoIcon}
+        parallax="card-reverse"
+        style={prefersReducedMotion ? undefined : { y: decoY }}
       />
     </Link>
   )

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { forwardRef, type CSSProperties } from 'react'
 
 import { cn } from '@/utilities/ui'
 
@@ -12,6 +12,7 @@ type PageDecoProps = {
   parallax?: string
   seed?: string
   size?: string
+  style?: CSSProperties
 }
 
 type DecoStyle = CSSProperties & {
@@ -19,15 +20,13 @@ type DecoStyle = CSSProperties & {
   '--page-deco-size'?: string
 }
 
-export function PageDeco({
-  className,
-  icon = 'random',
-  parallax,
-  seed,
-  size,
-}: PageDecoProps) {
+export const PageDeco = forwardRef<HTMLSpanElement, PageDecoProps>(function PageDeco(
+  { className, icon = 'random', parallax, seed, size, style: styleProp },
+  ref,
+) {
   const iconName = icon === 'random' ? resolveRandomIcon(seed ?? className ?? 'page-deco') : icon
   const style: DecoStyle = {
+    ...styleProp,
     '--page-deco-image': `url('/assets/common/deco/${iconName}')`,
     ...(size ? { '--page-deco-size': size } : {}),
   }
@@ -38,10 +37,11 @@ export function PageDeco({
       className={cn('page-deco pointer-events-none absolute text-brand', className)}
       data-deco-icon={iconName}
       data-parallax={parallax}
+      ref={ref}
       style={style}
     />
   )
-}
+})
 
 function resolveRandomIcon(seed: string): DecoIcon {
   let hashA = 0xdeadbeef
