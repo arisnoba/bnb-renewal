@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import React from 'react'
 import { Toaster } from 'sonner'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 import { AdminBar } from '@/components/AdminBar'
 import { CookieBanner } from '@/components/legal/CookieBanner'
@@ -31,6 +32,7 @@ export default async function RootLayout({
         </FrontendChrome>
         <CookieBanner />
         <Toaster position="top-center" richColors />
+        <SpeedInsights />
       </body>
     </html>
   )
