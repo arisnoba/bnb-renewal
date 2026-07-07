@@ -67,7 +67,7 @@ export const AdminBar: React.FC<{
       })}
     >
       <div className="container-fluid flex min-h-11 flex-wrap items-center gap-x-4 gap-y-2 py-2">
-        <nav aria-label="센터 바로가기" className="flex flex-wrap items-center gap-2 text-xs">
+        <nav aria-label="센터 바로가기" className="flex flex-wrap items-center gap-1 text-xs">
           {adminBarCenterLinks.map((link) => (
             <Link
               className="rounded border border-white/30 px-2 py-1 text-white no-underline transition hover:border-white hover:bg-white/10"

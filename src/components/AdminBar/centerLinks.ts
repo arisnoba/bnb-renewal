@@ -3,8 +3,8 @@ import { centers, type CenterSlug } from '@/lib/centers'
 export const adminBarCenterLinks = [
   { label: '아트', slug: 'art' },
   { label: '입시', slug: 'exam' },
-  { label: '키즈', slug: 'kids' },
   { label: '하이틴', slug: 'highteen' },
+  { label: '키즈', slug: 'kids' },
   { label: '애비뉴', slug: 'avenue' },
 ] satisfies Array<{ label: string; slug: CenterSlug }>
 
