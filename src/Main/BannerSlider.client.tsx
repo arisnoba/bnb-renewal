@@ -610,10 +610,10 @@ function BannerLogoGrid({
       {items.map((item, index) => (
         <div
           className={cn(
-            'section-main-banner__logo-deco grid place-items-center',
+            'section-main-banner__logo-deco grid place-items-center rounded-full overflow-hidden',
             'drop-shadow-[0_10px_22px_rgba(0,0,0,0.28)]',
             placement === 'desktop'
-              ? 'size-15 max-[980px]:size-14'
+              ? 'size-20 max-[980px]:size-14'
               : 'size-12 max-[640px]:size-10',
           )}
           key={`${item.src}-${index}`}
@@ -643,12 +643,17 @@ function BannerLogoDecoLayer({ items }: { items: MainBannerLogoItem[] }) {
     >
       <div
         className={cn(
-          'section-main-banner__logo-deco-wrap absolute right-[8vw] top-1/2 -translate-y-1/2',
-          'max-w-[min(30vw,340px)]',
-          'max-[980px]:right-8 max-[980px]:max-w-[280px]',
+          'container grid min-h-svh items-end',
+          'grid-cols-[minmax(0,1fr)_minmax(240px,260px)]',
+          'gap-[var(--section-main-banner-content-gap)]',
+          'pb-[calc(var(--section-main-banner-marquee-height)+var(--section-main-banner-content-bottom-offset))]',
+          'pt-[calc(var(--admin-bar-height,0px)+120px)]',
         )}
       >
-        <BannerLogoGrid items={items} placement="desktop" />
+        <div aria-hidden="true" />
+        <div className="section-main-banner__logo-deco-wrap flex min-h-[340px] w-full items-end justify-center self-end min-[769px]:mb-[var(--section-main-banner-copy-bottom-offset)]">
+          <BannerLogoGrid items={items} placement="desktop" />
+        </div>
       </div>
     </div>
   )
@@ -713,7 +718,7 @@ function BannerSlide({
           )}
           <h2
             className={cn(
-              'section-main-banner__title m-0 text-balance font-black leading-[1.05]',
+              'section-main-banner__title m-0 text-balance leading-tight font-black ',
               'text-[length:var(--section-main-banner-title-size)] tracking-normal text-white',
               'max-[640px]:text-[length:var(--section-main-banner-title-size-mobile)]',
             )}

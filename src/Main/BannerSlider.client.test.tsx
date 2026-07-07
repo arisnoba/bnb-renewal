@@ -153,6 +153,33 @@ test('main banner renders exam broadcaster as brand text without badge backgroun
   assert.doesNotMatch(html, /section-main-banner__badge[^"]*rounded-full/)
 })
 
+test('main banner aligns exam decorative logos to the desktop statistics slot', () => {
+  const html = renderToStaticMarkup(
+    <MainBannerSlider
+      banners={[
+        {
+          decorImages: [{ alt: '세종대', image }],
+          desktopImage: image,
+          title: '입시 배너',
+        },
+      ]}
+      center="exam"
+    />,
+  )
+
+  assert.match(html, /section-main-banner__logo-deco-layer/)
+  assert.match(html, /grid-cols-\[minmax\(0,1fr\)_minmax\(240px,260px\)\]/)
+  assert.match(html, /section-main-banner__logo-deco-wrap[^"]*self-end/)
+  assert.match(html, /section-main-banner__logo-deco-wrap[^"]*items-end/)
+  assert.match(
+    html,
+    /section-main-banner__logo-deco-wrap[^"]*min-\[769px\]:mb-\[var\(--section-main-banner-copy-bottom-offset\)\]/,
+  )
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-wrap[^"]*items-center/)
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-wrap[^"]*right-\[8vw\]/)
+  assert.doesNotMatch(html, /section-main-banner__logo-deco-wrap[^"]*top-1\/2/)
+})
+
 test('main banner skips marquee links when linked content is empty', () => {
   const html = render({
     desktopImage: image,
