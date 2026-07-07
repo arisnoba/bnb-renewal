@@ -821,11 +821,11 @@ function BannerContentCards({ isActive, items }: { isActive: boolean; items: Mai
     <div
       className={cn(
         'section-main-banner__profile-marquee absolute inset-x-0 bottom-0 z-3',
-        'min-h-[var(--section-main-banner-marquee-height)] overflow-hidden',
-        'border-t border-white/10 bg-black/35 text-white backdrop-blur-md',
+        'min-h-(--section-main-banner-marquee-height) overflow-hidden',
+        'border-t border-b border-white/10 bg-black/35 text-white backdrop-blur-md',
         'data-[marquee=false]:overflow-x-auto data-[marquee=false]:[scrollbar-width:none]',
         'data-[marquee=false]:[&::-webkit-scrollbar]:hidden',
-        'hover:[&_.section-main-banner__profile-set]:[animation-play-state:paused]',
+        'hover:[&_.section-main-banner__profile-set]:paused',
       )}
       data-active={isActive ? 'true' : 'false'}
       data-marquee={shouldMarquee ? 'true' : 'false'}
