@@ -254,7 +254,7 @@ function CurriculumOverview({ model }: { model: DetailModel }) {
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="type-caption-m font-extrabold uppercase tracking-normal text-brand mb-4">
-            Class Overview
+            Overview
           </p>
           <h1 className="type-headline-m font-black leading-[1.18] text-neutral-900">
             {model.lessons[0]?.topic ?? model.title}
