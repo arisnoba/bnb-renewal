@@ -1,4 +1,11 @@
-import type { CollectionBeforeValidateHook, CollectionConfig, Field } from "payload";
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+  Field,
+  TypeWithID,
+} from "payload";
 
 import {
   BlockquoteFeature,
@@ -26,8 +33,10 @@ import {
   idSlugField,
 } from "./slugUtils";
 import {
+  centerFrontendPaths,
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
+  revalidateFrontendPaths,
 } from "./revalidateFrontend";
 
 const examResultBodyEditor = lexicalEditor({
@@ -48,6 +57,14 @@ const resultTypeOptions = [
   { label: "대학", value: "university" },
   { label: "예술고", value: "arts_high_school" },
 ];
+
+type ExamResultType = "university" | "arts_high_school";
+
+type ExamResultRevalidationDoc = TypeWithID & {
+  centers?: unknown;
+  resultType?: unknown;
+  slug?: unknown;
+};
 
 const examCentersField = {
   ...centersField,
@@ -109,6 +126,93 @@ const revalidateExamResultAfterDelete = createCenterRevalidationAfterDelete({
   suffixes: ["", "university-results", "arts-high-results"],
 });
 
+const resultTypeDetailPath: Record<ExamResultType, string> = {
+  arts_high_school: "arts-high-results",
+  university: "university-results",
+};
+
+function normalizeResultTypes(values: unknown[]) {
+  return Array.from(
+    new Set(
+      values.filter((value): value is ExamResultType =>
+        typeof value === "string" && value in resultTypeDetailPath,
+      ),
+    ),
+  );
+}
+
+export function examResultDetailFrontendPaths({
+  centers,
+  previousCenters,
+  resultTypes,
+  slugs,
+}: {
+  centers: unknown;
+  previousCenters?: unknown;
+  resultTypes: unknown[];
+  slugs: unknown[];
+}) {
+  const normalizedResultTypes = normalizeResultTypes(resultTypes);
+  const normalizedSlugs = Array.from(
+    new Set(
+      slugs
+        .map((slug) => String(slug ?? "").trim())
+        .filter(Boolean)
+        .map((slug) => encodeURIComponent(slug)),
+    ),
+  );
+
+  if (normalizedResultTypes.length === 0 || normalizedSlugs.length === 0) {
+    return [];
+  }
+
+  const suffixes = normalizedResultTypes.flatMap((resultType) =>
+    normalizedSlugs.map((slug) => `${resultTypeDetailPath[resultType]}/${slug}`),
+  );
+
+  return centerFrontendPaths({
+    centers,
+    previousCenters,
+    suffixes,
+  });
+}
+
+function examResultDetailFrontendPathsForDocs(
+  doc?: ExamResultRevalidationDoc | null,
+  previousDoc?: ExamResultRevalidationDoc | null,
+) {
+  return examResultDetailFrontendPaths({
+    centers: doc?.centers,
+    previousCenters: previousDoc?.centers,
+    resultTypes: [doc?.resultType, previousDoc?.resultType],
+    slugs: [doc?.id, doc?.slug, previousDoc?.id, previousDoc?.slug],
+  });
+}
+
+const revalidateExamResultDetailAfterChange: CollectionAfterChangeHook<
+  ExamResultRevalidationDoc
+> = ({ doc, previousDoc, req }) => {
+  revalidateFrontendPaths({
+    paths: examResultDetailFrontendPathsForDocs(doc, previousDoc),
+    reason: "exam result detail",
+    req,
+  });
+
+  return doc;
+};
+
+const revalidateExamResultDetailAfterDelete: CollectionAfterDeleteHook<
+  ExamResultRevalidationDoc
+> = ({ doc, req }) => {
+  revalidateFrontendPaths({
+    paths: examResultDetailFrontendPathsForDocs(doc),
+    reason: "exam result detail",
+    req,
+  });
+
+  return doc;
+};
+
 export const ExamResults: CollectionConfig = {
   slug: "exam-results",
   labels: {
@@ -124,8 +228,12 @@ export const ExamResults: CollectionConfig = {
   },
   defaultSort: "-publishedAt",
   hooks: {
-    afterChange: [finalizeExamResultSlugAfterCreate, revalidateExamResultAfterChange],
-    afterDelete: [revalidateExamResultAfterDelete],
+    afterChange: [
+      finalizeExamResultSlugAfterCreate,
+      revalidateExamResultAfterChange,
+      revalidateExamResultDetailAfterChange,
+    ],
+    afterDelete: [revalidateExamResultAfterDelete, revalidateExamResultDetailAfterDelete],
     beforeValidate: [setExamResultCenterBeforeValidate, setExamResultSlug],
   },
   fields: [

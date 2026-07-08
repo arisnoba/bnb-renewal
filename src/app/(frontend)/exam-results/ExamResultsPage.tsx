@@ -136,7 +136,12 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
             <>
               <div className="section-exam-results-list__grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {resultsPage.docs.map((item) => (
-                  <ExamResultCard config={config} item={item} key={item.id} />
+                  <ExamResultCard
+                    config={config}
+                    item={item}
+                    key={item.id}
+                    resultType={resultType}
+                  />
                 ))}
               </div>
               {resultsPage.totalPages > 1 ? (
@@ -260,43 +265,52 @@ function createExamResultsWhere(resultType: ExamResultType): Where {
 function ExamResultCard({
   config,
   item,
+  resultType,
 }: {
   config: ExamResultPageConfig
   item: ExamResultListItem
+  resultType: ExamResultType
 }) {
-  const imageUrl = normalizeImageUrl(item.thumbnailPath)
+  const imageUrl = normalizeExamResultImageUrl(item.thumbnailPath)
   const displayTitle = normalizeText(item.title) || config.eyebrow
+  const href = getExamResultDetailHref({ id: item.id, resultType })
 
   return (
-    <article className="section-exam-result-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
-      <div className="section-exam-result-card__media relative aspect-270/268 overflow-hidden bg-neutral-100">
-        {imageUrl ? (
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="size-full object-cover"
-            fill
-            loading="lazy"
-            sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc((100vw - 56px) / 2), calc((min(100vw, 1160px) - 48px) / 4)"
-            src={imageUrl}
-            unoptimized
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-neutral-100 px-6 text-center type-label-m font-semibold leading-normal text-neutral-500">
-            이미지 준비중
-          </div>
-        )}
-      </div>
-      <div className="section-exam-result-card__body flex items-center p-5">
-        <p className="section-exam-result-card__title line-clamp-2 type-body-m font-medium leading-normal text-neutral-900">
-          {displayTitle}
-        </p>
-      </div>
-    </article>
+    <Link
+      aria-label={`${displayTitle} 상세 보기`}
+      className="group block rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+      href={href}
+    >
+      <article className="section-exam-result-card overflow-hidden rounded-xl border border-neutral-300 bg-white transition-colors group-hover:border-brand">
+        <div className="section-exam-result-card__media relative aspect-270/268 overflow-hidden bg-neutral-100">
+          {imageUrl ? (
+            <Image
+              alt=""
+              aria-hidden="true"
+              className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              fill
+              loading="lazy"
+              sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc((100vw - 56px) / 2), calc((min(100vw, 1160px) - 48px) / 4)"
+              src={imageUrl}
+              unoptimized
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-neutral-100 px-6 text-center type-label-m font-semibold leading-normal text-neutral-500">
+              이미지 준비중
+            </div>
+          )}
+        </div>
+        <div className="section-exam-result-card__body flex items-center p-5">
+          <p className="section-exam-result-card__title line-clamp-2 type-body-m font-medium leading-normal text-neutral-900 transition-colors group-hover:text-brand">
+            {displayTitle}
+          </p>
+        </div>
+      </article>
+    </Link>
   )
 }
 
-function normalizeImageUrl(value: string | null | undefined) {
+export function normalizeExamResultImageUrl(value: string | null | undefined) {
   const trimmed = publishedImageSrc(value)
 
   if (!trimmed) {
@@ -399,8 +413,7 @@ function ExamResultsPaginationLink({
 }
 
 function examResultsHref({ page, resultType }: { page?: number; resultType: ExamResultType }) {
-  const pathname =
-    resultType === 'arts_high_school' ? '/exam/arts-high-results' : '/exam/university-results'
+  const pathname = getExamResultPathname(resultType)
 
   if (!page || page <= 1) {
     return `${pathname}#${listAnchorId}`
@@ -439,6 +452,20 @@ function normalizeText(value: string | null | undefined) {
 
 export function getExamResultPageTitle(resultType: ExamResultType) {
   return pageConfigByType[resultType].eyebrow
+}
+
+export function getExamResultPathname(resultType: ExamResultType) {
+  return resultType === 'arts_high_school' ? '/exam/arts-high-results' : '/exam/university-results'
+}
+
+export function getExamResultDetailHref({
+  id,
+  resultType,
+}: {
+  id: number | string
+  resultType: ExamResultType
+}) {
+  return `${getExamResultPathname(resultType)}/${encodeURIComponent(String(id))}`
 }
 
 export type { ExamResultType }

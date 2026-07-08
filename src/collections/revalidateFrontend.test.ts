@@ -5,7 +5,7 @@ import { MainStatistics } from '../Main/Statistics'
 import { ArtistPress } from './ArtistPress'
 import { Curriculums } from './Curriculums'
 import { DirectCastings } from './DirectCastings'
-import { ExamResults } from './ExamResults'
+import { ExamResults, examResultDetailFrontendPaths } from './ExamResults'
 import { ExamPassedReviews } from './ExamPassedReviews'
 import { ExamPassedVideos } from './ExamPassedVideos'
 import { Faqs } from './Faqs'
@@ -58,6 +58,17 @@ test('news detail frontend paths expand all centers', () => {
       '/highteen/news/news-all',
       '/avenue/news/news-all',
     ],
+  )
+})
+
+test('exam result detail frontend paths include result type routes', () => {
+  assert.deepEqual(
+    examResultDetailFrontendPaths({
+      centers: ['exam'],
+      resultTypes: ['university', 'arts_high_school'],
+      slugs: ['101', '101'],
+    }),
+    ['/exam/university-results/101', '/exam/arts-high-results/101'],
   )
 })
 
