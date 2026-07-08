@@ -22,7 +22,7 @@
 | 본문/UI 전체 | **Pretendard** | 한국어 + 영문 통합 |
 | 아이콘 | **Font Awesome 7 Pro** | Solid 스타일 기준 |
 
-> **현재 코드 상태**: `globals.css`에서 Pretendard 우선 fallback 스택 사용. Pretendard 패키지/CDN은 아직 미설치.
+> **현재 코드 상태**: `globals.css`에서 Pretendard 패키지의 variable dynamic subset CSS를 로드하고, Pretendard 우선 fallback 스택을 사용.
 
 ### 줄바꿈 기준
 
@@ -607,4 +607,5 @@ body:has(.page-dark, [data-page-tone='dark']) {
 - [ ] 기업소개 섹션 내용 확인 (현재 이름이 교육 화면과 혼용되어 있음)
 - [ ] 상담센터 섹션 디자인 (피그마 미완성)
 - [ ] **센터 브랜드 컬러 5종 실제 HEX 확정** (현재 임시값 — 피그마에서 추출 후 `@theme` 교체)
-- [ ] **Pretendard / Font Awesome 7 Pro 실제 설치**
+- [x] **Pretendard 실제 설치**
+- [ ] **Font Awesome 7 Pro 실제 설치**
