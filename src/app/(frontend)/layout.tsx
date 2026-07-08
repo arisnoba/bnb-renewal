@@ -39,6 +39,13 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
+  formatDetection: {
+    address: false,
+    date: false,
+    email: false,
+    telephone: false,
+    url: false,
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32' },

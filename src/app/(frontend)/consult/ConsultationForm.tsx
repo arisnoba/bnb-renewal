@@ -880,6 +880,7 @@ function TextInputField({
   ...inputProps
 }: ControlledFieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, 'name'>) {
   const { clearFieldError, errors, setFieldError } = useValidationFeedback()
+  const isDateInput = inputProps.type === 'date'
 
   return (
     <FormField
@@ -901,7 +902,11 @@ function TextInputField({
               {...inputProps}
               {...field}
               aria-invalid={Boolean(fieldMessage)}
-              className={cn(controlClassName, fieldMessage && invalidControlClassName)}
+              className={cn(
+                controlClassName,
+                isDateInput && dateInputClassName,
+                fieldMessage && invalidControlClassName,
+              )}
               onBlur={(event) => {
                 field.onBlur()
                 const message = getSoftInputValidationMessage(name, event.currentTarget.value)
@@ -1177,6 +1182,8 @@ function RadioButtonGroup({
 }
 
 const controlClassName = 'h-12'
+const dateInputClassName =
+  'appearance-none [-webkit-appearance:none] py-0 leading-[1.2] text-left [font:inherit] [&::-webkit-date-and-time-value]:m-0 [&::-webkit-date-and-time-value]:min-h-0 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:[font:inherit] [&::-webkit-date-and-time-value]:leading-[1.2]'
 const invalidControlClassName = 'border-destructive/60 outline-destructive/60 ring-destructive/20'
 const radioButtonClassName =
   'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background type-label-m font-medium text-foreground shadow-xs outline-ring/50 ring-ring/10 transition-[background-color,border-color,color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-foreground/60 peer-checked:bg-muted peer-checked:text-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1 peer-focus-visible:ring-ring/10 peer-focus-visible:outline-ring/50'
