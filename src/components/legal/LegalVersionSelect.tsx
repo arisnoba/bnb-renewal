@@ -22,7 +22,7 @@ export function LegalVersionSelect({ label, options, value }: LegalVersionSelect
       <span className="sr-only">{label}</span>
       <select
         aria-label={`${label} 선택`}
-        className="h-14 min-w-[150px] appearance-none rounded border border-white/15 bg-transparent py-0 pl-5 pr-12 text-base font-semibold text-white outline-none transition-colors hover:border-white/35 focus:border-white"
+        className="h-12 min-w-[132px] appearance-none rounded-md border border-white/15 bg-transparent py-0 pl-4 pr-10 text-sm font-semibold text-white shadow-xs outline-none transition-colors hover:border-white/35 focus:border-white"
         onChange={(event) => {
           const params = new URLSearchParams()
           if (event.target.value) {
@@ -41,7 +41,7 @@ export function LegalVersionSelect({ label, options, value }: LegalVersionSelect
       </select>
       <svg
         aria-hidden="true"
-        className="pointer-events-none absolute right-5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/70"
+        className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/70"
         fill="none"
         viewBox="0 0 16 16"
       >

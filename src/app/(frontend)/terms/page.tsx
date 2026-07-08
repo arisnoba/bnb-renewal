@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-
-import { LegalDocumentPage } from '@/components/legal/LegalDocumentPage'
-import { getLegalTermPageData } from '@/lib/legalTerms'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: '이용약관',
@@ -16,7 +14,6 @@ type TermsPageProps = {
 
 export default async function TermsPage({ searchParams }: TermsPageProps) {
   const { version } = await searchParams
-  const document = await getLegalTermPageData('terms', version)
 
-  return <LegalDocumentPage document={document} />
+  redirect(`/art/terms${version ? `?version=${encodeURIComponent(version)}` : ''}`)
 }

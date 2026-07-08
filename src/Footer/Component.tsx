@@ -70,10 +70,10 @@ export async function Footer() {
             <FooterLogo initialCenter={center} />
 
             <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
-              <Link className="text-[#666] transition-colors hover:text-white" href="/terms" prefetch={false}>
+              <Link className="text-[#666] transition-colors hover:text-white" href={`/${center}/terms`} prefetch={false}>
                 이용약관
               </Link>
-              <Link className="font-medium text-[#999] transition-colors hover:text-white" href="/privacy" prefetch={false}>
+              <Link className="font-medium text-[#999] transition-colors hover:text-white" href={`/${center}/privacy`} prefetch={false}>
                 개인정보처리방침
               </Link>
             </nav>

@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-
-import { LegalDocumentPage } from '@/components/legal/LegalDocumentPage'
-import { getLegalTermPageData } from '@/lib/legalTerms'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: '개인정보처리방침',
@@ -16,7 +14,6 @@ type PrivacyPolicyPageProps = {
 
 export default async function PrivacyPolicyPage({ searchParams }: PrivacyPolicyPageProps) {
   const { version } = await searchParams
-  const document = await getLegalTermPageData('privacy', version)
 
-  return <LegalDocumentPage document={document} />
+  redirect(`/art/privacy${version ? `?version=${encodeURIComponent(version)}` : ''}`)
 }

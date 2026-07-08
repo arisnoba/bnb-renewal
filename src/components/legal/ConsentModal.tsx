@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { centerSlugFromPathname } from '@/Footer/centerInfo'
 import {
   Dialog,
   DialogContent,
@@ -25,6 +27,8 @@ export function ConsentModal({
   const [open, setOpen] = useState(false)
   const [termsChecked, setTermsChecked] = useState(false)
   const [privacyChecked, setPrivacyChecked] = useState(false)
+  const pathname = usePathname()
+  const center = centerSlugFromPathname(pathname) ?? 'art'
   const canSubmit = termsChecked && privacyChecked
 
   function agree() {
@@ -60,7 +64,7 @@ export function ConsentModal({
             />
             <span>
               <span className="font-semibold">이용약관 동의</span>
-              <Link className="ml-2 text-primary underline underline-offset-4" href="/terms">
+              <Link className="ml-2 text-primary underline underline-offset-4" href={`/${center}/terms`}>
                 보기
               </Link>
             </span>
@@ -74,7 +78,7 @@ export function ConsentModal({
             />
             <span>
               <span className="font-semibold">개인정보처리방침 동의</span>
-              <Link className="ml-2 text-primary underline underline-offset-4" href="/privacy">
+              <Link className="ml-2 text-primary underline underline-offset-4" href={`/${center}/privacy`}>
                 보기
               </Link>
             </span>
