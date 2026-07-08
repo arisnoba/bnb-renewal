@@ -8,31 +8,8 @@ import { useDocumentInfo, useField } from '@payloadcms/ui';
 import { ImagePlus } from 'lucide-react';
 
 import { getAdminImagePreviewSrc } from './adminImagePreviewSrc';
+import { getImagePathFieldFileName, isProbablyImagePath } from './imagePathFieldPreview';
 import { getTeacherImageSrc } from './teacherImageSrc';
-
-const imageExtensions = new Set(['avif', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp']);
-
-function getFileName(src: string) {
-	const pathname = src.split('?')[0] ?? '';
-	const fileName = pathname.split('/').filter(Boolean).pop();
-
-	if (!fileName) {
-		return src;
-	}
-
-	try {
-		return decodeURIComponent(fileName);
-	} catch {
-		return fileName;
-	}
-}
-
-function isProbablyImage(src: string) {
-	const pathname = src.split('?')[0] ?? '';
-	const extension = pathname.split('.').pop()?.toLowerCase();
-
-	return extension ? imageExtensions.has(extension) : true;
-}
 
 async function readErrorMessage(response: Response) {
 	const fallback = '이미지 처리 중 오류가 발생했습니다.';
@@ -70,10 +47,10 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 		collectionSlug === 'teachers' && fieldPath === 'profileImagePath'
 			? getTeacherImageSrc(value, { sourceDb, sourceId, sourceTable })
 			: getAdminImagePreviewSrc(value);
-	const canPreview = imageSrc && isProbablyImage(imageSrc);
+	const canPreview = imageSrc && isProbablyImagePath(imageSrc);
 	const hasValue = Boolean(fieldValue.trim());
 	const hasError = Boolean(showError);
-	const fileName = imageSrc ? getFileName(imageSrc) : getFileName(fieldValue);
+	const fileName = getImagePathFieldFileName(imageSrc, fieldValue);
 	const controlsDisabled = disabled || isProcessing;
 
 	async function uploadFile(file: File) {
