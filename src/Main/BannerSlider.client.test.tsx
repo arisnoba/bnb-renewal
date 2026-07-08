@@ -3,7 +3,9 @@ import test from 'node:test'
 
 import type { Media } from '@/payload-types'
 
-import React from 'react'
+import { JSDOM } from 'jsdom'
+import React, { act } from 'react'
+import { createRoot } from 'react-dom/client'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 import {
@@ -106,6 +108,118 @@ test('main banner profile cards marquee as soon as the profile set is wider than
   assert.equal(shouldProfileSetMarquee(721, 720), true)
   assert.equal(shouldProfileSetMarquee(720, 720), false)
   assert.equal(shouldProfileSetMarquee(700, 720), false)
+})
+
+test('main banner animates the profile track instead of each profile set', async () => {
+  const dom = new JSDOM('<!doctype html><div id="root"></div>', {
+    url: 'http://localhost',
+  })
+  const mutableGlobal = globalThis as Record<string, unknown>
+  const previousGlobals = {
+    HTMLElement: mutableGlobal.HTMLElement,
+    IS_REACT_ACT_ENVIRONMENT: mutableGlobal.IS_REACT_ACT_ENVIRONMENT,
+    ResizeObserver: mutableGlobal.ResizeObserver,
+    document: mutableGlobal.document,
+    self: mutableGlobal.self,
+    window: mutableGlobal.window,
+  }
+
+  class TestResizeObserver {
+    disconnect() {}
+    observe() {}
+    unobserve() {}
+  }
+
+  Object.defineProperty(dom.window.HTMLElement.prototype, 'clientWidth', {
+    configurable: true,
+    get: function (this: Element) {
+      return this.classList.contains('section-main-banner__profile-marquee') ? 320 : 0
+    },
+  })
+  Object.defineProperty(dom.window.HTMLElement.prototype, 'scrollWidth', {
+    configurable: true,
+    get: function (this: Element) {
+      return this.classList.contains('section-main-banner__profile-set') ? 760 : 0
+    },
+  })
+
+  mutableGlobal.window = dom.window
+  mutableGlobal.self = dom.window
+  mutableGlobal.document = dom.window.document
+  mutableGlobal.HTMLElement = dom.window.HTMLElement
+  mutableGlobal.ResizeObserver = TestResizeObserver
+  mutableGlobal.IS_REACT_ACT_ENVIRONMENT = true
+
+  const rootElement = dom.window.document.getElementById('root')
+  assert.ok(rootElement)
+
+  const root = createRoot(rootElement)
+
+  try {
+    await act(async () => {
+      root.render(
+        <MainBannerSlider
+          autoplayEnabled={false}
+          banners={[
+            {
+              desktopImage: image,
+              marqueeItems: [
+                {
+                  type: 'card',
+                  buttonLabel: '프로필 보기',
+                  href: '/art/profiles/kim-actor',
+                  image,
+                  imageAlt: '김배우',
+                  label: '김배우',
+                  name: '김배우',
+                  roleLabel: '배우',
+                },
+                {
+                  type: 'card',
+                  buttonLabel: '프로필 보기',
+                  href: '/art/profiles/lee-actor',
+                  image,
+                  imageAlt: '이배우',
+                  label: '이배우',
+                  name: '이배우',
+                  roleLabel: '배우',
+                },
+              ],
+              title: '메인 배너',
+            },
+          ]}
+        />,
+      )
+    })
+
+    const track = dom.window.document.querySelector('.section-main-banner__profile-track')
+    const sets = dom.window.document.querySelectorAll('.section-main-banner__profile-set')
+
+    assert.ok(track)
+    assert.equal(sets.length, 2)
+    assert.match(
+      String((track as HTMLElement).className),
+      /animate-\[section-main-banner-marquee_34s_linear_infinite\]/,
+    )
+    sets.forEach((set) => {
+      assert.doesNotMatch(
+        String((set as HTMLElement).className),
+        /animate-\[section-main-banner-marquee_/,
+      )
+    })
+  } finally {
+    await act(async () => {
+      root.unmount()
+    })
+
+    mutableGlobal.window = previousGlobals.window
+    mutableGlobal.self = previousGlobals.self
+    mutableGlobal.document = previousGlobals.document
+    mutableGlobal.HTMLElement = previousGlobals.HTMLElement
+    mutableGlobal.ResizeObserver = previousGlobals.ResizeObserver
+    mutableGlobal.IS_REACT_ACT_ENVIRONMENT = previousGlobals.IS_REACT_ACT_ENVIRONMENT
+    dom.window.close()
+  }
 })
 
 test('main banner renders exam review cards with review buttons', () => {

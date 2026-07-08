@@ -162,6 +162,26 @@ function isCardItem(item: MainBannerMarqueeItem): item is MainBannerCardItem {
   return item.type === 'card'
 }
 
+function mainBannerMarqueeKey(items: MainBannerMarqueeItem[]) {
+  return items
+    .map((item, index) => {
+      if (isCardItem(item)) {
+        return [
+          'card',
+          index,
+          item.href,
+          item.label,
+          item.name,
+          item.roleLabel ?? '',
+          item.buttonLabel ?? '',
+        ].join(':')
+      }
+
+      return ['link', index, item.href, item.label].join(':')
+    })
+    .join('|')
+}
+
 function statisticGroupHref(title: string, center?: CenterSlug) {
   const category = statisticGroupLinks[title.replace(/[·\s]/g, '')]
 
@@ -499,6 +519,7 @@ function MainBannerFrame({
   frameRef,
   isVisible,
   marqueeItems,
+  marqueeKey,
   statistics,
 }: {
   center?: CenterSlug
@@ -506,10 +527,12 @@ function MainBannerFrame({
   frameRef: RefObject<HTMLDivElement | null>
   isVisible: boolean
   marqueeItems?: MainBannerMarqueeItem[]
+  marqueeKey?: string
   statistics?: MainBannerStatistics | null
 }) {
   const currentMarqueeItems = marqueeItems ?? []
   const hasMarqueeItems = currentMarqueeItems.length > 0
+  const currentMarqueeKey = marqueeKey ?? mainBannerMarqueeKey(currentMarqueeItems)
 
   return (
     <div
@@ -526,7 +549,13 @@ function MainBannerFrame({
     >
       <div className="section-main-banner__hero-stack relative min-h-svh overflow-hidden">
         <div className="section-main-banner__kv-layer relative z-1">{children}</div>
-        {hasMarqueeItems && <BannerMarquee isActive={isVisible} items={currentMarqueeItems} />}
+        {hasMarqueeItems && (
+          <BannerMarquee
+            isActive={isVisible}
+            items={currentMarqueeItems}
+            marqueeKey={currentMarqueeKey}
+          />
+        )}
         {statistics && <BannerStatisticsLayer center={center} statistics={statistics} />}
       </div>
       {statistics && <BannerMobileStatisticsPanel center={center} statistics={statistics} />}
@@ -721,11 +750,26 @@ function BannerSlide({
   )
 }
 
-function BannerMarquee({ isActive, items }: { isActive: boolean; items: MainBannerMarqueeItem[] }) {
+function BannerMarquee({
+  isActive,
+  items,
+  marqueeKey,
+}: {
+  isActive: boolean
+  items: MainBannerMarqueeItem[]
+  marqueeKey: string
+}) {
   const cardItems = items.filter(isCardItem)
 
   if (cardItems.length > 0) {
-    return <BannerContentCards isActive={isActive} items={cardItems} />
+    return (
+      <BannerContentCards
+        isActive={isActive}
+        items={cardItems}
+        itemsKey={marqueeKey}
+        key={marqueeKey}
+      />
+    )
   }
 
   return (
@@ -753,7 +797,15 @@ function BannerMarquee({ isActive, items }: { isActive: boolean; items: MainBann
   )
 }
 
-function BannerContentCards({ isActive, items }: { isActive: boolean; items: MainBannerCardItem[] }) {
+function BannerContentCards({
+  isActive,
+  items,
+  itemsKey,
+}: {
+  isActive: boolean
+  items: MainBannerCardItem[]
+  itemsKey: string
+}) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const setRef = useRef<HTMLDivElement | null>(null)
   const [shouldMarquee, setShouldMarquee] = useState(false)
@@ -789,17 +841,16 @@ function BannerContentCards({ isActive, items }: { isActive: boolean; items: Mai
     return () => {
       observer.disconnect()
     }
-  }, [items.length])
+  }, [itemsKey])
 
   return (
     <div
       className={cn(
-        'section-main-banner__profile-marquee absolute inset-x-0 bottom-0 z-3',
+        'section-main-banner__profile-marquee absolute inset-x-0 bottom-0 z-3 w-full',
         'min-h-(--section-main-banner-marquee-height) overflow-hidden',
         'border-t border-b border-white/10 bg-black/35 text-white backdrop-blur-md',
         'data-[marquee=false]:overflow-x-auto data-[marquee=false]:[scrollbar-width:none]',
         'data-[marquee=false]:[&::-webkit-scrollbar]:hidden',
-        'hover:[&_.section-main-banner__profile-set]:paused',
       )}
       data-active={isActive ? 'true' : 'false'}
       data-marquee={shouldMarquee ? 'true' : 'false'}
@@ -808,19 +859,24 @@ function BannerContentCards({ isActive, items }: { isActive: boolean; items: Mai
       <div
         className={cn(
           'section-main-banner__profile-track flex py-5',
-          shouldMarquee ? 'w-max' : 'min-w-full w-full justify-center',
+          shouldMarquee
+            ? cn(
+                'w-max shrink-0 will-change-transform',
+                shouldAnimate
+                  ? 'animate-[section-main-banner-marquee_34s_linear_infinite]'
+                  : 'animate-none',
+                'motion-reduce:animate-none',
+              )
+            : 'min-w-full w-full justify-center',
         )}
       >
         {cardSets.map((set, setIndex) => (
           <div
             aria-hidden={setIndex === 1 ? 'true' : undefined}
             className={cn(
-              'section-main-banner__profile-set flex min-w-max gap-6',
+              'section-main-banner__profile-set flex min-w-max shrink-0 gap-6',
               shouldMarquee ? 'pl-5' : 'px-5',
-              shouldAnimate
-                ? 'animate-[section-main-banner-marquee_34s_linear_infinite]'
-                : 'animate-none',
-              'motion-reduce:animate-none max-[640px]:gap-4',
+              'max-[640px]:gap-4',
             )}
             key={setIndex}
             ref={setIndex === 0 ? setRef : undefined}
@@ -915,6 +971,7 @@ export function MainBannerSlider({
   const swiperRef = useRef<SwiperInstance | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const activeBanner = banners[activeIndex] ?? banners[0]
+  const activeMarqueeItems = activeBanner?.marqueeItems ?? []
   const isFrameVisible = useElementVisibility(frameRef)
 
   useEffect(() => {
@@ -943,6 +1000,7 @@ export function MainBannerSlider({
         frameRef={frameRef}
         isVisible={isFrameVisible}
         marqueeItems={banners[0].marqueeItems ?? []}
+        marqueeKey={mainBannerMarqueeKey(banners[0].marqueeItems ?? [])}
         statistics={statistics}
       >
         <BannerSlide banner={banners[0]} center={center} isSingle />
@@ -955,7 +1013,8 @@ export function MainBannerSlider({
       center={center}
       frameRef={frameRef}
       isVisible={isFrameVisible}
-      marqueeItems={activeBanner?.marqueeItems ?? []}
+      marqueeItems={activeMarqueeItems}
+      marqueeKey={`${activeIndex}:${mainBannerMarqueeKey(activeMarqueeItems)}`}
       statistics={statistics}
     >
       <Swiper
