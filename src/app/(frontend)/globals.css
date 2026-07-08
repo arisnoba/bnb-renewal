@@ -176,6 +176,11 @@
   padding-top: var(--page-top-offset-padding);
 }
 
+body:has(.page-not-found[data-not-found-scope='gate']) .site-header,
+body:has(.page-not-found[data-not-found-scope='gate']) footer {
+  display: none;
+}
+
 [data-center='art'] {
   --brand: var(--color-brand-art);
   --color-brand: var(--color-brand-art);
