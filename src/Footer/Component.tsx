@@ -1,6 +1,7 @@
 import type { Footer as FooterData } from '@/payload-types'
 
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import React from 'react'
 
 import { getCachedGlobal } from '@/utilities/getGlobals'
@@ -8,6 +9,7 @@ import { FooterAddress } from './Address.client'
 import { FooterCenterLinks } from './CenterLinks.client'
 import { FooterLogo } from './FooterLogo.client'
 import { FooterSocialLinks } from './SocialLinks.client'
+import { centerSlugFromPathname } from './centerInfo'
 
 const fallbackFamilySites = [
   { href: '/art', label: 'ART CENTER', name: '아트센터' },
@@ -39,6 +41,9 @@ function familySitesFromFooter(footer: FooterData | null) {
 }
 
 export async function Footer() {
+  const requestHeaders = await headers()
+  const pathname = requestHeaders.get('x-pathname')
+  const center = centerSlugFromPathname(pathname) ?? 'art'
   const footer = await getFooterData()
   const familySites = familySitesFromFooter(footer)
   const centerInfos = footer?.centerInfos ?? []
@@ -54,7 +59,7 @@ export async function Footer() {
             시작되는 곳
           </p>
           <div className="grid gap-8 sm:grid-cols-2 lg:gap-5">
-            <FooterCenterLinks />
+            <FooterCenterLinks initialCenter={center} />
           </div>
         </div>
 
@@ -62,7 +67,7 @@ export async function Footer() {
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-6">
           <div className="order-2 flex flex-col items-start gap-6 lg:order-1 lg:min-h-[234px] lg:justify-between">
-            <FooterLogo initialCenter="art" />
+            <FooterLogo initialCenter={center} />
 
             <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
               <Link className="text-[#666] transition-colors hover:text-white" href="/terms" prefetch={false}>
@@ -73,7 +78,7 @@ export async function Footer() {
               </Link>
             </nav>
 
-            <FooterAddress centerInfos={centerInfos} initialPathname={null} />
+            <FooterAddress centerInfos={centerInfos} initialPathname={pathname} />
 
             <p className="text-sm leading-[1.2] tracking-normal text-white/40">
               ©{copyrightYear} BNB INDUSTRY. All rights reserved.
@@ -85,7 +90,7 @@ export async function Footer() {
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
             <FooterLinkGroup title="SOCIAL">
-              <FooterSocialLinks centerInfos={centerInfos} initialPathname={null} />
+              <FooterSocialLinks centerInfos={centerInfos} initialPathname={pathname} />
             </FooterLinkGroup>
           </div>
         </div>
