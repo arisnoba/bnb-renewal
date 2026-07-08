@@ -7,6 +7,7 @@ import type { ExamResult } from '@/payload-types'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getPayload, type Payload, type Where } from 'payload'
 import { cache } from 'react'
@@ -64,6 +65,7 @@ export async function ExamResultDetailPage({ resultType, slug }: ExamResultDetai
   }
 
   const body = hasLexicalContent(examResult.body) ? examResult.body : null
+  const thumbnailUrl = normalizeExamResultImageUrl(examResult.thumbnailPath)
   const backHref = getExamResultPathname(resultType)
   const backLabel = getExamResultPageTitle(resultType)
   const adjacent = await queryAdjacentExamResults({
@@ -82,6 +84,20 @@ export async function ExamResultDetailPage({ resultType, slug }: ExamResultDetai
           eyebrow={backLabel}
           title={examResult.title}
         />
+
+        {thumbnailUrl ? (
+          <div className="section-exam-result-detail__thumbnail relative mb-10 aspect-270/268 w-full overflow-hidden rounded-xl bg-neutral-100 md:mb-14">
+            <Image
+              alt={examResult.title}
+              className="size-full object-contain"
+              fill
+              priority
+              sizes="(max-width: 839px) calc(100vw - 40px), 840px"
+              src={thumbnailUrl}
+              unoptimized
+            />
+          </div>
+        ) : null}
 
         {body ? (
           <RichText

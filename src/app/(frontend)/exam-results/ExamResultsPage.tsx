@@ -281,7 +281,7 @@ function ExamResultCard({
       className="group block rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
       href={href}
     >
-      <article className="section-exam-result-card overflow-hidden rounded-xl border border-neutral-300 bg-white transition-colors group-hover:border-brand">
+      <article className="section-exam-result-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
         <div className="section-exam-result-card__media relative aspect-270/268 overflow-hidden bg-neutral-100">
           {imageUrl ? (
             <Image
@@ -300,8 +300,8 @@ function ExamResultCard({
             </div>
           )}
         </div>
-        <div className="section-exam-result-card__body flex items-center p-5">
-          <p className="section-exam-result-card__title line-clamp-2 type-body-m font-medium leading-normal text-neutral-900 transition-colors group-hover:text-brand">
+        <div className="section-exam-result-card__body flex min-w-0 items-center p-5">
+          <p className="section-exam-result-card__title truncate type-body-m font-medium leading-normal text-neutral-900 transition-colors group-hover:text-brand">
             {displayTitle}
           </p>
         </div>
