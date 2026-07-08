@@ -33,10 +33,10 @@ const routeCenters: Partial<Record<string, readonly CenterSlug[]>> = {
   casting: ['art', 'avenue', 'highteen', 'kids'],
   'casting-status': ['art', 'avenue', 'highteen', 'kids'],
   'casting-system': ['art', 'avenue', 'highteen', 'kids'],
-  curriculum: ['art', 'highteen', 'kids'],
+  curriculum: ['art', 'avenue', 'exam', 'highteen', 'kids'],
   'direct-castings': ['art', 'avenue', 'highteen', 'kids'],
   entertainment: ['art', 'avenue', 'highteen', 'kids'],
-  'grade-system': ['art', 'highteen', 'kids'],
+  'grade-system': ['art', 'avenue', 'highteen', 'kids'],
   management: ['exam'],
   'passed-reviews': ['exam'],
   'passed-videos': ['exam'],
@@ -45,7 +45,7 @@ const routeCenters: Partial<Record<string, readonly CenterSlug[]>> = {
 }
 
 const detailRouteCenters: Partial<Record<string, readonly CenterSlug[]>> = {
-  curriculum: ['art', 'highteen'],
+  curriculum: ['art', 'avenue', 'highteen'],
 }
 
 export function adminBarCenterHref(pathname: string | null, targetCenter: CenterSlug) {

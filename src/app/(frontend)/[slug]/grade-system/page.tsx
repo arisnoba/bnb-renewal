@@ -14,11 +14,16 @@ type Args = {
   }>
 }
 
-type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'avenue' | 'highteen' | 'kids'>
+type GradeSystemContentCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
 
 const gradeSystemMetadata = {
   art: {
     description: '배우앤배움 아트센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
+    title: '등급제 교육관리시스템',
+  },
+  avenue: {
+    description: '배우앤배움 애비뉴센터 등급제 교육관리시스템 안내',
     title: '등급제 교육관리시스템',
   },
   highteen: {
@@ -32,11 +37,15 @@ const gradeSystemMetadata = {
 } satisfies Record<GradeSystemCenter, Metadata>
 
 function isGradeSystemCenter(center: CenterSlug): center is GradeSystemCenter {
-  return center === 'art' || center === 'highteen' || center === 'kids'
+  return center === 'art' || center === 'avenue' || center === 'highteen' || center === 'kids'
+}
+
+function gradeSystemContentCenter(center: GradeSystemCenter): GradeSystemContentCenter {
+  return center === 'avenue' ? 'art' : center
 }
 
 export function generateStaticParams() {
-  return [{ slug: 'art' }, { slug: 'highteen' }, { slug: 'kids' }]
+  return [{ slug: 'art' }, { slug: 'avenue' }, { slug: 'highteen' }, { slug: 'kids' }]
 }
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
@@ -60,6 +69,8 @@ export default async function ArtGradeSystemPage({ params }: Args) {
   if (!isGradeSystemCenter(center)) {
     notFound()
   }
+
+  const contentCenter = gradeSystemContentCenter(center)
 
   return (
     <main className="page page-dark page-grade-system" data-center={center}>
@@ -90,7 +101,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
           </h1>
         </div>
       </section>
-      <GradeSystemTabs center={center} />
+      <GradeSystemTabs center={contentCenter} />
     </main>
   )
 }

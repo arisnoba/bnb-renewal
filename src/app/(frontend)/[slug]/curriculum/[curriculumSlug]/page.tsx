@@ -8,7 +8,10 @@ import {
   queryCurriculumBySlug,
   queryCurriculumStaticParams,
 } from '../../../curriculum/CurriculumDetailPage'
-import { isCurriculumCenter } from '../../../curriculum/CurriculumArchive'
+import {
+  curriculumContentCenter,
+  isCurriculumCenter,
+} from '../../../curriculum/CurriculumArchive'
 
 type Args = {
   params: Promise<{
@@ -24,11 +27,28 @@ export async function generateStaticParams() {
   const docs = await queryCurriculumStaticParams().catch(() => [])
 
   return docs
-    .filter((doc) => doc.centers && isCurriculumCenter(doc.centers as CenterSlug))
-    .map((doc) => ({
-      curriculumSlug: String(doc.id),
-      slug: doc.centers,
-    }))
+    .flatMap((doc) => {
+      if (!doc.centers || !isCurriculumCenter(doc.centers as CenterSlug)) {
+        return []
+      }
+
+      const slug = doc.centers as CenterSlug
+      const params = [
+        {
+          curriculumSlug: String(doc.id),
+          slug,
+        },
+      ]
+
+      if (slug === 'art') {
+        params.push({
+          curriculumSlug: String(doc.id),
+          slug: 'avenue',
+        })
+      }
+
+      return params
+    })
 }
 
 export default async function CenterCurriculumDetailPage({ params }: Args) {
@@ -42,6 +62,7 @@ export default async function CenterCurriculumDetailPage({ params }: Args) {
   return (
     <CurriculumDetailPage
       center={center}
+      contentCenter={curriculumContentCenter(center)}
       curriculumSlug={decodeURIComponent(curriculumSlug)}
     />
   )
@@ -58,7 +79,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   }
 
   const curriculum = await queryCurriculumBySlug({
-    center,
+    center: curriculumContentCenter(center),
     slug: decodeURIComponent(curriculumSlug),
   }).catch(() => null)
   const title = curriculum?.className ?? curriculum?.title

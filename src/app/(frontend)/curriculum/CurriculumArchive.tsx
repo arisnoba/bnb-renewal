@@ -21,7 +21,7 @@ import {
 import type { Curriculum, Teacher } from '@/payload-types'
 
 type CurriculumArchiveProps = {
-  center: SearchableCurriculumCenter
+  center: CurriculumPageCenter
   filters: CurriculumFilters
 }
 
@@ -41,17 +41,23 @@ type CurriculumCardItem = {
   topic: string
 }
 
-type SearchableCurriculumCenter = Extract<CurriculumCenter, 'art' | 'highteen'>
+export type CurriculumPageCenter = Extract<CurriculumCenter, 'art' | 'avenue' | 'highteen'>
+export type CurriculumContentCenter = Extract<CurriculumCenter, 'art' | 'highteen'>
 
-const curriculumCenters = new Set<SearchableCurriculumCenter>(['art', 'highteen'])
+const curriculumCenters = new Set<CurriculumPageCenter>(['art', 'avenue', 'highteen'])
 
-export function isCurriculumCenter(center: CenterSlug): center is SearchableCurriculumCenter {
-  return curriculumCenters.has(center as SearchableCurriculumCenter)
+export function isCurriculumCenter(center: CenterSlug): center is CurriculumPageCenter {
+  return curriculumCenters.has(center as CurriculumPageCenter)
+}
+
+export function curriculumContentCenter(center: CurriculumPageCenter): CurriculumContentCenter {
+  return center === 'avenue' ? 'art' : center
 }
 
 export async function CurriculumArchive({ center, filters }: CurriculumArchiveProps) {
-  const [curriculums, queryFailed] = await queryCurriculums(center)
-  const classOptions = curriculumClassOptionsByCenter[center]
+  const contentCenter = curriculumContentCenter(center)
+  const [curriculums, queryFailed] = await queryCurriculums(contentCenter)
+  const classOptions = curriculumClassOptionsByCenter[contentCenter]
   const searchFields = buildCurriculumSearchFields({
     classOptions,
     curriculums,
@@ -59,10 +65,10 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
   })
   const visibleItems = curriculums
     .filter((curriculum) => matchesFilters(curriculum, filters))
-    .sort((left, right) => curriculumSort(left, right, center))
+    .sort((left, right) => curriculumSort(left, right, contentCenter))
     .map(toCurriculumCardItem)
-  const period = resolveCurrentCurriculumPeriod(center)
-  const periodMonths = getCurriculumPeriodMonths(center)
+  const period = resolveCurrentCurriculumPeriod(contentCenter)
+  const periodMonths = getCurriculumPeriodMonths(contentCenter)
   const decoIcons = getPageDecoIcons(4, `curriculum-${center}`)
   const hasActiveFilters = Boolean(filters.className || filters.lessonCount || filters.time)
 
@@ -151,7 +157,7 @@ function CurriculumCard({
   center,
   item,
 }: {
-  center: SearchableCurriculumCenter
+  center: CurriculumPageCenter
   item: CurriculumCardItem
 }) {
   const detailHref = `/${center}/curriculum/${encodeURIComponent(String(item.id))}`
@@ -233,7 +239,7 @@ function CurriculumNotice({
 }
 
 async function queryCurriculums(
-  center: SearchableCurriculumCenter,
+  center: CurriculumContentCenter,
 ): Promise<[Curriculum[], boolean]> {
   const payload = await getPayload({ config: configPromise })
   const where: Where = {
@@ -313,7 +319,7 @@ function toCurriculumCardItem(curriculum: Curriculum): CurriculumCardItem {
   }
 }
 
-function curriculumSort(left: Curriculum, right: Curriculum, center: SearchableCurriculumCenter) {
+function curriculumSort(left: Curriculum, right: Curriculum, center: CurriculumContentCenter) {
   const classOrder = curriculumClassOptionsByCenter[center].map((option) => option.value)
   const classDiff =
     classOrder.indexOf(left.className ?? '') - classOrder.indexOf(right.className ?? '')
@@ -390,7 +396,7 @@ function CurriculumPeriodTooltip({
   period,
   periodMonths,
 }: {
-  center: SearchableCurriculumCenter
+  center: CurriculumPageCenter
   period: CurriculumPeriod
   periodMonths: number
 }) {

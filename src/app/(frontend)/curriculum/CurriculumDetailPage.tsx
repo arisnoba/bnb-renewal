@@ -16,16 +16,17 @@ import type { ReactNode } from 'react'
 import { getPayload } from 'payload'
 
 import { Media } from '@/components/Media/Renderer'
-import type { CenterSlug } from '@/lib/centers'
 import type { Classroom, Curriculum, Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { cn } from '@/utilities/ui'
 
 import { CurriculumStickyCta } from './CurriculumBottomSheet.client'
 import { CurriculumClassroomGallery } from './CurriculumClassroomGallery.client'
+import type { CurriculumContentCenter, CurriculumPageCenter } from './CurriculumArchive'
 
 type CurriculumDetailPageProps = {
-  center: Extract<CenterSlug, 'art' | 'highteen'>
+  center: CurriculumPageCenter
+  contentCenter?: CurriculumContentCenter
   curriculumSlug: string
 }
 
@@ -73,9 +74,14 @@ const educationDayFields = [
 
 export async function CurriculumDetailPage({
   center,
+  contentCenter,
   curriculumSlug,
 }: CurriculumDetailPageProps) {
-  const curriculum = await queryCurriculumBySlug({ center, slug: curriculumSlug }).catch(() => null)
+  const dataCenter: CurriculumContentCenter = contentCenter ?? (center === 'avenue' ? 'art' : center)
+  const curriculum = await queryCurriculumBySlug({
+    center: dataCenter,
+    slug: curriculumSlug,
+  }).catch(() => null)
 
   if (!curriculum) {
     notFound()

@@ -618,12 +618,7 @@ const centerPhoneExtension = {
 
 function procedureFor(center: CenterSlug): ProcedureStep[] {
   const centerName = centerNameFor(center)
-  const courseHref =
-    center === 'exam'
-      ? '/exam#curriculum'
-      : center === 'avenue'
-        ? '/avenue#portfolio'
-        : `/${center}/curriculum`
+  const courseHref = `/${center}/curriculum`
   const teacherHref =
     center === 'exam'
       ? '/exam/teachers'
