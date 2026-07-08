@@ -109,7 +109,7 @@ export function FaqArchiveClient({
         >
           <input
             aria-label="FAQ 검색어"
-            className="section-faq-list__search-input type-title-m font-bold leading-[1.4]"
+            className="section-faq-list__search-input type-title-m font-medium leading-[1.4]"
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="궁금한 내용을 검색해보세요."
             ref={inputRef}

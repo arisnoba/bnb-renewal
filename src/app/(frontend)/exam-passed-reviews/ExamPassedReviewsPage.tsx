@@ -104,7 +104,7 @@ export async function ExamPassedReviewsPage({ page = 1 }: ExamPassedReviewsPageP
 
           {reviewsPage.docs.length > 0 ? (
             <>
-              <div className="section-exam-passed-reviews-list__grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="section-exam-passed-reviews-list__grid grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {reviewsPage.docs.map((item) => (
                   <ExamPassedReviewCard item={item} key={item.id} />
                 ))}

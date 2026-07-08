@@ -134,7 +134,7 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
 
           {resultsPage.docs.length > 0 ? (
             <>
-              <div className="section-exam-results-list__grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="section-exam-results-list__grid grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {resultsPage.docs.map((item) => (
                   <ExamResultCard
                     config={config}

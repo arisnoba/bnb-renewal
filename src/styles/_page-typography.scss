@@ -19,7 +19,7 @@
   --page-desc-color: var(--muted-foreground);
   --page-desc-font-size: 16px;
   --page-desc-font-weight: 500;
-  --page-desc-line-height: 1.8;
+  --page-desc-line-height: 1.65;
   --page-desc-margin-top: 40px;
   --page-desc-max-width: 620px;
 }
@@ -55,7 +55,7 @@
   color: var(--page-title-color);
   font-size: var(--page-title-font-size);
   font-weight: var(--page-title-font-weight);
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
   line-height: var(--page-title-line-height);
   margin: var(--page-title-margin-top) 0 var(--page-title-margin-bottom);
   text-wrap: balance;
