@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { centers, type CenterSlug } from '@/lib/centers'
+import type { CenterSlug } from '@/lib/centers'
 import type {
   Media as PayloadMedia,
   Profile,
@@ -23,7 +23,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import { ScreenAppearanceProfileAvatar } from './ScreenAppearanceProfileAvatar.client'
 import { screenAppearanceProfileImageUrl } from './screenAppearanceProfileImage'
 
@@ -41,55 +40,10 @@ type CareerGroup = {
   name?: string
 }
 
-export async function generateScreenAppearanceStaticParams() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const params: Array<{ screenAppearanceSlug: string; slug: CenterSlug }> = []
-
-    for (const center of Object.keys(centers) as CenterSlug[]) {
-      const result = await payload.find({
-        collection: 'screen-appearances',
-        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          centers: true,
-          slug: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            {
-              centers: {
-                equals: center,
-              },
-            },
-          ],
-        },
-      })
-
-      params.push(
-        ...result.docs.flatMap((appearance) => {
-          const id = appearance.id
-
-          if (!id) {
-            return []
-          }
-
-          return [{ screenAppearanceSlug: String(id), slug: center }]
-        }),
-      )
-    }
-
-    return params
-  } catch {
-    return []
-  }
+export async function generateScreenAppearanceStaticParams(): Promise<
+  Array<{ screenAppearanceSlug: string; slug: CenterSlug }>
+> {
+  return []
 }
 
 export async function ScreenAppearanceDetailPage({

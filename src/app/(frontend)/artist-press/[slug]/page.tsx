@@ -21,7 +21,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../../staticGeneration'
 
 export const revalidate = 600
 export const dynamicParams = true
@@ -32,22 +31,11 @@ type Args = {
   }>
 }
 
-export async function generateArtistPressStaticParams(center?: CenterSlug) {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'artist-press',
-      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-      overrideAccess: false,
-      pagination: false,
-      sort: '-publishedAt',
-      where: publishedArtistPressWhere(center),
-    })
-
-    return result.docs.map(({ id }) => ({ slug: String(id) }))
-  } catch {
-    return []
-  }
+export async function generateArtistPressStaticParams(
+  center?: CenterSlug,
+): Promise<Array<{ slug: string }>> {
+  void center
+  return []
 }
 
 export async function generateStaticParams() {

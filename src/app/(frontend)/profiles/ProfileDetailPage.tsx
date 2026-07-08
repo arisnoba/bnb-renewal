@@ -16,7 +16,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import { ProfileDetailGallery, type ProfileImageItem } from './ProfileDetailGallery.client'
 
 export type ProfileDetailParams = {
@@ -24,64 +23,11 @@ export type ProfileDetailParams = {
   slug?: string
 }
 
-export async function generateProfileStaticParams(center?: CenterSlug) {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'profiles',
-      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        centers: true,
-        slug: true,
-      },
-      sort: '-publishedAt',
-      where: {
-        and: [
-          {
-            displayStatus: {
-              equals: 'published',
-            },
-          },
-          ...(center
-            ? [
-                {
-                  or: [
-                    {
-                      centers: {
-                        contains: center,
-                      },
-                    },
-                    {
-                      centers: {
-                        contains: 'all',
-                      },
-                    },
-                  ],
-                },
-              ]
-            : []),
-        ],
-      },
-    })
-
-    return result.docs.flatMap((profile) => {
-      const slug = profile.slug
-
-      if (!slug) {
-        return []
-      }
-
-      if (center) {
-        return [{ center, slug }]
-      }
-
-      return profileCenterSlugs(profile as Profile).map((center) => ({ center, slug }))
-    })
-  } catch {
-    return []
-  }
+export async function generateProfileStaticParams(
+  _center?: CenterSlug,
+): Promise<Array<{ center: CenterSlug; slug: string }>> {
+  void _center
+  return []
 }
 
 export async function ProfileDetailPage({

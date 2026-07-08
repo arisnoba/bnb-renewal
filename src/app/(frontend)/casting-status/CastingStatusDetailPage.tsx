@@ -17,68 +17,11 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
-import { castingStatusCenters } from './CastingStatus.data'
 
-export async function generateCastingStatusStaticParams() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const params: Array<{ castingStatusSlug: string; slug: CenterSlug }> = []
-
-    for (const center of castingStatusCenters) {
-      const result = await payload.find({
-        collection: 'casting-appearances',
-        depth: 0,
-        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          centers: true,
-          slug: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            {
-              or: [
-                {
-                  centers: {
-                    contains: center,
-                  },
-                },
-                {
-                  centers: {
-                    contains: 'all',
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      })
-
-      params.push(
-        ...result.docs.flatMap((appearance) => {
-          const id = appearance.id
-
-          if (!id) {
-            return []
-          }
-
-          return [{ castingStatusSlug: String(id), slug: center }]
-        }),
-      )
-    }
-
-    return params
-  } catch {
-    return []
-  }
+export async function generateCastingStatusStaticParams(): Promise<
+  Array<{ castingStatusSlug: string; slug: CenterSlug }>
+> {
+  return []
 }
 
 export async function CastingStatusDetailPage({

@@ -16,61 +16,15 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import {
   directCastingCompanyValues,
   getDirectCastingCompanyLabels,
 } from './DirectCastingsArchive'
 
-const directCastingStaticParamCenters: readonly CenterSlug[] = ['art', 'avenue', 'highteen', 'kids']
-
-export async function generateDirectCastingStaticParams() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const params: Array<{ directCastingSlug: string; slug: CenterSlug }> = []
-
-    for (const center of directCastingStaticParamCenters) {
-      const result = await payload.find({
-        collection: 'direct-castings',
-        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-        overrideAccess: true,
-        pagination: false,
-        select: {
-          centers: true,
-          slug: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            {
-              centers: {
-                contains: center,
-              },
-            },
-          ],
-        },
-      })
-
-      params.push(
-        ...result.docs.flatMap((casting) => {
-          if (!casting.id) {
-            return []
-          }
-
-          return [{ directCastingSlug: String(casting.id), slug: center }]
-        }),
-      )
-    }
-
-    return params
-  } catch {
-    return []
-  }
+export async function generateDirectCastingStaticParams(): Promise<
+  Array<{ directCastingSlug: string; slug: CenterSlug }>
+> {
+  return []
 }
 
 export async function DirectCastingDetailPage({

@@ -23,7 +23,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../../../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../../../staticGeneration'
+import { NEWS_DETAIL_STATIC_PARAMS_LIMIT } from '../../../staticGeneration'
 
 export const revalidate = 600
 export const dynamicParams = true
@@ -44,7 +44,7 @@ export async function generateStaticParams() {
       const result = await payload.find({
         collection: 'news',
         depth: 0,
-        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
+        limit: NEWS_DETAIL_STATIC_PARAMS_LIMIT,
         overrideAccess: false,
         pagination: false,
         select: {

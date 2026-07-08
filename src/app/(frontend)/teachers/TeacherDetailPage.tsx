@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
-import { centers, type CenterSlug } from '@/lib/centers'
+import type { CenterSlug } from '@/lib/centers'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -19,7 +19,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import { TeacherDetailGallery, type TeacherImageItem } from './TeacherDetailGallery.client'
 import { TeacherDetailScrollReset } from './TeacherDetailScrollReset.client'
 
@@ -27,64 +26,11 @@ type TeacherRepresentativeWork = NonNullable<Teacher['representativeWorks']>[num
   posterMedia?: number | PayloadMedia | null
 }
 
-export async function generateTeacherStaticParams(center?: CenterSlug) {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'teachers',
-      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        centers: true,
-        slug: true,
-      },
-      sort: ['displayOrder', '-updatedAt'],
-      where: {
-        and: [
-          {
-            status: {
-              equals: 'published',
-            },
-          },
-          ...(center
-            ? [
-                {
-                  or: [
-                    {
-                      centers: {
-                        contains: center,
-                      },
-                    },
-                    {
-                      centers: {
-                        contains: 'all',
-                      },
-                    },
-                  ],
-                },
-              ]
-            : []),
-        ],
-      },
-    })
-
-    return result.docs.flatMap((teacher) => {
-      const slug = teacher.slug
-
-      if (!slug) {
-        return []
-      }
-
-      if (center) {
-        return [{ center, slug }]
-      }
-
-      return teacherCenterSlugs(teacher as Teacher).map((center) => ({ center, slug }))
-    })
-  } catch {
-    return []
-  }
+export async function generateTeacherStaticParams(
+  _center?: CenterSlug,
+): Promise<Array<{ center: CenterSlug; slug: string }>> {
+  void _center
+  return []
 }
 
 export async function TeacherDetailPage({
@@ -325,14 +271,6 @@ const queryAdjacentTeachers = cache(async ({ center, slug }: { center: CenterSlu
 
 function teacherBelongsToCenter(teacher: Teacher, center: CenterSlug) {
   return teacher.centers.includes('all') || teacher.centers.includes(center)
-}
-
-function teacherCenterSlugs(teacher: Teacher) {
-  if (teacher.centers.includes('all')) {
-    return Object.keys(centers) as CenterSlug[]
-  }
-
-  return teacher.centers.filter((center): center is CenterSlug => center in centers)
 }
 
 function RepresentativeWorkCard({ work }: { work: TeacherRepresentativeWork }) {

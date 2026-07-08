@@ -20,7 +20,6 @@ import type { Classroom, Curriculum, Media as PayloadMedia, Teacher } from '@/pa
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { cn } from '@/utilities/ui'
 
-import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import { CurriculumStickyCta } from './CurriculumBottomSheet.client'
 import { CurriculumClassroomGallery } from './CurriculumClassroomGallery.client'
 import type { CurriculumContentCenter, CurriculumPageCenter } from './CurriculumArchive'
@@ -236,26 +235,8 @@ export const queryCurriculumBySlug = cache(
 )
 
 export const queryCurriculumStaticParams = cache(async (center: CurriculumContentCenter) => {
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-    collection: 'curriculums',
-    depth: 0,
-    limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      centers: true,
-      slug: true,
-    },
-    sort: '-updatedAt',
-    where: {
-      centers: {
-        equals: center,
-      },
-    },
-  })
-
-  return result.docs as Pick<Curriculum, 'centers' | 'id' | 'slug'>[]
+  void center
+  return [] as Pick<Curriculum, 'centers' | 'id' | 'slug'>[]
 })
 
 function CurriculumOverview({ model }: { model: DetailModel }) {
