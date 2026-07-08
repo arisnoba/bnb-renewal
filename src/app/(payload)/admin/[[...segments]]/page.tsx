@@ -10,9 +10,15 @@ export default function PayloadAdminPage({
   params?: Promise<{ segments?: string[] }>
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const normalizedParams = Promise.resolve(params).then((value) => ({
-    segments: value?.segments ?? [],
-  }))
+  const normalizedParams = Promise.resolve(params).then((value) => {
+    const segments = value?.segments?.filter(Boolean) ?? []
+
+    if (segments.length === 0) {
+      return {}
+    }
+
+    return { segments }
+  }) as Promise<{ segments: string[] }>
   const normalizedSearchParams = Promise.resolve(searchParams ?? {}).then((value) =>
     Object.fromEntries(
       Object.entries(value).filter(([, entryValue]) => entryValue !== undefined),
