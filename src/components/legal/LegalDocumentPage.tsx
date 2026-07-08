@@ -18,7 +18,7 @@ export function LegalDocumentPage({
 }) {
   return (
     <main
-      className="page page-dark page-legal page-top-offset min-h-screen bg-neutral-950 pb-24 text-white"
+      className="page page-dark page-legal page-top-offset min-h-screen bg-neutral-900 pb-24 text-white"
       data-center={center}
     >
       <section className="border-b border-white/10">
