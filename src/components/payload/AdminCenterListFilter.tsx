@@ -5,19 +5,34 @@ import type { BeforeListTableClientProps } from 'payload'
 import { Button, useAuth, useConfig, useListQuery } from '@payloadcms/ui'
 
 import {
+  buildExamResultTypeListWhere,
   buildCenterListWhere,
   centerListFilterConfig,
+  selectedExamResultTypeFromWhere,
   selectedCenterFromWhere,
   type CenterListFilterValue,
+  type ExamResultTypeListFilterValue,
 } from './AdminCenterListFilter.utils'
 
-const centerOptions: Array<{ label: string; value: CenterListFilterValue }> = [
-  { label: '전체', value: 'all' },
-  { label: '아트', value: 'art' },
-  { label: '입시', value: 'exam' },
-  { label: '키즈', value: 'kids' },
-  { label: '하이틴', value: 'highteen' },
-  { label: '애비뉴', value: 'avenue' },
+type QuickFilterOption<Value extends string> = {
+  ariaLabel: string
+  label: string
+  value: Value
+}
+
+const centerOptions: Array<QuickFilterOption<CenterListFilterValue>> = [
+  { ariaLabel: '전체 센터 필터', label: '전체', value: 'all' },
+  { ariaLabel: '아트 센터 필터', label: '아트', value: 'art' },
+  { ariaLabel: '입시 센터 필터', label: '입시', value: 'exam' },
+  { ariaLabel: '키즈 센터 필터', label: '키즈', value: 'kids' },
+  { ariaLabel: '하이틴 센터 필터', label: '하이틴', value: 'highteen' },
+  { ariaLabel: '애비뉴 센터 필터', label: '애비뉴', value: 'avenue' },
+]
+
+const examResultTypeOptions: Array<QuickFilterOption<ExamResultTypeListFilterValue>> = [
+  { ariaLabel: '전체 학교 필터', label: '전체', value: 'all' },
+  { ariaLabel: '대학교 학교 필터', label: '대학교', value: 'university' },
+  { ariaLabel: '예술고 학교 필터', label: '예술고', value: 'arts_high_school' },
 ]
 
 function isGlobalAdmin(user: unknown) {
@@ -35,27 +50,17 @@ function isGlobalAdmin(user: unknown) {
   )
 }
 
-export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientProps) => {
-  const { user } = useAuth()
-  const { getEntityConfig } = useConfig()
-  const { query, refineListData } = useListQuery()
-
-  if (!isGlobalAdmin(user)) {
-    return null
-  }
-
-  const collectionConfig = getEntityConfig({ collectionSlug })
-  const centerFilterConfig = centerListFilterConfig(collectionConfig.fields)
-
-  if (!centerFilterConfig) {
-    return null
-  }
-
-  const activeCenter =
-    selectedCenterFromWhere(query?.where, centerFilterConfig.fieldName) ??
-    selectedCenterFromWhere(query, centerFilterConfig.fieldName) ??
-    'all'
-
+function QuickFilterBar<Value extends string>({
+  activeValue,
+  label,
+  onSelect,
+  options,
+}: {
+  activeValue: Value
+  label: string
+  onSelect: (value: Value) => void
+  options: Array<QuickFilterOption<Value>>
+}) {
   return (
     <div
       style={{
@@ -76,25 +81,17 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
           marginRight: 4,
         }}
       >
-        센터 빠른 필터
+        {label}
       </span>
-      {centerOptions.map((option) => {
-        const isActive = activeCenter === option.value
+      {options.map((option) => {
+        const isActive = activeValue === option.value
 
         return (
           <Button
-            aria-label={`${option.label} 센터 필터`}
+            aria-label={option.ariaLabel}
             buttonStyle={isActive ? 'primary' : 'secondary'}
             key={option.value}
-            onClick={() => {
-              void refineListData({
-                where: buildCenterListWhere({
-                  center: option.value,
-                  existingWhere: query?.where,
-                  ...centerFilterConfig,
-                }),
-              })
-            }}
+            onClick={() => onSelect(option.value)}
             size="small"
             type="button"
           >
@@ -103,5 +100,67 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
         )
       })}
     </div>
+  )
+}
+
+export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientProps) => {
+  const { user } = useAuth()
+  const { getEntityConfig } = useConfig()
+  const { query, refineListData } = useListQuery()
+
+  if (collectionSlug === 'exam-results') {
+    const activeResultType =
+      selectedExamResultTypeFromWhere(query?.where) ??
+      selectedExamResultTypeFromWhere(query) ??
+      'all'
+
+    return (
+      <QuickFilterBar
+        activeValue={activeResultType}
+        label="학교 필터"
+        onSelect={(resultType) => {
+          void refineListData({
+            where: buildExamResultTypeListWhere({
+              existingWhere: query?.where,
+              resultType,
+            }),
+          })
+        }}
+        options={examResultTypeOptions}
+      />
+    )
+  }
+
+  if (!isGlobalAdmin(user)) {
+    return null
+  }
+
+  const collectionConfig = getEntityConfig({ collectionSlug })
+  const centerFilterConfig = centerListFilterConfig(collectionConfig.fields)
+
+  if (!centerFilterConfig) {
+    return null
+  }
+
+  const activeCenter =
+    selectedCenterFromWhere(query?.where, centerFilterConfig.fieldName) ??
+    selectedCenterFromWhere(query, centerFilterConfig.fieldName) ??
+    'all'
+
+  return (
+    <QuickFilterBar
+      activeValue={activeCenter}
+      label="센터 빠른 필터"
+      onSelect={(center) => {
+        void refineListData({
+          where: buildCenterListWhere({
+            center,
+            existingWhere: query?.where,
+            ...centerFilterConfig,
+          }),
+        })
+      }}
+      options={centerOptions}
+    />
   )
 }

@@ -11,6 +11,7 @@ export type CenterListFilterConfig = {
   fieldName: CenterListFilterField
   hasMany: boolean
 }
+export type ExamResultTypeListFilterValue = 'all' | 'university' | 'arts_high_school'
 
 const validCenterValues = new Set<CenterListFilterValue>([
   'all',
@@ -19,6 +20,11 @@ const validCenterValues = new Set<CenterListFilterValue>([
   'exam',
   'highteen',
   'kids',
+])
+const validExamResultTypeValues = new Set<ExamResultTypeListFilterValue>([
+  'all',
+  'university',
+  'arts_high_school',
 ])
 
 function objectValue(value: unknown): Record<string, unknown> | undefined {
@@ -95,7 +101,10 @@ export function centerListFilterFieldName(fields: unknown[]): CenterListFilterFi
   return centerListFilterConfig(fields)?.fieldName
 }
 
-function omitCenterListWhere(value: unknown): Record<string, unknown> | undefined {
+function omitListWhereFields(
+  value: unknown,
+  fieldNames: ReadonlySet<string>,
+): Record<string, unknown> | undefined {
   const record = objectValue(value)
 
   if (!record) {
@@ -105,7 +114,7 @@ function omitCenterListWhere(value: unknown): Record<string, unknown> | undefine
   const next: Record<string, unknown> = {}
 
   for (const [key, item] of Object.entries(record)) {
-    if (centerListFilterFields.includes(key as CenterListFilterField)) {
+    if (fieldNames.has(key)) {
       continue
     }
 
@@ -114,7 +123,7 @@ function omitCenterListWhere(value: unknown): Record<string, unknown> | undefine
         ? item
         : Object.values(objectValue(item) ?? {})
       const filtered = children
-        .map(omitCenterListWhere)
+        .map((child) => omitListWhereFields(child, fieldNames))
         .filter((entry): entry is Record<string, unknown> => Boolean(entry && Object.keys(entry).length))
 
       if (filtered.length > 0) {
@@ -142,6 +151,16 @@ function omitCenterListWhere(value: unknown): Record<string, unknown> | undefine
   }
 
   return next
+}
+
+const centerListFilterFieldSet = new Set<string>(centerListFilterFields)
+const examResultTypeListFilterFieldSet = new Set<string>([
+  'resultType',
+  ...centerListFilterFields,
+])
+
+function omitCenterListWhere(value: unknown): Record<string, unknown> | undefined {
+  return omitListWhereFields(value, centerListFilterFieldSet)
 }
 
 function centerWhere({
@@ -256,6 +275,89 @@ export function selectedCenterFromWhere(
 
     for (const child of iterableWhereChildren(item)) {
       const childValue = selectedCenterFromWhere(child, fieldName)
+
+      if (childValue && childValue !== 'all') {
+        return childValue
+      }
+    }
+  }
+
+  return undefined
+}
+
+function examResultTypeWhere(resultType: ExamResultTypeListFilterValue): Where | undefined {
+  if (resultType === 'all') {
+    return undefined
+  }
+
+  return {
+    resultType: {
+      equals: resultType,
+    },
+  }
+}
+
+export function buildExamResultTypeListWhere({
+  existingWhere,
+  resultType,
+}: {
+  existingWhere?: unknown
+  resultType: ExamResultTypeListFilterValue
+}): Where {
+  const baseWhere = omitListWhereFields(existingWhere, examResultTypeListFilterFieldSet)
+  const nextResultTypeWhere = examResultTypeWhere(resultType)
+
+  if (!baseWhere && !nextResultTypeWhere) {
+    return {}
+  }
+
+  if (!baseWhere) {
+    return nextResultTypeWhere ?? {}
+  }
+
+  if (!nextResultTypeWhere) {
+    return baseWhere as Where
+  }
+
+  return {
+    and: [baseWhere as Where, nextResultTypeWhere],
+  }
+}
+
+function examResultTypeValueFromCondition(value: unknown) {
+  const condition = objectValue(value)
+  const operatorValue = condition?.equals
+
+  return typeof operatorValue === 'string' &&
+    validExamResultTypeValues.has(operatorValue as ExamResultTypeListFilterValue)
+    ? (operatorValue as ExamResultTypeListFilterValue)
+    : undefined
+}
+
+export function selectedExamResultTypeFromWhere(
+  value: unknown,
+): ExamResultTypeListFilterValue | undefined {
+  const record = objectValue(value)
+
+  if (!record) {
+    return undefined
+  }
+
+  const direct = examResultTypeValueFromCondition(record.resultType)
+
+  if (direct && direct !== 'all') {
+    return direct
+  }
+
+  for (const item of Object.values(record)) {
+    const itemValue = selectedExamResultTypeFromWhere(item)
+
+    if (itemValue && itemValue !== 'all') {
+      return itemValue
+    }
+
+    for (const child of iterableWhereChildren(item)) {
+      const childValue = selectedExamResultTypeFromWhere(child)
 
       if (childValue && childValue !== 'all') {
         return childValue

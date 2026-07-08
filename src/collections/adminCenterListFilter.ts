@@ -9,8 +9,18 @@ function hasCenterListFilterField(fields: Field[]) {
   return Boolean(centerListFilterFieldName(fields))
 }
 
+const excludedCenterQuickFilterCollectionSlugs = new Set([
+  'exam-passed-reviews',
+  'exam-passed-videos',
+  'exam-school-logos',
+])
+
 export function applyAdminCenterListFilter(collections: CollectionConfig[]) {
   return collections.map((collection) => {
+    if (excludedCenterQuickFilterCollectionSlugs.has(collection.slug)) {
+      return collection
+    }
+
     if (!hasCenterListFilterField(collection.fields)) {
       return collection
     }

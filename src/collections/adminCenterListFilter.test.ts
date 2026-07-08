@@ -5,12 +5,14 @@ import configPromise from '../../payload.config'
 import {
   adminCenterListFilterComponentPath,
   buildCenterListWhere,
+  buildExamResultTypeListWhere,
   centerListFilterConfig,
   centerListFilterFieldName,
+  selectedExamResultTypeFromWhere,
   selectedCenterFromWhere,
 } from '../components/payload/AdminCenterListFilter.utils'
 
-const expectedCenterFilterCollections = [
+const expectedQuickFilterCollections = [
   'main-banners',
   'social-links',
   'teachers',
@@ -25,10 +27,7 @@ const expectedCenterFilterCollections = [
   'profiles',
   'artist-press',
   'artist-press-agencies',
-  'exam-passed-reviews',
-  'exam-passed-videos',
   'exam-results',
-  'exam-school-logos',
   'news',
   'faqs',
   'star-cards',
@@ -36,7 +35,7 @@ const expectedCenterFilterCollections = [
   'users',
 ]
 
-test('center-aware collections receive the global admin quick center filter', async () => {
+test('center-aware collections receive quick filters except fixed exam collections', async () => {
   const config = await configPromise
   const filteredCollectionSlugs = config.collections
     .filter((collection) =>
@@ -44,7 +43,7 @@ test('center-aware collections receive the global admin quick center filter', as
     )
     .map((collection) => collection.slug)
 
-  assert.deepEqual(filteredCollectionSlugs, expectedCenterFilterCollections)
+  assert.deepEqual(filteredCollectionSlugs, expectedQuickFilterCollections)
 })
 
 test('center list filter detects single and multi center fields', async () => {
@@ -220,5 +219,75 @@ test('center list filter reads the active center from list where clauses', () =>
       'centers',
     ),
     'art',
+  )
+})
+
+test('exam result type list filter preserves other filters while replacing prior school filters', () => {
+  assert.deepEqual(
+    buildExamResultTypeListWhere({
+      existingWhere: {
+        and: [
+          { displayStatus: { equals: 'published' } },
+          { resultType: { equals: 'arts_high_school' } },
+        ],
+      },
+      resultType: 'university',
+    }),
+    {
+      and: [
+        { displayStatus: { equals: 'published' } },
+        { resultType: { equals: 'university' } },
+      ],
+    },
+  )
+
+  assert.deepEqual(
+    buildExamResultTypeListWhere({
+      existingWhere: {
+        displayStatus: { equals: 'draft' },
+        resultType: { equals: 'university' },
+      },
+      resultType: 'all',
+    }),
+    { displayStatus: { equals: 'draft' } },
+  )
+
+  assert.deepEqual(
+    buildExamResultTypeListWhere({
+      existingWhere: {
+        displayStatus: { equals: 'published' },
+        centers: { contains: 'art' },
+      },
+      resultType: 'arts_high_school',
+    }),
+    {
+      and: [
+        { displayStatus: { equals: 'published' } },
+        { resultType: { equals: 'arts_high_school' } },
+      ],
+    },
+  )
+})
+
+test('exam result type list filter reads the active school filter from list where clauses', () => {
+  assert.equal(
+    selectedExamResultTypeFromWhere({
+      and: [
+        { displayStatus: { equals: 'published' } },
+        { resultType: { equals: 'arts_high_school' } },
+      ],
+    }),
+    'arts_high_school',
+  )
+
+  assert.equal(
+    selectedExamResultTypeFromWhere({
+      page: 1,
+      sort: '-publishedAt',
+      where: {
+        resultType: { equals: 'university' },
+      },
+    }),
+    'university',
   )
 })
