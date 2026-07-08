@@ -147,7 +147,7 @@ function EntertainmentEducationSection({
                   {metric.label}
                 </p>
                 <p className="mt-5 type-display-l font-bold leading-none text-white">
-                  <AnimatedCounter value={metric.value} />
+                  <AnimatedCounter startOnMount value={metric.value} />
                   {metric.unit}
                 </p>
               </div>

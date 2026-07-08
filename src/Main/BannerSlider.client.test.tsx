@@ -78,6 +78,12 @@ test('main banner renders profile cards when linked profiles exist', () => {
   assert.match(html, /아이돌 연습생 역/)
   assert.match(html, /프로필 보기/)
   assert.match(html, /href="\/art\/profiles\/kim-actor"/)
+  assert.match(
+    html,
+    /<a[^>]*class="section-main-banner__profile-card[^"]*"[^>]*href="\/art\/profiles\/kim-actor"/,
+  )
+  assert.match(html, /<span class="section-main-banner__profile-link[^"]*text-\[10px\]/)
+  assert.doesNotMatch(html, /<a[^>]*section-main-banner__profile-link/)
 })
 
 test('main banner profile cards start centered without duplicate marquee set', () => {

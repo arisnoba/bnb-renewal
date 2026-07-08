@@ -911,11 +911,16 @@ function BannerProfileCard({
   const buttonLabel = String(item.buttonLabel || '자세히 보기').trim()
 
   return (
-    <article className="section-main-banner__profile-card grid h-[100px] w-60 grid-cols-[120px_108px] gap-3 max-[640px]:w-[190px] max-[640px]:grid-cols-[96px_82px]">
+    <Link
+      aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
+      className="section-main-banner__profile-card group grid h-[100px] w-60 grid-cols-[120px_108px] gap-3 outline-none transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white max-[640px]:h-20 max-[640px]:w-[174px] max-[640px]:grid-cols-[80px_82px]"
+      href={item.href}
+      tabIndex={duplicate ? -1 : undefined}
+    >
       <div
         className={cn(
           'section-main-banner__profile-image h-[100px] w-[120px] overflow-hidden',
-          'rounded-xl bg-white/10 max-[640px]:w-24',
+          'rounded-xl bg-white/10 max-[640px]:h-20 max-[640px]:w-20',
           '[&_img]:block [&_img]:h-full [&_img]:w-full [&_img]:object-cover',
         )}
       >
@@ -941,16 +946,13 @@ function BannerProfileCard({
             </p>
           )}
         </div>
-        <Link
-          aria-label={`${name || '연결 콘텐츠'} ${buttonLabel}`}
-          className="section-main-banner__profile-link inline-flex h-[30px] items-center justify-center rounded-full border border-white/70 px-2.5 text-[12px] font-black leading-none text-white transition-colors hover:border-white hover:bg-white/10"
-          href={item.href}
-          tabIndex={duplicate ? -1 : undefined}
+        <span
+          className="section-main-banner__profile-link inline-flex h-[30px] items-center justify-center rounded-full border border-white/70 px-2.5 text-[10px] font-black leading-none text-white transition-colors group-hover:border-white group-hover:bg-white/10 max-[640px]:h-6 max-[640px]:px-2"
         >
           <span>{buttonLabel}</span>
-        </Link>
+        </span>
       </div>
-    </article>
+    </Link>
   )
 }
 

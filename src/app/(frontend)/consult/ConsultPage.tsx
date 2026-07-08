@@ -143,7 +143,7 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
 
   return (
     <article
-      className={`section-consult-card flex flex-col gap-10 p-6 md:p-10 ${isFirst ? '' : 'border-t border-border md:border-l md:border-t-0'}`}
+      className={`section-consult-card flex flex-col gap-10 p-4 min-[360px]:p-6 md:p-10 ${isFirst ? '' : 'border-t border-border md:border-l md:border-t-0'}`}
     >
       <div className="section-consult-card__body grid gap-4">
         <div className="section-consult-card__title flex items-center gap-3">
@@ -188,9 +188,14 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
         )}
         <dl className="grid gap-1 type-body-s leading-normal text-muted-foreground">
           {item.details.map((detail) => (
-            <div className="grid gap-2 sm:grid-cols-[44px_minmax(0,1fr)]" key={detail.label}>
-              <dt className="font-bold text-foreground">{detail.label}</dt>
-              <dd>{detail.value}</dd>
+            <div
+              className="grid grid-cols-[32px_minmax(0,1fr)] items-baseline gap-x-1.5 min-[360px]:grid-cols-[44px_minmax(0,1fr)] min-[360px]:gap-x-2"
+              key={detail.label}
+            >
+              <dt className="whitespace-nowrap font-bold text-foreground">{detail.label}</dt>
+              <dd className="min-w-0 whitespace-nowrap type-caption-s min-[430px]:type-body-s">
+                {detail.value}
+              </dd>
             </div>
           ))}
         </dl>
