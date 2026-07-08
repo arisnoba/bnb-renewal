@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 
-import { centers, assertCenter } from '@/lib/centers'
+import { assertCenter } from '@/lib/centers'
 
 import {
   ArtistPressDetailPage,
   generateArtistPressDetailMetadata,
-  generateArtistPressStaticParams,
-} from '../../../artist-press/[slug]/page'
+} from '../../../artist-press/ArtistPressDetailPage'
 
 type Args = {
   params: Promise<{
@@ -16,24 +15,8 @@ type Args = {
 }
 
 export const revalidate = 600
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-
-export async function generateStaticParams() {
-  const params: Array<{ artistPressSlug: string; slug: string }> = []
-
-  for (const slug of Object.keys(centers) as Array<keyof typeof centers>) {
-    const artistPressParams = await generateArtistPressStaticParams(slug)
-
-    params.push(
-      ...artistPressParams.map((artistPressParam) => ({
-        artistPressSlug: artistPressParam.slug,
-        slug,
-      })),
-    )
-  }
-
-  return params
-}
 
 export default async function CenterArtistPressDetail({ params: paramsPromise }: Args) {
   const { artistPressSlug, slug } = await paramsPromise

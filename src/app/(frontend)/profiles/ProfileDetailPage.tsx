@@ -23,13 +23,6 @@ export type ProfileDetailParams = {
   slug?: string
 }
 
-export async function generateProfileStaticParams(
-  _center?: CenterSlug,
-): Promise<Array<{ center: CenterSlug; slug: string }>> {
-  void _center
-  return []
-}
-
 export async function ProfileDetailPage({
   center,
   slug,

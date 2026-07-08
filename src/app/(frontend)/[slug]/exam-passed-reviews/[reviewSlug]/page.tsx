@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation'
 import {
   ExamPassedReviewDetailPage,
   generateExamPassedReviewMetadata,
-  generateExamPassedReviewStaticParams,
 } from '../../../exam-passed-reviews/ExamPassedReviewDetailPage'
 
 type Args = {
@@ -18,10 +17,7 @@ type Args = {
 
 export const dynamicParams = true
 export const revalidate = 600
-
-export function generateStaticParams() {
-  return generateExamPassedReviewStaticParams()
-}
+export const dynamic = 'force-dynamic'
 
 export default async function ExamPassedReviewDetailRoute({ params }: Args) {
   const { reviewSlug, slug } = await params

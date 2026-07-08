@@ -21,12 +21,6 @@ import {
   getDirectCastingCompanyLabels,
 } from './DirectCastingsArchive'
 
-export async function generateDirectCastingStaticParams(): Promise<
-  Array<{ directCastingSlug: string; slug: CenterSlug }>
-> {
-  return []
-}
-
 export async function DirectCastingDetailPage({
   center,
   slug,

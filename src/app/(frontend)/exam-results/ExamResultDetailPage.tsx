@@ -19,7 +19,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { EXAM_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import {
   getExamResultDetailHref,
   getExamResultPageTitle,
@@ -33,30 +32,6 @@ const center: CenterSlug = 'exam'
 type ExamResultDetailParams = {
   resultType: ExamResultType
   slug: string
-}
-
-export async function generateExamResultStaticParams(resultType: ExamResultType) {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'exam-results',
-      depth: 0,
-      limit: EXAM_DETAIL_STATIC_PARAMS_LIMIT,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-      sort: '-publishedAt',
-      where: publishedExamResultsWhere(resultType),
-    })
-
-    return result.docs.flatMap(({ id }) =>
-      id ? [{ resultSlug: String(id), slug: center }] : [],
-    )
-  } catch {
-    return []
-  }
 }
 
 export async function ExamResultDetailPage({ resultType, slug }: ExamResultDetailParams) {

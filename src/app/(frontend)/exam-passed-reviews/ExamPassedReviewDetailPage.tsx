@@ -18,7 +18,6 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { EXAM_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 
 type ExamPassedReviewDetail = ExamPassedReview & {
   school: number | (Pick<ExamSchoolLogo, 'id' | 'schoolName'> & Record<string, unknown>)
@@ -26,49 +25,6 @@ type ExamPassedReviewDetail = ExamPassedReview & {
 
 const center: CenterSlug = 'exam'
 const pathPrefix = '/exam/passed-reviews'
-
-export async function generateExamPassedReviewStaticParams() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'exam-passed-reviews',
-      limit: EXAM_DETAIL_STATIC_PARAMS_LIMIT,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        slug: true,
-      },
-      sort: '-publishedAt',
-      where: {
-        and: [
-          {
-            displayStatus: {
-              equals: 'published',
-            },
-          },
-          {
-            or: [
-              {
-                centers: {
-                  contains: center,
-                },
-              },
-              {
-                centers: {
-                  contains: 'all',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    })
-
-    return result.docs.flatMap(({ id }) => (id ? [{ reviewSlug: String(id), slug: center }] : []))
-  } catch {
-    return []
-  }
-}
 
 export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
   const review = await queryExamPassedReviewBySlug(slug).catch(() => null)

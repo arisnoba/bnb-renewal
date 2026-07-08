@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation'
 import {
   ExamResultDetailPage,
   generateExamResultMetadata,
-  generateExamResultStaticParams,
 } from '../../../exam-results/ExamResultDetailPage'
 
 type Args = {
@@ -20,10 +19,7 @@ const resultType = 'arts_high_school'
 
 export const dynamicParams = true
 export const revalidate = 600
-
-export function generateStaticParams() {
-  return generateExamResultStaticParams(resultType)
-}
+export const dynamic = 'force-dynamic'
 
 export default async function ArtsHighResultDetailRoute({ params }: Args) {
   const { resultSlug, slug } = await params

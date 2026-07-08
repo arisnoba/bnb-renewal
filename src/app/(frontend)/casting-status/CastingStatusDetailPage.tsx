@@ -18,12 +18,6 @@ import {
   DetailPager,
 } from '../_components/DetailLayout'
 
-export async function generateCastingStatusStaticParams(): Promise<
-  Array<{ castingStatusSlug: string; slug: CenterSlug }>
-> {
-  return []
-}
-
 export async function CastingStatusDetailPage({
   center,
   slug,

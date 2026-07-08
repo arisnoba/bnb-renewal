@@ -40,12 +40,6 @@ type CareerGroup = {
   name?: string
 }
 
-export async function generateScreenAppearanceStaticParams(): Promise<
-  Array<{ screenAppearanceSlug: string; slug: CenterSlug }>
-> {
-  return []
-}
-
 export async function ScreenAppearanceDetailPage({
   center,
   slug,

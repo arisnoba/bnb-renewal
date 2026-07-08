@@ -8,7 +8,6 @@ import { castingStatusCenters } from '../../../casting-status/CastingStatus.data
 import {
   CastingStatusDetailPage,
   generateCastingStatusMetadata,
-  generateCastingStatusStaticParams,
 } from '../../../casting-status/CastingStatusDetailPage'
 
 type Args = {
@@ -19,11 +18,8 @@ type Args = {
 }
 
 export const revalidate = 600
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-
-export async function generateStaticParams() {
-  return generateCastingStatusStaticParams()
-}
 
 export default async function CenterCastingStatusDetail({ params: paramsPromise }: Args) {
   const { castingStatusSlug, slug } = await paramsPromise

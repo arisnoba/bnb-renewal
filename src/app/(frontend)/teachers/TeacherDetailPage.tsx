@@ -26,13 +26,6 @@ type TeacherRepresentativeWork = NonNullable<Teacher['representativeWorks']>[num
   posterMedia?: number | PayloadMedia | null
 }
 
-export async function generateTeacherStaticParams(
-  _center?: CenterSlug,
-): Promise<Array<{ center: CenterSlug; slug: string }>> {
-  void _center
-  return []
-}
-
 export async function TeacherDetailPage({
   center,
   slug,

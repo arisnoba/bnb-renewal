@@ -4,7 +4,6 @@ import { assertCenter } from '@/lib/centers'
 
 import {
   generateScreenAppearanceMetadata,
-  generateScreenAppearanceStaticParams,
   ScreenAppearanceDetailPage,
 } from '../../../screen-appearances/ScreenAppearanceDetailPage'
 
@@ -16,11 +15,8 @@ type Args = {
 }
 
 export const revalidate = 600
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-
-export async function generateStaticParams() {
-  return generateScreenAppearanceStaticParams()
-}
 
 export default async function CenterScreenAppearanceDetail({ params: paramsPromise }: Args) {
   const { screenAppearanceSlug, slug } = await paramsPromise

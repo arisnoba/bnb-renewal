@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation'
 import {
   DirectCastingDetailPage,
   generateDirectCastingMetadata,
-  generateDirectCastingStaticParams,
 } from '../../../direct-castings/DirectCastingDetailPage'
 
 type Args = {
@@ -19,11 +18,8 @@ type Args = {
 const directCastingCenters: readonly CenterSlug[] = ['art', 'avenue', 'highteen', 'kids']
 
 export const revalidate = 600
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-
-export async function generateStaticParams() {
-  return generateDirectCastingStaticParams()
-}
 
 export default async function CenterDirectCastingDetail({ params: paramsPromise }: Args) {
   const { directCastingSlug, slug } = await paramsPromise
