@@ -75,7 +75,13 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
                 aria-expanded={isMegaOpen}
                 aria-haspopup="true"
                 className="site-header__nav-link text-base"
+                onClick={() => setIsMegaOpen(true)}
                 onFocus={() => setIsMegaOpen(true)}
+                onPointerDown={(event) => {
+                  if (event.pointerType !== 'mouse') {
+                    setIsMegaOpen(true)
+                  }
+                }}
                 type="button"
               >
                 {group.label}
