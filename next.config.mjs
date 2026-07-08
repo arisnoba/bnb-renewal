@@ -1,4 +1,5 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import { networkInterfaces } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -40,6 +41,25 @@ const remotePatterns = [
   },
 ].filter(Boolean)
 
+function localNetworkDevOrigins() {
+  if (process.env.NODE_ENV === 'production') {
+    return []
+  }
+
+  const configuredOrigins = (process.env.NEXT_ALLOWED_DEV_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+  const networkOrigins = Object.values(networkInterfaces())
+    .flatMap((interfaces) => interfaces ?? [])
+    .filter((networkInterface) => networkInterface.family === 'IPv4' && !networkInterface.internal)
+    .map((networkInterface) => networkInterface.address)
+
+  return [...new Set([...configuredOrigins, ...networkOrigins])]
+}
+
+const allowedDevOrigins = localNetworkDevOrigins()
+
 const limitVercelStaticGenerationConcurrency = process.env.VERCEL === '1'
 const experimentalConfig = {
   staleTimes: {
@@ -57,6 +77,7 @@ const experimentalConfig = {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  ...(allowedDevOrigins.length > 0 ? { allowedDevOrigins } : {}),
   experimental: experimentalConfig,
   images: {
     localPatterns: [

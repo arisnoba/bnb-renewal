@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev-local.mjs",
-    "dev:remote": "next dev",
+    "dev:remote": "next dev --webpack",
     "prebuild": "payload generate:types",
     "build": "next build",
     "start": "next start",
