@@ -178,7 +178,7 @@ function CampusGallery() {
 function CenterInfoCard({ location }: { location: CenterLocation }) {
   return (
     <section className="section-map-info flex flex-col gap-8 rounded-xl bg-neutral-900 p-6 md:p-8 lg:flex-row lg:items-start">
-      <div className="section-map-info__summary flex min-w-0 flex-col gap-6 md:flex-row lg:w-[630px] lg:shrink-0 border-white/10 pt-8 md:border-b lg:border-r lg:border-b-0 lg:py-0 lg:pr-10">
+      <div className="section-map-info__summary flex min-w-0 flex-col gap-6 md:flex-row lg:w-[630px] lg:shrink-0 border-white/10 md:pt-8 md:border-b lg:border-r lg:border-b-0 lg:py-0 lg:pr-10">
         <div className="relative size-[148px] shrink-0 overflow-hidden rounded-lg bg-neutral-600">
           <Image
             alt=""
