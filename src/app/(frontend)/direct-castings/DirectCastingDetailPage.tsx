@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
-import { centers, type CenterSlug } from '@/lib/centers'
+import type { CenterSlug } from '@/lib/centers'
 import type { DirectCasting } from '@/payload-types'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
@@ -16,41 +16,58 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import {
   directCastingCompanyValues,
   getDirectCastingCompanyLabels,
 } from './DirectCastingsArchive'
 
+const directCastingStaticParamCenters: readonly CenterSlug[] = ['art', 'avenue', 'highteen', 'kids']
+
 export async function generateDirectCastingStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'direct-castings',
-      limit: 1000,
-      overrideAccess: true,
-      pagination: false,
-      select: {
-        centers: true,
-        slug: true,
-      },
-      where: {
-        displayStatus: {
-          equals: 'published',
+    const params: Array<{ directCastingSlug: string; slug: CenterSlug }> = []
+
+    for (const center of directCastingStaticParamCenters) {
+      const result = await payload.find({
+        collection: 'direct-castings',
+        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
+        overrideAccess: true,
+        pagination: false,
+        select: {
+          centers: true,
+          slug: true,
         },
-      },
-    })
-
-    return result.docs.flatMap((casting) => {
-      const visibleCenters = casting.centers ?? []
-
-      return visibleCenters.flatMap((center) => {
-        if (!casting.id || !(center in centers)) {
-          return []
-        }
-
-        return [{ directCastingSlug: String(casting.id), slug: center }]
+        sort: '-publishedAt',
+        where: {
+          and: [
+            {
+              displayStatus: {
+                equals: 'published',
+              },
+            },
+            {
+              centers: {
+                contains: center,
+              },
+            },
+          ],
+        },
       })
-    })
+
+      params.push(
+        ...result.docs.flatMap((casting) => {
+          if (!casting.id) {
+            return []
+          }
+
+          return [{ directCastingSlug: String(casting.id), slug: center }]
+        }),
+      )
+    }
+
+    return params
   } catch {
     return []
   }

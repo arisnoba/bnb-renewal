@@ -21,8 +21,10 @@ import {
   DetailPage,
   DetailPager,
 } from '../../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../../staticGeneration'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
+export const dynamicParams = true
 
 type Args = {
   params: Promise<{
@@ -30,25 +32,26 @@ type Args = {
   }>
 }
 
-export async function generateStaticParams() {
+export async function generateArtistPressStaticParams(center?: CenterSlug) {
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
       collection: 'artist-press',
-      limit: 1000,
+      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
       overrideAccess: false,
       pagination: false,
-      where: {
-        displayStatus: {
-          equals: 'published',
-        },
-      },
+      sort: '-publishedAt',
+      where: publishedArtistPressWhere(center),
     })
 
     return result.docs.map(({ id }) => ({ slug: String(id) }))
   } catch {
     return []
   }
+}
+
+export async function generateStaticParams() {
+  return generateArtistPressStaticParams()
 }
 
 export default async function ArtistPressDetail({ params: paramsPromise }: Args) {

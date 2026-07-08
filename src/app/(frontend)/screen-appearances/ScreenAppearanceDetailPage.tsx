@@ -23,6 +23,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import { ScreenAppearanceProfileAvatar } from './ScreenAppearanceProfileAvatar.client'
 import { screenAppearanceProfileImageUrl } from './screenAppearanceProfileImage'
 
@@ -43,32 +44,49 @@ type CareerGroup = {
 export async function generateScreenAppearanceStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'screen-appearances',
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        centers: true,
-        slug: true,
-      },
-      where: {
-        displayStatus: {
-          equals: 'published',
+    const params: Array<{ screenAppearanceSlug: string; slug: CenterSlug }> = []
+
+    for (const center of Object.keys(centers) as CenterSlug[]) {
+      const result = await payload.find({
+        collection: 'screen-appearances',
+        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
+        overrideAccess: false,
+        pagination: false,
+        select: {
+          centers: true,
+          slug: true,
         },
-      },
-    })
+        sort: '-publishedAt',
+        where: {
+          and: [
+            {
+              displayStatus: {
+                equals: 'published',
+              },
+            },
+            {
+              centers: {
+                equals: center,
+              },
+            },
+          ],
+        },
+      })
 
-    return result.docs.flatMap((appearance) => {
-      const center = appearance.centers
-      const id = appearance.id
+      params.push(
+        ...result.docs.flatMap((appearance) => {
+          const id = appearance.id
 
-      if (!id || !(center in centers)) {
-        return []
-      }
+          if (!id) {
+            return []
+          }
 
-      return [{ screenAppearanceSlug: String(id), slug: center }]
-    })
+          return [{ screenAppearanceSlug: String(id), slug: center }]
+        }),
+      )
+    }
+
+    return params
   } catch {
     return []
   }

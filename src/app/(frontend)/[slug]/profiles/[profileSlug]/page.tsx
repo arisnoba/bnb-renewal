@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
 
-import { assertCenter } from '@/lib/centers'
+import { assertCenter, centers } from '@/lib/centers'
 import {
   generateProfileMetadata,
   generateProfileStaticParams,
   ProfileDetailPage,
 } from '../../../profiles/ProfileDetailPage'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
+export const dynamicParams = true
 
 type Args = {
   params: Promise<{
@@ -17,9 +18,15 @@ type Args = {
 }
 
 export async function generateStaticParams(): Promise<Array<{ profileSlug: string; slug: string }>> {
-  const params = await generateProfileStaticParams()
+  const params: Array<{ profileSlug: string; slug: string }> = []
 
-  return params.map(({ center, slug }) => ({ profileSlug: slug, slug: center }))
+  for (const center of Object.keys(centers) as Array<keyof typeof centers>) {
+    const profileParams = await generateProfileStaticParams(center)
+
+    params.push(...profileParams.map(({ slug }) => ({ profileSlug: slug, slug: center })))
+  }
+
+  return params
 }
 
 export default async function CenterProfileDetail({ params: paramsPromise }: Args) {

@@ -8,7 +8,8 @@ import {
 } from '../ProfileDetailPage'
 import { notFound, redirect } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
+export const dynamicParams = true
 
 type Args = {
   params: Promise<ProfileDetailParams>
@@ -16,8 +17,9 @@ type Args = {
 
 export async function generateStaticParams() {
   const params = await generateProfileStaticParams()
+  const slugs = [...new Set(params.map(({ slug }) => slug))]
 
-  return params.map(({ slug }) => ({ slug }))
+  return slugs.map((slug) => ({ slug }))
 }
 
 export default async function ProfileDetail({ params: paramsPromise }: Args) {

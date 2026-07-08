@@ -19,6 +19,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import { TeacherDetailGallery, type TeacherImageItem } from './TeacherDetailGallery.client'
 import { TeacherDetailScrollReset } from './TeacherDetailScrollReset.client'
 
@@ -26,22 +27,45 @@ type TeacherRepresentativeWork = NonNullable<Teacher['representativeWorks']>[num
   posterMedia?: number | PayloadMedia | null
 }
 
-export async function generateTeacherStaticParams() {
+export async function generateTeacherStaticParams(center?: CenterSlug) {
   try {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
       collection: 'teachers',
-      limit: 1000,
+      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
       overrideAccess: false,
       pagination: false,
       select: {
         centers: true,
         slug: true,
       },
+      sort: ['displayOrder', '-updatedAt'],
       where: {
-        status: {
-          equals: 'published',
-        },
+        and: [
+          {
+            status: {
+              equals: 'published',
+            },
+          },
+          ...(center
+            ? [
+                {
+                  or: [
+                    {
+                      centers: {
+                        contains: center,
+                      },
+                    },
+                    {
+                      centers: {
+                        contains: 'all',
+                      },
+                    },
+                  ],
+                },
+              ]
+            : []),
+        ],
       },
     })
 
@@ -50,6 +74,10 @@ export async function generateTeacherStaticParams() {
 
       if (!slug) {
         return []
+      }
+
+      if (center) {
+        return [{ center, slug }]
       }
 
       return teacherCenterSlugs(teacher as Teacher).map((center) => ({ center, slug }))

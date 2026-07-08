@@ -19,6 +19,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 import {
   getExamResultDetailHref,
   getExamResultPageTitle,
@@ -40,12 +41,13 @@ export async function generateExamResultStaticParams(resultType: ExamResultType)
     const result = await payload.find({
       collection: 'exam-results',
       depth: 0,
-      limit: 1000,
+      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
       overrideAccess: false,
       pagination: false,
       select: {
         slug: true,
       },
+      sort: '-publishedAt',
       where: publishedExamResultsWhere(resultType),
     })
 

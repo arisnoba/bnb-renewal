@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
-import { assertCenter } from '@/lib/centers'
+import { assertCenter, centers, type CenterSlug } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import {
   getNewsDescription,
@@ -23,9 +23,9 @@ import {
   DetailPage,
   DetailPager,
 } from '../../../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../../../staticGeneration'
 
 export const revalidate = 600
-export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 type Args = {
@@ -36,7 +36,33 @@ type Args = {
 }
 
 export async function generateStaticParams() {
-  return []
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const params: Array<{ newsSlug: string; slug: CenterSlug }> = []
+
+    for (const center of Object.keys(centers) as CenterSlug[]) {
+      const result = await payload.find({
+        collection: 'news',
+        depth: 0,
+        limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
+        overrideAccess: false,
+        pagination: false,
+        select: {
+          slug: true,
+        },
+        sort: '-publishedAt',
+        where: publishedNewsWhere(center),
+      })
+
+      params.push(
+        ...result.docs.flatMap(({ id }) => (id ? [{ newsSlug: String(id), slug: center }] : [])),
+      )
+    }
+
+    return params
+  } catch {
+    return []
+  }
 }
 
 export default async function CenterNewsDetail({ params: paramsPromise }: Args) {

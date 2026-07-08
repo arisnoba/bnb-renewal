@@ -20,35 +20,30 @@ type Args = {
   }>
 }
 
-export const dynamic = 'force-dynamic'
 export const revalidate = 600
+export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const docs = await queryCurriculumStaticParams().catch(() => [])
+  const params: Array<{ curriculumSlug: string; slug: CenterSlug }> = []
 
-  return docs
-    .flatMap((doc) => {
-      if (!doc.centers || !isCurriculumCenter(doc.centers as CenterSlug)) {
-        return []
-      }
+  for (const slug of ['art', 'avenue', 'highteen'] as const) {
+    const docs = await queryCurriculumStaticParams(curriculumContentCenter(slug)).catch(() => [])
 
-      const slug = doc.centers as CenterSlug
-      const params = [
-        {
+    params.push(
+      ...docs.flatMap((doc) => {
+        if (!doc.id) {
+          return []
+        }
+
+        return [{
           curriculumSlug: String(doc.id),
           slug,
-        },
-      ]
+        }]
+      }),
+    )
+  }
 
-      if (slug === 'art') {
-        params.push({
-          curriculumSlug: String(doc.id),
-          slug: 'avenue',
-        })
-      }
-
-      return params
-    })
+  return params
 }
 
 export default async function CenterCurriculumDetailPage({ params }: Args) {

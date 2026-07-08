@@ -18,6 +18,7 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
+import { PUBLIC_DETAIL_STATIC_PARAMS_LIMIT } from '../staticGeneration'
 
 type ExamPassedReviewDetail = ExamPassedReview & {
   school: number | (Pick<ExamSchoolLogo, 'id' | 'schoolName'> & Record<string, unknown>)
@@ -31,12 +32,13 @@ export async function generateExamPassedReviewStaticParams() {
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
       collection: 'exam-passed-reviews',
-      limit: 1000,
+      limit: PUBLIC_DETAIL_STATIC_PARAMS_LIMIT,
       overrideAccess: false,
       pagination: false,
       select: {
         slug: true,
       },
+      sort: '-publishedAt',
       where: {
         and: [
           {

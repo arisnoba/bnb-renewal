@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { assertCenter } from '@/lib/centers'
+import { assertCenter, centers } from '@/lib/centers'
 
 import {
   generateTeacherMetadata,
@@ -8,7 +8,8 @@ import {
   TeacherDetailPage,
 } from '../../../teachers/TeacherDetailPage'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
+export const dynamicParams = true
 
 type Args = {
   params: Promise<{
@@ -18,9 +19,15 @@ type Args = {
 }
 
 export async function generateStaticParams(): Promise<Array<{ slug: string; teacherSlug: string }>> {
-  const params = await generateTeacherStaticParams()
+  const params: Array<{ slug: string; teacherSlug: string }> = []
 
-  return params.map(({ center, slug }) => ({ slug: center, teacherSlug: slug }))
+  for (const center of Object.keys(centers) as Array<keyof typeof centers>) {
+    const teacherParams = await generateTeacherStaticParams(center)
+
+    params.push(...teacherParams.map(({ slug }) => ({ slug: center, teacherSlug: slug })))
+  }
+
+  return params
 }
 
 export default async function CenterTeacherDetail({ params: paramsPromise }: Args) {

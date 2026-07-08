@@ -5,7 +5,7 @@ import { centers, assertCenter } from '@/lib/centers'
 import {
   ArtistPressDetailPage,
   generateArtistPressDetailMetadata,
-  generateStaticParams as generateArtistPressStaticParams,
+  generateArtistPressStaticParams,
 } from '../../../artist-press/[slug]/page'
 
 type Args = {
@@ -15,17 +15,24 @@ type Args = {
   }>
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 600
+export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const artistPressParams = await generateArtistPressStaticParams()
+  const params: Array<{ artistPressSlug: string; slug: string }> = []
 
-  return Object.keys(centers).flatMap((slug) =>
-    artistPressParams.map((params) => ({
-      artistPressSlug: params.slug,
-      slug,
-    })),
-  )
+  for (const slug of Object.keys(centers) as Array<keyof typeof centers>) {
+    const artistPressParams = await generateArtistPressStaticParams(slug)
+
+    params.push(
+      ...artistPressParams.map((artistPressParam) => ({
+        artistPressSlug: artistPressParam.slug,
+        slug,
+      })),
+    )
+  }
+
+  return params
 }
 
 export default async function CenterArtistPressDetail({ params: paramsPromise }: Args) {
