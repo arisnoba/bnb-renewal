@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
 import { ChevronDown, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
@@ -29,6 +29,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
   const center = headerCenterFromPathname(pathname)
   const menuGroups = getHeaderMenu(center)
   const consultHref = `/${center}/consult`
+  const navZoneRef = useRef<HTMLDivElement | null>(null)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [activeMobileGroupKey, setActiveMobileGroupKey] = useState<string | null>(null)
@@ -44,6 +45,27 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
   }, [isMegaOpen, onMegaOpenChange])
 
   useEffect(() => {
+    if (!isMegaOpen) return
+
+    const closeMegaOnOutsidePointerDown = (event: PointerEvent) => {
+      const navZone = navZoneRef.current
+      const target = event.target
+
+      if (navZone && target instanceof Node && navZone.contains(target)) {
+        return
+      }
+
+      setIsMegaOpen(false)
+    }
+
+    document.addEventListener('pointerdown', closeMegaOnOutsidePointerDown, true)
+
+    return () => {
+      document.removeEventListener('pointerdown', closeMegaOnOutsidePointerDown, true)
+    }
+  }, [isMegaOpen])
+
+  useEffect(() => {
     if (!isMobileOpen) return
 
     const previousOverflow = document.body.style.overflow
@@ -57,6 +79,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
   return (
     <>
       <div
+        ref={navZoneRef}
         className="site-header__nav-zone"
         data-mega-open={isMegaOpen ? 'true' : undefined}
         style={navZoneStyle(menuGroups)}
