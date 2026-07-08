@@ -136,13 +136,13 @@ export function CenterHomeScreenAppearances({
                   />
                 ) : null}
                 {!isVideo && item.broadcastLogoUrl ? (
-                  <span className="absolute left-7 top-6 flex h-32 items-center justify-center md:left-10 md:top-8 md:h-20">
+                  <span className="absolute left-4 top-5 flex size-12 items-center justify-center md:left-10 md:top-8 md:size-20">
                     <Image
                       alt={item.broadcastLogoAlt}
-                      className="h-full w-auto object-contain"
+                      className="size-full object-contain"
                       height={32}
                       loading={index === 0 ? 'eager' : 'lazy'}
-                      sizes="96px"
+                      sizes="(max-width: 767px) 48px, 80px"
                       src={item.broadcastLogoUrl}
                       unoptimized
                       width={96}
@@ -150,14 +150,14 @@ export function CenterHomeScreenAppearances({
                   </span>
                 ) : null}
                 {!isVideo ? (
-                  <span className="absolute bottom-8 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
+                  <span className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10">
                     <span className="block type-caption-l font-bold leading-[1.35] text-white/70">
                       {item.meta}
                     </span>
-                    <span className="mt-2 block max-w-[360px] type-headline-s font-extrabold leading-[1.2] text-white md:type-headline-l">
+                    <span className="mt-2 block max-w-[360px] type-title-l font-extrabold leading-[1.2] text-white md:type-headline-l">
                       {item.projectTitle}
                     </span>
-                    <span className="mt-5 inline-flex items-center gap-4 type-label-m font-bold leading-[1.2] text-white">
+                    <span className="mt-5 hidden items-center gap-4 type-label-m font-bold leading-[1.2] text-white md:inline-flex">
                       <ActorThumb
                         imageUrl={item.profileImageUrl}
                         size="small"
@@ -267,6 +267,18 @@ export function CenterHomeScreenAppearances({
                         isActive={isActive}
                         size="large"
                       />
+                      {!isVideo ? (
+                        <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 block bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2 pb-2 pt-8 text-white md:hidden">
+                          <span className="block truncate type-caption-l font-bold leading-[1.2]">
+                            {item.performerName}
+                          </span>
+                          {item.performerRole ? (
+                            <span className="mt-0.5 block truncate type-caption-s font-semibold leading-[1.2] text-white/80">
+                              {item.performerRole}
+                            </span>
+                          ) : null}
+                        </span>
+                      ) : null}
                     </span>
                   </button>
                 </SwiperSlide>
