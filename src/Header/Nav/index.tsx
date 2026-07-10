@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
-import { ChevronDown, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Menu, Minus, Plus } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 
 import type { CenterSlug } from '@/lib/centers'
@@ -135,10 +135,10 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         </Link>
         <HeaderCenterSelect currentCenter={center} />
       </div>
-      <div className="site-header__mobile-actions">
-        <Link className="site-header__mobile-consult" href={consultHref} prefetch={false}>
-          상담
-        </Link>
+      <div
+        className="site-header__mobile-actions"
+        data-open={isMobileOpen ? 'true' : 'false'}
+      >
         <button
           aria-expanded={isMobileOpen}
           aria-label={isMobileOpen ? '전체 메뉴 닫기' : '전체 메뉴 열기'}
@@ -155,19 +155,20 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
           type="button"
         >
           {isMobileOpen ? (
-            <X aria-hidden="true" size={20} strokeWidth={2.4} />
+            <ArrowLeft aria-hidden="true" size={20} strokeWidth={2.4} />
           ) : (
             <Menu aria-hidden="true" size={20} strokeWidth={2.4} />
           )}
         </button>
+        <Link className="site-header__mobile-consult" href={consultHref} prefetch={false}>
+          {isMobileOpen ? '온라인상담' : '상담'}
+        </Link>
       </div>
       <MobileMenu
         activeGroupKey={activeMobileGroupKey}
-        consultHref={consultHref}
         groups={menuGroups}
         isOpen={isMobileOpen}
-        onBack={() => setActiveMobileGroupKey(null)}
-        onGroupSelect={setActiveMobileGroupKey}
+        onGroupToggle={setActiveMobileGroupKey}
         onLinkClick={closeMenus}
       />
     </>
@@ -223,23 +224,17 @@ function navZoneStyle(groups: HeaderMenuGroup[]): NavZoneStyle {
 
 function MobileMenu({
   activeGroupKey,
-  consultHref,
   groups,
   isOpen,
-  onBack,
-  onGroupSelect,
+  onGroupToggle,
   onLinkClick,
 }: {
   activeGroupKey: string | null
-  consultHref: string
   groups: HeaderMenuGroup[]
   isOpen: boolean
-  onBack: () => void
-  onGroupSelect: (groupKey: string) => void
+  onGroupToggle: (groupKey: string | null) => void
   onLinkClick: () => void
 }) {
-  const activeGroup = groups.find((group) => group.key === activeGroupKey) ?? null
-
   return (
     <div
       aria-hidden={!isOpen}
@@ -247,59 +242,58 @@ function MobileMenu({
       data-open={isOpen ? 'true' : 'false'}
     >
       <div className="site-header__mobile-panel-inner">
-        <div className="site-header__mobile-stage" data-view={activeGroup ? 'detail' : 'root'}>
-          <nav aria-label="전체 메뉴" className="site-header__mobile-root">
-            {groups.map((group) => (
-              <button
-                className="site-header__mobile-root-button"
+        <nav aria-label="전체 메뉴" className="site-header__mobile-accordion">
+          {groups.map((group) => {
+            const isActive = group.key === activeGroupKey
+            const submenuId = `site-header-mobile-submenu-${group.key}`
+
+            return (
+              <div
+                className="site-header__mobile-accordion-item"
+                data-open={isActive ? 'true' : 'false'}
                 key={group.key}
-                onClick={() => onGroupSelect(group.key)}
-                type="button"
               >
-                <span>{group.label}</span>
-                <ChevronRight aria-hidden="true" size={24} strokeWidth={2.4} />
-              </button>
-            ))}
-            <Link
-              className="site-header__mobile-root-link"
-              href={consultHref}
-              onClick={onLinkClick}
-              prefetch={false}
-            >
-              온라인상담
-            </Link>
-          </nav>
-          <nav
-            aria-label={activeGroup ? `${activeGroup.label} 하위 메뉴` : undefined}
-            className="site-header__mobile-detail"
-          >
-            {activeGroup && (
-              <>
-                <button className="site-header__mobile-back" onClick={onBack} type="button">
-                  <ChevronLeft aria-hidden="true" size={20} strokeWidth={2.4} />
-                  <span>전체 메뉴</span>
+                <button
+                  aria-controls={submenuId}
+                  aria-expanded={isActive}
+                  className="site-header__mobile-accordion-trigger"
+                  onClick={() => onGroupToggle(isActive ? null : group.key)}
+                  type="button"
+                >
+                  <span>{group.label}</span>
+                  {isActive ? (
+                    <Minus aria-hidden="true" size={20} strokeWidth={2.4} />
+                  ) : (
+                    <Plus aria-hidden="true" size={20} strokeWidth={2.4} />
+                  )}
                 </button>
-                <div className="site-header__mobile-detail-title">
-                  {activeGroup.label}
+                <div
+                  aria-hidden={!isActive}
+                  className="site-header__mobile-submenu"
+                  id={submenuId}
+                >
+                  <div className="site-header__mobile-submenu-inner">
+                    <ul className="site-header__mobile-submenu-list">
+                      {group.items.map((item) => (
+                        <li key={`${group.key}-${item.href}-${item.label}`}>
+                          <Link
+                            className="site-header__mobile-submenu-link"
+                            href={item.href}
+                            onClick={onLinkClick}
+                            prefetch={false}
+                            tabIndex={isActive ? undefined : -1}
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <ul className="site-header__mobile-detail-list">
-                  {activeGroup.items.map((item) => (
-                    <li key={`${activeGroup.key}-${item.href}-${item.label}`}>
-                      <Link
-                        className="site-header__mobile-detail-link"
-                        href={item.href}
-                        onClick={onLinkClick}
-                        prefetch={false}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </nav>
-        </div>
+              </div>
+            )
+          })}
+        </nav>
       </div>
     </div>
   )
