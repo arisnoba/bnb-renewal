@@ -300,7 +300,7 @@ function ExamResultCard({
             </div>
           )}
         </div>
-        <div className="section-exam-result-card__body flex min-w-0 items-center p-5">
+        <div className="section-exam-result-card__body flex qlfmin-w-0 items-center p-5">
           <p className="section-exam-result-card__title truncate type-body-m font-medium leading-normal text-neutral-900 transition-colors group-hover:text-brand">
             {displayTitle}
           </p>
