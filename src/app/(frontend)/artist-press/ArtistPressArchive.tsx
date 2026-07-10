@@ -107,7 +107,7 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
               등록된 출신 아티스트 소식이 없습니다.
             </p>
           ) : (
-            <div className="section-artist-press-list__grid">
+            <div className="section-artist-press-list__grid grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
               {artistPress.docs.map((item) => (
                 <ArtistPressCard
                   artistPress={item}
