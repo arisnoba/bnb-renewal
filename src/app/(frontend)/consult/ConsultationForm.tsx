@@ -768,7 +768,13 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           상담 신청 확인과 안내를 위해 이름, 생년월일, 연락처, 거주지역, 문의 유형,
           예약 희망일, 연기 경험 정보 또는 제휴 신청 정보를 수집합니다. 수집된 정보는 상담
           안내 및 문의 처리 목적으로만 사용되며, 이용 목적 달성 후 내부 보관 정책에 따라 파기됩니다.{' '}
-          <Link className="font-medium text-foreground underline underline-offset-4" href={privacyHref}>
+          <Link
+            aria-label="개인정보처리방침 보기 새 창으로 열기"
+            className="font-medium text-foreground underline underline-offset-4"
+            href={privacyHref}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             개인정보처리방침 보기
           </Link>
         </div>
