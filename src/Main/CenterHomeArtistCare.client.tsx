@@ -21,41 +21,96 @@ type CenterHomeArtistCareProps = {
   items: CenterHomeArtistCareItem[]
 }
 
-export function artistCareSlidesOffsetAfter(containerWidth: number, slideWidth: number) {
+export function artistCareVisibleSlideCount({
+  containerWidth,
+  slideWidth,
+  spaceBetween,
+}: {
+  containerWidth: number
+  slideWidth: number
+  spaceBetween: number
+}) {
   if (containerWidth <= 0 || slideWidth <= 0) {
+    return 1
+  }
+
+  const safeSpaceBetween = Math.max(spaceBetween, 0)
+
+  return Math.max(1, Math.floor((containerWidth + safeSpaceBetween) / (slideWidth + safeSpaceBetween)))
+}
+
+export function artistCareViewportStartIndex({
+  itemCount,
+  selectedIndex,
+  visibleSlideCount,
+}: {
+  itemCount: number
+  selectedIndex: number
+  visibleSlideCount: number
+}) {
+  if (itemCount <= 0) {
     return 0
   }
 
-  return Math.max(Math.ceil(containerWidth - slideWidth), 0)
+  const maxStartIndex = Math.max(itemCount - Math.max(visibleSlideCount, 1), 0)
+
+  return Math.max(0, Math.min(selectedIndex, maxStartIndex))
 }
 
 export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(0)
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null)
-  const [slidesOffsetAfter, setSlidesOffsetAfter] = useState(0)
+  const [visibleSlideCount, setVisibleSlideCount] = useState(1)
   const shouldSlide = items.length > 1
-  const selectedIndex = items.length > 0 ? Math.min(activeIndex, items.length - 1) : -1
+  const activeIndex = items.length > 0 ? Math.min(selectedIndex, items.length - 1) : -1
 
-  const updateSlidesOffsetAfter = useCallback((swiperInstance: SwiperInstance) => {
+  const updateVisibleSlideCount = useCallback((swiperInstance: SwiperInstance) => {
     const firstSlide = swiperInstance.slides[0]
+    const secondSlide = swiperInstance.slides[1]
     const slideWidth = firstSlide?.getBoundingClientRect().width || firstSlide?.offsetWidth || 0
+    const slideLeft = firstSlide?.offsetLeft ?? 0
+    const secondSlideLeft = secondSlide?.offsetLeft ?? slideLeft + slideWidth
+    const measuredSpaceBetween = Math.max(secondSlideLeft - slideLeft - slideWidth, 0)
 
-    setSlidesOffsetAfter(
-      artistCareSlidesOffsetAfter(swiperInstance.el.clientWidth, slideWidth),
+    setVisibleSlideCount(
+      artistCareVisibleSlideCount({
+        containerWidth: swiperInstance.el.clientWidth,
+        slideWidth,
+        spaceBetween: measuredSpaceBetween,
+      }),
     )
   }, [])
 
-  const setActiveSlide = useCallback((swiperInstance: SwiperInstance) => {
-    setActiveIndex(swiperInstance.activeIndex)
+  const selectSlide = useCallback(
+    (index: number, swiperInstance = swiper) => {
+      if (items.length <= 0) {
+        return
+      }
+
+      const nextIndex = Math.max(0, Math.min(index, items.length - 1))
+      const viewportStartIndex = artistCareViewportStartIndex({
+        itemCount: items.length,
+        selectedIndex: nextIndex,
+        visibleSlideCount,
+      })
+
+      setSelectedIndex(nextIndex)
+      swiperInstance?.slideTo(viewportStartIndex, undefined, false)
+    },
+    [items.length, swiper, visibleSlideCount],
+  )
+
+  const setActiveSlideFromSwiper = useCallback((swiperInstance: SwiperInstance) => {
+    setSelectedIndex(swiperInstance.activeIndex)
   }, [])
 
   return (
     <div className="section-center-home-care__stage mt-10 md:mt-0">
       <div className="section-center-home-care__controls hidden mb-8 justify-start gap-5 md:flex md:-mt-16 md:mb-16 md:justify-end">
-        <ArtistCareControl ariaLabel="이전 배우 케어 보기" onClick={() => swiper?.slidePrev()}>
+        <ArtistCareControl ariaLabel="이전 배우 케어 보기" onClick={() => selectSlide(activeIndex - 1)}>
           <ChevronLeft aria-hidden="true" className="size-6" strokeWidth={2} />
         </ArtistCareControl>
-        <ArtistCareControl ariaLabel="다음 배우 케어 보기" onClick={() => swiper?.slideNext()}>
+        <ArtistCareControl ariaLabel="다음 배우 케어 보기" onClick={() => selectSlide(activeIndex + 1)}>
           <ChevronRight aria-hidden="true" className="size-6" strokeWidth={2} />
         </ArtistCareControl>
       </div>
@@ -74,21 +129,20 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
         keyboard={{ enabled: shouldSlide }}
         modules={[A11y, Keyboard]}
         onResize={(swiperInstance) => {
-          updateSlidesOffsetAfter(swiperInstance)
-          setActiveSlide(swiperInstance)
+          updateVisibleSlideCount(swiperInstance)
+          selectSlide(activeIndex, swiperInstance)
         }}
-        onSlideChange={setActiveSlide}
+        onSlideChange={setActiveSlideFromSwiper}
         onSwiper={(swiperInstance) => {
           setSwiper(swiperInstance)
-          updateSlidesOffsetAfter(swiperInstance)
-          setActiveSlide(swiperInstance)
+          updateVisibleSlideCount(swiperInstance)
+          selectSlide(activeIndex, swiperInstance)
         }}
-        slidesOffsetAfter={slidesOffsetAfter}
         slidesPerView="auto"
         spaceBetween={20}
       >
         {items.map((item, index) => {
-          const isSelected = index === selectedIndex
+          const isSelected = index === activeIndex
 
           return (
             <SwiperSlide
@@ -101,10 +155,17 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
                 className="group/care section-center-home-care-card relative block h-72 w-full overflow-hidden rounded-[999px] bg-neutral-900 text-white outline-none ring-white/25 transition-[height,border-radius,background-color,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 data-[expanded=true]:h-92 data-[expanded=true]:rounded-none data-[expanded=true]:bg-white md:h-[calc((min(100vw,var(--container-main))-120px)/3)] md:data-[expanded=true]:h-110"
                 data-expanded={isSelected}
                 href={item.href}
+                onClick={(event) => {
+                  if (isSelected) {
+                    return
+                  }
+
+                  event.preventDefault()
+                  selectSlide(index)
+                }}
                 onFocus={() => {
-                  if (index !== selectedIndex) {
-                    swiper?.slideTo(index)
-                    setActiveIndex(index)
+                  if (index !== activeIndex) {
+                    selectSlide(index)
                   }
                 }}
               >

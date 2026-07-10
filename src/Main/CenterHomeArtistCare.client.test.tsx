@@ -1,15 +1,35 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { artistCareSlidesOffsetAfter } from './CenterHomeArtistCare.client'
+import {
+  artistCareViewportStartIndex,
+  artistCareVisibleSlideCount,
+} from './CenterHomeArtistCare.client'
 
-test('center home artist care keeps enough trailing space for the last card to become active', () => {
-  assert.equal(artistCareSlidesOffsetAfter(390, 288), 102)
-  assert.equal(artistCareSlidesOffsetAfter(1160, 360), 800)
+test('center home artist care calculates how many cards fit inside the container', () => {
+  assert.equal(artistCareVisibleSlideCount({ containerWidth: 390, slideWidth: 288, spaceBetween: 20 }), 1)
+  assert.equal(artistCareVisibleSlideCount({ containerWidth: 1160, slideWidth: 360, spaceBetween: 40 }), 3)
+  assert.equal(artistCareVisibleSlideCount({ containerWidth: 0, slideWidth: 288, spaceBetween: 20 }), 1)
 })
 
-test('center home artist care does not add trailing space when dimensions are unavailable', () => {
-  assert.equal(artistCareSlidesOffsetAfter(0, 288), 0)
-  assert.equal(artistCareSlidesOffsetAfter(390, 0), 0)
-  assert.equal(artistCareSlidesOffsetAfter(288, 390), 0)
+test('center home artist care keeps the final group filled while active moves across slots', () => {
+  assert.equal(
+    artistCareViewportStartIndex({ itemCount: 8, selectedIndex: 5, visibleSlideCount: 3 }),
+    5,
+  )
+  assert.equal(
+    artistCareViewportStartIndex({ itemCount: 8, selectedIndex: 6, visibleSlideCount: 3 }),
+    5,
+  )
+  assert.equal(
+    artistCareViewportStartIndex({ itemCount: 8, selectedIndex: 7, visibleSlideCount: 3 }),
+    5,
+  )
+})
+
+test('center home artist care can still place the last card first on one-card viewports', () => {
+  assert.equal(
+    artistCareViewportStartIndex({ itemCount: 8, selectedIndex: 7, visibleSlideCount: 1 }),
+    7,
+  )
 })
