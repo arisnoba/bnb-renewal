@@ -26,7 +26,7 @@ export function FooterCenterLinks({ initialCenter = 'art' }: { initialCenter?: C
   return (
     <>
       <FooterLinkGroup title="고객 안내 센터">
-        <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
+        <ul className="flex flex-col gap-2">
           {customerLinks.map((item) => (
             <li key={item.label}>
               <Link
@@ -80,7 +80,7 @@ function FooterTextLinks({
       : 'text-sm font-normal leading-normal text-[#666]'
 
   return (
-    <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
+    <ul className="flex flex-col gap-2">
       {links.map((link) => (
         <li key={link.label}>
           <Link

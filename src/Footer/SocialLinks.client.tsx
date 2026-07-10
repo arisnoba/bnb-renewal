@@ -23,7 +23,7 @@ export function FooterSocialLinks({
   }
 
   return (
-    <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
+    <ul className="flex flex-row flex-wrap items-center gap-x-12 gap-y-4 lg:flex-col lg:items-start lg:gap-x-0 lg:gap-y-2">
       {socialLinks.map((item) => (
         <li key={item.label}>
           <a
@@ -32,8 +32,8 @@ export function FooterSocialLinks({
             rel="noreferrer"
             target="_blank"
           >
-            <Image alt="" height={20} src={item.icon} width={20} />
-            <span className="text-sm leading-normal">{item.label}</span>
+            <Image alt="" className="h-7 w-7 lg:h-5 lg:w-5" height={20} src={item.icon} width={20} />
+            <span className="sr-only text-sm leading-normal lg:not-sr-only">{item.label}</span>
           </a>
         </li>
       ))}

@@ -51,14 +51,14 @@ export async function Footer() {
 
   return (
     <footer className="mt-auto bg-bg-footer text-white">
-      <div className="mx-auto flex w-full container flex-col gap-10 px-5 py-16 md:px-8 lg:py-20">
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-5">
-          <p className="text-[32px] font-semibold leading-[1.2] tracking-normal">
+      <div className="mx-auto flex w-full container flex-col gap-14 px-5 py-20 md:px-8 lg:gap-10 lg:py-20">
+        <div className="grid gap-20 lg:grid-cols-2 lg:gap-5">
+          <p className="text-[32px] font-semibold leading-normal tracking-normal lg:leading-[1.2]">
             배우의 서사가
             <br />
             시작되는 곳
           </p>
-          <div className="grid gap-8 sm:grid-cols-2 lg:gap-5">
+          <div className="grid gap-16 lg:grid-cols-2 lg:gap-5">
             <FooterCenterLinks initialCenter={center} />
           </div>
         </div>
@@ -85,7 +85,7 @@ export async function Footer() {
             </p>
           </div>
 
-          <div className="order-1 grid gap-8 sm:grid-cols-2 lg:order-2 lg:gap-6">
+          <div className="order-1 grid gap-16 lg:order-2 lg:grid-cols-2 lg:gap-6">
             <FooterLinkGroup title="FAMILY SITE">
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
@@ -129,7 +129,7 @@ function FooterTextLinks({
       : 'text-sm font-normal leading-normal text-[#666]'
 
   return (
-    <ul className="flex flex-col gap-2 min-[360px]:flex-row min-[360px]:flex-wrap min-[360px]:gap-x-8 min-[360px]:gap-y-3 lg:flex-col lg:gap-x-0 lg:gap-y-2">
+    <ul className="flex flex-col gap-2">
       {links.map((link) => (
         <li key={link.label}>
           <Link
