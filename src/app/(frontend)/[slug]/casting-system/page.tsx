@@ -50,54 +50,42 @@ type CastingSystemItem = {
 const castingSystemCenters = ["art", "avenue", "highteen", "kids"] as const satisfies readonly CenterSlug[];
 type CastingSystemCenter = (typeof castingSystemCenters)[number];
 
-function castingSystemCenterAssets(
-  center: CenterSlug,
-): Record<CastingSystemItemId, string> {
-  return {
-    agency: `/assets/casting-system/${center}/system11.jpg`,
-    audition: `/assets/casting-system/${center}/system05.jpg`,
-    "director-meeting": `/assets/casting-system/${center}/system06.jpg`,
-    "filming-support": `/assets/casting-system/${center}/system07.jpg`,
-    pr: `/assets/casting-system/${center}/system04.jpg`,
-    press: `/assets/casting-system/${center}/system09.jpg`,
-    profile: `/assets/casting-system/${center}/system01.jpg`,
-    selection: `/assets/casting-system/${center}/system03.jpg`,
-    video: `/assets/casting-system/${center}/system02.jpg`,
-  };
-}
+const castingSystemHeroImage = "/assets/casting-system/hero.png";
+
+const castingSystemImages = {
+  agency: "/assets/casting-system/agency.png",
+  audition: "/assets/casting-system/audition.png",
+  "director-meeting": "/assets/casting-system/director-meeting.png",
+  "filming-support": "/assets/casting-system/car-support.png",
+  pr: "/assets/casting-system/pr.png",
+  press: "/assets/casting-system/press.png",
+  profile: "/assets/casting-system/profile.png",
+  selection: "/assets/casting-system/selection.png",
+  video: "/assets/casting-system/video.png",
+} satisfies Record<CastingSystemItemId, string>;
 
 const castingSystemConfigs = {
   art: {
-    heroImage: "/assets/casting-system/hero.png",
-    images: {
-      agency: "/assets/casting-system/agency.png",
-      audition: "/assets/casting-system/audition.png",
-      "director-meeting": "/assets/casting-system/director-meeting.png",
-      "filming-support": "/assets/casting-system/car-support.png",
-      pr: "/assets/casting-system/pr.png",
-      press: "/assets/casting-system/press.png",
-      profile: "/assets/casting-system/profile.png",
-      selection: "/assets/casting-system/selection.png",
-      video: "/assets/casting-system/video.png",
-    },
+    heroImage: castingSystemHeroImage,
+    images: castingSystemImages,
     studioName: "BAEWOOHWA STUDIO",
     videoCompanyName: "㈜볼드 인사이트",
   },
   avenue: {
-    heroImage: "/assets/casting-system/avenue/hero.jpg",
-    images: castingSystemCenterAssets("avenue"),
+    heroImage: castingSystemHeroImage,
+    images: castingSystemImages,
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
   highteen: {
-    heroImage: "/assets/casting-system/highteen/hero.jpg",
-    images: castingSystemCenterAssets("highteen"),
+    heroImage: castingSystemHeroImage,
+    images: castingSystemImages,
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
   kids: {
-    heroImage: "/assets/casting-system/kids/hero.jpg",
-    images: castingSystemCenterAssets("kids"),
+    heroImage: castingSystemHeroImage,
+    images: castingSystemImages,
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
@@ -192,11 +180,8 @@ function getCastingSystemItems(center: CastingSystemCenter): CastingSystemItem[]
   ];
 }
 
-const castingSystemCardDecoClasses = [
-  "left-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)]",
-  "right-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)]",
-  "right-[calc(var(--page-deco-size)/-2)] bottom-[calc(var(--page-deco-size)/-2)]",
-] as const;
+const castingSystemCardDecoClass =
+  "section-casting-system-card__deco left-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)] opacity-90";
 
 export function generateStaticParams() {
   return castingSystemCenters.map((slug) => ({ slug }));
@@ -282,18 +267,14 @@ export default async function CastingSystemPage({ params }: Args) {
                 id={item.id}
                 key={item.id}
               >
-                <div className="section-casting-system-card__media relative aspect-[552/320]">
+                <div className="section-casting-system-card__media relative isolate aspect-[552/320]">
                   <PageDeco
-                    className={[
-                      "z-20 opacity-90",
-                      castingSystemCardDecoClasses[
-                        index % castingSystemCardDecoClasses.length
-                      ],
-                    ].join(" ")}
+                    className={castingSystemCardDecoClass}
                     icon={decoIcons[index + 2]}
                     size="clamp(64px, 6vw, 90px)"
+                    style={{ zIndex: 2 }}
                   />
-                  <div className="relative z-10 size-full overflow-hidden bg-neutral-200">
+                  <div className="relative z-0 size-full overflow-hidden bg-neutral-200">
                     <Image
                       alt=""
                       aria-hidden="true"
