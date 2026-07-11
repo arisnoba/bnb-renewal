@@ -54,6 +54,7 @@ type ProfileProductionCenterConfig = {
 };
 
 const profileProductionCenters = Object.keys(centers) as CenterSlug[];
+const profileProductionHeroImage = "/assets/casting-system/hero.png";
 
 function profileProductionAsset(center: CenterSlug, filename: string) {
   return `/assets/profile-production/${center}/${filename}`;
@@ -244,26 +245,26 @@ function createDefaultProfileProductionItems(
 
 const profileProductionConfigs = {
   art: {
-    heroImage: "/assets/profile-production/hero.png",
+    heroImage: profileProductionHeroImage,
     items: artProfileProductionItems,
   },
   avenue: {
-    heroImage: profileProductionAsset("avenue", "hero.jpg"),
+    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems("avenue", artProfileProductionMedia),
   },
   exam: {
-    heroImage: profileProductionAsset("exam", "hero.jpg"),
+    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems("exam", artProfileProductionMedia),
   },
   highteen: {
-    heroImage: profileProductionAsset("highteen", "hero.jpg"),
+    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems(
       "highteen",
       kidsProfileProductionMedia,
     ),
   },
   kids: {
-    heroImage: profileProductionAsset("kids", "hero.jpg"),
+    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems(
       "kids",
       kidsProfileProductionMedia,
