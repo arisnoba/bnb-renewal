@@ -75,6 +75,17 @@ export function isGlobalAdminUser(user: unknown) {
   );
 }
 
+export function isMasterAdminUser(user: unknown) {
+  if (!user || typeof user !== "object") {
+    return false;
+  }
+
+  const role = (user as { role?: unknown }).role;
+  const permissionLevel = (user as { permissionLevel?: unknown }).permissionLevel;
+
+  return role === "master" || (typeof permissionLevel === "number" && permissionLevel >= 100);
+}
+
 export function isExamAdminMenuHidden(user: unknown) {
   return !isGlobalAdminUser(user) && userCenterValue(user) !== "exam";
 }
