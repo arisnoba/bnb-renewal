@@ -19,10 +19,14 @@ type Args = {
   }>;
 };
 
+type ProfileProductionAspectClass = "aspect-[552/320]" | "aspect-[1104/560]";
+
 type ProfileProductionMedia =
   | {
       alt?: string;
+      aspectClass?: ProfileProductionAspectClass;
       kind: "single";
+      objectFit?: "contain" | "cover";
       objectPosition?: string;
       src: string;
     }
@@ -54,6 +58,38 @@ const profileProductionCenters = Object.keys(centers) as CenterSlug[];
 function profileProductionAsset(center: CenterSlug, filename: string) {
   return `/assets/profile-production/${center}/${filename}`;
 }
+
+function profileProductionRootAsset(filename: string) {
+  return `/assets/profile-production/${filename}`;
+}
+
+const artProfileProductionMedia = {
+  srcs: [
+    profileProductionRootAsset("art-01.jpg"),
+    profileProductionRootAsset("art-02.jpg"),
+    profileProductionRootAsset("art-03.jpg"),
+    profileProductionRootAsset("art-04.jpg"),
+    profileProductionRootAsset("art-05.jpg"),
+  ],
+} satisfies {
+  srcs: string[];
+};
+
+const kidsProfileProductionMedia = {
+  aspectClass: "aspect-[1104/560]",
+  objectFit: "contain",
+  srcs: [
+    profileProductionRootAsset("kids-01.jpg"),
+    profileProductionRootAsset("kids-02.jpg"),
+    profileProductionRootAsset("kids-03.jpg"),
+    profileProductionRootAsset("kids-04.jpg"),
+    profileProductionRootAsset("kids-05.jpg"),
+  ],
+} satisfies {
+  aspectClass: ProfileProductionAspectClass;
+  objectFit: "contain";
+  srcs: string[];
+};
 
 const artProfileProductionItems = [
   {
@@ -120,8 +156,15 @@ const artProfileProductionItems = [
 
 function createDefaultProfileProductionItems(
   center: CenterSlug,
+  mediaOverrides: {
+    aspectClass?: ProfileProductionAspectClass;
+    objectFit?: "contain" | "cover";
+    srcs?: string[];
+  } = {},
 ): ProfileProductionItem[] {
   const isKids = center === "kids";
+  const mediaSrc = (index: number, filename: string) =>
+    mediaOverrides.srcs?.[index] ?? profileProductionAsset(center, filename);
 
   return [
     {
@@ -130,9 +173,11 @@ function createDefaultProfileProductionItems(
       ],
       id: "application",
       media: {
+        aspectClass: mediaOverrides.aspectClass,
         kind: "single",
+        objectFit: mediaOverrides.objectFit,
         objectPosition: "center",
-        src: profileProductionAsset(center, "profile_img01.jpg"),
+        src: mediaSrc(0, "profile_img01.jpg"),
       },
       title: "프로필 신청",
     },
@@ -144,9 +189,11 @@ function createDefaultProfileProductionItems(
       ],
       id: "concept-meeting",
       media: {
+        aspectClass: mediaOverrides.aspectClass,
         kind: "single",
+        objectFit: mediaOverrides.objectFit,
         objectPosition: "center",
-        src: profileProductionAsset(center, "profile_img02.jpg"),
+        src: mediaSrc(1, "profile_img02.jpg"),
       },
       title: "촬영 콘셉트미팅",
     },
@@ -156,9 +203,11 @@ function createDefaultProfileProductionItems(
       ],
       id: "shooting",
       media: {
+        aspectClass: mediaOverrides.aspectClass,
         kind: "single",
+        objectFit: mediaOverrides.objectFit,
         objectPosition: "center",
-        src: profileProductionAsset(center, "profile_img03.jpg"),
+        src: mediaSrc(2, "profile_img03.jpg"),
       },
       title: "프로필 촬영",
     },
@@ -168,9 +217,11 @@ function createDefaultProfileProductionItems(
       ],
       id: "retouching",
       media: {
+        aspectClass: mediaOverrides.aspectClass,
         kind: "single",
+        objectFit: mediaOverrides.objectFit,
         objectPosition: "center",
-        src: profileProductionAsset(center, "profile_img04.jpg"),
+        src: mediaSrc(3, "profile_img04.jpg"),
       },
       title: "A컷 분류 및 보정작업",
     },
@@ -180,9 +231,11 @@ function createDefaultProfileProductionItems(
       ],
       id: "profile-design",
       media: {
+        aspectClass: mediaOverrides.aspectClass,
         kind: "single",
+        objectFit: mediaOverrides.objectFit,
         objectPosition: "center",
-        src: profileProductionAsset(center, "profile_img05.jpg"),
+        src: mediaSrc(4, "profile_img05.jpg"),
       },
       title: "최종 프로필 디자인",
     },
@@ -196,27 +249,30 @@ const profileProductionConfigs = {
   },
   avenue: {
     heroImage: profileProductionAsset("avenue", "hero.jpg"),
-    items: createDefaultProfileProductionItems("avenue"),
+    items: createDefaultProfileProductionItems("avenue", artProfileProductionMedia),
   },
   exam: {
     heroImage: profileProductionAsset("exam", "hero.jpg"),
-    items: createDefaultProfileProductionItems("exam"),
+    items: createDefaultProfileProductionItems("exam", artProfileProductionMedia),
   },
   highteen: {
     heroImage: profileProductionAsset("highteen", "hero.jpg"),
-    items: createDefaultProfileProductionItems("highteen"),
+    items: createDefaultProfileProductionItems(
+      "highteen",
+      kidsProfileProductionMedia,
+    ),
   },
   kids: {
     heroImage: profileProductionAsset("kids", "hero.jpg"),
-    items: createDefaultProfileProductionItems("kids"),
+    items: createDefaultProfileProductionItems(
+      "kids",
+      kidsProfileProductionMedia,
+    ),
   },
 } satisfies Record<CenterSlug, ProfileProductionCenterConfig>;
 
-const profileProductionCardDecoClasses = [
-  "left-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)]",
-  "right-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)]",
-  "right-[calc(var(--page-deco-size)/-2)] bottom-[calc(var(--page-deco-size)/-2)]",
-] as const;
+const profileProductionCardDecoClass =
+  "section-profile-production-card__deco left-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)] opacity-90";
 
 export function generateStaticParams() {
   return profileProductionCenters.map((slug) => ({ slug }));
@@ -308,16 +364,17 @@ export default async function ProfileProductionPage({ params }: Args) {
                 id={item.id}
                 key={item.id}
               >
-                <div className="section-profile-production-card__media relative aspect-[552/320]">
+                <div
+                  className={[
+                    "section-profile-production-card__media relative isolate",
+                    profileProductionMediaAspectClass(item.media),
+                  ].join(" ")}
+                >
                   <PageDeco
-                    className={[
-                      "z-20 opacity-90",
-                      profileProductionCardDecoClasses[
-                        index % profileProductionCardDecoClasses.length
-                      ],
-                    ].join(" ")}
+                    className={profileProductionCardDecoClass}
                     icon={decoIcons[index + 2]}
                     size="clamp(64px, 6vw, 90px)"
+                    style={{ zIndex: 2 }}
                   />
                   <ProfileProductionMedia
                     media={item.media}
@@ -357,11 +414,15 @@ function ProfileProductionMedia({
 }) {
   if (media.kind === "single") {
     return (
-      <div className="relative z-10 size-full overflow-hidden bg-neutral-200">
+      <div className="relative z-0 size-full overflow-hidden bg-neutral-200">
         <Image
           alt=""
           aria-hidden="true"
-          className="size-full object-cover"
+          className={
+            media.objectFit === "contain"
+              ? "size-full object-contain"
+              : "size-full object-cover"
+          }
           fill
           sizes="(max-width: 1023px) calc(100vw - 40px), 552px"
           src={media.src}
@@ -372,7 +433,7 @@ function ProfileProductionMedia({
   }
 
   return (
-    <div className="relative z-10 grid size-full grid-cols-2 overflow-hidden bg-neutral-200">
+    <div className="relative z-0 grid size-full grid-cols-2 overflow-hidden bg-neutral-200">
       {media.images.map((image, index) => (
         <div
           className={[
@@ -398,6 +459,14 @@ function ProfileProductionMedia({
       ))}
     </div>
   );
+}
+
+function profileProductionMediaAspectClass(
+  media: ProfileProductionMedia,
+): ProfileProductionAspectClass {
+  return media.kind === "single" && media.aspectClass
+    ? media.aspectClass
+    : "aspect-[552/320]";
 }
 
 function formatProfileProductionIndex(index: number) {
