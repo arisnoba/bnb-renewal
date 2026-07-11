@@ -1044,10 +1044,10 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
 
       <div className="relative">
         <section
-          className="section-grade-system-steps section-p-block-base scroll-mt-[calc(var(--page-top-offset))]"
+          className="section-grade-system-steps section-p-block-base scroll-mt-[calc(var(--page-top-offset))] relative z-10"
           id="steps"
         >
-          <div className="container relative">
+          <div className="container relative z-10">
             <StepsPanel center={center} data={data} />
           </div>
         </section>
@@ -1060,7 +1060,7 @@ export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
           </div>
         </section>
         <section
-          className="section-grade-system-cohorts section-p-block-base scroll-mt-[calc(var(--page-top-offset))]"
+          className="section-grade-system-cohorts section-p-block-base scroll-mt-[calc(var(--page-top-offset))] relative z-10"
           id="cohorts"
         >
           <div className="container relative">

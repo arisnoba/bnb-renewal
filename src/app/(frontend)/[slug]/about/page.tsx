@@ -205,7 +205,7 @@ export default async function CenterAboutPage({ params }: Args) {
             </h2>
           </header>
 
-          <div className="section-center-about-list__items divide-y divide-white/15 border-white/15">
+          <div className="section-center-about-list__items divide-y divide-white/15 border-white/15 relative z-10">
             {centerIntroductions.map((item) => (
               <CenterIntroArticle item={item} key={item.id} />
             ))}
