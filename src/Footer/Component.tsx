@@ -1,19 +1,15 @@
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import React from 'react'
 
 import { FooterAddress } from './Address.client'
-import { FooterCenterLinks } from './CenterLinks.client'
+import { FooterCenterLinks, FooterPolicyLinks } from './CenterLinks.client'
 import { FooterLogo } from './FooterLogo.client'
 import { FooterSocialLinks } from './SocialLinks.client'
-import { centerSlugFromPathname } from './centerInfo'
 import { getFooterData } from './data'
 import { familySitesFromFooter } from './familySites'
 
 export async function Footer() {
-  const requestHeaders = await headers()
-  const pathname = requestHeaders.get('x-pathname')
-  const center = centerSlugFromPathname(pathname) ?? 'art'
+  const initialCenter = 'art'
   const footer = await getFooterData()
   const familySites = familySitesFromFooter(footer)
   const centerInfos = footer?.centerInfos ?? []
@@ -29,7 +25,7 @@ export async function Footer() {
             시작되는 곳
           </p>
           <div className="grid gap-16 md:grid-cols-2 md:gap-5">
-            <FooterCenterLinks initialCenter={center} />
+            <FooterCenterLinks initialCenter={initialCenter} />
           </div>
         </div>
 
@@ -37,18 +33,11 @@ export async function Footer() {
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-5">
           <div className="order-2 flex flex-col items-start gap-6 lg:order-1 lg:min-h-[234px] lg:justify-between">
-            <FooterLogo initialCenter={center} />
+            <FooterLogo initialCenter={initialCenter} />
 
-            <nav aria-label="정책" className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal">
-              <Link className="text-[#666] transition-colors hover:text-white" href={`/${center}/terms`} prefetch={false}>
-                이용약관
-              </Link>
-              <Link className="font-medium text-[#999] transition-colors hover:text-white" href={`/${center}/privacy`} prefetch={false}>
-                개인정보처리방침
-              </Link>
-            </nav>
+            <FooterPolicyLinks initialCenter={initialCenter} />
 
-            <FooterAddress centerInfos={centerInfos} initialPathname={pathname} />
+            <FooterAddress centerInfos={centerInfos} initialPathname={null} />
 
             <p className="text-sm leading-[1.2] tracking-normal text-white/40">
               ©{copyrightYear} BNB INDUSTRY. All rights reserved.
@@ -60,7 +49,7 @@ export async function Footer() {
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
             <FooterLinkGroup title="SOCIAL">
-              <FooterSocialLinks centerInfos={centerInfos} initialPathname={pathname} />
+              <FooterSocialLinks centerInfos={centerInfos} initialPathname={null} />
             </FooterLinkGroup>
           </div>
         </div>
