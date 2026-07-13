@@ -62,8 +62,14 @@ const databasePoolMax = resolvePayloadDatabasePoolMax()
 export default buildConfig({
   admin: {
     components: {
+      afterLogin: ['@/components/payload/AdminPasswordHelp#AdminLoginPasswordHelp'],
       graphics: {
         Logo: '@/components/payload/AdminLoginLogo#AdminLoginLogo',
+      },
+      views: {
+        forgot: {
+          Component: '@/components/payload/AdminPasswordHelp#AdminForgotPasswordNotice',
+        },
       },
     },
     dateFormat: 'yyyy-MM-dd HH:mm',

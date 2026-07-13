@@ -99,6 +99,73 @@ html[data-theme='dark'] .bnb-admin-login-logo {
 	filter: none;
 }
 
+.login__form > a[href$='/forgot'] {
+	display: none;
+}
+
+.bnb-admin-password-help {
+	background: var(--theme-elevation-50);
+	border: 1px solid var(--theme-elevation-150);
+	border-radius: var(--style-radius-s);
+	color: var(--theme-elevation-700);
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	line-height: 1.55;
+	margin-top: calc(var(--base) * -0.25);
+	padding: 14px 16px;
+}
+
+.bnb-admin-password-help strong {
+	color: var(--theme-elevation-900);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.bnb-admin-password-help p {
+	font-size: 13px;
+	margin: 0;
+}
+
+.bnb-admin-password-notice {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.bnb-admin-password-notice h1 {
+	font-size: 24px;
+	line-height: 1.3;
+	margin: 0;
+}
+
+.bnb-admin-password-notice p {
+	color: var(--theme-elevation-700);
+	line-height: 1.6;
+	margin: 0;
+}
+
+.bnb-admin-password-notice__link {
+	align-items: center;
+	align-self: flex-start;
+	background: var(--theme-elevation-800);
+	border-radius: var(--style-radius-s);
+	color: var(--theme-elevation-0);
+	display: inline-flex;
+	font-weight: 700;
+	line-height: 1.25;
+	margin-top: 8px;
+	min-height: 40px;
+	padding: 0 16px;
+	text-decoration: none;
+}
+
+.bnb-admin-password-notice__link:hover,
+.bnb-admin-password-notice__link:focus-visible {
+	background: var(--theme-elevation-600);
+	color: var(--theme-elevation-0);
+}
+
 .field-type.upload .dropzone,
 .bnb-image-upload-trigger {
 	background: var(--bnb-admin-upload-bg);
