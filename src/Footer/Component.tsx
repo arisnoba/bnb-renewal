@@ -58,14 +58,14 @@ export async function Footer() {
             <br />
             시작되는 곳
           </p>
-          <div className="grid gap-16 lg:grid-cols-2 lg:gap-5">
+          <div className="grid gap-16 md:grid-cols-2 md:gap-5">
             <FooterCenterLinks initialCenter={center} />
           </div>
         </div>
 
         <div className="h-px w-full bg-white/10" />
 
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-6">
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-5">
           <div className="order-2 flex flex-col items-start gap-6 lg:order-1 lg:min-h-[234px] lg:justify-between">
             <FooterLogo initialCenter={center} />
 
