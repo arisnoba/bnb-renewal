@@ -42,7 +42,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
     <main className="page page-light page-casting-status" data-center={center}>
       <section
         aria-labelledby="casting-status-hero-title"
-        className="section-casting-status-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-casting-status-hero overflow-hidden"
         data-page-tone="dark"
       >
         <CastingStatusHeroVisual items={heroItems} />

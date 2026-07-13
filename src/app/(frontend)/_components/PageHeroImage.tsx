@@ -30,7 +30,7 @@ const artistHeroImages = {
   art: heroImageSet(`${heroRoot}/artist/art`),
   avenue: heroImageSet(`${heroRoot}/artist/art`),
   exam: heroImageSet(`${heroRoot}/passed/exam`),
-  highteen: heroImageSet(`${heroRoot}/artist/art`),
+  highteen: heroImageSet(`${heroRoot}/artist/highteen`),
   kids: heroImageSet(`${heroRoot}/artist/kids`),
 } satisfies Record<CenterSlug, HeroImageSet>
 

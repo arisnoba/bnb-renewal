@@ -87,7 +87,7 @@ export async function ScreenAppearancesArchive({
   return (
     <main className="page page-light page-screen-appearances" data-center={center}>
       <section
-        className="section-screen-appearances-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-screen-appearances-hero overflow-hidden"
         aria-labelledby="screen-appearances-hero-title"
         data-page-tone="dark"
       >

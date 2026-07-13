@@ -4,6 +4,9 @@
 // Legacy/shared feature styles.
 @use '../Main/BannerSlider';
 
+// Shared page patterns.
+@use 'hero-pattern';
+
 // Page-level exception styles kept next to their frontend routes.
 @use '../app/(frontend)/faq/FaqArchive';
 @use '../app/(frontend)/artist-press/ArtistPressArchive';

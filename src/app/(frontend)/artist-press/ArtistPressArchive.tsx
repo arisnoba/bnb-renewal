@@ -57,30 +57,30 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
       data-page-tone="dark"
     >
       <section
-        className="section-artist-press-hero"
+        className="section-kv-hero section-kv-hero--compact-title section-artist-press-hero"
         aria-labelledby="artist-press-hero-title"
       >
         <PageHeroImage
           image={getArtistHeroImage(center)}
-          className="section-artist-press-hero__background"
+          className="section-kv-hero__background"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
+        <div aria-hidden="true" className="section-kv-hero__overlay" />
         <PageDeco
-          className="section-artist-press-hero__deco section-artist-press-hero__deco--left"
+          className="section-kv-hero__deco section-kv-hero__deco--left"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="section-artist-press-hero__deco section-artist-press-hero__deco--center"
+          className="section-kv-hero__deco section-kv-hero__deco--center"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="section-artist-press-hero__deco section-artist-press-hero__deco--right"
+          className="section-kv-hero__deco section-kv-hero__deco--right"
           icon={decoIcons[2]}
         />
-        <div className="section-artist-press-hero__content">
+        <div className="section-kv-hero__content">
           <div
             id="artist-press-hero-title"
-            className="section-artist-press-hero__title page-hero-label"
+            className="section-kv-hero__title page-hero-label"
           >
             <span className="block text-brand">아티스트</span>
             <span className="block">BNB</span>

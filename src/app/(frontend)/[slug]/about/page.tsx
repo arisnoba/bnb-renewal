@@ -161,7 +161,7 @@ export default async function CenterAboutPage({ params }: Args) {
     <main className="page page-dark page-about" data-center={center}>
       <section
         aria-labelledby="center-about-hero-title"
-        className="section-center-about-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-center-about-hero overflow-hidden"
       >
         <PageHeroImage image={getAboutHeroImage()} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/65" />

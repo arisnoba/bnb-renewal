@@ -140,6 +140,7 @@ export async function RookiesArchive({
     }))
 
   const totalPages = Math.max(rookies.totalPages || 1, 1)
+  const heroImage = getArtistHeroImage(center)
   const filterItems = [
     {
       active: !filter,
@@ -159,25 +160,31 @@ export async function RookiesArchive({
       data-center={center}
       data-page-tone="dark"
     >
-      <section className="section-rookies-hero" aria-labelledby="rookies-hero-title">
-        <PageHeroImage image={getArtistHeroImage(center)} className="section-rookies-hero__background" />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
+      <section
+        className="section-kv-hero section-kv-hero--compact-title section-rookies-hero"
+        aria-labelledby="rookies-hero-title"
+      >
+        <PageHeroImage
+          image={heroImage}
+          className="section-kv-hero__background"
+        />
+        <div aria-hidden="true" className="section-kv-hero__overlay" />
         <PageDeco
-          className="section-rookies-hero__deco section-rookies-hero__deco--left"
+          className="section-kv-hero__deco section-kv-hero__deco--left"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="section-rookies-hero__deco section-rookies-hero__deco--center"
+          className="section-kv-hero__deco section-kv-hero__deco--center"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="section-rookies-hero__deco section-rookies-hero__deco--right"
+          className="section-kv-hero__deco section-kv-hero__deco--right"
           icon={decoIcons[2]}
         />
-        <div className="section-rookies-hero__content">
+        <div className="section-kv-hero__content">
           <div
             id="rookies-hero-title"
-            className="section-rookies-hero__title page-hero-label"
+            className="section-kv-hero__title page-hero-label"
           >
             <span className="block text-brand">아티스트</span>
             <span className="block">BNB 루키</span>

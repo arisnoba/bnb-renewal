@@ -13,6 +13,8 @@ import {
   type CenterSlug,
 } from "@/lib/centers";
 
+import { CastingCenterHeroVisual } from "../../_components/CastingCenterHeroVisual";
+import { HeroMosaicDim } from "../../_components/HeroMosaicDim";
 import { CastingSystemIndex } from "./CastingSystemIndex.client";
 
 type Args = {
@@ -33,7 +35,6 @@ type CastingSystemItemId =
   | "agency";
 
 type CastingSystemCenterConfig = {
-  heroImage: string;
   images: Record<CastingSystemItemId, string>;
   studioName: string;
   videoCompanyName: string;
@@ -50,8 +51,6 @@ type CastingSystemItem = {
 const castingSystemCenters = ["art", "avenue", "highteen", "kids"] as const satisfies readonly CenterSlug[];
 type CastingSystemCenter = (typeof castingSystemCenters)[number];
 
-const castingSystemHeroImage = "/assets/casting-system/hero.png";
-
 const castingSystemImages = {
   agency: "/assets/casting-system/agency.png",
   audition: "/assets/casting-system/audition.png",
@@ -66,26 +65,26 @@ const castingSystemImages = {
 
 const castingSystemConfigs = {
   art: {
-    heroImage: castingSystemHeroImage,
     images: castingSystemImages,
     studioName: "BAEWOOHWA STUDIO",
     videoCompanyName: "㈜볼드 인사이트",
   },
   avenue: {
-    heroImage: castingSystemHeroImage,
     images: castingSystemImages,
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
   highteen: {
-    heroImage: castingSystemHeroImage,
     images: castingSystemImages,
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
   kids: {
-    heroImage: castingSystemHeroImage,
-    images: castingSystemImages,
+    images: {
+      ...castingSystemImages,
+      profile: "/assets/casting-system/kids-video.jpg",
+      video: "/assets/casting-system/kids-profile.jpg",
+    },
     studioName: "스튜디오BNB",
     videoCompanyName: "㈜아비오 콘텐츠",
   },
@@ -201,7 +200,6 @@ export default async function CastingSystemPage({ params }: Args) {
   const { slug } = await params;
   const center = assertCastingSystemCenter(assertCenter(slug));
   const castingSystemItems = getCastingSystemItems(center);
-  const castingSystemConfig = castingSystemConfigs[center];
   const decoIcons = getPageDecoIcons(
     castingSystemItems.length + 2,
     `casting-system-${center}`,
@@ -211,19 +209,14 @@ export default async function CastingSystemPage({ params }: Args) {
     <main className="page page-light page-casting-system" data-center={center}>
       <section
         aria-labelledby="casting-system-hero-title"
-        className="section-casting-system-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-casting-system-hero overflow-hidden"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover opacity-60"
-          fill
-          priority
-          sizes="100vw"
-          src={castingSystemConfig.heroImage}
+        <CastingCenterHeroVisual
+          className="section-casting-system-hero__visual"
+          mediaClassName="section-casting-system-hero__media"
         />
-        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[38%] md:block md:-left-28"
           icon={decoIcons[0]}

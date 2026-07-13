@@ -125,7 +125,7 @@ export default async function SpecialSystemPage({ params }: Args) {
     <main className="page page-dark page-special-system" data-center={center}>
       <section
         aria-labelledby="special-system-hero-title"
-        className="section-special-system-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-special-system-hero overflow-hidden"
         data-page-tone="dark"
       >
         <PageHeroImage

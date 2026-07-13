@@ -5,9 +5,10 @@ import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { getCenterLabel } from '@/lib/centers'
 import configPromise from '@payload-config'
-import Image from 'next/image'
 import { getPayload, type Where } from 'payload'
 
+import { CastingCenterHeroVisual } from '../_components/CastingCenterHeroVisual'
+import { HeroMosaicDim } from '../_components/HeroMosaicDim'
 import { MonthNavigator } from './MonthNavigator.client'
 
 type SchedulePageProps = {
@@ -31,7 +32,6 @@ type CalendarDay = {
 
 type ScheduleEventType = NonNullable<AuditionSchedule['eventType']>
 
-const scheduleHeroImage = '/assets/casting-system/hero.png'
 const calendarWeekdays = ['일', '월', '화', '수', '목', '금', '토'] as const
 const scheduleCenters = ['art', 'avenue', 'highteen', 'kids'] as const
 
@@ -83,19 +83,14 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
     <main className="page page-light page-schedule" data-center={center}>
       <section
         aria-labelledby="schedule-hero-title"
-        className="section-schedule-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-schedule-hero overflow-hidden"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover object-center opacity-60"
-          fill
-          priority
-          sizes="100vw"
-          src={scheduleHeroImage}
+        <CastingCenterHeroVisual
+          className="section-schedule-hero__visual"
+          mediaClassName="section-schedule-hero__media"
         />
-        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[36%] md:block md:-left-28"
           icon={decoIcons[0]}

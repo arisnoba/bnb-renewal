@@ -5,16 +5,15 @@ import {
   getExamResultsHeroImage,
   PageHeroImage,
 } from "@/app/(frontend)/_components/PageHeroImage";
+import { CastingCenterHeroVisual } from "@/app/(frontend)/_components/CastingCenterHeroVisual";
 import { HeroMosaicDim } from "@/app/(frontend)/_components/HeroMosaicDim";
 import { getPageDecoIcons, PageDeco } from "@/components/PageDeco";
 import type { CenterSlug } from "@/lib/centers";
 import { cn } from "@/utilities/ui";
-import Image from "next/image";
 
 type SkeletonTone = "dark" | "light";
 
 const loadingCenters = ["art", "avenue", "exam", "highteen", "kids"] as const;
-const scheduleHeroImage = "/assets/casting-system/hero.png";
 
 export function resolveLoadingCenter(
   value: string | string[] | undefined,
@@ -184,7 +183,7 @@ function EducationHeroLoadingSkeleton({
     <section
       aria-label="페이지 상단 콘텐츠 로딩"
       className={cn(
-        "relative min-h-140 overflow-hidden bg-black md:min-h-200",
+        "section-kv-hero section-kv-hero--standard overflow-hidden",
         sectionClassName,
       )}
       data-page-tone="dark"
@@ -295,7 +294,7 @@ export function ExamPassedVideosLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="합격영상 상단 콘텐츠 로딩"
-        className="section-exam-passed-videos-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-exam-passed-videos-hero overflow-hidden"
         data-page-tone="dark"
       >
         <PageHeroImage
@@ -351,26 +350,26 @@ export function RookiesLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="BNB 루키 상단 콘텐츠 로딩"
-        className="section-rookies-hero"
+        className="section-kv-hero section-kv-hero--compact-title section-rookies-hero"
       >
         <PageHeroImage
           image={getArtistHeroImage("art")}
-          className="section-rookies-hero__background"
+          className="section-kv-hero__background"
         />
-        <div aria-hidden="true" className="section-rookies-hero__overlay" />
+        <div aria-hidden="true" className="section-kv-hero__overlay" />
         <PageDeco
-          className="section-rookies-hero__deco section-rookies-hero__deco--left"
+          className="section-kv-hero__deco section-kv-hero__deco--left"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="section-rookies-hero__deco section-rookies-hero__deco--center"
+          className="section-kv-hero__deco section-kv-hero__deco--center"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="section-rookies-hero__deco section-rookies-hero__deco--right"
+          className="section-kv-hero__deco section-kv-hero__deco--right"
           icon={decoIcons[2]}
         />
-        <div className="section-rookies-hero__content space-y-4">
+        <div className="section-kv-hero__content space-y-4">
           <SkeletonBlock className="h-10 w-32" tone="dark" />
           <SkeletonBlock className="h-16 w-full max-w-[420px]" tone="dark" />
         </div>
@@ -407,19 +406,14 @@ export function ScheduleLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="촬영ㆍ오디션 스케줄 상단 콘텐츠 로딩"
-        className="section-schedule-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-schedule-hero overflow-hidden"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover object-center opacity-60"
-          fill
-          priority
-          sizes="100vw"
-          src={scheduleHeroImage}
+        <CastingCenterHeroVisual
+          className="section-schedule-hero__visual"
+          mediaClassName="section-schedule-hero__media"
         />
-        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[36%] md:block md:-left-28"
           icon={decoIcons[0]}
@@ -547,6 +541,10 @@ export function HeroArchiveLoadingSkeleton({
   };
   const usesMosaicDim =
     kind === "direct-castings" || kind === "screen-appearances";
+  const heroRootClassName =
+    kind === "artist-press"
+      ? "section-kv-hero section-kv-hero--compact-title"
+      : "section-kv-hero section-kv-hero--standard";
   const heroHeightClassName =
     kind === "artist-press"
       ? "min-h-[620px] md:min-h-200"
@@ -560,7 +558,7 @@ export function HeroArchiveLoadingSkeleton({
       <LoadingLabel />
       <section
         aria-label="페이지 상단 콘텐츠 로딩"
-        className={cn("relative overflow-hidden bg-black", heroHeightClassName)}
+        className={cn(heroRootClassName, "overflow-hidden")}
         data-page-tone="dark"
       >
         <div
@@ -635,7 +633,7 @@ export function ExamResultsLoadingSkeleton({
       <LoadingLabel />
       <section
         aria-label="합격현황 상단 콘텐츠 로딩"
-        className="section-exam-results-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-exam-results-hero overflow-hidden"
         data-page-tone="dark"
       >
         <PageHeroImage
@@ -691,7 +689,7 @@ export function ExamPassedReviewsLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="합격후기 상단 콘텐츠 로딩"
-        className="section-exam-passed-reviews-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-exam-passed-reviews-hero overflow-hidden"
         data-page-tone="dark"
       >
         <PageHeroImage

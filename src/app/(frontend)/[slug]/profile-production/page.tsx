@@ -11,6 +11,8 @@ import {
   type CenterSlug,
 } from "@/lib/centers";
 
+import { CastingCenterHeroVisual } from "../../_components/CastingCenterHeroVisual";
+import { HeroMosaicDim } from "../../_components/HeroMosaicDim";
 import { ProfileProductionIndex } from "./ProfileProductionIndex.client";
 
 type Args = {
@@ -49,12 +51,10 @@ type ProfileProductionItem = {
 };
 
 type ProfileProductionCenterConfig = {
-  heroImage: string;
   items: ProfileProductionItem[];
 };
 
 const profileProductionCenters = Object.keys(centers) as CenterSlug[];
-const profileProductionHeroImage = "/assets/casting-system/hero.png";
 
 function profileProductionAsset(center: CenterSlug, filename: string) {
   return `/assets/profile-production/${center}/${filename}`;
@@ -245,26 +245,21 @@ function createDefaultProfileProductionItems(
 
 const profileProductionConfigs = {
   art: {
-    heroImage: profileProductionHeroImage,
     items: artProfileProductionItems,
   },
   avenue: {
-    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems("avenue", artProfileProductionMedia),
   },
   exam: {
-    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems("exam", artProfileProductionMedia),
   },
   highteen: {
-    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems(
       "highteen",
       kidsProfileProductionMedia,
     ),
   },
   kids: {
-    heroImage: profileProductionHeroImage,
     items: createDefaultProfileProductionItems(
       "kids",
       kidsProfileProductionMedia,
@@ -306,19 +301,14 @@ export default async function ProfileProductionPage({ params }: Args) {
     >
       <section
         aria-labelledby="profile-production-hero-title"
-        className="section-profile-production-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-profile-production-hero overflow-hidden"
         data-page-tone="dark"
       >
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 size-full object-cover opacity-60"
-          fill
-          priority
-          sizes="100vw"
-          src={profileProductionConfig.heroImage}
+        <CastingCenterHeroVisual
+          className="section-profile-production-hero__visual"
+          mediaClassName="section-profile-production-hero__media"
         />
-        <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+        <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[38%] md:block md:-left-28"
           icon={decoIcons[0]}

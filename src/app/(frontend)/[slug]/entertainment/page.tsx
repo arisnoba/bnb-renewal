@@ -76,7 +76,7 @@ function EntertainmentHero({ center }: { center: EntertainmentCenter }) {
   const decoIcons = getPageDecoIcons(2, `entertainment-${center}`)
 
   return (
-    <section className="section-entertainment-hero relative min-h-140 overflow-hidden bg-black md:min-h-200">
+    <section className="section-kv-hero section-kv-hero--standard section-entertainment-hero overflow-hidden">
       <PageHeroImage image={getEducationHeroImage(center)} />
       <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
       <PageDeco

@@ -159,7 +159,7 @@ export function KidsCurriculumPage() {
     <main className="page page-dark page-curriculum page-curriculum--kids bg-neutral-950" data-center="kids">
       <section
         aria-labelledby="kids-curriculum-hero-title"
-        className="section-kids-curriculum-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-kids-curriculum-hero overflow-hidden"
         data-page-tone="dark"
       >
         <PageHeroImage image={getEducationHeroImage('kids')} />

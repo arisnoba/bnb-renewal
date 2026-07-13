@@ -40,7 +40,7 @@ export default async function FacilitiesPage({ params }: Args) {
     <main className="page page-dark page-facilities bg-neutral-950 text-white" data-center={center}>
       <section
         aria-labelledby="facilities-title"
-        className="section-facilities-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-facilities-hero overflow-hidden"
       >
         <PageHeroImage image={getAboutHeroImage()} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/60" />

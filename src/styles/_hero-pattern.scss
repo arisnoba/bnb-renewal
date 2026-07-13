@@ -1,0 +1,110 @@
+.section-kv-hero {
+  background: #000;
+  color: #fff;
+  // overflow: hidden;
+  position: relative;
+}
+
+.section-kv-hero--standard {
+  min-height: 560px;
+}
+
+.section-kv-hero--compact-title {
+  height: 800px;
+}
+
+.section-kv-hero__background {
+  object-position: center 36%;
+  opacity: 0.6;
+}
+
+.section-kv-hero__overlay {
+  background: rgb(0 0 0 / 60%);
+  inset: 0;
+  position: absolute;
+}
+
+.section-kv-hero__deco--left {
+  left: -156px;
+  top: 345px;
+}
+
+.section-kv-hero__deco--center {
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(40%);
+}
+
+.section-kv-hero__deco--right {
+  right: -124px;
+  top: 158px;
+}
+
+.section-kv-hero__content {
+  bottom: 120px;
+  left: max(20px, calc((100vw - 1120px) / 2));
+  position: absolute;
+  width: min(100% - 40px, 420px);
+  z-index: 1;
+}
+
+.section-kv-hero__eyebrow {
+  color: var(--brand);
+  margin: 0 0 4px;
+}
+
+.section-kv-hero__title {
+  color: #fff;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.section-grade-system-hero__deco--kids-left {
+  left: -96px;
+  top: 22%;
+}
+
+.section-grade-system-hero__deco--kids-right {
+  bottom: 10%;
+  right: -48px;
+}
+
+@media (max-width: 767px) {
+  .section-kv-hero--compact-title {
+    height: 620px;
+  }
+
+  .section-kv-hero__deco--left {
+    left: -120px;
+    top: 300px;
+  }
+
+  .section-kv-hero__deco--center {
+    bottom: -70px;
+    transform: translateX(8%);
+  }
+
+  .section-kv-hero__deco--right {
+    right: -112px;
+    top: 110px;
+  }
+
+  .section-kv-hero__content {
+    bottom: 72px;
+    width: min(100% - 32px, 360px);
+  }
+}
+
+@media (min-width: 768px) {
+  .section-kv-hero--standard {
+    min-height: 800px;
+  }
+
+  .section-grade-system-hero__deco--kids-left {
+    left: -240px;
+  }
+
+  .section-grade-system-hero__deco--kids-right {
+    right: -80px;
+  }
+}

@@ -44,7 +44,7 @@ export default async function CenterMapPage({ params }: Args) {
 
   return (
     <main className="page page-dark map-page" data-center={center}>
-      <section className="relative min-h-140 overflow-hidden bg-black md:min-h-200">
+      <section className="section-kv-hero section-kv-hero--standard section-map-hero overflow-hidden">
         <PageHeroImage image={getAboutHeroImage()} />
         <div className="absolute inset-0 bg-black/60" />
         <PageDeco

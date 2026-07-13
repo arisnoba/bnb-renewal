@@ -1,57 +1,3 @@
-.section-rookies-hero {
-  background: #000;
-  color: #fff;
-  height: 800px;
-  overflow: hidden;
-  position: relative;
-}
-
-.section-rookies-hero__background {
-  object-position: center 36%;
-  opacity: 0.6;
-}
-
-.section-rookies-hero__overlay {
-  background: rgb(0 0 0 / 60%);
-  inset: 0;
-  position: absolute;
-}
-
-.section-rookies-hero__deco--left {
-  left: -156px;
-  top: 345px;
-}
-
-.section-rookies-hero__deco--center {
-  bottom: -100px;
-  left: 50%;
-  transform: translateX(40%);
-}
-
-.section-rookies-hero__deco--right {
-  right: -124px;
-  top: 158px;
-}
-
-.section-rookies-hero__content {
-  bottom: 120px;
-  left: max(20px, calc((100vw - 1120px) / 2));
-  position: absolute;
-  width: min(100% - 40px, 420px);
-  z-index: 1;
-}
-
-.section-rookies-hero__eyebrow {
-  color: var(--brand);
-  margin: 0 0 4px;
-}
-
-.section-rookies-hero__title {
-  color: #fff;
-  margin: 0;
-  word-break: keep-all;
-}
-
 .section-rookies-list {
   background: #fff;
   color: #222;
@@ -340,30 +286,6 @@
 }
 
 @media (max-width: 767px) {
-  .section-rookies-hero {
-    height: 620px;
-  }
-
-  .section-rookies-hero__deco--left {
-    left: -120px;
-    top: 300px;
-  }
-
-  .section-rookies-hero__deco--center {
-    bottom: -70px;
-    transform: translateX(8%);
-  }
-
-  .section-rookies-hero__deco--right {
-    right: -112px;
-    top: 110px;
-  }
-
-  .section-rookies-hero__content {
-    bottom: 72px;
-    width: min(100% - 32px, 360px);
-  }
-
   .section-rookies-list {
     padding-block: 72px 88px;
   }

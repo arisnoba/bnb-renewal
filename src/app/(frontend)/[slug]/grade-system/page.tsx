@@ -74,27 +74,30 @@ export default async function ArtGradeSystemPage({ params }: Args) {
 
   return (
     <main className="page page-dark page-grade-system" data-center={center}>
-      <section className="relative min-h-140 overflow-hidden bg-black md:min-h-200">
-        <PageHeroImage image={getEducationHeroImage(center)} />
-        <div className="absolute inset-0 bg-black/60" />
+      <section className="section-kv-hero section-kv-hero--compact-title section-grade-system-hero">
+        <PageHeroImage
+          image={getEducationHeroImage(center)}
+          className="section-kv-hero__background"
+        />
+        <div aria-hidden="true" className="section-kv-hero__overlay" />
         <PageDeco
           className={
             center === 'kids'
-              ? '-left-24 top-[22%] md:-left-60'
-              : '-left-20 top-[22%] md:-left-28'
+              ? 'section-kv-hero__deco section-grade-system-hero__deco--kids-left'
+              : 'section-kv-hero__deco section-kv-hero__deco--left'
           }
           icon={center === 'kids' ? 'icon-ng.svg' : decoIcons[0]}
         />
         <PageDeco
           className={
             center === 'kids'
-              ? '-right-12 bottom-[10%] md:block md:-right-20'
-              : '-right-12 bottom-[10%] md:-right-20'
+              ? 'section-kv-hero__deco section-grade-system-hero__deco--kids-right'
+              : 'section-kv-hero__deco section-kv-hero__deco--right'
           }
           icon={center === 'kids' ? 'icon-ae.svg' : decoIcons[1]}
         />
-        <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
-          <h1 className="page-hero-label">
+        <div className="section-kv-hero__content">
+          <h1 className="section-kv-hero__title page-hero-label">
             <span className="block whitespace-nowrap text-brand">교육</span>
             <span className="block">등급제</span>
             <span className="block">교육관리시스템</span>

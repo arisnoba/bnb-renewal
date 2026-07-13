@@ -113,7 +113,7 @@ export async function DirectCastingsArchive({
     <main className="page page-light page-direct-castings" data-center={center}>
       <section
         aria-labelledby="direct-castings-hero-title"
-        className="section-direct-castings-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-direct-castings-hero overflow-hidden"
         data-page-tone="dark"
       >
         <DirectCastingsHero images={heroImages} />

@@ -47,7 +47,6 @@ export function CompanyTextDeco() {
           <HyperText
             animateOnHover={false}
             as="span"
-            characterClassName="font-sans"
             className="block overflow-visible font-[inherit] leading-[inherit]"
             delay={index * 180}
             duration={1200}

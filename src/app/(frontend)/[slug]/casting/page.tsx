@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 
 import configPromise from '@payload-config'
 import { ChevronRight } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
@@ -13,6 +12,7 @@ import { assertCenter, getCenterLabel, type CenterSlug } from '@/lib/centers'
 import type { CastingDirector, Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
+import { CastingCenterHeroVisual } from '../../_components/CastingCenterHeroVisual'
 import { HeroMosaicDim } from '../../_components/HeroMosaicDim'
 import { CastingProfileCard, type CastingProfile } from './CastingProfileCard.client'
 import './CastingPage.css'
@@ -124,24 +124,13 @@ export default async function CastingPage({ params }: Args) {
     <main className="page page-light page-casting" data-center={center}>
       <section
         aria-labelledby="casting-hero-title"
-        className="section-casting-hero relative min-h-140 overflow-hidden bg-black md:min-h-200"
+        className="section-kv-hero section-kv-hero--standard section-casting-hero overflow-hidden"
         data-page-tone="dark"
       >
-        <div
-          aria-hidden="true"
-          className="section-casting-hero__visual absolute inset-0 overflow-hidden"
-        >
-          <div className="section-casting-hero__media absolute left-1/2 top-1/2 h-[760px] w-[1280px] max-w-none rounded-2xl -translate-x-1/2 -translate-y-1/2 rotate-[-5.5deg] md:h-[1050px] md:w-[1900px] xl:h-[1269px] xl:w-[2406px]">
-            <Image
-              alt=""
-              className="size-full object-cover opacity-65"
-              fill
-              priority
-              sizes="100vw"
-              src="/assets/casting/hero-posters.png"
-            />
-          </div>
-        </div>
+        <CastingCenterHeroVisual
+          className="section-casting-hero__visual"
+          mediaClassName="section-casting-hero__media"
+        />
         <HeroMosaicDim />
         <PageDeco
           className="-left-28 top-[43%] md:block"
