@@ -3,7 +3,9 @@ import type { Metadata } from 'next'
 import React from 'react'
 import { Toaster } from 'sonner'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { headers } from 'next/headers'
 
+import { isGlobalAdminUser, userCenterValue } from '@/collections/shared'
 import { AdminBar } from '@/components/AdminBar'
 import { CookieBanner } from '@/components/legal/CookieBanner'
 import { Footer } from '@/Footer/Component'
@@ -15,6 +17,7 @@ import {
 } from '@/SiteSettings/maintenance'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { getPayloadClient } from '@/lib/payload'
 import { FrontendChrome } from './FrontendChrome.client'
 import { MaintenancePage } from './MaintenancePage'
 import { NavigationTopLoader } from './NavigationTopLoader.client'
@@ -31,13 +34,26 @@ async function getSiteSettings() {
   }
 }
 
+async function getFrontendMaintenanceBypassUser() {
+  try {
+    const payload = await getPayloadClient()
+    const requestHeaders = await headers()
+    const { user } = await payload.auth({ headers: requestHeaders })
+
+    return user && (isGlobalAdminUser(user) || userCenterValue(user)) ? user : null
+  } catch {
+    return null
+  }
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const siteSettings = await getSiteSettings()
-  const showMaintenancePage = isMaintenanceModeEnabled(siteSettings)
+  const bypassUser = await getFrontendMaintenanceBypassUser()
+  const showMaintenancePage = isMaintenanceModeEnabled(siteSettings) && !bypassUser
 
   return (
     <html lang="ko" suppressHydrationWarning>
@@ -91,7 +107,7 @@ const defaultMetadata: Metadata = {
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteSettings()
 
-  if (!isMaintenanceModeEnabled(siteSettings)) {
+  if (!isMaintenanceModeEnabled(siteSettings) || (await getFrontendMaintenanceBypassUser())) {
     return defaultMetadata
   }
 

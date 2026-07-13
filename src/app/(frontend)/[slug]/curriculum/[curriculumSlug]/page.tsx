@@ -19,12 +19,7 @@ type Args = {
   }>
 }
 
-export const revalidate = 600
-export const dynamicParams = true
-
-export function generateStaticParams() {
-  return []
-}
+export const dynamic = 'force-dynamic'
 
 export default async function CenterCurriculumDetailPage({ params }: Args) {
   const { curriculumSlug, slug } = await params
