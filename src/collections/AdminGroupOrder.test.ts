@@ -17,6 +17,8 @@ const expectedMainSettingCollections = [
 
 const expectedMainSettingGlobals = ['main', 'main-statistics']
 
+const expectedSystemManagementGlobals = ['site-settings']
+
 const expectedCastingLastCollection = 'broadcast-stations'
 
 const expectedEducationCollectionOrder = [
@@ -55,6 +57,15 @@ test('main setting collections keep the requested relative order', async () => {
       .map((global) => global.slug),
     expectedMainSettingGlobals,
   )
+})
+
+test('system management globals keep the requested relative order', async () => {
+  const config = await configPromise
+  const systemManagementGlobals = config.globals
+    .filter((global) => global.admin?.group === '시스템관리')
+    .map((global) => global.slug)
+
+  assert.deepEqual(systemManagementGlobals, expectedSystemManagementGlobals)
 })
 
 test('casting admin group keeps broadcast station settings at the bottom', async () => {

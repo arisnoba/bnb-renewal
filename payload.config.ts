@@ -43,6 +43,7 @@ import { applyReliableBulkEndpoints } from './src/collections/reliableBulkEndpoi
 import { Footer } from './src/Footer/config'
 import { Main } from './src/Main/config'
 import { MainStatistics } from './src/Main/Statistics'
+import { SiteSettings } from './src/SiteSettings/config'
 import { defaultLexical } from './src/fields/defaultLexical'
 import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
@@ -133,7 +134,7 @@ export default buildConfig({
     },
   }),
   editor: defaultLexical,
-  globals: applyGlobalAdminSaveLoadingOverlay([Main, MainStatistics, Footer]),
+  globals: applyGlobalAdminSaveLoadingOverlay([Main, MainStatistics, Footer, SiteSettings]),
   plugins,
   routes: {
     admin: '/admin',
