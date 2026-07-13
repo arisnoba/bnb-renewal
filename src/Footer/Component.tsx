@@ -1,44 +1,14 @@
-import type { Footer as FooterData } from '@/payload-types'
-
 import Link from 'next/link'
 import { headers } from 'next/headers'
 import React from 'react'
 
-import { getCachedGlobal } from '@/utilities/getGlobals'
 import { FooterAddress } from './Address.client'
 import { FooterCenterLinks } from './CenterLinks.client'
 import { FooterLogo } from './FooterLogo.client'
 import { FooterSocialLinks } from './SocialLinks.client'
 import { centerSlugFromPathname } from './centerInfo'
-
-const fallbackFamilySites = [
-  { href: '/art', label: 'ART CENTER', name: '아트센터' },
-  { href: '/exam', label: 'EXAM CENTER', name: '입시센터' },
-  { href: '/highteen', label: 'HIGH TEEN CENTER', name: '하이틴센터' },
-  { href: '/kids', label: 'KIDS CENTER', name: '키즈센터' },
-  { href: '/avenue', label: 'AVENUE CENTER', name: '애비뉴센터' },
-]
-
-async function getFooterData() {
-  try {
-    return await getCachedGlobal('footer', 0)()
-  } catch {
-    return null
-  }
-}
-
-function familySitesFromFooter(footer: FooterData | null) {
-  const centerInfos = footer?.centerInfos ?? []
-
-  return fallbackFamilySites.map((site) => {
-    const centerInfo = centerInfos.find((item) => item.centerName === site.name)
-
-    return {
-      ...site,
-      href: centerInfo?.url || site.href,
-    }
-  })
-}
+import { getFooterData } from './data'
+import { familySitesFromFooter } from './familySites'
 
 export async function Footer() {
   const requestHeaders = await headers()

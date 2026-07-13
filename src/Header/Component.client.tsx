@@ -3,13 +3,19 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 
+import type { FamilySiteLink } from '@/Footer/familySites'
+
 import { Logo } from '@/components/Logo/Logo'
 import { centerLogoFor } from '@/lib/centerLogos'
 import { HeaderNav } from './Nav'
 import { headerCenterFromPathname } from './Nav/menu'
 import './index.scss'
 
-export const HeaderClient: React.FC = () => {
+type HeaderClientProps = {
+  familySites: FamilySiteLink[]
+}
+
+export const HeaderClient: React.FC<HeaderClientProps> = ({ familySites }) => {
   /* Storing the value in a useState to avoid hydration errors */
   const headerRef = useRef<HTMLElement | null>(null)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
@@ -71,7 +77,7 @@ export const HeaderClient: React.FC = () => {
         <Link className="site-header__logo" href={`/${center}`} prefetch={false}>
           <Logo loading="eager" priority="high" {...centerLogo} />
         </Link>
-        <HeaderNav onMegaOpenChange={setIsMegaOpen} />
+        <HeaderNav familySites={familySites} onMegaOpenChange={setIsMegaOpen} />
       </div>
     </header>
   )

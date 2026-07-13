@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
-import { ArrowLeft, ChevronDown, Menu, Minus, Plus } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronRight, Menu, Minus, Plus } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 
+import type { FamilySiteLink } from '@/Footer/familySites'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
 import {
@@ -19,12 +20,13 @@ import {
 import { getHeaderMenu, headerCenterFromPathname, type HeaderMenuGroup } from './menu'
 
 type HeaderNavProps = {
+  familySites: FamilySiteLink[]
   onMegaOpenChange?: (isOpen: boolean) => void
 }
 
 const headerCenterOptions: CenterSlug[] = ['art', 'exam', 'highteen', 'kids', 'avenue']
 
-export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
+export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenChange }) => {
   const pathname = usePathname()
   const center = headerCenterFromPathname(pathname)
   const menuGroups = getHeaderMenu(center)
@@ -176,6 +178,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
       </div>
       <MobileMenu
         activeGroupKey={activeMobileGroupKey}
+        familySites={familySites}
         groups={menuGroups}
         isOpen={isMobileOpen}
         onGroupToggle={setActiveMobileGroupKey}
@@ -234,12 +237,14 @@ function navZoneStyle(groups: HeaderMenuGroup[]): NavZoneStyle {
 
 function MobileMenu({
   activeGroupKey,
+  familySites,
   groups,
   isOpen,
   onGroupToggle,
   onLinkClick,
 }: {
   activeGroupKey: string | null
+  familySites: FamilySiteLink[]
   groups: HeaderMenuGroup[]
   isOpen: boolean
   onGroupToggle: (groupKey: string | null) => void
@@ -303,6 +308,24 @@ function MobileMenu({
               </div>
             )
           })}
+        </nav>
+        <nav aria-label="패밀리사이트" className="site-header__mobile-family-sites">
+          <h2 className="site-header__mobile-family-title text-base">패밀리사이트</h2>
+          <ul className="site-header__mobile-family-list">
+            {familySites.map((site) => (
+              <li key={site.name}>
+                <Link
+                  className="site-header__mobile-family-link text-2xl"
+                  href={site.href}
+                  onClick={onLinkClick}
+                  prefetch={false}
+                >
+                  <span>{site.mobileLabel ?? site.label}</span>
+                  <ChevronRight aria-hidden="true" size={18} strokeWidth={2.4} />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
       </div>
     </div>
