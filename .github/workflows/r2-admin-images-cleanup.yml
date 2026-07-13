@@ -1,0 +1,186 @@
+name: R2 admin images cleanup
+
+on:
+  schedule:
+    # Weekly on Monday 03:00 KST.
+    - cron: '0 18 * * 0'
+  workflow_dispatch:
+    inputs:
+      cleanup_mode:
+        description: 'dry-run creates a report only. write deletes unreferenced R2 objects.'
+        required: true
+        default: 'dry-run'
+        type: choice
+        options:
+          - dry-run
+          - write
+      confirm_write:
+        description: 'Required for write mode: DELETE_ADMIN_IMAGES'
+        required: false
+        default: ''
+        type: string
+      grace_days:
+        description: 'Only consider unreferenced objects older than this many days.'
+        required: true
+        default: '7'
+        type: string
+      max_candidates:
+        description: 'Write mode fails if the dry-run candidate count exceeds this number.'
+        required: true
+        default: '50'
+        type: string
+      prefix:
+        description: 'R2 key prefix to scan.'
+        required: true
+        default: 'admin-images/'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r2-admin-images-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    environment: Production – bnb-renewal
+    timeout-minutes: 20
+    env:
+      NODE_ENV: production
+      PAYLOAD_MIGRATING: 'true'
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+      POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_PUBLIC_BASE_URL: ${{ secrets.R2_PUBLIC_BASE_URL }}
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run dry-run scan
+        id: dry_run
+        env:
+          GRACE_DAYS: ${{ github.event.inputs.grace_days || '7' }}
+          PREFIX: ${{ github.event.inputs.prefix || 'admin-images/' }}
+          REPORT_PATH: tmp/legacy-assets/admin-images-cleanup-plan.json
+        run: |
+          set -euo pipefail
+          mkdir -p tmp/legacy-assets
+
+          node --import tsx scripts/payload-migration/plan-admin-images-cleanup.ts \
+            --dry-run \
+            --grace-days "$GRACE_DAYS" \
+            --prefix "$PREFIX" \
+            --output "$REPORT_PATH"
+
+          candidate_count="$(jq -r '.totals.candidateObjects' "$REPORT_PATH")"
+          referenced_count="$(jq -r '.totals.referencedKeys' "$REPORT_PATH")"
+          r2_object_count="$(jq -r '.totals.r2Objects' "$REPORT_PATH")"
+          total_bytes="$(jq -r '.unreferencedEntries | map(.size // 0) | add // 0' "$REPORT_PATH")"
+
+          {
+            echo "candidate_count=$candidate_count"
+            echo "referenced_count=$referenced_count"
+            echo "r2_object_count=$r2_object_count"
+            echo "total_bytes=$total_bytes"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### R2 admin-images cleanup dry-run"
+            echo ""
+            echo "| Metric | Value |"
+            echo "| --- | ---: |"
+            echo "| R2 objects scanned | $r2_object_count |"
+            echo "| Referenced keys | $referenced_count |"
+            echo "| Delete candidates | $candidate_count |"
+            echo "| Candidate bytes | $total_bytes |"
+            echo ""
+            echo "Report artifact: \`admin-images-cleanup-plan\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload dry-run report
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-images-cleanup-plan
+          path: tmp/legacy-assets/admin-images-cleanup-plan.json
+          if-no-files-found: error
+
+      - name: Validate write request
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.cleanup_mode == 'write'
+        env:
+          CONFIRM_WRITE: ${{ github.event.inputs.confirm_write }}
+          CANDIDATE_COUNT: ${{ steps.dry_run.outputs.candidate_count }}
+          MAX_CANDIDATES: ${{ github.event.inputs.max_candidates || '50' }}
+        run: |
+          set -euo pipefail
+
+          if [ "$CONFIRM_WRITE" != "DELETE_ADMIN_IMAGES" ]; then
+            echo "write mode requires confirm_write=DELETE_ADMIN_IMAGES" >&2
+            exit 1
+          fi
+
+          if ! [[ "$MAX_CANDIDATES" =~ ^[0-9]+$ ]]; then
+            echo "max_candidates must be a non-negative integer: $MAX_CANDIDATES" >&2
+            exit 1
+          fi
+
+          if [ "$CANDIDATE_COUNT" -gt "$MAX_CANDIDATES" ]; then
+            echo "candidate count $CANDIDATE_COUNT exceeds max_candidates $MAX_CANDIDATES" >&2
+            exit 1
+          fi
+
+      - name: Delete unreferenced R2 objects
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.cleanup_mode == 'write'
+        env:
+          ALLOW_DESTRUCTIVE_C0: '1'
+          GRACE_DAYS: ${{ github.event.inputs.grace_days || '7' }}
+          PREFIX: ${{ github.event.inputs.prefix || 'admin-images/' }}
+          REPORT_PATH: tmp/legacy-assets/admin-images-cleanup-write-report.json
+        run: |
+          set -euo pipefail
+
+          node --import tsx scripts/payload-migration/plan-admin-images-cleanup.ts \
+            --write \
+            --grace-days "$GRACE_DAYS" \
+            --prefix "$PREFIX" \
+            --output "$REPORT_PATH"
+
+          deleted_count="$(jq -r '.totals.deletedObjects' "$REPORT_PATH")"
+          failed_count="$(jq -r '.totals.failedObjects' "$REPORT_PATH")"
+
+          {
+            echo "### R2 admin-images cleanup write"
+            echo ""
+            echo "| Metric | Value |"
+            echo "| --- | ---: |"
+            echo "| Deleted objects | $deleted_count |"
+            echo "| Failed objects | $failed_count |"
+            echo ""
+            echo "Report artifact: \`admin-images-cleanup-write-report\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload write report
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.cleanup_mode == 'write'
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-images-cleanup-write-report
+          path: tmp/legacy-assets/admin-images-cleanup-write-report.json
+          if-no-files-found: error
