@@ -190,13 +190,15 @@ function CenterInfoCard({ location }: { location: CenterLocation }) {
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           {location.logoSrc ? (
-            <Image
-              alt={location.name}
-              className="h-8 w-[120px] object-contain object-left"
-              height={36}
-              src={location.logoSrc}
-              width={120}
-            />
+            <span className="relative block h-8 w-[120px]">
+              <Image
+                alt={location.name}
+                className="object-contain object-left"
+                fill
+                sizes="120px"
+                src={location.logoSrc}
+              />
+            </span>
           ) : (
             <p className="type-title-m font-bold leading-[1.4] text-white">{location.tabLabel}</p>
           )}

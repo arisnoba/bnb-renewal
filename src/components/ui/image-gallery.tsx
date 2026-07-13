@@ -11,6 +11,10 @@ import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
 const MotionPageDeco = motion.create(PageDeco)
+const gateHeroMobileSizes = '(max-width: 767px) 100vw, 0px'
+const gateHeroDesktopSizes = '(max-width: 767px) 0px, 100vw'
+const gateCardMobileSizes = '(max-width: 1023px) 100vw, 0px'
+const gateCardDesktopSizes = '(max-width: 1023px) 0px, (min-width: 1920px) 1920px, 100vw'
 
 export type ImageGalleryItem = {
   center: CenterSlug
@@ -106,7 +110,7 @@ function GateHero() {
         className="object-cover object-center md:hidden pointer-events-none"
         fill
         priority
-        sizes="100vw"
+        sizes={gateHeroMobileSizes}
         src="/assets/gate/hero-mobile.png"
       />
       <Image
@@ -115,7 +119,7 @@ function GateHero() {
         className="hidden object-cover object-top md:block pointer-events-none"
         fill
         priority
-        sizes="100vw"
+        sizes={gateHeroDesktopSizes}
         src="/assets/gate/hero-desktop.png"
       />
       <PageDeco
@@ -196,7 +200,7 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
         className="pointer-events-none object-cover lg:hidden"
         fill
         loading={index === 0 ? 'eager' : 'lazy'}
-        sizes="100vw"
+        sizes={gateCardMobileSizes}
         src={item.mobileImage}
       />
       <Image
@@ -205,7 +209,7 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
         className="pointer-events-none hidden object-cover lg:block"
         fill
         loading={index === 0 ? 'eager' : 'lazy'}
-        sizes="(min-width: 1920px) 1920px, 100vw"
+        sizes={gateCardDesktopSizes}
         src={item.desktopImage}
       />
       <span

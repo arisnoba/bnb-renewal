@@ -273,10 +273,11 @@ export default async function CompanyPage({ params }: Args) {
               <Image
                 alt="배우앤배움 대표 임채홍"
                 className="w-full h-auto object-cover"
-                height={760}
+                height={670}
                 priority
-                sizes="(max-width: 767px) calc(100vw - 40px), 960px"
+                sizes="(max-width: 767px) calc(100vw - 40px), 1120px"
                 src="/assets/company/ceo-portrait.jpg"
+                style={{ height: 'auto' }}
                 width={1120}
               />
               <PageDeco

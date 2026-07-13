@@ -36,6 +36,8 @@ const artistHeroImages = {
 
 const examResultsHeroImage = heroImageSet(`${heroRoot}/results/exam`)
 const examPassedHeroImage = heroImageSet(`${heroRoot}/passed/exam`)
+const mobileHeroSizes = '(max-width: 767px) 100vw, 0px'
+const desktopHeroSizes = '(max-width: 767px) 0px, 100vw'
 
 export function PageHeroImage({
   className,
@@ -52,7 +54,7 @@ export function PageHeroImage({
         className={cn(imageClassName, 'md:hidden')}
         fill
         priority={priority}
-        sizes="100vw"
+        sizes={mobileHeroSizes}
         src={image.mobile}
       />
       <Image
@@ -61,7 +63,7 @@ export function PageHeroImage({
         className={cn(imageClassName, 'hidden md:block')}
         fill
         priority={priority}
-        sizes="100vw"
+        sizes={desktopHeroSizes}
         src={image.desktop}
       />
     </>
