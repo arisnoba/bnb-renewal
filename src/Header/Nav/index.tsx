@@ -297,10 +297,10 @@ function MobileMenu({
     <div
       ref={panelRef}
       aria-hidden={!isOpen}
-      className="site-header__mobile-panel"
+      className="site-header__mobile-panel h-full"
       data-open={isOpen ? 'true' : 'false'}
     >
-      <div className="site-header__mobile-panel-inner">
+      <div className="site-header__mobile-panel-inner flex flex-col justify-between h-full">
         <nav aria-label="전체 메뉴" className="site-header__mobile-accordion">
           {groups.map((group) => {
             const isActive = group.key === activeGroupKey
