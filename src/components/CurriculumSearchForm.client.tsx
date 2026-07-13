@@ -1,7 +1,8 @@
 'use client'
 
 import { ChevronDown, Search } from 'lucide-react'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState, type FormEvent } from 'react'
 
 import type { CurriculumSearchField } from '@/lib/curriculumSearch'
 
@@ -40,8 +41,27 @@ const variantClasses = {
   },
 } as const
 
+const curriculumSearchScrollKey = 'bnb.curriculumSearch.scrollY'
+
+function restoreScrollPosition(scrollY: number) {
+  if (!Number.isFinite(scrollY)) {
+    return
+  }
+
+  const restoreScroll = () => window.scrollTo({ top: scrollY, behavior: 'auto' })
+
+  window.requestAnimationFrame(() => {
+    restoreScroll()
+
+    for (const delay of [0, 50, 150, 300, 600, 1000]) {
+      window.setTimeout(restoreScroll, delay)
+    }
+  })
+}
+
 export function CurriculumSearchForm({ action, fields, variant }: CurriculumSearchFormProps) {
   const classes = variantClasses[variant]
+  const router = useRouter()
   const controls = fields.map((field) => (
     <CurriculumFilterSelect
       emptyLabel={classes.emptyLabel}
@@ -51,8 +71,57 @@ export function CurriculumSearchForm({ action, fields, variant }: CurriculumSear
     />
   ))
 
+  useEffect(() => {
+    if (variant !== 'curriculumArchive') {
+      return
+    }
+
+    const storedScrollY = window.sessionStorage.getItem(curriculumSearchScrollKey)
+
+    if (!storedScrollY) {
+      return
+    }
+
+    window.sessionStorage.removeItem(curriculumSearchScrollKey)
+
+    const scrollY = Number(storedScrollY)
+
+    if (!Number.isFinite(scrollY)) {
+      return
+    }
+
+    restoreScrollPosition(scrollY)
+  })
+
+  const handleSubmit =
+    variant === 'curriculumArchive'
+      ? (event: FormEvent<HTMLFormElement>) => {
+          event.preventDefault()
+
+          const targetUrl = new URL(action, window.location.origin)
+          const params = new URLSearchParams()
+          const formData = new FormData(event.currentTarget)
+
+          for (const [key, value] of formData.entries()) {
+            const normalizedValue = String(value).trim()
+
+            if (normalizedValue) {
+              params.set(key, normalizedValue)
+            }
+          }
+
+          const query = params.toString()
+          const href = `${targetUrl.pathname}${query ? `?${query}` : ''}${targetUrl.hash}`
+          const scrollY = window.scrollY
+
+          window.sessionStorage.setItem(curriculumSearchScrollKey, String(scrollY))
+          router.push(href, { scroll: false })
+          restoreScrollPosition(scrollY)
+        }
+      : undefined
+
   return (
-    <form action={action} className={classes.form}>
+    <form action={action} className={classes.form} onSubmit={handleSubmit}>
       {classes.fieldGroup ? <div className={classes.fieldGroup}>{controls}</div> : controls}
       <button className={classes.submit} type="submit">
         <span>강의검색</span>

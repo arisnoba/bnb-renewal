@@ -212,7 +212,7 @@ export const queryCurriculumBySlug = cache(
       collection: 'curriculums',
       depth: 2,
       limit: 1,
-      overrideAccess: false,
+      overrideAccess: true,
       pagination: false,
       where: {
         and: [
@@ -233,11 +233,6 @@ export const queryCurriculumBySlug = cache(
     return (result.docs?.[0] as Curriculum | undefined) ?? null
   },
 )
-
-export const queryCurriculumStaticParams = cache(async (center: CurriculumContentCenter) => {
-  void center
-  return [] as Pick<Curriculum, 'centers' | 'id' | 'slug'>[]
-})
 
 function CurriculumOverview({ model }: { model: DetailModel }) {
   return (

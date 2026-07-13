@@ -3,7 +3,7 @@ import test from 'node:test'
 
 import { MainStatistics } from '../Main/Statistics'
 import { ArtistPress } from './ArtistPress'
-import { Curriculums } from './Curriculums'
+import { Curriculums, curriculumDetailFrontendPaths } from './Curriculums'
 import { DirectCastings } from './DirectCastings'
 import { ExamResults, examResultDetailFrontendPaths } from './ExamResults'
 import { ExamPassedReviews } from './ExamPassedReviews'
@@ -69,6 +69,24 @@ test('exam result detail frontend paths include result type routes', () => {
       slugs: ['101', '101'],
     }),
     ['/exam/university-results/101', '/exam/arts-high-results/101'],
+  )
+})
+
+test('curriculum detail frontend paths include avenue for shared art content', () => {
+  assert.deepEqual(
+    curriculumDetailFrontendPaths({
+      centers: ['art'],
+      previousCenters: ['highteen'],
+      slugs: ['123', '123', 'old-slug'],
+    }),
+    [
+      '/art/curriculum/123',
+      '/art/curriculum/old-slug',
+      '/highteen/curriculum/123',
+      '/highteen/curriculum/old-slug',
+      '/avenue/curriculum/123',
+      '/avenue/curriculum/old-slug',
+    ],
   )
 })
 

@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { assertCenter, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { assertCenter, getCenterLabel } from '@/lib/centers'
 
 import {
   CurriculumDetailPage,
   queryCurriculumBySlug,
-  queryCurriculumStaticParams,
 } from '../../../curriculum/CurriculumDetailPage'
 import {
   curriculumContentCenter,
@@ -23,27 +22,8 @@ type Args = {
 export const revalidate = 600
 export const dynamicParams = true
 
-export async function generateStaticParams() {
-  const params: Array<{ curriculumSlug: string; slug: CenterSlug }> = []
-
-  for (const slug of ['art', 'avenue', 'highteen'] as const) {
-    const docs = await queryCurriculumStaticParams(curriculumContentCenter(slug)).catch(() => [])
-
-    params.push(
-      ...docs.flatMap((doc) => {
-        if (!doc.id) {
-          return []
-        }
-
-        return [{
-          curriculumSlug: String(doc.id),
-          slug,
-        }]
-      }),
-    )
-  }
-
-  return params
+export function generateStaticParams() {
+  return []
 }
 
 export default async function CenterCurriculumDetailPage({ params }: Args) {

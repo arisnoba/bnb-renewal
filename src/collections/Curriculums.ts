@@ -1,4 +1,13 @@
-import type { Access, CollectionBeforeValidateHook, CollectionConfig, Field, Where } from "payload";
+import type {
+  Access,
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+  Field,
+  TypeWithID,
+  Where,
+} from "payload";
 
 import {
   curriculumClassOptions,
@@ -22,8 +31,11 @@ import {
   idSlugField,
 } from "./slugUtils";
 import {
+  centerFrontendPaths,
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
+  revalidateFrontendPaths,
+  selectedFrontendCenters,
 } from "./revalidateFrontend";
 
 const curriculumCenterOptions = centerOptions;
@@ -253,6 +265,87 @@ const revalidateCurriculumAfterDelete = createCenterRevalidationAfterDelete({
   suffixes: ["", "curriculum"],
 });
 
+type CurriculumRevalidationDoc = TypeWithID & {
+  centers?: unknown;
+  slug?: unknown;
+};
+
+function curriculumFrontendCenters(...values: unknown[]) {
+  const centers = values.flatMap((value) => selectedFrontendCenters(value));
+
+  if (centers.includes("art")) {
+    centers.push("avenue");
+  }
+
+  return Array.from(new Set(centers));
+}
+
+export function curriculumDetailFrontendPaths({
+  centers,
+  previousCenters,
+  slugs,
+}: {
+  centers: unknown;
+  previousCenters?: unknown;
+  slugs: unknown[];
+}) {
+  const detailCenters = curriculumFrontendCenters(centers, previousCenters).filter(
+    (center) => center === "art" || center === "avenue" || center === "highteen",
+  );
+  const suffixes = Array.from(
+    new Set(
+      slugs
+        .map((slug) => String(slug ?? "").trim())
+        .filter(Boolean)
+        .map((slug) => `curriculum/${encodeURIComponent(slug)}`),
+    ),
+  );
+
+  if (detailCenters.length === 0 || suffixes.length === 0) {
+    return [];
+  }
+
+  return centerFrontendPaths({
+    centers: detailCenters,
+    suffixes,
+  });
+}
+
+function curriculumDetailFrontendPathsForDocs(
+  doc?: CurriculumRevalidationDoc | null,
+  previousDoc?: CurriculumRevalidationDoc | null,
+) {
+  return curriculumDetailFrontendPaths({
+    centers: doc?.centers,
+    previousCenters: previousDoc?.centers,
+    slugs: [doc?.id, doc?.slug, previousDoc?.id, previousDoc?.slug],
+  });
+}
+
+const revalidateCurriculumDetailAfterChange: CollectionAfterChangeHook<
+  CurriculumRevalidationDoc
+> = ({ doc, previousDoc, req }) => {
+  revalidateFrontendPaths({
+    paths: curriculumDetailFrontendPathsForDocs(doc, previousDoc),
+    reason: "curriculum detail",
+    req,
+  });
+
+  return doc;
+};
+
+const revalidateCurriculumDetailAfterDelete: CollectionAfterDeleteHook<
+  CurriculumRevalidationDoc
+> = ({ doc, req }) => {
+  revalidateFrontendPaths({
+    paths: curriculumDetailFrontendPathsForDocs(doc),
+    reason: "curriculum detail",
+    req,
+  });
+
+  return doc;
+};
+
 export const Curriculums: CollectionConfig = {
   slug: "curriculums",
   labels: {
@@ -283,8 +376,12 @@ export const Curriculums: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    afterChange: [finalizeCurriculumSlugAfterCreate, revalidateCurriculumAfterChange],
-    afterDelete: [revalidateCurriculumAfterDelete],
+    afterChange: [
+      finalizeCurriculumSlugAfterCreate,
+      revalidateCurriculumAfterChange,
+      revalidateCurriculumDetailAfterChange,
+    ],
+    afterDelete: [revalidateCurriculumAfterDelete, revalidateCurriculumDetailAfterDelete],
     beforeValidate: [curriculumBeforeValidate, setCurriculumSlug],
   },
   fields: [
