@@ -87,6 +87,18 @@
 	margin-left: 4px;
 }
 
+.bnb-admin-login-logo {
+	display: block;
+	filter: invert(1);
+	height: auto;
+	max-width: min(137px, 64vw);
+	width: 137px;
+}
+
+html[data-theme='dark'] .bnb-admin-login-logo {
+	filter: none;
+}
+
 .field-type.upload .dropzone,
 .bnb-image-upload-trigger {
 	background: var(--bnb-admin-upload-bg);

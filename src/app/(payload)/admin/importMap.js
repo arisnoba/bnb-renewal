@@ -76,6 +76,7 @@ import { ForceUnlockHelp as ForceUnlockHelp_dec636a31a0ad194f79ef16134ea6cc5 } f
 import { MainBannerAutoplayDelayField as MainBannerAutoplayDelayField_13fce165629ba3ed7b132adb9cc09af9 } from '@/components/payload/MainBannerAutoplayDelayField'
 import { MainBannerOrderRowLabel as MainBannerOrderRowLabel_1367d5c7871b1fb50a0483d3ac77fa38 } from '@/Main/RowLabel'
 import { CenterInfoRowLabel as CenterInfoRowLabel_1f6ff6ff633e3695d348f4f3c58f1466 } from '@/Footer/RowLabel'
+import { AdminLoginLogo as AdminLoginLogo_96915ddba92652a664a5ad6e084903b8 } from '@/components/payload/AdminLoginLogo'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -158,5 +159,6 @@ export const importMap = {
   "@/components/payload/MainBannerAutoplayDelayField#MainBannerAutoplayDelayField": MainBannerAutoplayDelayField_13fce165629ba3ed7b132adb9cc09af9,
   "@/Main/RowLabel#MainBannerOrderRowLabel": MainBannerOrderRowLabel_1367d5c7871b1fb50a0483d3ac77fa38,
   "@/Footer/RowLabel#CenterInfoRowLabel": CenterInfoRowLabel_1f6ff6ff633e3695d348f4f3c58f1466,
+  "@/components/payload/AdminLoginLogo#AdminLoginLogo": AdminLoginLogo_96915ddba92652a664a5ad6e084903b8,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -61,6 +61,11 @@ const databasePoolMax = resolvePayloadDatabasePoolMax()
 
 export default buildConfig({
   admin: {
+    components: {
+      graphics: {
+        Logo: '@/components/payload/AdminLoginLogo#AdminLoginLogo',
+      },
+    },
     dateFormat: 'yyyy-MM-dd HH:mm',
     importMap: {
       baseDir: path.resolve(dirname, './src'),
