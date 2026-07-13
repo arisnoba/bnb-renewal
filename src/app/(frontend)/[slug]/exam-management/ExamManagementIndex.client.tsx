@@ -76,7 +76,7 @@ export function ExamManagementIndex({ items }: ExamManagementIndexProps) {
   return (
     <nav
       aria-label="입시 매니지먼트 목차"
-      className="section-exam-management-list__nav mt-12 flex flex-col gap-3 md:mt-16"
+      className="section-exam-management-list__nav mt-12 hidden flex-col gap-3 lg:mt-16 lg:flex"
     >
       {items.map((item) => {
         const isActive = activeId === item.id
