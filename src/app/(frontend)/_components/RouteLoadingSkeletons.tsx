@@ -183,7 +183,7 @@ function EducationHeroLoadingSkeleton({
     <section
       aria-label="페이지 상단 콘텐츠 로딩"
       className={cn(
-        "section-kv-hero section-kv-hero--standard overflow-hidden",
+        "section-kv-hero section-kv-hero--standard",
         sectionClassName,
       )}
       data-page-tone="dark"
@@ -294,7 +294,7 @@ export function ExamPassedVideosLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="합격영상 상단 콘텐츠 로딩"
-        className="section-kv-hero section-kv-hero--standard section-exam-passed-videos-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-passed-videos-hero"
         data-page-tone="dark"
       >
         <PageHeroImage
@@ -406,7 +406,7 @@ export function ScheduleLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="촬영ㆍ오디션 스케줄 상단 콘텐츠 로딩"
-        className="section-kv-hero section-kv-hero--standard section-schedule-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-schedule-hero"
         data-page-tone="dark"
       >
         <CastingCenterHeroVisual
@@ -633,7 +633,7 @@ export function ExamResultsLoadingSkeleton({
       <LoadingLabel />
       <section
         aria-label="합격현황 상단 콘텐츠 로딩"
-        className="section-kv-hero section-kv-hero--standard section-exam-results-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-results-hero"
         data-page-tone="dark"
       >
         <PageHeroImage
@@ -689,7 +689,7 @@ export function ExamPassedReviewsLoadingSkeleton() {
       <LoadingLabel />
       <section
         aria-label="합격후기 상단 콘텐츠 로딩"
-        className="section-kv-hero section-kv-hero--standard section-exam-passed-reviews-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-passed-reviews-hero"
         data-page-tone="dark"
       >
         <PageHeroImage

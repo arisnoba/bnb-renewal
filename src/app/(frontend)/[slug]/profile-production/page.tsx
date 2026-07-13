@@ -301,7 +301,7 @@ export default async function ProfileProductionPage({ params }: Args) {
     >
       <section
         aria-labelledby="profile-production-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-profile-production-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-profile-production-hero"
         data-page-tone="dark"
       >
         <CastingCenterHeroVisual

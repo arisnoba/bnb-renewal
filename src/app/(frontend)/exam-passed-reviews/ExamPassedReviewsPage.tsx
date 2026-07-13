@@ -50,7 +50,7 @@ export async function ExamPassedReviewsPage({ page = 1 }: ExamPassedReviewsPageP
     <main className="page page-light page-exam-passed-reviews" data-center="exam">
       <section
         aria-labelledby="exam-passed-reviews-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-exam-passed-reviews-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-passed-reviews-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getExamPassedHeroImage()} />

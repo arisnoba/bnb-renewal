@@ -83,7 +83,7 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
     <main className="page page-light page-exam-results" data-center="exam">
       <section
         aria-labelledby="exam-results-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-exam-results-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-results-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getExamResultsHeroImage()} />

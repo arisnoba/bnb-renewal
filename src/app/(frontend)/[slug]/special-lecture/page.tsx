@@ -72,7 +72,7 @@ export default async function HighteenSpecialLecturePage({
     <main className="page page-dark page-special-lecture" data-center={center}>
       <section
         aria-labelledby="special-lecture-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-special-lecture-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-special-lecture-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getEducationHeroImage(center)} />

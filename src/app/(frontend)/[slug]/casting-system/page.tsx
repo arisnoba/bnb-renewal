@@ -209,7 +209,7 @@ export default async function CastingSystemPage({ params }: Args) {
     <main className="page page-light page-casting-system" data-center={center}>
       <section
         aria-labelledby="casting-system-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-casting-system-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-casting-system-hero"
         data-page-tone="dark"
       >
         <CastingCenterHeroVisual

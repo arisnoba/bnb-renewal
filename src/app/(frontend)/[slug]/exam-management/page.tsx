@@ -122,7 +122,7 @@ export default async function ExamManagementPage({ params }: Args) {
     <main className="page page-dark page-exam-management" data-center={center}>
       <section
         aria-labelledby="exam-management-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-exam-management-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-management-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getEducationHeroImage(center)} />

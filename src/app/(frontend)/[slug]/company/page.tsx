@@ -177,7 +177,7 @@ export default async function CompanyPage({ params }: Args) {
     <main className="page page-dark page-company bg-neutral-950 text-white" data-center={center}>
       <section
         aria-labelledby="company-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-company-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-company-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getAboutHeroImage()} />

@@ -76,7 +76,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
     <main className="page page-light page-curriculum" data-center={center}>
       <section
         aria-labelledby="curriculum-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-curriculum-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-curriculum-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getEducationHeroImage(center)} />

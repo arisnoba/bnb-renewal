@@ -239,7 +239,7 @@ export function ExamCurriculumPage({ tab }: ExamCurriculumPageProps) {
     <main className="page page-dark page-curriculum page-curriculum--exam bg-[#0C0C0C]" data-center="exam">
       <section
         aria-labelledby="exam-curriculum-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-exam-curriculum-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-curriculum-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getEducationHeroImage('exam')} />

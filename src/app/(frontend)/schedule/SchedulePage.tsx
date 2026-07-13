@@ -83,7 +83,7 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
     <main className="page page-light page-schedule" data-center={center}>
       <section
         aria-labelledby="schedule-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-schedule-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-schedule-hero"
         data-page-tone="dark"
       >
         <CastingCenterHeroVisual

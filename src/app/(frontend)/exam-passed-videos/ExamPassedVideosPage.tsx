@@ -46,7 +46,7 @@ export async function ExamPassedVideosPage({ page = 1 }: ExamPassedVideosPagePro
     <main className="page page-light page-exam-passed-videos" data-center="exam">
       <section
         aria-labelledby="exam-passed-videos-hero-title"
-        className="section-kv-hero section-kv-hero--standard section-exam-passed-videos-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-exam-passed-videos-hero"
         data-page-tone="dark"
       >
         <PageHeroImage image={getExamPassedHeroImage()} />
