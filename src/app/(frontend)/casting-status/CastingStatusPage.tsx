@@ -137,6 +137,7 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
               priority={isPriorityHeroPoster(index)}
               sizes="(max-width: 767px) 34vw, 13vw"
               src={item.imageUrl}
+              unoptimized
             />
           </div>
         ))}
