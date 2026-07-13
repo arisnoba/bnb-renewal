@@ -64,7 +64,7 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
   return (
     <main className="page page-dark page-teachers-archive" data-center={center}>
       <section
-        className="section-kv-hero section-kv-hero--standard section-teachers-hero overflow-hidden"
+        className="section-kv-hero section-kv-hero--standard section-teachers-hero"
         aria-labelledby="teachers-hero-title"
       >
         <PageHeroImage image={getEducationHeroImage(center)} />

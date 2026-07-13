@@ -373,8 +373,10 @@
   inset: var(--admin-bar-height, 0px) 0 0;
   min-height: calc(100dvh - var(--admin-bar-height, 0px));
   opacity: 0;
+  overflow-anchor: none;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: calc(var(--site-header-height) + 28px) 0 0;
   pointer-events: none;
   position: fixed;

@@ -35,6 +35,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenCha
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [activeMobileGroupKey, setActiveMobileGroupKey] = useState<string | null>(null)
+  const lockedScrollYRef = useRef(0)
 
   const closeMenus = () => {
     setIsMegaOpen(false)
@@ -70,11 +71,28 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenCha
   useEffect(() => {
     if (!isMobileOpen) return
 
+    lockedScrollYRef.current = window.scrollY
+    const previousHtmlOverflow = document.documentElement.style.overflow
     const previousOverflow = document.body.style.overflow
+    const previousPosition = document.body.style.position
+    const previousTop = document.body.style.top
+    const previousWidth = document.body.style.width
+
+    document.documentElement.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${lockedScrollYRef.current}px`
+    document.body.style.width = '100%'
 
     return () => {
+      const scrollY = lockedScrollYRef.current
+
+      document.documentElement.style.overflow = previousHtmlOverflow
       document.body.style.overflow = previousOverflow
+      document.body.style.position = previousPosition
+      document.body.style.top = previousTop
+      document.body.style.width = previousWidth
+      window.scrollTo(0, scrollY)
     }
   }, [isMobileOpen])
 
@@ -250,8 +268,34 @@ function MobileMenu({
   onGroupToggle: (groupKey: string | null) => void
   onLinkClick: () => void
 }) {
+  const panelRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const resetPanelScroll = () => {
+      const panel = panelRef.current
+
+      if (!panel) return
+
+      panel.scrollLeft = 0
+      panel.scrollTop = 0
+    }
+    const frameId = window.requestAnimationFrame(resetPanelScroll)
+    const timeoutId = window.setTimeout(resetPanelScroll, 180)
+
+    resetPanelScroll()
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.clearTimeout(timeoutId)
+      resetPanelScroll()
+    }
+  }, [isOpen])
+
   return (
     <div
+      ref={panelRef}
       aria-hidden={!isOpen}
       className="site-header__mobile-panel"
       data-open={isOpen ? 'true' : 'false'}
