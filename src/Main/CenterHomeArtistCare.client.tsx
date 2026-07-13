@@ -155,14 +155,6 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
                 className="group/care section-center-home-care-card relative block h-72 w-full overflow-hidden rounded-[999px] bg-neutral-900 text-white outline-none ring-white/25 transition-[height,border-radius,background-color,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 data-[expanded=true]:h-92 data-[expanded=true]:rounded-none data-[expanded=true]:bg-white md:h-[calc((min(100vw,var(--container-main))-120px)/3)] md:data-[expanded=true]:h-110"
                 data-expanded={isSelected}
                 href={item.href}
-                onClick={(event) => {
-                  if (isSelected) {
-                    return
-                  }
-
-                  event.preventDefault()
-                  selectSlide(index)
-                }}
                 onFocus={() => {
                   if (index !== activeIndex) {
                     selectSlide(index)
