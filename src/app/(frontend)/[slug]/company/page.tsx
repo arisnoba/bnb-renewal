@@ -185,12 +185,10 @@ export default async function CompanyPage({ params }: Args) {
         <PageDeco
           className="absolute -left-18 top-24 md:block"
           icon={decoIcons[0]}
-          size="clamp(260px, 26vw, 360px)"
         />
         <PageDeco
           className="absolute -right-20 -bottom-14 md:block"
           icon={decoIcons[1]}
-          size="clamp(288px, 26vw, 360px)"
         />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">
           <h1 className="section-company-hero__title page-hero-label" id="company-hero-title">
