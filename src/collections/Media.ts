@@ -1,4 +1,9 @@
-import type { CollectionAfterChangeHook, CollectionAfterReadHook, CollectionConfig } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterReadHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+} from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -9,6 +14,7 @@ import fs from 'node:fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+import { assertAdminImageUploadSize } from '@/lib/mediaUploadPolicy'
 import { deleteR2Object, hasR2Config } from '@/lib/r2'
 import { resolveMediaPublicUrl } from '@/utilities/resolveMediaPublicUrl'
 
@@ -230,6 +236,14 @@ const removeGeneratedImageVariantsAfterChange: CollectionAfterChangeHook = async
   }
 }
 
+const validateAdminImageUploadSize: CollectionBeforeValidateHook = ({ req }) => {
+  if (req.context?.skipAdminImageUploadSizeLimit) {
+    return
+  }
+
+  assertAdminImageUploadSize(req.file)
+}
+
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
@@ -241,6 +255,7 @@ export const Media: CollectionConfig = {
   hooks: {
     afterChange: [removeGeneratedImageVariantsAfterChange],
     afterRead: [applyExternalUrlAfterRead],
+    beforeValidate: [validateAdminImageUploadSize],
   },
   admin: {
     defaultColumns: ['filename', 'alt', 'updatedAt'],

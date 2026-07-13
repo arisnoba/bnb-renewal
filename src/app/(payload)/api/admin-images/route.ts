@@ -4,10 +4,13 @@ import path from "node:path";
 
 import { NextResponse } from "next/server";
 
+import {
+  ADMIN_IMAGE_UPLOAD_LIMIT_BYTES,
+  ADMIN_IMAGE_UPLOAD_LIMIT_MESSAGE,
+} from "@/lib/mediaUploadPolicy";
 import { getPayloadClient } from "@/lib/payload";
 import { deleteR2Object, getR2ObjectKey, getR2PublicUrl, uploadR2Object } from "@/lib/r2";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const LOCAL_UPLOAD_ROOT = path.resolve(
   process.cwd(),
   "public/uploads/admin-images",
@@ -138,8 +141,8 @@ export async function POST(request: Request) {
     return jsonError("지원하지 않는 이미지 형식입니다.", 400);
   }
 
-  if (file.size > MAX_FILE_SIZE) {
-    return jsonError("이미지는 10MB 이하만 업로드할 수 있습니다.", 400);
+  if (file.size > ADMIN_IMAGE_UPLOAD_LIMIT_BYTES) {
+    return jsonError(ADMIN_IMAGE_UPLOAD_LIMIT_MESSAGE, 400);
   }
 
   const { month, year } = getStorageDateParts();

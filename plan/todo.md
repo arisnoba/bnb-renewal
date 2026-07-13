@@ -79,10 +79,14 @@
 
 ## 오픈 전 마무리
 
-- [ ] 고용량 이미지 업데이트 정책 수립.
-  - 관리자 업로드 이미지의 권장 원본 용량/해상도, 압축 기준, 원본 보존 여부, 재업로드 책임 범위를 정한다.
-  - `docs/08-R2-미디어-업로드-현황.md`의 남은 media role prefix 정규화 대상(`main_banners`, `social_links`, `classrooms_rels`)을 실제 정리할지 결정한다.
-  - 운영 참조가 없는 stale/orphan media 후보는 별도 정리 작업으로 분리한다.
+- [x] 고용량 이미지 업데이트 정책 수립.
+  - 관리자 업로드 이미지는 공개용 운영본 기준으로 2MB 이하만 허용한다.
+  - 메인 배너 영상은 데스크톱 20MB 이하, 모바일 10MB 이하를 권장하고 필드 안내로 고지한다.
+  - 원본 보관이 필요하면 공개 R2 `media/`가 아니라 별도 보관소에서 관리한다.
+  - 세부 기준: [R2 미디어 업로드 현황](../docs/08-R2-미디어-업로드-현황.md)
+- [ ] 남은 media role prefix 정규화.
+  - 대상: `main_banners`, `social_links`, `classrooms_rels`의 `media/assets/{mediaId}` 참조.
+  - 방식: R2 object를 role prefix로 복사한 뒤 `media.prefix`를 갱신하고, 기존 object 삭제는 별도 stale/orphan 정리로 분리한다.
 - [ ] 실제 도메인 연결.
   - 대표 도메인/canonical 기준을 확정한다.
   - Vercel 도메인, 기존 센터별 도메인, Cloudflare R2 공개 도메인, `NEXT_PUBLIC_SITE_URL`, `R2_PUBLIC_BASE_URL` 전환 순서를 정한다.
