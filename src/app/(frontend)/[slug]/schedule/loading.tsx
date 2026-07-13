@@ -1,5 +1,5 @@
-import { ScheduleLoadingSkeleton } from "../../_components/RouteLoadingSkeletons";
+import { CenterScheduleLoadingSkeleton } from "../_components/CenterRouteLoadingSkeletons.client";
 
 export default function Loading() {
-  return <ScheduleLoadingSkeleton />;
+  return <CenterScheduleLoadingSkeleton />;
 }

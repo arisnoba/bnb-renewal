@@ -12,6 +12,9 @@ import type { CenterSlug } from "@/lib/centers";
 import { cn } from "@/utilities/ui";
 
 type SkeletonTone = "dark" | "light";
+type CenterLoadingSkeletonProps = {
+  center?: CenterSlug;
+};
 
 const loadingCenters = ["art", "avenue", "exam", "highteen", "kids"] as const;
 
@@ -217,17 +220,19 @@ function EducationHeroLoadingSkeleton({
   );
 }
 
-export function CurriculumLoadingSkeleton() {
+export function CurriculumLoadingSkeleton({
+  center = "art",
+}: CenterLoadingSkeletonProps = {}) {
   return (
     <main
       aria-busy="true"
       className="page page-light page-curriculum"
-      data-center="art"
+      data-center={center}
     >
       <LoadingLabel />
       <EducationHeroLoadingSkeleton
-        center="art"
-        decoSeed="curriculum-loading"
+        center={center}
+        decoSeed={`curriculum-loading-${center}`}
         sectionClassName="section-curriculum-hero"
       />
 
@@ -337,14 +342,16 @@ export function ExamPassedVideosLoadingSkeleton() {
   );
 }
 
-export function RookiesLoadingSkeleton() {
-  const decoIcons = getPageDecoIcons(3, "rookies-loading");
+export function RookiesLoadingSkeleton({
+  center = "art",
+}: CenterLoadingSkeletonProps = {}) {
+  const decoIcons = getPageDecoIcons(3, `rookies-loading-${center}`);
 
   return (
     <main
       aria-busy="true"
       className="page page-light page-rookies-archive"
-      data-center="art"
+      data-center={center}
       data-page-tone="dark"
     >
       <LoadingLabel />
@@ -353,7 +360,7 @@ export function RookiesLoadingSkeleton() {
         className="section-kv-hero section-kv-hero--compact-title section-rookies-hero"
       >
         <PageHeroImage
-          image={getArtistHeroImage("art")}
+          image={getArtistHeroImage(center)}
           className="section-kv-hero__background"
         />
         <div aria-hidden="true" className="section-kv-hero__overlay" />
@@ -394,14 +401,16 @@ export function RookiesLoadingSkeleton() {
   );
 }
 
-export function ScheduleLoadingSkeleton() {
-  const decoIcons = getPageDecoIcons(3, "schedule-loading");
+export function ScheduleLoadingSkeleton({
+  center = "art",
+}: CenterLoadingSkeletonProps = {}) {
+  const decoIcons = getPageDecoIcons(3, `schedule-loading-${center}`);
 
   return (
     <main
       aria-busy="true"
       className="page page-light page-schedule"
-      data-center="art"
+      data-center={center}
     >
       <LoadingLabel />
       <section

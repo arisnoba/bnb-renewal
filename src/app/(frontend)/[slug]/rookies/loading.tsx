@@ -1,5 +1,5 @@
-import { RookiesLoadingSkeleton } from "../../_components/RouteLoadingSkeletons";
+import { CenterRookiesLoadingSkeleton } from "../_components/CenterRouteLoadingSkeletons.client";
 
 export default function Loading() {
-  return <RookiesLoadingSkeleton />;
+  return <CenterRookiesLoadingSkeleton />;
 }

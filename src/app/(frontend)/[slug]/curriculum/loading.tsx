@@ -1,5 +1,5 @@
-import { CurriculumLoadingSkeleton } from "../../_components/RouteLoadingSkeletons";
+import { CenterCurriculumLoadingSkeleton } from "../_components/CenterRouteLoadingSkeletons.client";
 
 export default function Loading() {
-  return <CurriculumLoadingSkeleton />;
+  return <CenterCurriculumLoadingSkeleton />;
 }
