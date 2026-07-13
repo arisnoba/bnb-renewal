@@ -255,7 +255,6 @@ function RookieCard({
   const media = profile.profileImageMedia
   const hasMediaImage = media && typeof media === 'object'
   const legacyImagePath = publishedImageSrc(profile.profileImagePath) || undefined
-  const profileMeta = [profile.height, profile.weight].filter(Boolean).join(', ')
 
   return (
     <Link className="section-rookies-card" href={`/${center}/profiles/${encodeURIComponent(profile.slug)}`}>
@@ -286,18 +285,10 @@ function RookieCard({
         <div className="section-rookies-card__overlay" aria-hidden="true" />
         <div className="section-rookies-card__info">
           <div className="section-rookies-card__names">
-            <p className="section-rookies-card__name type-title-m font-bold leading-[1.4]">
+            <p className="section-rookies-card__name type-title-s font-bold leading-[1.4]">
               {profile.name}
             </p>
-            {profile.englishName && (
-              <p className="section-rookies-card__english type-label-l font-semibold leading-[1.2]">
-                {profile.englishName}
-              </p>
-            )}
           </div>
-          {profileMeta && (
-            <p className="section-rookies-card__meta type-body-s leading-normal">{profileMeta}</p>
-          )}
         </div>
       </article>
     </Link>
