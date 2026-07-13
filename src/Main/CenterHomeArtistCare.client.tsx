@@ -57,12 +57,42 @@ export function artistCareViewportStartIndex({
   return Math.max(0, Math.min(selectedIndex, maxStartIndex))
 }
 
+export function artistCareExpandedIndex({
+  activeIndex,
+  itemCount,
+  previewIndex,
+}: {
+  activeIndex: number
+  itemCount: number
+  previewIndex: number | null
+}) {
+  if (itemCount <= 0) {
+    return -1
+  }
+
+  if (previewIndex !== null && previewIndex >= 0 && previewIndex < itemCount) {
+    return previewIndex
+  }
+
+  return Math.max(0, Math.min(activeIndex, itemCount - 1))
+}
+
+function supportsHoverPreview() {
+  return typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+}
+
 export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null)
   const [visibleSlideCount, setVisibleSlideCount] = useState(1)
   const shouldSlide = items.length > 1
   const activeIndex = items.length > 0 ? Math.min(selectedIndex, items.length - 1) : -1
+  const expandedIndex = artistCareExpandedIndex({
+    activeIndex,
+    itemCount: items.length,
+    previewIndex: hoveredIndex,
+  })
 
   const updateVisibleSlideCount = useCallback((swiperInstance: SwiperInstance) => {
     const firstSlide = swiperInstance.slides[0]
@@ -142,29 +172,41 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
         spaceBetween={20}
       >
         {items.map((item, index) => {
-          const isSelected = index === activeIndex
+          const isExpanded = index === expandedIndex
 
           return (
             <SwiperSlide
               className="flex! h-full! w-72! items-center! md:w-[calc((100%-80px)/3)]!"
-              data-expanded={isSelected}
+              data-expanded={isExpanded}
               key={item.title}
             >
               <Link
                 aria-label={`${item.title} 바로가기`}
                 className="group/care section-center-home-care-card relative block h-72 w-full overflow-hidden rounded-[999px] bg-neutral-900 text-white outline-none ring-white/25 transition-[height,border-radius,background-color,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 data-[expanded=true]:h-92 data-[expanded=true]:rounded-none data-[expanded=true]:bg-white md:h-[calc((min(100vw,var(--container-main))-120px)/3)] md:data-[expanded=true]:h-110"
-                data-expanded={isSelected}
+                data-expanded={isExpanded}
                 href={item.href}
                 onFocus={() => {
+                  setHoveredIndex(null)
+
                   if (index !== activeIndex) {
                     selectSlide(index)
+                  }
+                }}
+                onPointerEnter={(event) => {
+                  if (event.pointerType === 'mouse' && supportsHoverPreview()) {
+                    setHoveredIndex(index)
+                  }
+                }}
+                onPointerLeave={(event) => {
+                  if (event.pointerType === 'mouse') {
+                    setHoveredIndex((currentIndex) => (currentIndex === index ? null : currentIndex))
                   }
                 }}
               >
                 <Image
                   alt=""
                   className="absolute inset-0 size-full object-cover opacity-70 transition duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] data-[expanded=true]:opacity-90"
-                  data-expanded={isSelected}
+                  data-expanded={isExpanded}
                   fill
                   loading={index < 3 ? 'eager' : 'lazy'}
                   sizes="(max-width: 767px) 288px, calc((min(100vw - 40px, 1160px) - 80px) / 3)"
@@ -173,11 +215,11 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
                 <span
                   aria-hidden="true"
                   className="absolute inset-0 bg-black/35 transition duration-500 data-[expanded=true]:bg-white/88"
-                  data-expanded={isSelected}
+                  data-expanded={isExpanded}
                 />
                 <span
                   className="absolute inset-x-5 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center text-center opacity-0 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] data-[expanded=true]:opacity-100 md:inset-x-6"
-                  data-expanded={isSelected}
+                  data-expanded={isExpanded}
                 >
                   <span className="inline-flex rounded-full bg-brand px-4 py-2 type-label-m font-bold leading-[1.2] text-white">
                     {item.category}

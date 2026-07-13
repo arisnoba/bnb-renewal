@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  artistCareExpandedIndex,
   artistCareViewportStartIndex,
   artistCareVisibleSlideCount,
 } from './CenterHomeArtistCare.client'
@@ -32,4 +33,11 @@ test('center home artist care can still place the last card first on one-card vi
     artistCareViewportStartIndex({ itemCount: 8, selectedIndex: 7, visibleSlideCount: 1 }),
     7,
   )
+})
+
+test('center home artist care uses hover preview only while it is valid', () => {
+  assert.equal(artistCareExpandedIndex({ activeIndex: 2, itemCount: 8, previewIndex: null }), 2)
+  assert.equal(artistCareExpandedIndex({ activeIndex: 2, itemCount: 8, previewIndex: 5 }), 5)
+  assert.equal(artistCareExpandedIndex({ activeIndex: 2, itemCount: 8, previewIndex: 8 }), 2)
+  assert.equal(artistCareExpandedIndex({ activeIndex: 2, itemCount: 0, previewIndex: 0 }), -1)
 })
