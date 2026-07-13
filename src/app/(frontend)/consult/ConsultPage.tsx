@@ -143,7 +143,7 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
 
   return (
     <article
-      className={`section-consult-card flex flex-col gap-10 p-4 min-[360px]:p-6 md:p-10 ${isFirst ? '' : 'border-t border-border md:border-l md:border-t-0'}`}
+      className={`section-consult-card flex flex-col gap-6 p-4 min-[360px]:p-6 md:p-10 ${isFirst ? '' : 'border-t border-border md:border-l md:border-t-0'}`}
     >
       <div className="section-consult-card__body grid gap-4">
         <div className="section-consult-card__title flex items-center gap-3">

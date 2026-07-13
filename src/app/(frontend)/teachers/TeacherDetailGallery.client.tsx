@@ -37,8 +37,8 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
   }
 
   return (
-    <div className="section-teacher-detail__gallery min-w-0 max-w-full">
-      <div className="aspect-square min-w-0 max-w-full overflow-hidden bg-black">
+    <div className="section-teacher-detail__gallery w-full min-w-0 max-w-full overflow-hidden">
+      <div className="relative aspect-square w-full min-w-0 max-w-full overflow-hidden bg-black">
         {hasImages ? (
           <Swiper
             className="section-teacher-detail__gallery-swiper aspect-square w-full min-w-0 max-w-full"
@@ -49,7 +49,10 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
             slidesPerView={1}
           >
             {images.map((image, index) => (
-              <SwiperSlide className="aspect-square!" key={teacherImageKey(image, index)}>
+              <SwiperSlide
+                className="aspect-square! min-w-0 overflow-hidden"
+                key={teacherImageKey(image, index)}
+              >
                 <TeacherGalleryImage
                   alt={index === 0 ? teacherName : `${teacherName} 이미지 ${index + 1}`}
                   image={image}
@@ -82,7 +85,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
                 <button
                   aria-current={isActive ? 'true' : undefined}
                   aria-label={`${teacherName} 이미지 ${index + 1} 보기`}
-                  className="aspect-square w-full overflow-hidden bg-black opacity-40 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[active=true]:rounded-full data-[active=true]:opacity-100"
+                  className="aspect-square w-full min-w-0 overflow-hidden bg-black opacity-40 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white data-[active=true]:rounded-full data-[active=true]:opacity-100"
                   data-active={isActive}
                   onClick={() => {
                     mainSwiper?.slideTo(index)
@@ -144,6 +147,7 @@ function TeacherGalleryImage({
       priority={priority}
       src={image.src}
       width={1200}
+      sizes={size}
     />
   )
 }
