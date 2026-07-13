@@ -244,7 +244,7 @@ export default async function CastingSystemPage({ params }: Args) {
           <aside className="section-casting-system-list__aside lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:self-start">
             <PageIntro
               id="casting-system-list-title"
-              title={'수강생의 준비부터\n현장 관리까지'}
+              title={'수강생의\n준비부터\n현장 관리까지'}
               titleClassName="section-casting-system-list__title"
             />
 
