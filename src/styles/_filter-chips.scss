@@ -48,7 +48,13 @@
   opacity: 0.4;
 }
 
-.filter-chips__item:hover,
+.filter-chips__item:hover {
+  // background: var(--filter-chip-active-background);
+  border-color: var(--filter-chip-active-border);
+  color: var(--filter-chip-active-border);
+  opacity: 1;
+}
+
 .filter-chips__item[data-active='true'] {
   background: var(--filter-chip-active-background);
   border-color: var(--filter-chip-active-border);
