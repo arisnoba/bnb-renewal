@@ -183,12 +183,12 @@ export default async function CompanyPage({ params }: Args) {
         <PageHeroImage image={getAboutHeroImage()} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
         <PageDeco
-          className="absolute -left-18 top-24 hidden md:block"
+          className="absolute -left-18 top-24 md:block"
           icon={decoIcons[0]}
           size="clamp(260px, 26vw, 360px)"
         />
         <PageDeco
-          className="absolute -right-20 -bottom-14 hidden md:block"
+          className="absolute -right-20 -bottom-14 md:block"
           icon={decoIcons[1]}
           size="clamp(288px, 26vw, 360px)"
         />

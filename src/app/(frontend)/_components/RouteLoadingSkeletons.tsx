@@ -198,11 +198,11 @@ function EducationHeroLoadingSkeleton({
         className={cn("absolute inset-0", overlayClassName)}
       />
       <PageDeco
-        className="-left-24 top-[42%] max-md:hidden! md:-left-28"
+        className="-left-24 top-[42%] md:-left-28"
         icon={decoIcons[0]}
       />
       <PageDeco
-        className="right-[-72px] top-[16%] max-md:hidden! md:right-[-104px]"
+        className="right-[-72px] top-[16%] md:right-[-104px]"
         icon={decoIcons[1]}
       />
       <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
@@ -303,15 +303,15 @@ export function ExamPassedVideosLoadingSkeleton() {
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"
+          className="-left-20 top-[36%] md:block md:-left-72 2xl:-left-39"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
+          className="right-[-72px] top-[16%] md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
+          className="right-[16%] bottom-[-8%] md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
@@ -421,15 +421,15 @@ export function ScheduleLoadingSkeleton() {
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] max-md:hidden! md:block md:-left-28"
+          className="-left-20 top-[36%] md:block md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[12%] max-md:hidden! md:block md:right-[-104px]"
+          className="right-[-72px] top-[12%] md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[18%] bottom-[-8%] max-md:hidden! md:block"
+          className="right-[18%] bottom-[-8%] md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
@@ -644,15 +644,15 @@ export function ExamResultsLoadingSkeleton({
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] max-md:hidden! md:block md:-left-72 2xl:-left-39"
+          className="-left-20 top-[36%] md:block md:-left-72 2xl:-left-39"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:hidden! md:block md:right-[-104px]"
+          className="right-[-72px] top-[16%] md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[16%] bottom-[-8%] max-md:hidden! md:block"
+          className="right-[16%] bottom-[-8%] md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
@@ -700,15 +700,15 @@ export function ExamPassedReviewsLoadingSkeleton() {
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] max-md:!hidden md:block md:-left-72 2xl:-left-39"
+          className="-left-20 top-[36%] md:block md:-left-72 2xl:-left-39"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:!hidden md:block md:right-[-104px]"
+          className="right-[-72px] top-[16%] md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[16%] bottom-[-8%] max-md:!hidden md:block"
+          className="right-[16%] bottom-[-8%] md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">

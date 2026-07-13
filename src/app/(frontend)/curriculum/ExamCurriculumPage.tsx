@@ -245,11 +245,11 @@ export function ExamCurriculumPage({ tab }: ExamCurriculumPageProps) {
         <PageHeroImage image={getEducationHeroImage('exam')} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/72" />
         <PageDeco
-          className="-left-56 top-[48%] max-md:hidden! lg:-left-72"
+          className="-left-24 top-[48%] md:-left-56 lg:-left-72"
           icon={heroDecoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[16%] max-md:hidden! md:right-[-104px]"
+          className="right-[-72px] top-[16%] md:right-[-104px]"
           icon={heroDecoIcons[1]}
         />
 

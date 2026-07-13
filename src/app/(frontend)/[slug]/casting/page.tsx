@@ -144,14 +144,12 @@ export default async function CastingPage({ params }: Args) {
         </div>
         <HeroMosaicDim />
         <PageDeco
-          className="-left-28 top-[43%] max-md:hidden! md:block"
+          className="-left-28 top-[43%] md:block"
           icon={decoIcons[0]}
-          size="360px"
         />
         <PageDeco
-          className="right-[-92px] top-[20%] max-md:hidden! md:block"
+          className="right-[-92px] top-[20%] md:block"
           icon={decoIcons[1]}
-          size="360px"
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[120px]">
           <h1

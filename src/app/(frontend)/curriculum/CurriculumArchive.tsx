@@ -81,9 +81,9 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
       >
         <PageHeroImage image={getEducationHeroImage(center)} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
-        <PageDeco className="-left-20 top-[36%] max-md:hidden! md:-left-28" icon={decoIcons[0]} />
+        <PageDeco className="-left-20 top-[36%] md:-left-28" icon={decoIcons[0]} />
         <PageDeco
-          className="right-[-72px] top-[12%] max-md:hidden! md:right-[-104px]"
+          className="right-[-72px] top-[12%] md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">

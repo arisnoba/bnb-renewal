@@ -44,8 +44,8 @@ export default async function FacilitiesPage({ params }: Args) {
       >
         <PageHeroImage image={getAboutHeroImage()} />
         <div aria-hidden="true" className="absolute inset-0 bg-black/60" />
-        <PageDeco className="hidden -left-39 top-28 opacity-100 md:block" icon={decoIcons[0]} size="360px" />
-        <PageDeco className="hidden -right-18 bottom-[-56px] opacity-100 md:block" icon={decoIcons[1]} size="360px" />
+        <PageDeco className="-left-20 top-28 opacity-100 md:-left-39" icon={decoIcons[0]} />
+        <PageDeco className="-right-20 bottom-[-40px] opacity-100 md:-right-18 md:bottom-[-56px]" icon={decoIcons[1]} />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-30">
           <header className="section-facilities-hero__head">
             <h1

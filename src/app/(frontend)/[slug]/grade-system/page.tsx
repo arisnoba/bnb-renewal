@@ -80,7 +80,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
         <PageDeco
           className={
             center === 'kids'
-              ? '-left-52 top-[22%] md:-left-60'
+              ? '-left-24 top-[22%] md:-left-60'
               : '-left-20 top-[22%] md:-left-28'
           }
           icon={center === 'kids' ? 'icon-ng.svg' : decoIcons[0]}
@@ -88,7 +88,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
         <PageDeco
           className={
             center === 'kids'
-              ? '-right-12 bottom-[10%] hidden md:block md:-right-20'
+              ? '-right-12 bottom-[10%] md:block md:-right-20'
               : '-right-12 bottom-[10%] md:-right-20'
           }
           icon={center === 'kids' ? 'icon-ae.svg' : decoIcons[1]}

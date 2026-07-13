@@ -97,15 +97,15 @@ export async function SchedulePage({ center, month, year }: SchedulePageProps) {
         />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
         <PageDeco
-          className="-left-20 top-[36%] max-md:hidden! md:block md:-left-28"
+          className="-left-20 top-[36%] md:block md:-left-28"
           icon={decoIcons[0]}
         />
         <PageDeco
-          className="right-[-72px] top-[12%] max-md:hidden! md:block md:right-[-104px]"
+          className="right-[-72px] top-[12%] md:block md:right-[-104px]"
           icon={decoIcons[1]}
         />
         <PageDeco
-          className="right-[18%] bottom-[-8%] max-md:hidden! md:block"
+          className="right-[18%] bottom-[-8%] md:block"
           icon={decoIcons[2]}
         />
         <div className="container relative z-10 flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
