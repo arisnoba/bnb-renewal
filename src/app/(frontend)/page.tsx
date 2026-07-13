@@ -68,9 +68,28 @@ const gateCenters: ImageGalleryItem[] = [
 const gateDescription =
   '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터, 애비뉴센터의 교육과 캐스팅, 매니지먼트 과정을 선택해 확인하세요.'
 
+function gateFaviconPath(fileName: string) {
+  return `/assets/favicons/art/${fileName}`
+}
+
 export const metadata: Metadata = {
   title: '센터 선택 - 배우앤배움',
   description: gateDescription,
+  icons: {
+    icon: [
+      { url: gateFaviconPath('favicon.ico'), sizes: 'any' },
+      { url: gateFaviconPath('favicon-32x32.png'), sizes: '32x32', type: 'image/png' },
+      { url: gateFaviconPath('favicon-16x16.png'), sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      {
+        url: gateFaviconPath('apple-touch-icon.png'),
+        sizes: '180x180',
+        type: 'image/png',
+      },
+    ],
+  },
+  manifest: gateFaviconPath('site.webmanifest'),
   openGraph: mergeOpenGraph({
     description: gateDescription,
     images: [commonOpenGraphImage()],
