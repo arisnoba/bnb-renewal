@@ -37,11 +37,11 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
   }
 
   return (
-    <div className="section-teacher-detail__gallery w-full min-w-0 max-w-full overflow-hidden">
-      <div className="relative aspect-square w-full min-w-0 max-w-full overflow-hidden bg-black">
+    <div className="section-teacher-detail__gallery w-full min-w-0 max-w-[calc(100vw-40px)] overflow-hidden">
+      <div className="relative aspect-square w-full min-w-0 max-w-[calc(100vw-40px)] overflow-hidden bg-black">
         {hasImages ? (
           <Swiper
-            className="section-teacher-detail__gallery-swiper aspect-square w-full min-w-0 max-w-full"
+            className="section-teacher-detail__gallery-swiper aspect-square w-full min-w-0 max-w-[calc(100vw-40px)]"
             keyboard={{ enabled: shouldSlide }}
             modules={[A11y, Keyboard]}
             onSlideChange={(swiper) => setActiveSlide(swiper.realIndex)}
@@ -71,7 +71,7 @@ export function TeacherDetailGallery({ images, teacherName }: TeacherDetailGalle
 
       {shouldSlide && (
         <Swiper
-          className="section-teacher-detail__gallery-thumbs mt-3 w-full min-w-0 max-w-full"
+          className="section-teacher-detail__gallery-thumbs mt-3 w-full min-w-0 max-w-[calc(100vw-40px)]"
           onSwiper={setThumbsSwiper}
           spaceBetween={12}
           slidesPerView={5}
