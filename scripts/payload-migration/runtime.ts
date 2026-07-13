@@ -22,22 +22,29 @@ export type DbTargetInfo = {
 export function getDatabaseConnectionString(options?: {
   preferUnpooled?: boolean
 }): string {
-  if (options?.preferUnpooled) {
-    return (
-      process.env.DATABASE_URL_UNPOOLED ??
-      process.env.POSTGRES_URL_NON_POOLING ??
-      process.env.DATABASE_URL ??
-      process.env.POSTGRES_URL ??
-      DEFAULT_DATABASE_URL
-    )
-  }
+  const connectionString = options?.preferUnpooled
+    ? (
+        process.env.DATABASE_URL_UNPOOLED ??
+        process.env.POSTGRES_URL_NON_POOLING ??
+        process.env.DATABASE_URL ??
+        process.env.POSTGRES_URL ??
+        DEFAULT_DATABASE_URL
+      )
+    : (
+        process.env.DATABASE_URL_UNPOOLED ??
+        process.env.POSTGRES_URL_NON_POOLING ??
+        process.env.DATABASE_URL ??
+        process.env.POSTGRES_URL ??
+        DEFAULT_DATABASE_URL
+      )
 
-  return (
-    process.env.DATABASE_URL_UNPOOLED ??
-    process.env.POSTGRES_URL_NON_POOLING ??
-    process.env.DATABASE_URL ??
-    process.env.POSTGRES_URL ??
-    DEFAULT_DATABASE_URL
+  return normalizeDatabaseConnectionString(connectionString)
+}
+
+function normalizeDatabaseConnectionString(connectionString: string) {
+  return connectionString.replace(
+    /([?&]sslmode=)(prefer|require|verify-ca)(?=(&|$))/i,
+    '$1verify-full',
   )
 }
 
