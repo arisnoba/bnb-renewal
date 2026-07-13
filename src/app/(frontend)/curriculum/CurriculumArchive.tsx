@@ -124,7 +124,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
               커리큘럼을 불러오지 못했습니다.
             </p>
           ) : visibleItems.length > 0 ? (
-            <div className="section-curriculum-list__grid grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="section-curriculum-list__grid grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {visibleItems.map((item) => (
                 <CurriculumCard center={center} item={item} key={item.id} />
               ))}
@@ -164,20 +164,20 @@ function CurriculumCard({
   const markBackground = classMarkBackground(item.className)
 
   return (
-    <article className="section-curriculum-card group/card flex min-h-[429px] flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-8">
-      <header className="section-curriculum-card__head flex items-center gap-4">
+    <article className="section-curriculum-card group/card flex min-h-[380px] min-w-0 flex-col rounded-xl border border-neutral-200 bg-neutral-50 p-6 md:min-h-[429px] md:p-8">
+      <header className="section-curriculum-card__head flex min-w-0 items-center gap-4">
         <span
           aria-hidden="true"
           className={`grid size-8 shrink-0 place-items-center rounded-sm ${markBackground} type-label-m font-black text-white`}
         >
           {classMark(item.className)}
         </span>
-        <p className="type-label-m font-bold leading-[1.2] text-neutral-800">{item.className}</p>
+        <p className="min-w-0 type-label-m font-bold leading-[1.2] text-neutral-800">{item.className}</p>
       </header>
 
-      <div className="section-curriculum-card__body flex flex-1 flex-col justify-between pt-9">
-        <div>
-          <h3 className="type-headline-l font-bold leading-[1.35] text-neutral-900 line-clamp-3">
+      <div className="section-curriculum-card__body flex min-w-0 flex-1 flex-col justify-between pt-8 md:pt-9">
+        <div className="min-w-0">
+          <h3 className="min-w-0 type-headline-l font-bold leading-[1.35] text-neutral-900 line-clamp-3">
             <Link
               className="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               href={detailHref}
@@ -185,17 +185,17 @@ function CurriculumCard({
               {item.topic}
             </Link>
           </h3>
-          <p className="mt-3 type-body-m font-medium text-neutral-500">{item.teacherName}</p>
+          <p className="mt-3 min-w-0 type-body-m font-medium text-neutral-500">{item.teacherName}</p>
         </div>
 
-        <div className="section-curriculum-card__meta mt-8 flex flex-wrap items-center justify-between gap-3">
+        <div className="section-curriculum-card__meta mt-8 flex min-w-0 flex-wrap items-center justify-start gap-3 sm:justify-between">
           <Link
-            className="inline-flex min-h-10 items-center justify-center rounded-full bg-neutral-300 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand group-hover/card:bg-brand"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-neutral-300 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand group-hover/card:bg-brand"
             href={detailHref}
           >
             수강 신청
           </Link>
-          <div className="flex flex-wrap justify-end gap-1">
+          <div className="flex min-w-0 max-w-full flex-wrap justify-start gap-1 sm:justify-end">
             {item.days.map((day) => (
               <span
                 className="inline-flex min-h-10 items-center justify-center rounded-full bg-black/5 px-3 type-label-m font-medium text-neutral-900"
