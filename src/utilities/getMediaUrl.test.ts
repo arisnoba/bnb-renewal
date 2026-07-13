@@ -66,6 +66,19 @@ test('getMediaUrl preserves absolute media URLs in production', () => {
   )
 })
 
+test('getMediaUrl rewrites absolute R2.dev media URLs to the configured public base', () => {
+  setNodeEnv('production')
+  process.env.R2_PUBLIC_BASE_URL = 'https://media.baewooenm.com'
+
+  assert.equal(
+    getMediaUrl(
+      'https://pub-208a689495e44ad08f35a11dfe27d259.r2.dev/media/screen-appearances/thumbnails/465/screen-appearance-thumbnail-465.webp',
+      '2026-07-06T06:40:39.484Z',
+    ),
+    'https://media.baewooenm.com/media/screen-appearances/thumbnails/465/screen-appearance-thumbnail-465.webp?2026-07-06T06%3A40%3A39.484Z',
+  )
+})
+
 test.after(() => {
   setNodeEnv(originalNodeEnv)
 

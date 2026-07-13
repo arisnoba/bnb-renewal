@@ -5,6 +5,12 @@ export function publishedImageSrc(value: string | null | undefined) {
     return ''
   }
 
+  const r2DevObjectKey = r2DevMediaObjectKey(trimmed)
+
+  if (r2DevObjectKey) {
+    return r2PublicUrl(r2DevObjectKey)
+  }
+
   const legacyObjectKey = legacyAssetObjectKey(trimmed)
 
   if (legacyObjectKey) {
@@ -30,6 +36,32 @@ function r2PublicUrl(objectKey: string) {
   }
 
   return `${publicBaseUrl}/${objectKey}`
+}
+
+function r2DevMediaObjectKey(value: string) {
+  if (!/^(https?:)?\/\//.test(value)) {
+    return ''
+  }
+
+  try {
+    const parsed = new URL(value, 'http://local.test')
+
+    if (!isR2DevHostname(parsed.hostname)) {
+      return ''
+    }
+
+    if (!parsed.pathname.startsWith('/media/') && !parsed.pathname.startsWith('/legacy/')) {
+      return ''
+    }
+
+    return `${parsed.pathname.replace(/^\/+/, '')}${parsed.search}`
+  } catch {
+    return ''
+  }
+}
+
+function isR2DevHostname(hostname: string) {
+  return hostname === 'r2.dev' || hostname.endsWith('.r2.dev')
 }
 
 function legacyAssetObjectKey(value: string) {

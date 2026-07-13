@@ -65,10 +65,6 @@ function r2PublicBaseUrl() {
 }
 
 function mediaObjectKey(url: string) {
-  if (/^(https?:)?\/\//.test(url)) {
-    return ''
-  }
-
   try {
     const parsed = new URL(url, 'http://local.test')
     const apiMediaObjectKey = apiMediaObjectKeyFromUrl(parsed)
@@ -77,11 +73,15 @@ function mediaObjectKey(url: string) {
       return apiMediaObjectKey
     }
 
-    if (!parsed.pathname.startsWith('/media/')) {
+    const isAbsoluteUrl = /^(https?:)?\/\//.test(url)
+
+    if (isAbsoluteUrl && !isR2DevHostname(parsed.hostname)) {
       return ''
     }
 
-    return `${parsed.pathname.replace(/^\/+/, '')}${parsed.search}`
+    const objectKey = appManagedObjectKeyFromPathname(parsed.pathname)
+
+    return objectKey ? `${objectKey}${parsed.search}` : ''
   } catch {
     return ''
   }
@@ -100,4 +100,16 @@ function apiMediaObjectKeyFromUrl(parsed: URL) {
   }
 
   return `${prefix}/${decodeURIComponent(filename)}`
+}
+
+function appManagedObjectKeyFromPathname(pathname: string) {
+  if (!pathname.startsWith('/media/')) {
+    return ''
+  }
+
+  return pathname.replace(/^\/+/, '')
+}
+
+function isR2DevHostname(hostname: string) {
+  return hostname === 'r2.dev' || hostname.endsWith('.r2.dev')
 }

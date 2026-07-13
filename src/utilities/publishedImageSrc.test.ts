@@ -34,6 +34,17 @@ test('publishedImageSrc preserves existing media object key behavior', () => {
   )
 })
 
+test('publishedImageSrc rewrites absolute R2.dev media URLs to the configured public base', () => {
+  process.env.R2_PUBLIC_BASE_URL = 'https://media.baewooenm.com'
+
+  assert.equal(
+    publishedImageSrc(
+      'https://pub-208a689495e44ad08f35a11dfe27d259.r2.dev/media/teachers/profile-images/48/song-minji.webp?updated=1',
+    ),
+    'https://media.baewooenm.com/media/teachers/profile-images/48/song-minji.webp?updated=1',
+  )
+})
+
 test('publishedImageSrc preserves external URLs', () => {
   process.env.R2_PUBLIC_BASE_URL = 'https://pub.example.r2.dev'
 
