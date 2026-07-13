@@ -1,5 +1,5 @@
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { Pool } from 'pg'
 
 import {
   deleteR2Object,
@@ -50,14 +50,10 @@ type Options = {
 }
 
 type PayloadLike = {
-  destroy?: () => Promise<void>
-  find: (args: {
-    collection: string
-    depth: number
-    limit: number
-    overrideAccess: boolean
-    pagination: false
-  }) => Promise<{ docs: Record<string, unknown>[] }>
+  query: <T extends Record<string, unknown> = Record<string, unknown>>(
+    text: string,
+    values?: unknown[],
+  ) => Promise<{ rows: T[] }>
 }
 
 type FieldLike = Record<string, unknown>
@@ -89,18 +85,18 @@ async function main() {
     throw new Error('비로컬 DB/R2 삭제는 ALLOW_DESTRUCTIVE_C0=1 을 명시해야 합니다.')
   }
 
-  let payload: PayloadLike | null = null
+  let pool: Pool | null = null
 
   try {
     const config = await configPromise
-    payload = (await getPayload({ config: configPromise })) as unknown as PayloadLike
+    pool = new Pool({ connectionString, max: 1 })
     const fieldRefs = collectAdminImageFieldRefs(config.collections ?? [])
 
     if (fieldRefs.length === 0) {
       throw new Error('admin-images 참조 필드를 찾지 못했습니다. 삭제 후보 산출을 중단합니다.')
     }
 
-    const references = await collectAdminImageReferences(payload, fieldRefs)
+    const references = await collectAdminImageReferences(pool, fieldRefs)
     const referencedKeys = new Set(references.map((reference) => reference.key))
     const objects = await listR2Objects(options.prefix)
     const plannedEntries = buildCleanupEntries({
@@ -159,7 +155,7 @@ async function main() {
       ),
     )
   } finally {
-    await payload?.destroy?.()
+    await pool?.end()
     destroyR2Client()
   }
 }
@@ -336,40 +332,98 @@ async function collectAdminImageReferences(payload: PayloadLike, fieldRefs: Admi
   const refsByCollection = groupBy(fieldRefs, (fieldRef) => fieldRef.collection)
 
   for (const [collection, refs] of refsByCollection) {
-    const result = await payload.find({
-      collection,
-      depth: 0,
-      limit: 10000,
-      overrideAccess: true,
-      pagination: false,
-    })
+    for (const ref of refs) {
+      const rows = await readFieldReferenceRows(payload, collection, ref.path)
 
-    for (const doc of result.docs) {
-      const docId = String(doc.id ?? '')
+      for (const row of rows) {
+        const key = adminImageObjectKeyFromValue(row.value)
 
-      for (const ref of refs) {
-        const values = getStringValuesAtPath(doc, ref.path)
-
-        for (const value of values) {
-          const key = adminImageObjectKeyFromValue(value)
-
-          if (!key) {
-            continue
-          }
-
-          references.push({
-            collection,
-            docId,
-            key,
-            path: ref.path.join('.'),
-            value,
-          })
+        if (!key) {
+          continue
         }
+
+        references.push({
+          collection,
+          docId: row.docId,
+          key,
+          path: ref.path.join('.'),
+          value: row.value,
+        })
       }
     }
   }
 
   return references
+}
+
+async function readFieldReferenceRows(
+  payload: PayloadLike,
+  collection: string,
+  path: string[],
+) {
+  if (path.length === 1) {
+    const tableName = collectionTableName(collection)
+    const columnName = fieldColumnName(path[0] ?? '')
+    const result = await payload.query<{ doc_id: unknown; value: unknown }>(
+      `
+        SELECT "id"::text AS "doc_id", ${quoteIdent(columnName)}::text AS "value"
+        FROM ${quoteIdent(tableName)}
+        WHERE ${quoteIdent(columnName)} IS NOT NULL
+          AND btrim(${quoteIdent(columnName)}::text) <> ''
+      `,
+    )
+
+    return result.rows.flatMap(toReferenceRow)
+  }
+
+  if (path.length === 2) {
+    const tableName = `${collectionTableName(collection)}_${fieldColumnName(path[0] ?? '')}`
+    const columnName = fieldColumnName(path[1] ?? '')
+    const result = await payload.query<{ doc_id: unknown; value: unknown }>(
+      `
+        SELECT "_parent_id"::text AS "doc_id", ${quoteIdent(columnName)}::text AS "value"
+        FROM ${quoteIdent(tableName)}
+        WHERE ${quoteIdent(columnName)} IS NOT NULL
+          AND btrim(${quoteIdent(columnName)}::text) <> ''
+      `,
+    )
+
+    return result.rows.flatMap(toReferenceRow)
+  }
+
+  throw new Error(
+    `admin-images 참조 필드 경로를 SQL로 읽을 수 없습니다: ${collection}.${path.join('.')}`,
+  )
+}
+
+function toReferenceRow(row: { doc_id: unknown; value: unknown }) {
+  const docId = String(row.doc_id ?? '').trim()
+  const value = String(row.value ?? '').trim()
+
+  return docId && value ? [{ docId, value }] : []
+}
+
+function collectionTableName(collection: string) {
+  return safeIdentifier(collection.replaceAll('-', '_'), `collection ${collection}`)
+}
+
+function fieldColumnName(fieldName: string) {
+  return safeIdentifier(
+    fieldName.replace(/[A-Z]/g, (match) => `_${match.toLowerCase()}`),
+    `field ${fieldName}`,
+  )
+}
+
+function quoteIdent(identifier: string) {
+  return `"${identifier.replaceAll('"', '""')}"`
+}
+
+function safeIdentifier(value: string, label: string) {
+  if (!/^[a-z][a-z0-9_]*$/.test(value)) {
+    throw new Error(`SQL 식별자로 사용할 수 없는 ${label}: ${value}`)
+  }
+
+  return value
 }
 
 function buildCleanupEntries({
@@ -496,28 +550,6 @@ function componentReferences(value: unknown): string[] {
   }
 
   return []
-}
-
-function getStringValuesAtPath(value: unknown, path: string[]): string[] {
-  if (Array.isArray(value)) {
-    return value.flatMap((item) => getStringValuesAtPath(item, path))
-  }
-
-  if (path.length === 0) {
-    return typeof value === 'string' && value.trim() ? [value.trim()] : []
-  }
-
-  if (!isRecord(value)) {
-    return []
-  }
-
-  const [nextSegment, ...rest] = path
-
-  if (!nextSegment) {
-    return []
-  }
-
-  return getStringValuesAtPath(value[nextSegment], rest)
 }
 
 function adminImageObjectKeyFromValue(value: string) {
