@@ -36,8 +36,10 @@
   transform: translate3d(0, 0, 0);
 }
 
-.section-main-banner__profile-marquee:hover .section-main-banner__profile-track {
-  animation-play-state: paused;
+@media (hover: hover) and (pointer: fine) {
+  .section-main-banner__profile-marquee:hover .section-main-banner__profile-track {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes section-main-banner-marquee {

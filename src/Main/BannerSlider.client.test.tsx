@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
 import type { Media } from '@/payload-types'
@@ -226,6 +227,19 @@ test('main banner animates the profile track instead of each profile set', async
     mutableGlobal.IS_REACT_ACT_ENVIRONMENT = previousGlobals.IS_REACT_ACT_ENVIRONMENT
     dom.window.close()
   }
+})
+
+test('main banner pauses the profile marquee only on fine pointer hover devices', () => {
+  const scss = readFileSync('src/Main/BannerSlider.scss', 'utf8')
+
+  assert.match(
+    scss,
+    /@media \(hover: hover\) and \(pointer: fine\) \{\s*\.section-main-banner__profile-marquee:hover \.section-main-banner__profile-track \{\s*animation-play-state: paused;\s*\}\s*\}/,
+  )
+  assert.doesNotMatch(
+    scss,
+    /^\.section-main-banner__profile-marquee:hover \.section-main-banner__profile-track/m,
+  )
 })
 
 test('main banner renders exam review cards with review buttons', () => {
