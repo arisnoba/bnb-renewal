@@ -110,7 +110,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-refund section-p-block-sm scroll-mt-(--page-top-offset) bg-neutral-50"
+        className="section-admission-refund section-p-t-sm section-p-b-lg scroll-mt-(--page-top-offset) bg-neutral-50"
         id="refund"
       >
         <div className="container">
