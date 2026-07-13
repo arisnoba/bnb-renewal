@@ -5,7 +5,8 @@ import type { CSSProperties } from 'react';
 
 import { SelectField, useAuth, useField } from '@payloadcms/ui';
 
-const validCenters = new Set(['art', 'exam', 'highteen', 'avenue']);
+const validCenters = new Set(['art', 'exam', 'kids', 'highteen', 'avenue']);
+const staticPublicPageCenters = new Set(['exam', 'kids']);
 
 function getUserCenter(user: unknown) {
   if (!user || typeof user !== 'object') {
@@ -43,6 +44,7 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
     ? props.field.options
     : props.field.options.filter((option) => typeof option === 'object' && option.value === userCenter);
   const hasCenter = typeof value === 'string' && validCenters.has(value);
+  const usesStaticPublicPage = typeof value === 'string' && staticPublicPageCenters.has(value);
 
   return (
     <div
@@ -69,6 +71,17 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
             margin: '4px 0 0',
           }}>
           센터를 먼저 선택해 주세요.
+        </p>
+      ) : null}
+      {usesStaticPublicPage ? (
+        <p
+          style={{
+            color: 'var(--theme-elevation-600)',
+            fontSize: 12,
+            margin: '4px 0 0',
+          }}>
+          입시센터와 키즈센터 커리큘럼 공개 페이지는 현재 정적 콘텐츠로 운영됩니다. 이 항목은
+          관리자 분류와 보관용으로 사용되며 공개 페이지에 자동 노출되지 않습니다.
         </p>
       ) : null}
       {!canEditCenter ? (

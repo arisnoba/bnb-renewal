@@ -223,6 +223,7 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
   assert.deepEqual(centerField.options, [
     { label: "아트센터", value: "art" },
     { label: "입시센터", value: "exam" },
+    { label: "키즈센터", value: "kids" },
     { label: "하이틴센터", value: "highteen" },
     { label: "애비뉴센터", value: "avenue" },
   ]);
@@ -291,6 +292,9 @@ test("curriculums admin uses the new lecture info and curriculum tabs", () => {
     { label: "중급 R CLASS", value: "중급 R CLASS" },
     { label: "심화 U CLASS", value: "심화 U CLASS" },
     { label: "전문 DA CLASS", value: "전문 DA CLASS" },
+    { label: "영재교육 Class", value: "영재교육 Class" },
+    { label: "아역배우 Class", value: "아역배우 Class" },
+    { label: "아티스트 Class", value: "아티스트 Class" },
   ]);
 
   const educationDaysField = lectureInfoTab.fields.find((field) =>

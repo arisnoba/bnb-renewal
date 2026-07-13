@@ -7,7 +7,7 @@ import { RelationshipField, useFormFields } from '@payloadcms/ui';
 import type { CurriculumCenter } from '@/lib/curriculumOptions';
 
 function normalizeCenter(value: unknown): CurriculumCenter | undefined {
-  return value === 'art' || value === 'exam' || value === 'highteen' || value === 'avenue'
+  return value === 'art' || value === 'exam' || value === 'kids' || value === 'highteen' || value === 'avenue'
     ? value
     : undefined;
 }

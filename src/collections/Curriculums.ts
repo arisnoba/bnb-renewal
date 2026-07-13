@@ -26,7 +26,7 @@ import {
   createCenterRevalidationAfterDelete,
 } from "./revalidateFrontend";
 
-const curriculumCenterOptions = centerOptions.filter((option) => option.value !== "kids");
+const curriculumCenterOptions = centerOptions;
 const curriculumCenterValues = new Set(curriculumCenterOptions.map((option) => option.value));
 
 const educationDayFieldNames = [

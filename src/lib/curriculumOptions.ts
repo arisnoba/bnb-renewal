@@ -1,4 +1,4 @@
-export type CurriculumCenter = "art" | "avenue" | "exam" | "highteen";
+export type CurriculumCenter = "art" | "avenue" | "exam" | "highteen" | "kids";
 
 export type CurriculumClassOption = {
   label: string;
@@ -32,6 +32,12 @@ export const avenueCurriculumClassOptions: CurriculumClassOption[] = [
   { label: "애비뉴 S Class", value: "애비뉴 S Class" },
 ];
 
+export const kidsCurriculumClassOptions: CurriculumClassOption[] = [
+  { label: "영재교육 Class", value: "영재교육 Class" },
+  { label: "아역배우 Class", value: "아역배우 Class" },
+  { label: "아티스트 Class", value: "아티스트 Class" },
+];
+
 export const curriculumClassOptionsByCenter: Record<
   CurriculumCenter,
   CurriculumClassOption[]
@@ -40,10 +46,12 @@ export const curriculumClassOptionsByCenter: Record<
   avenue: avenueCurriculumClassOptions,
   exam: examCurriculumClassOptions,
   highteen: highteenCurriculumClassOptions,
+  kids: kidsCurriculumClassOptions,
 };
 
 export const curriculumClassOptions = [
   ...artCurriculumClassOptions,
   ...examCurriculumClassOptions,
   ...highteenCurriculumClassOptions,
+  ...kidsCurriculumClassOptions,
 ];
