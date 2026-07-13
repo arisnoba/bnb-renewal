@@ -130,7 +130,12 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
         </nav>
       </div>
       <div className="site-header__actions">
-        <Link className="site-header__consult" href={consultHref} prefetch={false}>
+        <Link
+          className="site-header__consult"
+          href={consultHref}
+          onClick={closeMenus}
+          prefetch={false}
+        >
           온라인상담
         </Link>
         <HeaderCenterSelect currentCenter={center} />
@@ -160,7 +165,12 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ onMegaOpenChange }) => {
             <Menu aria-hidden="true" size={20} strokeWidth={2.4} />
           )}
         </button>
-        <Link className="site-header__mobile-consult" href={consultHref} prefetch={false}>
+        <Link
+          className="site-header__mobile-consult"
+          href={consultHref}
+          onClick={closeMenus}
+          prefetch={false}
+        >
           {isMobileOpen ? '온라인상담' : '상담'}
         </Link>
       </div>
