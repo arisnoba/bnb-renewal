@@ -81,11 +81,8 @@ const examManagementItems = [
   },
 ] satisfies ExamManagementItem[]
 
-const examManagementCardDecoClasses = [
-  'left-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)]',
-  'right-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)]',
-  'right-[calc(var(--page-deco-size)/-2)] bottom-[calc(var(--page-deco-size)/-2)]',
-] as const
+const examManagementCardDecoClass =
+  'section-exam-management-card__deco left-[calc(var(--page-deco-size)/-2)] top-[calc(var(--page-deco-size)/-2)] opacity-90'
 
 export function generateStaticParams() {
   return [{ slug: 'exam' }]
@@ -174,18 +171,14 @@ export default async function ExamManagementPage({ params }: Args) {
                 id={item.id}
                 key={item.id}
               >
-                <div className="section-exam-management-card__media relative aspect-[552/320]">
+                <div className="section-exam-management-card__media relative isolate aspect-[552/320]">
                   <PageDeco
-                    className={[
-                      'z-20 opacity-90',
-                      examManagementCardDecoClasses[
-                        index % examManagementCardDecoClasses.length
-                      ],
-                    ].join(' ')}
+                    className={examManagementCardDecoClass}
                     icon={decoIcons[index + 2]}
-                    size="90px"
+                    size="clamp(64px, 6vw, 90px)"
+                    style={{ zIndex: 2 }}
                   />
-                  <div className="relative z-10 size-full overflow-hidden bg-neutral-900">
+                  <div className="relative z-0 size-full overflow-hidden bg-neutral-900">
                     <Image
                       alt=""
                       aria-hidden="true"
