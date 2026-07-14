@@ -32,6 +32,8 @@ type CastingCompany = {
   marquee: string
 }
 
+export const revalidate = 600
+
 const castingCenters: readonly CenterSlug[] = ['art', 'avenue', 'highteen', 'kids']
 
 const commonDescription = [
@@ -87,14 +89,6 @@ const castingCompanies = [
     marquee: 'BX Model Agency',
   },
 ] satisfies CastingCompany[]
-
-const profileOrderByCompany = {
-  'arko-lab': ['김건보', '홍진희'],
-  'bnb-casting': ['오재동', '양형서', '신주현'],
-  'bx-model-agency': ['이덕화', '김하나'],
-  'cna-agency': [],
-  'im-ground': ['표미희'],
-} as const
 
 export function generateStaticParams() {
   return castingCenters.map((slug) => ({ slug }))
@@ -222,12 +216,14 @@ function CastingCompanySection({
 }
 
 function director(
+  createdAt: string,
   name: string,
   image: string | undefined,
   careerItems: CastingDirector['careerItems'],
 ): CastingProfile {
   return {
     careerItems: normalizeCareerItems(careerItems),
+    createdAt,
     image,
     name,
     role: '디렉터',
@@ -250,10 +246,11 @@ const queryCastingDirectorProfiles = cache(async () => {
       select: {
         careerItems: true,
         company: true,
+        createdAt: true,
         personName: true,
         profileImageMedia: true,
       },
-      sort: 'personName',
+      sort: '-createdAt',
       where,
     })
 
@@ -271,7 +268,7 @@ function groupDirectorProfiles(directors: CastingDirector[]) {
     const image = mediaUrl(item.profileImageMedia)
     const profiles = profilesByCompany.get(companyKey) ?? []
 
-    profiles.push(director(item.personName, image, item.careerItems))
+    profiles.push(director(item.createdAt, item.personName, image, item.careerItems))
     profilesByCompany.set(companyKey, profiles)
   }
 
@@ -300,19 +297,17 @@ function getCompanyProfiles(
   const uniqueProfiles = profiles.filter(
     (profile, index, list) => list.findIndex((item) => item.name === profile.name) === index,
   )
-  const preferredOrder = profileOrderByCompany[company.id as keyof typeof profileOrderByCompany] ?? []
-
   return [...uniqueProfiles].sort((left, right) => {
-    const leftIndex = preferredOrder.indexOf(left.name as never)
-    const rightIndex = preferredOrder.indexOf(right.name as never)
+    const dateDifference = registrationTime(right.createdAt) - registrationTime(left.createdAt)
 
-    if (leftIndex !== -1 || rightIndex !== -1) {
-      return (leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex) -
-        (rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex)
-    }
-
-    return left.name.localeCompare(right.name, 'ko')
+    return dateDifference || left.name.localeCompare(right.name, 'ko')
   })
+}
+
+function registrationTime(value: string) {
+  const timestamp = Date.parse(value)
+
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp
 }
 
 function mediaUrl(value: CastingDirector['profileImageMedia']) {

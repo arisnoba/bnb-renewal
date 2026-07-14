@@ -3,6 +3,10 @@ import type { CollectionConfig } from "payload";
 import { centerScopedPublishedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from "./revalidateFrontend";
+import {
   adminRow,
   authorNameField,
   centerScopedBeforeValidate,
@@ -12,6 +16,25 @@ import {
   publishingStatusSelectAdmin,
   sidebarFields,
 } from "./shared";
+
+const castingDirectorCompanyOptions = [
+  { label: "BNB Casting", value: "BNB Casting" },
+  { label: "CNA Agency", value: "CNA Agency" },
+  { label: "ARKO LAB", value: "ARKO LAB" },
+  { label: "IMGround", value: "IMGround" },
+  { label: "BX Model Agency", value: "BX Model Agency" },
+  { label: "라인업", value: "라인업" },
+];
+
+const revalidateCastingDirectorAfterChange = createCenterRevalidationAfterChange({
+  reason: "casting director",
+  suffixes: ["casting"],
+});
+
+const revalidateCastingDirectorAfterDelete = createCenterRevalidationAfterDelete({
+  reason: "casting director",
+  suffixes: ["casting"],
+});
 
 export const CastingDirectors: CollectionConfig = {
   slug: "casting-directors",
@@ -35,10 +58,12 @@ export const CastingDirectors: CollectionConfig = {
   defaultSort: "personName",
   hooks: {
     afterChange: [
+      revalidateCastingDirectorAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: "profileImageMedia", role: "casting-directors.profile-image" },
       ]),
     ],
+    afterDelete: [revalidateCastingDirectorAfterDelete],
     beforeValidate: [centerScopedBeforeValidate],
   },
   fields: [
@@ -52,9 +77,10 @@ export const CastingDirectors: CollectionConfig = {
       },
       {
         name: "company",
-        type: "text",
+        type: "select",
         label: "회사",
         required: true,
+        options: castingDirectorCompanyOptions,
       },
     ]),
     {
