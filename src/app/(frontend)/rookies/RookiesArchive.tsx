@@ -18,7 +18,7 @@ import { getProfileFilterOptions } from '@/lib/profileFilters'
 import type { Profile } from '@/payload-types'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
-import { getPayload, type Where } from 'payload'
+import { getPayload, type Payload, type Where } from 'payload'
 
 import { FilterChips } from '../_components/FilterChips'
 import { RookiesSearchForm } from './RookiesSearchForm.client'
@@ -48,6 +48,35 @@ type RookiesArchiveProps = {
   center: CenterSlug
   page?: number
   search?: string
+}
+
+export async function findRookies({
+  page,
+  payload,
+  where,
+}: {
+  page: number
+  payload: Payload
+  where: Where
+}) {
+  return payload.find({
+    collection: 'profiles',
+    depth: 1,
+    limit: ITEMS_PER_PAGE,
+    overrideAccess: false,
+    page,
+    select: {
+      englishName: true,
+      filter: true,
+      height: true,
+      name: true,
+      profileImageMedia: true,
+      profileImagePath: true,
+      slug: true,
+      weight: true,
+    },
+    where,
+  })
 }
 
 export async function RookiesArchive({
@@ -113,31 +142,7 @@ export async function RookiesArchive({
     ],
   }
 
-  const rookies = await payload
-    .find({
-      collection: 'profiles',
-      depth: 1,
-      limit: ITEMS_PER_PAGE,
-      overrideAccess: false,
-      page: currentPage,
-      select: {
-        englishName: true,
-        filter: true,
-        height: true,
-        name: true,
-        profileImageMedia: true,
-        profileImagePath: true,
-        slug: true,
-        weight: true,
-      },
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page: 1,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const rookies = await findRookies({ page: currentPage, payload, where })
 
   const totalPages = Math.max(rookies.totalPages || 1, 1)
   const heroImage = getArtistHeroImage(center)

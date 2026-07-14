@@ -307,7 +307,7 @@ function ScheduleLegend({ className = '' }: { className?: string }) {
   )
 }
 
-async function findScheduleEvents({
+export async function findScheduleEvents({
   center,
   month,
   payload,
@@ -354,25 +354,21 @@ async function findScheduleEvents({
     ],
   }
 
-  const result = await payload
-    .find({
-      collection: 'audition-schedules',
-      depth: 0,
-      limit: 200,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        eventType: true,
-        scheduleEndDate: true,
-        scheduleStartDate: true,
-        title: true,
-      },
-      sort: 'scheduleStartDate',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-    }))
+  const result = await payload.find({
+    collection: 'audition-schedules',
+    depth: 0,
+    limit: 200,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      eventType: true,
+      scheduleEndDate: true,
+      scheduleStartDate: true,
+      title: true,
+    },
+    sort: 'scheduleStartDate',
+    where,
+  })
 
   return result.docs as ScheduleListItem[]
 }

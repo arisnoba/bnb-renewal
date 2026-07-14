@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const curriculum = await queryCurriculumBySlug({
     center: curriculumContentCenter(center),
     slug: decodeURIComponent(curriculumSlug),
-  }).catch(() => null)
+  })
   const title = curriculum?.className ?? curriculum?.title
 
   return {

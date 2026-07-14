@@ -140,30 +140,23 @@ async function queryExamPassedVideosPage(page: number) {
   })
 }
 
-async function findExamPassedVideosPage({
+export async function findExamPassedVideosPage({
   page,
   payload,
 }: {
   page: number
   payload: Payload
 }) {
-  const result = await payload
-    .find({
-      collection: 'exam-passed-videos',
-      depth: 0,
-      limit: pageSize,
-      overrideAccess: false,
-      page,
-      select: examPassedVideoSelect,
-      sort: '-publishedAt',
-      where: createExamPassedVideosWhere(),
-    })
-    .catch(() => ({
-      docs: [],
-      page,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const result = await payload.find({
+    collection: 'exam-passed-videos',
+    depth: 0,
+    limit: pageSize,
+    overrideAccess: false,
+    page,
+    select: examPassedVideoSelect,
+    sort: '-publishedAt',
+    where: createExamPassedVideosWhere(),
+  })
 
   return {
     docs: result.docs as ExamPassedVideoListItem[],

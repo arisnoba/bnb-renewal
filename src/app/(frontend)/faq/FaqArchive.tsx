@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
-import { getPayload, type Where } from 'payload'
+import { getPayload, type Payload, type Where } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
@@ -108,6 +108,17 @@ function getCachedFaqs(center: CenterSlug) {
 
 async function queryFaqs(center: CenterSlug) {
   const payload = await getPayload({ config: configPromise })
+
+  return findFaqs({ center, payload })
+}
+
+export async function findFaqs({
+  center,
+  payload,
+}: {
+  center: CenterSlug
+  payload: Payload
+}) {
   const where: Where = {
     and: [
       {
@@ -132,18 +143,14 @@ async function queryFaqs(center: CenterSlug) {
     ],
   }
 
-  const result = await payload
-    .find({
-      collection: 'faqs',
-      depth: 0,
-      limit: 100,
-      overrideAccess: false,
-      sort: ['createdAt', 'id'],
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-    }))
+  const result = await payload.find({
+    collection: 'faqs',
+    depth: 0,
+    limit: 100,
+    overrideAccess: false,
+    sort: ['createdAt', 'id'],
+    where,
+  })
 
   return result.docs as Faq[]
 }

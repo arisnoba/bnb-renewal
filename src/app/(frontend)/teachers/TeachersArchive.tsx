@@ -3,7 +3,7 @@ import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import configPromise from '@payload-config'
-import { getPayload, type Where } from 'payload'
+import { getPayload, type Payload, type Where } from 'payload'
 import React from 'react'
 
 import { TeachersGrid } from './TeachersGrid.client'
@@ -12,6 +12,30 @@ const MAX_TEACHERS_TO_RENDER = 1000
 
 type TeachersArchiveProps = {
   center: CenterSlug
+}
+
+export async function findTeachers({
+  payload,
+  where,
+}: {
+  payload: Payload
+  where: Where
+}) {
+  return payload.find({
+    collection: 'teachers',
+    depth: 1,
+    limit: MAX_TEACHERS_TO_RENDER,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      name: true,
+      profileImageMedia: true,
+      role: true,
+      slug: true,
+    },
+    sort: 'displayOrder',
+    where,
+  })
 }
 
 export async function TeachersArchive({ center }: TeachersArchiveProps) {
@@ -41,25 +65,7 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
     ],
   }
 
-  const teachers = await payload
-    .find({
-      collection: 'teachers',
-      depth: 1,
-      limit: MAX_TEACHERS_TO_RENDER,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        name: true,
-        profileImageMedia: true,
-        role: true,
-        slug: true,
-      },
-      sort: 'displayOrder',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-    }))
+  const teachers = await findTeachers({ payload, where })
 
   return (
     <main className="page page-dark page-teachers-archive" data-center={center}>

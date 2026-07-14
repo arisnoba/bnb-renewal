@@ -35,7 +35,7 @@ type ExamResultDetailParams = {
 }
 
 export async function ExamResultDetailPage({ resultType, slug }: ExamResultDetailParams) {
-  const examResult = await queryExamResultBySlug({ resultType, slug }).catch(() => null)
+  const examResult = await queryExamResultBySlug({ resultType, slug })
 
   if (!examResult) {
     notFound()
@@ -100,7 +100,7 @@ export async function generateExamResultMetadata({
   resultType,
   slug,
 }: ExamResultDetailParams): Promise<Metadata> {
-  const examResult = await queryExamResultBySlug({ resultType, slug }).catch(() => null)
+  const examResult = await queryExamResultBySlug({ resultType, slug })
   const fallbackTitle = getExamResultPageTitle(resultType)
   const title = examResult?.title || fallbackTitle
   const description = examResult ? `${fallbackTitle} - ${examResult.title}` : undefined

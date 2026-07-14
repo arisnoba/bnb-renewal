@@ -147,30 +147,23 @@ async function queryExamPassedReviewsPage(page: number) {
   })
 }
 
-async function findExamPassedReviewsPage({
+export async function findExamPassedReviewsPage({
   page,
   payload,
 }: {
   page: number
   payload: Payload
 }) {
-  const result = await payload
-    .find({
-      collection: 'exam-passed-reviews',
-      depth: 2,
-      limit: pageSize,
-      overrideAccess: false,
-      page,
-      select: examPassedReviewSelect,
-      sort: '-publishedAt',
-      where: createExamPassedReviewsWhere(),
-    })
-    .catch(() => ({
-      docs: [],
-      page,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const result = await payload.find({
+    collection: 'exam-passed-reviews',
+    depth: 2,
+    limit: pageSize,
+    overrideAccess: false,
+    page,
+    select: examPassedReviewSelect,
+    sort: '-publishedAt',
+    where: createExamPassedReviewsWhere(),
+  })
 
   return {
     docs: result.docs as ExamPassedReviewListItem[],

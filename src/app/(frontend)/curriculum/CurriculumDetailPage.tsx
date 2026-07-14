@@ -81,7 +81,7 @@ export async function CurriculumDetailPage({
   const curriculum = await queryCurriculumBySlug({
     center: dataCenter,
     slug: curriculumSlug,
-  }).catch(() => null)
+  })
 
   if (!curriculum) {
     notFound()

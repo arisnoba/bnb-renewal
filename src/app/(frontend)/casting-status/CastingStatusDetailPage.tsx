@@ -25,7 +25,7 @@ export async function CastingStatusDetailPage({
   center: CenterSlug
   slug: string
 }) {
-  const casting = await queryCastingStatusBySlug({ center, slug }).catch(() => null)
+  const casting = await queryCastingStatusBySlug({ center, slug })
 
   if (!casting) {
     notFound()
@@ -158,7 +158,7 @@ export async function generateCastingStatusMetadata({
   center: CenterSlug
   slug: string
 }): Promise<Metadata> {
-  const casting = await queryCastingStatusBySlug({ center, slug }).catch(() => null)
+  const casting = await queryCastingStatusBySlug({ center, slug })
 
   return {
     title: casting?.title || '캐스팅 출연현황',
@@ -203,8 +203,7 @@ const queryCastingStatusBySlug = cache(
 const queryAdjacentCastingStatus = cache(
   async ({ center, id }: { center: CenterSlug; id: number }) => {
     const payload = await getPayload({ config: configPromise })
-    const result = await payload
-      .find({
+    const result = await payload.find({
         collection: 'casting-appearances',
         depth: 0,
         limit: 1000,
@@ -226,7 +225,6 @@ const queryAdjacentCastingStatus = cache(
           ],
         },
       })
-      .catch(() => ({ docs: [] }))
 
     const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined

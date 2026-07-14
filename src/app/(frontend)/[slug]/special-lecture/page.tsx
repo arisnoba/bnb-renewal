@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import configPromise from '@payload-config'
 import { CirclePlay } from 'lucide-react'
 import { notFound } from 'next/navigation'
-import { getPayload, type Where } from 'payload'
+import { getPayload } from 'payload'
 import React from 'react'
 
 import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
@@ -13,6 +13,8 @@ import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter } from '@/lib/centers'
 import { extractYouTubeVideoId, youtubeThumbnailUrl, youtubeWatchUrl } from '@/lib/youtube'
 import type { HighteenSpecialClass, Media as MediaType } from '@/payload-types'
+
+import { findSpecialLectures } from './specialLectureData'
 
 type Args = {
   params: Promise<{
@@ -27,8 +29,6 @@ type SpecialLectureListItem = Pick<
   HighteenSpecialClass,
   'id' | 'publishedAt' | 'slug' | 'thumbnailMedia' | 'title' | 'youtubeUrl'
 >
-
-const ITEMS_PER_PAGE = 16
 
 export const revalidate = 600
 
@@ -270,44 +270,8 @@ function PaginationLink({
 
 async function querySpecialLectures(page: number) {
   const payload = await getPayload({ config: configPromise })
-  const where: Where = {
-    and: [
-      {
-        displayStatus: {
-          equals: 'published',
-        },
-      },
-      {
-        centers: {
-          contains: 'highteen',
-        },
-      },
-    ],
-  }
 
-  return payload
-    .find({
-      collection: 'highteen-special-classes',
-      depth: 1,
-      limit: ITEMS_PER_PAGE,
-      overrideAccess: false,
-      page,
-      select: {
-        publishedAt: true,
-        slug: true,
-        thumbnailMedia: true,
-        title: true,
-        youtubeUrl: true,
-      },
-      sort: '-publishedAt',
-      where,
-    })
-    .catch(() => ({
-      docs: [] as SpecialLectureListItem[],
-      page: 1,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  return findSpecialLectures({ page, payload })
 }
 
 function getLectureThumbnailMedia(lecture: SpecialLectureListItem) {

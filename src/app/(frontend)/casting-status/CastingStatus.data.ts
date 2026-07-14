@@ -104,15 +104,6 @@ export async function findCastingStatusYearBatch({
   }
 }
 
-export function getEmptyCastingStatusOverview(): CastingStatusOverviewData {
-  return {
-    groups: [],
-    hasNextYearPage: false,
-    items: [],
-    nextYearOffset: null,
-  }
-}
-
 export async function findCastingStatusYearPage({
   center,
   limit = CASTING_STATUS_YEAR_PAGE_SIZE,

@@ -478,7 +478,7 @@ function DirectCastingsPaginationLink({
   )
 }
 
-async function findDirectCastingsPage({
+export async function findDirectCastingsPage({
   page,
   payload,
   where,
@@ -487,23 +487,16 @@ async function findDirectCastingsPage({
   payload: Awaited<ReturnType<typeof getPayload>>
   where: Where
 }): Promise<DirectCastingsPageResult> {
-  const result = await payload
-    .find({
-      collection: 'direct-castings',
-      depth: 1,
-      limit: pageSize,
-      overrideAccess: true,
-      page,
-      select: directCastingArchiveSelect,
-      sort: '-publishedAt',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const result = await payload.find({
+    collection: 'direct-castings',
+    depth: 1,
+    limit: pageSize,
+    overrideAccess: true,
+    page,
+    select: directCastingArchiveSelect,
+    sort: '-publishedAt',
+    where,
+  })
 
   return {
     docs: result.docs as DirectCastingListItem[],
@@ -518,29 +511,25 @@ type DirectCastingHeroImage = {
   media: PayloadMedia
 }
 
-async function findHeroImages({
+export async function findHeroImages({
   center,
   payload,
 }: {
   center: CenterSlug
   payload: Awaited<ReturnType<typeof getPayload>>
 }): Promise<DirectCastingHeroImage[]> {
-  const result = await payload
-    .find({
-      collection: 'direct-castings',
-      depth: 1,
-      limit: heroImageLimit,
-      overrideAccess: true,
-      pagination: false,
-      select: {
-        thumbnailMedia: true,
-      },
-      sort: '-publishedAt',
-      where: directCastingsWhere({ center, company: 'all' }),
-    })
-    .catch(() => ({
-      docs: [],
-    }))
+  const result = await payload.find({
+    collection: 'direct-castings',
+    depth: 1,
+    limit: heroImageLimit,
+    overrideAccess: true,
+    pagination: false,
+    select: {
+      thumbnailMedia: true,
+    },
+    sort: '-publishedAt',
+    where: directCastingsWhere({ center, company: 'all' }),
+  })
 
   return result.docs
     .map((casting) => {

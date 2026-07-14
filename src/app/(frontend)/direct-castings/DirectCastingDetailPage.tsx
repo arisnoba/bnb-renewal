@@ -28,7 +28,7 @@ export async function DirectCastingDetailPage({
   center: CenterSlug
   slug: string
 }) {
-  const casting = await queryDirectCastingBySlug({ center, slug }).catch(() => null)
+  const casting = await queryDirectCastingBySlug({ center, slug })
 
   if (!casting) {
     notFound()
@@ -94,7 +94,7 @@ export async function generateDirectCastingMetadata({
   center: CenterSlug
   slug: string
 }): Promise<Metadata> {
-  const casting = await queryDirectCastingBySlug({ center, slug }).catch(() => null)
+  const casting = await queryDirectCastingBySlug({ center, slug })
 
   return {
     description: casting?.projectInfo || undefined,
@@ -175,8 +175,7 @@ const queryAdjacentDirectCastings = cache(
           : []),
       ],
     }
-    const result = await payload
-      .find({
+    const result = await payload.find({
         collection: 'direct-castings',
         depth: 0,
         limit: 1000,
@@ -189,7 +188,6 @@ const queryAdjacentDirectCastings = cache(
         sort: '-publishedAt',
         where,
       })
-      .catch(() => ({ docs: [] }))
 
     const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined

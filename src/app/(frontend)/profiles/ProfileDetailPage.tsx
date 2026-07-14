@@ -30,7 +30,7 @@ export async function ProfileDetailPage({
   center?: CenterSlug
   slug: string
 }) {
-  const profile = await queryProfileBySlug({ center, slug }).catch(() => null)
+  const profile = await queryProfileBySlug({ center, slug })
 
   if (!profile) {
     notFound()
@@ -139,7 +139,7 @@ export async function generateProfileMetadata({
   center?: CenterSlug
   slug: string
 }): Promise<Metadata> {
-  const profile = await queryProfileBySlug({ center, slug }).catch(() => null)
+  const profile = await queryProfileBySlug({ center, slug })
 
   if (!profile) {
     return {
@@ -154,7 +154,7 @@ export async function generateProfileMetadata({
 }
 
 export async function profileCanonicalPath(slug: string) {
-  const profile = await queryProfileBySlug({ slug }).catch(() => null)
+  const profile = await queryProfileBySlug({ slug })
 
   if (!profile) {
     return null
@@ -210,8 +210,7 @@ const queryProfileBySlug = cache(async ({ center, slug }: { center?: CenterSlug;
 const queryAdjacentProfiles = cache(
   async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
     const payload = await getPayload({ config: configPromise })
-    const result = await payload
-      .find({
+    const result = await payload.find({
         collection: 'profiles',
         depth: 0,
         limit: 1000,
@@ -249,7 +248,6 @@ const queryAdjacentProfiles = cache(
           ],
         },
       })
-      .catch(() => ({ docs: [] }))
 
     const index = result.docs.findIndex((item) => item.slug === slug)
     const previous = index >= 0 ? result.docs[index + 1] : undefined

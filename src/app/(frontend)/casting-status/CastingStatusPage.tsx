@@ -6,10 +6,7 @@ import Image from 'next/image'
 import { getPayload } from 'payload'
 
 import { HeroMosaicDim } from '../_components/HeroMosaicDim'
-import {
-  findCastingStatusOverview,
-  getEmptyCastingStatusOverview,
-} from './CastingStatus.data'
+import { findCastingStatusOverview } from './CastingStatus.data'
 import {
   CastingStatusYearSwiper,
   type CastingStatusPosterItem,
@@ -35,7 +32,7 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
   const pageData = await findCastingStatusOverview({
     center,
     payload,
-  }).catch(() => getEmptyCastingStatusOverview())
+  })
   const heroItems = getCastingStatusHeroItems(pageData.items)
 
   return (

@@ -22,7 +22,7 @@ import {
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 
 const ITEMS_PER_PAGE = 16
 export const artistPressArchiveDepth = 2
@@ -146,24 +146,30 @@ function getCachedArtistPressPage(center: CenterSlug, page: number) {
 
 async function queryArtistPressPage(center: CenterSlug, page: number) {
   const payload = await getPayload({ config: configPromise })
+
+  return findArtistPressPage({ center, page, payload })
+}
+
+export async function findArtistPressPage({
+  center,
+  page,
+  payload,
+}: {
+  center: CenterSlug
+  page: number
+  payload: Payload
+}) {
   const where = publishedArtistPressWhere(center)
 
-  return payload
-    .find({
-      collection: 'artist-press',
-      depth: artistPressArchiveDepth,
-      limit: ITEMS_PER_PAGE,
-      overrideAccess: false,
-      page,
-      select: artistPressArchiveSelect,
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page: 1,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  return payload.find({
+    collection: 'artist-press',
+    depth: artistPressArchiveDepth,
+    limit: ITEMS_PER_PAGE,
+    overrideAccess: false,
+    page,
+    select: artistPressArchiveSelect,
+    where,
+  })
 }
 
 function ArtistPressCard({

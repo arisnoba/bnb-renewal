@@ -27,7 +27,7 @@ const center: CenterSlug = 'exam'
 const pathPrefix = '/exam/passed-reviews'
 
 export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
-  const review = await queryExamPassedReviewBySlug(slug).catch(() => null)
+  const review = await queryExamPassedReviewBySlug(slug)
 
   if (!review) {
     notFound()
@@ -128,7 +128,7 @@ export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
 }
 
 export async function generateExamPassedReviewMetadata(slug: string): Promise<Metadata> {
-  const review = await queryExamPassedReviewBySlug(slug).catch(() => null)
+  const review = await queryExamPassedReviewBySlug(slug)
 
   return {
     description: review ? getReviewDescription(review) : undefined,
@@ -184,8 +184,7 @@ const queryExamPassedReviewBySlug = cache(async (slug: string) => {
 
 const queryAdjacentExamPassedReviews = cache(async (id: number) => {
   const payload = await getPayload({ config: configPromise })
-  const result = await payload
-    .find({
+  const result = await payload.find({
       collection: 'exam-passed-reviews',
       depth: 0,
       limit: 1000,
@@ -222,7 +221,6 @@ const queryAdjacentExamPassedReviews = cache(async (id: number) => {
         ],
       },
     })
-    .catch(() => ({ docs: [] }))
 
   const index = result.docs.findIndex((item) => item.id === id)
   const previous = index >= 0 ? result.docs[index + 1] : undefined

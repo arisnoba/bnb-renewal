@@ -1233,199 +1233,183 @@ function formatDate(value: string | null | undefined) {
 }
 
 const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const shouldQueryCurriculums = hasSearchableHomeCurriculum(center)
-    const [
-      screenAppearances,
-      artistPress,
-      examPassedReviews,
-      examPassedVideos,
-      news,
-      socialLinks,
-      footer,
-      curriculums,
-    ] =
-      await Promise.all([
-        payload.find({
-          collection: 'screen-appearances',
-          depth: 2,
-          limit: screenAppearanceLimit,
-          overrideAccess: false,
-          pagination: false,
-          select: {
-            appearanceType: true,
-            actorInputMode: true,
-            bodyImages: true,
-            broadcastStation: true,
-            className: true,
-            linkedProfiles: true,
-            performerName: true,
-            profileImageMedia: true,
-            profileImagePath: true,
-            projectTitle: true,
-            publishedAt: true,
-            roleName: true,
-            slug: true,
-            thumbnailMedia: true,
-            thumbnailPath: true,
-            title: true,
-          },
-          sort: '-publishedAt',
-          where: {
-            and: [
-              {
-                displayStatus: {
-                  equals: 'published',
-                },
-              },
-              {
-                centers: {
-                  equals: center,
-                },
-              },
-            ],
-          } satisfies Where,
-        }),
-        payload.find({
-          collection: 'artist-press',
-          depth: 1,
-          limit: artistPressLimit,
-          overrideAccess: false,
-          pagination: false,
-          select: {
-            actorName: true,
-            generation: true,
-            publishedAt: true,
-            slug: true,
-            thumbnailMedia: true,
-            title: true,
-          },
-          sort: '-publishedAt',
-          where: publishedArtistPressWhere(center),
-        }),
-        center === 'exam'
-          ? payload.find({
-              collection: 'exam-passed-reviews',
-              depth: 2,
-              limit: examPassedReviewLimit,
-              overrideAccess: false,
-              pagination: false,
-              select: {
-                publishedAt: true,
-                resultSummary: true,
-                school: true,
-                slug: true,
-                studentImagePath: true,
-                studentName: true,
-                title: true,
-              },
-              sort: '-publishedAt',
-              where: centerArrayWhere('exam'),
-            })
-          : Promise.resolve({ docs: [] }),
-        center === 'exam'
-          ? payload.find({
-              collection: 'exam-passed-videos',
-              depth: 0,
-              limit: examPassedVideoLimit,
-              overrideAccess: false,
-              pagination: false,
-              select: {
-                publishedAt: true,
-                slug: true,
-                title: true,
-                youtubeCode: true,
-                youtubeUrl: true,
-              },
-              sort: '-publishedAt',
-              where: centerArrayWhere('exam'),
-            })
-          : Promise.resolve({ docs: [] }),
-        payload.find({
-          collection: 'news',
-          depth: 0,
-          limit: newsLimit,
-          overrideAccess: false,
-          pagination: false,
-          select: {
-            category: true,
-            publishedAt: true,
-            slug: true,
-            title: true,
-          },
-          sort: '-publishedAt',
-          where: centerArrayWhere(center),
-        }),
-        payload.find({
-          collection: 'social-links',
-          depth: 1,
-          limit: socialLimit,
-          overrideAccess: false,
-          pagination: false,
-          sort: '-createdAt',
-          where: {
-            center: {
-              equals: center,
-            },
+  const payload = await getPayload({ config: configPromise })
+  const shouldQueryCurriculums = hasSearchableHomeCurriculum(center)
+  const [
+    screenAppearances,
+    artistPress,
+    examPassedReviews,
+    examPassedVideos,
+    news,
+    socialLinks,
+    footer,
+    curriculums,
+  ] = await Promise.all([
+    payload.find({
+      collection: 'screen-appearances',
+      depth: 2,
+      limit: screenAppearanceLimit,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        appearanceType: true,
+        actorInputMode: true,
+        bodyImages: true,
+        broadcastStation: true,
+        className: true,
+        linkedProfiles: true,
+        performerName: true,
+        profileImageMedia: true,
+        profileImagePath: true,
+        projectTitle: true,
+        publishedAt: true,
+        roleName: true,
+        slug: true,
+        thumbnailMedia: true,
+        thumbnailPath: true,
+        title: true,
+      },
+      sort: '-publishedAt',
+      where: {
+        and: [
+          {
             displayStatus: {
               equals: 'published',
             },
           },
-        }),
-        payload.findGlobal({
-          slug: 'footer',
+          {
+            centers: {
+              equals: center,
+            },
+          },
+        ],
+      } satisfies Where,
+    }),
+    payload.find({
+      collection: 'artist-press',
+      depth: 1,
+      limit: artistPressLimit,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        actorName: true,
+        generation: true,
+        publishedAt: true,
+        slug: true,
+        thumbnailMedia: true,
+        title: true,
+      },
+      sort: '-publishedAt',
+      where: publishedArtistPressWhere(center),
+    }),
+    center === 'exam'
+      ? payload.find({
+          collection: 'exam-passed-reviews',
+          depth: 2,
+          limit: examPassedReviewLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            publishedAt: true,
+            resultSummary: true,
+            school: true,
+            slug: true,
+            studentImagePath: true,
+            studentName: true,
+            title: true,
+          },
+          sort: '-publishedAt',
+          where: centerArrayWhere('exam'),
+        })
+      : Promise.resolve({ docs: [] }),
+    center === 'exam'
+      ? payload.find({
+          collection: 'exam-passed-videos',
           depth: 0,
-        }),
-        shouldQueryCurriculums
-          ? payload
-              .find({
-                collection: 'curriculums',
-                depth: 0,
-                limit: 200,
-                overrideAccess: false,
-                pagination: false,
-                select: {
-                  educationDayFriday: true,
-                  educationDayMonday: true,
-                  educationDaySaturday: true,
-                  educationDaySunday: true,
-                  educationDayThursday: true,
-                  educationDayTuesday: true,
-                  educationDayWednesday: true,
-                  educationStartTime: true,
-                },
-                where: {
-                  centers: {
-                    equals: center,
-                  },
-                } satisfies Where,
-              })
-              .catch(() => ({ docs: [] }))
-          : Promise.resolve({ docs: [] }),
-      ])
+          limit: examPassedVideoLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            publishedAt: true,
+            slug: true,
+            title: true,
+            youtubeCode: true,
+            youtubeUrl: true,
+          },
+          sort: '-publishedAt',
+          where: centerArrayWhere('exam'),
+        })
+      : Promise.resolve({ docs: [] }),
+    payload.find({
+      collection: 'news',
+      depth: 0,
+      limit: newsLimit,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        category: true,
+        publishedAt: true,
+        slug: true,
+        title: true,
+      },
+      sort: '-publishedAt',
+      where: centerArrayWhere(center),
+    }),
+    payload.find({
+      collection: 'social-links',
+      depth: 1,
+      limit: socialLimit,
+      overrideAccess: false,
+      pagination: false,
+      sort: '-createdAt',
+      where: {
+        center: {
+          equals: center,
+        },
+        displayStatus: {
+          equals: 'published',
+        },
+      },
+    }),
+    payload.findGlobal({
+      slug: 'footer',
+      depth: 0,
+    }),
+    shouldQueryCurriculums
+      ? payload.find({
+          collection: 'curriculums',
+          depth: 0,
+          limit: 200,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            educationDayFriday: true,
+            educationDayMonday: true,
+            educationDaySaturday: true,
+            educationDaySunday: true,
+            educationDayThursday: true,
+            educationDayTuesday: true,
+            educationDayWednesday: true,
+            educationStartTime: true,
+          },
+          where: {
+            centers: {
+              equals: center,
+            },
+          } satisfies Where,
+        })
+      : Promise.resolve({ docs: [] }),
+  ])
 
-    return {
-      artistPress: artistPress.docs as HomeArtistPress[],
-      curriculums: curriculums.docs as HomeCurriculum[],
-      examPassedReviews: examPassedReviews.docs as HomeExamPassedReview[],
-      examPassedVideos: examPassedVideos.docs as HomeExamPassedVideo[],
-      news: news.docs as HomeNews[],
-      screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
-      socialAccounts: centerSocialAccounts(footer as Footer, center),
-      socialLinks: socialLinks.docs as HomeSocialLink[],
-    }
-  } catch {
-    return {
-      artistPress: [],
-      curriculums: [],
-      examPassedReviews: [],
-      examPassedVideos: [],
-      news: [],
-      screenAppearances: [],
-      socialAccounts: [],
-      socialLinks: [],
-    }
+  return {
+    artistPress: artistPress.docs as HomeArtistPress[],
+    curriculums: curriculums.docs as HomeCurriculum[],
+    examPassedReviews: examPassedReviews.docs as HomeExamPassedReview[],
+    examPassedVideos: examPassedVideos.docs as HomeExamPassedVideo[],
+    news: news.docs as HomeNews[],
+    screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
+    socialAccounts: centerSocialAccounts(footer as Footer, center),
+    socialLinks: socialLinks.docs as HomeSocialLink[],
   }
 })
 

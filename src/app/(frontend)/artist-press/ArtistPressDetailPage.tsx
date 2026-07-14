@@ -27,7 +27,7 @@ export async function ArtistPressDetailPage({
   center?: CenterSlug
   slug: string
 }) {
-  const artistPress = await queryArtistPressBySlug({ slug }).catch(() => null)
+  const artistPress = await queryArtistPressBySlug({ slug })
 
   if (!artistPress) {
     notFound()
@@ -76,7 +76,7 @@ export async function generateArtistPressDetailMetadata(
   slug: string,
   center?: CenterSlug,
 ) {
-  const artistPress = await queryArtistPressBySlug({ slug }).catch(() => null)
+  const artistPress = await queryArtistPressBySlug({ slug })
 
   return generateArtistPressMeta(artistPress, center)
 }
@@ -116,8 +116,7 @@ const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
 const queryAdjacentArtistPress = cache(
   async ({ center, id }: { center?: CenterSlug; id: number }) => {
     const payload = await getPayload({ config: configPromise })
-    const result = await payload
-      .find({
+    const result = await payload.find({
         collection: 'artist-press',
         depth: 0,
         limit: 1000,
@@ -129,7 +128,6 @@ const queryAdjacentArtistPress = cache(
         sort: '-publishedAt',
         where: publishedArtistPressWhere(center),
       })
-      .catch(() => ({ docs: [] }))
 
     const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined

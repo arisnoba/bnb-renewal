@@ -33,7 +33,7 @@ export async function TeacherDetailPage({
   center: CenterSlug
   slug: string
 }) {
-  const teacher = await queryTeacherBySlug({ center, slug }).catch(() => null)
+  const teacher = await queryTeacherBySlug({ center, slug })
 
   if (!teacher) {
     notFound()
@@ -157,7 +157,7 @@ export async function generateTeacherMetadata({
   center: CenterSlug
   slug: string
 }): Promise<Metadata> {
-  const teacher = await queryTeacherBySlug({ center, slug }).catch(() => null)
+  const teacher = await queryTeacherBySlug({ center, slug })
 
   if (!teacher) {
     return {
@@ -211,8 +211,7 @@ const queryTeacherBySlug = cache(async ({ center, slug }: { center: CenterSlug; 
 
 const queryAdjacentTeachers = cache(async ({ center, slug }: { center: CenterSlug; slug: string }) => {
   const payload = await getPayload({ config: configPromise })
-  const result = await payload
-    .find({
+  const result = await payload.find({
       collection: 'teachers',
       depth: 0,
       limit: 1000,
@@ -247,7 +246,6 @@ const queryAdjacentTeachers = cache(async ({ center, slug }: { center: CenterSlu
         ],
       },
     })
-    .catch(() => ({ docs: [] }))
 
   const index = result.docs.findIndex((item) => item.slug === slug)
   const previous = index > 0 ? result.docs[index - 1] : undefined

@@ -196,7 +196,7 @@ async function queryExamResultsPage({
   })
 }
 
-async function findExamResultsPage({
+export async function findExamResultsPage({
   page,
   payload,
   resultType,
@@ -205,23 +205,16 @@ async function findExamResultsPage({
   payload: Payload
   resultType: ExamResultType
 }) {
-  const result = await payload
-    .find({
-      collection: 'exam-results',
-      depth: 0,
-      limit: pageSize,
-      overrideAccess: false,
-      page,
-      select: examResultSelect,
-      sort: '-publishedAt',
-      where: createExamResultsWhere(resultType),
-    })
-    .catch(() => ({
-      docs: [],
-      page,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const result = await payload.find({
+    collection: 'exam-results',
+    depth: 0,
+    limit: pageSize,
+    overrideAccess: false,
+    page,
+    select: examResultSelect,
+    sort: '-publishedAt',
+    where: createExamResultsWhere(resultType),
+  })
 
   return {
     docs: result.docs as ExamResultListItem[],

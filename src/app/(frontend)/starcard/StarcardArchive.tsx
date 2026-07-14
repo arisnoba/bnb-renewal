@@ -2,7 +2,7 @@ import configPromise from '@payload-config'
 import { ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getPayload, type Where } from 'payload'
+import { getPayload, type Payload, type Where } from 'payload'
 import React from 'react'
 
 import { PageIntro } from '@/components/PageIntro'
@@ -90,6 +90,17 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
 
 async function queryStarcards(center: CenterSlug) {
   const payload = await getPayload({ config: configPromise })
+
+  return findStarcards({ center, payload })
+}
+
+export async function findStarcards({
+  center,
+  payload,
+}: {
+  center: CenterSlug
+  payload: Payload
+}) {
   const where: Where = {
     and: [
       {
@@ -114,18 +125,14 @@ async function queryStarcards(center: CenterSlug) {
     ],
   }
 
-  const result = await payload
-    .find({
-      collection: 'star-cards',
-      depth: 1,
-      limit: 100,
-      overrideAccess: false,
-      sort: 'displayOrder',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-    }))
+  const result = await payload.find({
+    collection: 'star-cards',
+    depth: 1,
+    limit: 100,
+    overrideAccess: false,
+    sort: 'displayOrder',
+    where,
+  })
 
   return result.docs as StarCard[]
 }

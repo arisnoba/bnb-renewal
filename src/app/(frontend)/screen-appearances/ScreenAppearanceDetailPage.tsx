@@ -47,7 +47,7 @@ export async function ScreenAppearanceDetailPage({
   center: CenterSlug
   slug: string
 }) {
-  const appearance = await queryScreenAppearanceBySlug({ center, slug }).catch(() => null)
+  const appearance = await queryScreenAppearanceBySlug({ center, slug })
 
   if (!appearance) {
     notFound()
@@ -208,7 +208,7 @@ export async function generateScreenAppearanceMetadata({
   center: CenterSlug
   slug: string
 }): Promise<Metadata> {
-  const appearance = await queryScreenAppearanceBySlug({ center, slug }).catch(() => null)
+  const appearance = await queryScreenAppearanceBySlug({ center, slug })
   const title = appearance?.projectTitle?.trim() || appearance?.title
 
   return {
@@ -259,8 +259,7 @@ const queryScreenAppearanceBySlug = cache(
 const queryAdjacentScreenAppearances = cache(
   async ({ center, id }: { center: CenterSlug; id: number }) => {
     const payload = await getPayload({ config: configPromise })
-    const result = await payload
-      .find({
+    const result = await payload.find({
         collection: 'screen-appearances',
         depth: 1,
         limit: 1000,
@@ -290,7 +289,6 @@ const queryAdjacentScreenAppearances = cache(
           ],
         },
       })
-      .catch(() => ({ docs: [] }))
 
     const index = result.docs.findIndex((item) => item.id === id)
     const previous = index >= 0 ? result.docs[index + 1] : undefined

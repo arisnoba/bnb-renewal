@@ -452,7 +452,7 @@ function ScreenAppearancesPaginationLink({
   )
 }
 
-async function findScreenAppearancesPage({
+export async function findScreenAppearancesPage({
   page,
   payload,
   where,
@@ -461,23 +461,16 @@ async function findScreenAppearancesPage({
   payload: Awaited<ReturnType<typeof getPayload>>
   where: Where
 }): Promise<ScreenAppearancesPageResult> {
-  const result = await payload
-    .find({
-      collection: 'screen-appearances',
-      depth: 2,
-      limit: pageSize,
-      overrideAccess: false,
-      page,
-      select: screenAppearancesArchiveSelect,
-      sort: '-publishedAt',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-      page,
-      totalDocs: 0,
-      totalPages: 0,
-    }))
+  const result = await payload.find({
+    collection: 'screen-appearances',
+    depth: 2,
+    limit: pageSize,
+    overrideAccess: false,
+    page,
+    select: screenAppearancesArchiveSelect,
+    sort: '-publishedAt',
+    where,
+  })
 
   return {
     docs: result.docs as ScreenAppearanceListItem[],
@@ -487,32 +480,28 @@ async function findScreenAppearancesPage({
   }
 }
 
-async function findHeroImages({
+export async function findHeroImages({
   payload,
   where,
 }: {
   payload: Awaited<ReturnType<typeof getPayload>>
   where: Where
 }): Promise<ScreenAppearanceHeroImage[]> {
-  const result = await payload
-    .find({
-      collection: 'screen-appearances',
-      depth: 1,
-      limit: heroImageLimit,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        bodyImages: true,
-        id: true,
-        thumbnailMedia: true,
-        thumbnailPath: true,
-      },
-      sort: '-publishedAt',
-      where,
-    })
-    .catch(() => ({
-      docs: [],
-    }))
+  const result = await payload.find({
+    collection: 'screen-appearances',
+    depth: 1,
+    limit: heroImageLimit,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      bodyImages: true,
+      id: true,
+      thumbnailMedia: true,
+      thumbnailPath: true,
+    },
+    sort: '-publishedAt',
+    where,
+  })
 
   return result.docs
     .map((appearance) => {

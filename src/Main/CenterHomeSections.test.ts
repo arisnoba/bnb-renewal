@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import test from 'node:test'
 
 import type { Media, Profile, ScreenAppearance } from '@/payload-types'
@@ -105,4 +106,12 @@ test('center home course search is only exposed for searchable curriculum center
   assert.equal(hasSearchableHomeCurriculum('exam'), false)
   assert.equal(hasSearchableHomeCurriculum('kids'), false)
   assert.equal(hasSearchableHomeCurriculum('avenue'), false)
+})
+
+test('center home data query does not convert Payload failures to empty sections', () => {
+  const source = readFileSync(new URL('./CenterHomeSections.tsx', import.meta.url), 'utf8')
+  const querySource = source.slice(source.indexOf('const queryCenterHomeData'))
+
+  assert.doesNotMatch(querySource, /catch\s*\{/)
+  assert.doesNotMatch(querySource, /\.catch\(\(\) => \(\{ docs: \[\] \}\)\)/)
 })
