@@ -19,6 +19,7 @@ const DEFAULT_OUTPUT_PATH = 'tmp/casting/cna-direct-casting-import-report.json'
 const MIGRATION_NAME = '20260714_180000_direct_casting_avenue_center'
 
 type Options = {
+  allowRemoteWrite: boolean
   outputPath: string
   write: boolean
 }
@@ -62,8 +63,8 @@ async function main() {
   const connectionString = getDatabaseConnectionString({ preferUnpooled: true })
   const target = resolveDbTargetInfo(connectionString)
 
-  if (!target.isLocal) {
-    throw new Error('이 스크립트는 로컬 DB에서만 실행할 수 있습니다.')
+  if (!target.isLocal && !options.allowRemoteWrite) {
+    throw new Error('원격 DB 쓰기에는 --allow-remote-write 옵션이 필요합니다.')
   }
 
   logDbTargetInfo(target, { destructive: options.write })
@@ -426,6 +427,7 @@ function countByAction(results: ImportResult[]) {
 }
 
 function parseArgs(args: string[]): Options {
+  let allowRemoteWrite = false
   let outputPath = DEFAULT_OUTPUT_PATH
   let write = false
 
@@ -434,6 +436,11 @@ function parseArgs(args: string[]): Options {
 
     if (arg === '--write') {
       write = true
+      continue
+    }
+
+    if (arg === '--allow-remote-write') {
+      allowRemoteWrite = true
       continue
     }
 
@@ -452,7 +459,7 @@ function parseArgs(args: string[]): Options {
     throw new Error(`지원하지 않는 옵션입니다: ${arg}`)
   }
 
-  return { outputPath, write }
+  return { allowRemoteWrite, outputPath, write }
 }
 
 main().catch((error: unknown) => {

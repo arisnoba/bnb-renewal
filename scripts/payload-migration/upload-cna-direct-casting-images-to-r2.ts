@@ -17,6 +17,7 @@ const COMPANY = 'cna-agency'
 const DEFAULT_OUTPUT_PATH = 'tmp/casting/cna-direct-casting-r2-upload-report.json'
 
 type Options = {
+  allowRemoteRead: boolean
   outputPath: string
   write: boolean
 }
@@ -40,8 +41,8 @@ async function main() {
   const connectionString = getDatabaseConnectionString({ preferUnpooled: true })
   const target = resolveDbTargetInfo(connectionString)
 
-  if (!target.isLocal) {
-    throw new Error('이 스크립트는 로컬 DB의 CNA 미디어만 업로드할 수 있습니다.')
+  if (!target.isLocal && !options.allowRemoteRead) {
+    throw new Error('원격 DB 미디어 업로드에는 --allow-remote-read 옵션이 필요합니다.')
   }
 
   logDbTargetInfo(target, { destructive: options.write })
@@ -148,6 +149,7 @@ function countByAction(results: UploadResult[]) {
 }
 
 function parseArgs(args: string[]): Options {
+  let allowRemoteRead = false
   let outputPath = DEFAULT_OUTPUT_PATH
   let write = false
 
@@ -156,6 +158,11 @@ function parseArgs(args: string[]): Options {
 
     if (arg === '--write') {
       write = true
+      continue
+    }
+
+    if (arg === '--allow-remote-read') {
+      allowRemoteRead = true
       continue
     }
 
@@ -174,7 +181,7 @@ function parseArgs(args: string[]): Options {
     throw new Error(`지원하지 않는 옵션입니다: ${arg}`)
   }
 
-  return { outputPath, write }
+  return { allowRemoteRead, outputPath, write }
 }
 
 main().catch((error: unknown) => {
