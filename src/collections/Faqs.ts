@@ -5,7 +5,7 @@ import type {
   Validate,
 } from 'payload'
 
-import { centerScopedCollectionAccess } from './access'
+import { centerScopedPublishedCollectionAccess } from './access'
 import {
   adminRow,
   authorNameField,
@@ -290,7 +290,7 @@ export const Faqs: CollectionConfig = {
     plural: 'FAQ',
     singular: 'FAQ',
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       'title',

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { centerScopedCollectionAccess, globalAdminOnly } from "./access";
+import { centerScopedPublishedCollectionAccess, globalAdminOnly } from "./access";
 import {
   allCentersBeforeValidate,
   adminRow,
@@ -20,7 +20,7 @@ export const Agencies: CollectionConfig = {
     singular: "에이전시",
   },
   access: {
-    ...centerScopedCollectionAccess,
+    ...centerScopedPublishedCollectionAccess,
     create: globalAdminOnly,
   },
   admin: {

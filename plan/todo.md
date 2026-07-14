@@ -153,10 +153,16 @@
 
 ### 5단계 — 공개 API의 초안·보관 콘텐츠 접근 차단 (`P1`, `M`)
 
-- [ ] 비로그인 읽기 조건에 커스텀 `displayStatus: published` 필터를 공통 적용한다.
-- [ ] `main-banners`, `news`, `artist-press`, `faqs`, `star-cards`, `agencies`, `highteen-special-classes`, `exam-passed-reviews`, `exam-results`, `social-links`, `casting-directors`와 같은 상태 필드 사용 컬렉션을 일괄 감사한다.
-- [ ] 공개 REST/GraphQL 요청에서 `draft`, `archived` 문서를 직접 조회할 수 없는지 테스트한다.
-- [ ] 로그인 관리자와 센터 관리자의 기존 관리 권한은 유지되는지 확인한다.
+- [x] 비로그인 읽기 조건에 커스텀 `displayStatus: published` 필터를 공통 적용한다.
+  - 센터 범위 컬렉션은 `centerScopedPublishedCollectionAccess`를 사용하고, 로그인 사용자는 기존 센터 범위 조건을 유지한다.
+  - 필드명이 다른 `main-banners.status`와 단일 센터 구조인 `social-links`는 기존 권한 함수 안에서 비로그인 조건만 제한했다.
+- [x] `main-banners`, `news`, `artist-press`, `faqs`, `star-cards`, `agencies`, `highteen-special-classes`, `exam-passed-reviews`, `exam-results`, `social-links`, `casting-directors`와 같은 상태 필드 사용 컬렉션을 일괄 감사한다.
+  - Payload에 등록된 상태 필드 컬렉션 12개를 확인했으며, `direct-castings`는 기존에도 비로그인 읽기를 전면 거부하므로 더 넓은 공개 권한을 새로 열지 않았다.
+- [x] 공개 REST/GraphQL 요청에서 `draft`, `archived` 문서를 직접 조회할 수 없는지 테스트한다.
+  - 로컬 데이터의 뉴스 초안 361건·보관 1건을 기준으로 REST 초안 조건 조회는 0건, 보관 문서 ID 직접 조회는 404, 공개 조건 조회는 정상 반환됨을 확인했다.
+  - 현재 프로젝트는 GraphQL 라우트를 등록하지 않아 `/api/graphql`과 `/graphql` 모두 404임을 확인했다.
+- [x] 로그인 관리자와 센터 관리자의 기존 관리 권한은 유지되는지 확인한다.
+  - master는 전체 읽기, 센터 manager는 기존 센터 및 `all` 범위, `social-links`는 해당 단일 센터 범위, `main-banners`는 기존 전체 읽기가 유지되는지 권한 테스트로 확인했다.
 
 완료 기준: 프론트엔드 쿼리뿐 아니라 Payload API 자체에서도 미공개 콘텐츠가 차단된다.
 

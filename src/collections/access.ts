@@ -69,9 +69,26 @@ export const centerScopedReadAccess: Access = ({ req }) => {
   }
 }
 
+export const centerScopedPublishedReadAccess: Access = (args) => {
+  if (!args.req.user) {
+    return {
+      displayStatus: {
+        equals: 'published',
+      },
+    }
+  }
+
+  return centerScopedReadAccess(args)
+}
+
 export const centerScopedCollectionAccess = {
   create: centerScopedCreateAccess,
   delete: centerScopedAccess,
   read: centerScopedReadAccess,
   update: centerScopedAccess,
+}
+
+export const centerScopedPublishedCollectionAccess = {
+  ...centerScopedCollectionAccess,
+  read: centerScopedPublishedReadAccess,
 }

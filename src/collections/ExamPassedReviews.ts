@@ -13,7 +13,7 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import {
   createCenterRevalidationAfterChange,
   createCenterRevalidationAfterDelete,
@@ -111,7 +111,7 @@ export const ExamPassedReviews: CollectionConfig = {
     plural: "합격후기",
     singular: "합격후기",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: ["title", "slug", "centers", "authorName", "school", "publishedAt", "updatedAt"],
     group: "입시센터 후기/합격",

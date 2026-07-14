@@ -3,6 +3,7 @@ import type {
   CollectionBeforeValidateHook,
   CollectionConfig,
   Validate,
+  Where,
 } from 'payload'
 
 import {
@@ -112,7 +113,13 @@ const validateRepresentativeImage: Validate<unknown, unknown, SocialLinkData> = 
 
 const readAccess: Access = ({ req }) => {
   if (!req.user) {
-    return true
+    const publishedWhere: Where = {
+      displayStatus: {
+        equals: 'published',
+      },
+    }
+
+    return publishedWhere
   }
 
   if (isGlobalAdminUser(req.user)) {

@@ -15,7 +15,7 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import {
   authorNameField,
   authorNameFromCenters,
@@ -219,7 +219,7 @@ export const ExamResults: CollectionConfig = {
     plural: "합격결과",
     singular: "합격결과",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: ["title", "centers", "authorName", "resultType", "publishedAt", "updatedAt"],
     group: "입시센터 후기/합격",

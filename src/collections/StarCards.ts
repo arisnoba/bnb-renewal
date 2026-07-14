@@ -1,6 +1,6 @@
 import type { CollectionConfig, SelectField, Validate } from 'payload'
 
-import { centerScopedCollectionAccess } from './access'
+import { centerScopedPublishedCollectionAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   adminRow,
@@ -64,7 +64,7 @@ export const StarCards: CollectionConfig = {
     plural: '스타카드 제휴업체',
     singular: '스타카드 제휴업체',
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       'title',

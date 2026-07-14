@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   adminRow,
@@ -19,7 +19,7 @@ export const CastingDirectors: CollectionConfig = {
     plural: "캐스팅 디렉터",
     singular: "캐스팅 디렉터",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       "personName",

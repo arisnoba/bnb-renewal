@@ -1,6 +1,6 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
-import { centerScopedAccess, centerScopedReadAccess } from './access'
+import { centerScopedAccess, centerScopedPublishedReadAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
   adminTabs,
@@ -60,7 +60,7 @@ export const HighteenSpecialClasses: CollectionConfig = {
   access: {
     create: highteenOnlyCreateAccess,
     delete: centerScopedAccess,
-    read: centerScopedReadAccess,
+    read: centerScopedPublishedReadAccess,
     update: centerScopedAccess,
   },
   admin: {

@@ -55,7 +55,17 @@ const mainBannerOrderFieldByCenter = Object.fromEntries(
   centerOptions.map((option) => [option.value, `${option.value}Banners`]),
 ) as Record<CenterValue, MainBannerOrderField>
 
-const allowRead: Access = () => true
+const allowRead: Access = ({ req }) => {
+  if (req.user) {
+    return true
+  }
+
+  return {
+    status: {
+      equals: 'published',
+    },
+  }
+}
 
 const createAccess: Access = ({ req }) => {
   return Boolean(req.user && (isGlobalAdminUser(req.user) || userCenterValue(req.user)))

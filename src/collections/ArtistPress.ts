@@ -15,7 +15,7 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   createCenterRevalidationAfterChange,
@@ -83,7 +83,7 @@ export const ArtistPress: CollectionConfig = {
     plural: "출신 아티스트",
     singular: "출신 아티스트",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",

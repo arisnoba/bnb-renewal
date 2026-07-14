@@ -30,7 +30,7 @@ import {
   normalizeNewsCategory,
 } from "../lib/newsCategories";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
 import {
   centerFrontendPaths,
@@ -325,7 +325,7 @@ export const News: CollectionConfig = {
     plural: "뉴스",
     singular: "뉴스",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",
