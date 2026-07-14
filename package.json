@@ -89,6 +89,8 @@
     "payload:legacy:cleanup-media-variants:r2": "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal DATABASE_URL_UNPOOLED=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal POSTGRES_URL=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@127.0.0.1:5432/bnb_renewal node --env-file=.env.local --import tsx scripts/payload-migration/plan-media-variant-cleanup.ts --write",
     "payload:plan-admin-images-cleanup": "node --env-file=.env.local --import tsx scripts/payload-migration/plan-admin-images-cleanup.ts",
     "payload:cleanup-admin-images:write": "node --env-file=.env.local --import tsx scripts/payload-migration/plan-admin-images-cleanup.ts --write",
+    "payload:migrate-inquiry-attachments:plan": "node --env-file=.env.local --import tsx scripts/payload-migration/migrate-inquiry-attachments-to-private-r2.ts",
+    "payload:migrate-inquiry-attachments:write": "node --env-file=.env.local --import tsx scripts/payload-migration/migrate-inquiry-attachments-to-private-r2.ts --write",
     "payload:legacy:upload-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/upload-images.ts",
     "payload:legacy:upload-images:r2": "node --env-file=.env.local --import tsx scripts/payload-migration/upload-images.ts",
     "payload:legacy:replace-image-paths": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/replace-image-paths.ts",

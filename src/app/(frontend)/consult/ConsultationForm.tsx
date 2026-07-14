@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { centerSlugFromPathname } from '@/Footer/centerInfo'
+import { INQUIRY_ATTACHMENT_MAX_MEGABYTES } from '@/lib/inquiryAttachment'
 import { cn } from '@/utilities/ui'
 import { inquiryTypeValues, type InquiryType } from './inquiryTypeParams'
 
@@ -976,7 +977,7 @@ function FileInputField({
             accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
             files={uploadFiles}
             maxCount={1}
-            maxSize={10}
+            maxSize={INQUIRY_ATTACHMENT_MAX_MEGABYTES}
             onFileSelectChange={(files) => updateSelectedFiles(field.onChange, files)}
           >
             <FormControl>

@@ -50,6 +50,20 @@ R2_ENDPOINT=
 R2_PUBLIC_BASE_URL=
 ```
 
+상담 문의 첨부파일은 개인정보가 포함될 수 있으므로 공개 media bucket과 분리한다. 별도 비공개 bucket에는 커스텀 도메인과 `r2.dev` 공개 접근을 연결하지 않고, 해당 bucket만 읽고 쓸 수 있는 전용 S3 API token을 사용한다.
+
+```text
+R2_PRIVATE_ACCESS_KEY_ID=
+R2_PRIVATE_SECRET_ACCESS_KEY=
+R2_PRIVATE_BUCKET=
+```
+
+- 첨부파일 업로드는 비공개 bucket에만 저장한다.
+- DB에는 공개 URL 대신 `inquiries/attachments/...` object key만 저장한다.
+- 관리자는 Payload 로그인과 `inquiries` 읽기 권한을 통과한 `/api/inquiries/{id}/attachment` 경로로만 다운로드한다.
+- 기존 공개 첨부 이전은 `npm run payload:migrate-inquiry-attachments:plan`으로 대상을 확인하고, 비공개 환경변수 설정 후 `npm run payload:migrate-inquiry-attachments:write`로 복사한다.
+- 공개 원본 삭제는 비공개 복사와 다운로드 검증 후 별도 승인 하에 `--delete-public`과 `ALLOW_DESTRUCTIVE_C0=1`을 함께 사용한다.
+
 운영 기록 또는 Cloudflare dashboard 확인용:
 
 ```text

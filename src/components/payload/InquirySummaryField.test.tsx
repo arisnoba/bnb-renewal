@@ -13,14 +13,15 @@ const TestInquirySummaryField = InquirySummaryField as unknown as ComponentType<
   path: string
 }>
 
-test('partnership attachment link downloads without opening a new tab', () => {
+test('partnership attachment link uses the authenticated download route', () => {
   const html = renderToStaticMarkup(
     <TestInquirySummaryField
       clientField={{ admin: {}, name: 'summary' }}
       data={{
         attachmentFileName: 'proposal.pdf',
-        attachmentUrl: 'https://cdn.example.com/inquiries/attachments/partnership/proposal.pdf',
+        attachmentObjectKey: 'inquiries/attachments/partnership/2026/07/proposal.pdf',
         companyName: '배우앤배움',
+        id: 12,
         inquiryType: 'partnership',
       }}
       field={{ admin: {}, name: 'summary', type: 'ui' }}
@@ -28,7 +29,7 @@ test('partnership attachment link downloads without opening a new tab', () => {
     />,
   )
 
-  assert.match(html, /href="https:\/\/cdn\.example\.com\/inquiries\/attachments\/partnership\/proposal\.pdf"/)
+  assert.match(html, /href="\/api\/inquiries\/12\/attachment"/)
   assert.match(html, /download=""/)
   assert.doesNotMatch(html, /target="_blank"/)
 })
