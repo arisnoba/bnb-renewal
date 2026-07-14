@@ -208,13 +208,15 @@
 
 ### 8단계 — 테스트 실행 경로와 CI 복구 (`코드 사용성`, `M`)
 
-- [ ] `package.json`에 전체 테스트를 재현 가능하게 실행하는 `test` 스크립트를 추가한다.
-- [ ] 현재 실패하는 테스트 4건을 구현 변경인지 기대값 노후화인지 판별해 수정한다.
+- [x] `package.json`에 전체 테스트를 재현 가능하게 실행하는 `test` 스크립트를 추가한다.
+- [x] 현재 실패하는 테스트 4건을 구현 변경인지 기대값 노후화인지 판별해 수정한다.
   - `AdminArrayRowLabels.test.ts`
   - `AdminTodoFields.test.ts`
   - `CastingAppearances.test.ts`
   - `adminListSelectOptimization.test.ts`
-- [ ] CI에서 최소 `test`, `typecheck`, `lint`를 실행한다.
+- [x] CI에서 최소 `test`, `typecheck`, `lint`를 실행한다.
+
+판별 결과: `AdminTodoFields.test.ts`는 이미 통과하고 있었고, 나머지 3건은 레거시 필드 숨김 전환, ID 슬러그 후처리 훅 추가, 레거시 필드 라벨 변경을 반영하지 못한 노후 기대값이었다.
 
 완료 기준: 로컬과 CI가 같은 명령으로 전체 테스트를 실행하고 모두 통과한다.
 

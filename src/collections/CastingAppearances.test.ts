@@ -5,7 +5,7 @@ import { CastingAppearances } from "./CastingAppearances";
 import { centerFrontendPaths } from "./revalidateFrontend";
 
 test("casting appearances revalidate casting status pages after writes", () => {
-  assert.equal(CastingAppearances.hooks?.afterChange?.length, 1);
+  assert.equal(CastingAppearances.hooks?.afterChange?.length, 2);
   assert.equal(CastingAppearances.hooks?.afterDelete?.length, 1);
 });
 

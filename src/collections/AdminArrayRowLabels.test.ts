@@ -290,10 +290,10 @@ test("screen appearances use requested work information field order", () => {
 });
 
 test("screen appearances hide profile image field when a profile is linked", () => {
-  const profileImagePath = getFieldDeep(ScreenAppearances, "profileImagePath");
+  const profileImageMedia = getFieldDeep(ScreenAppearances, "profileImageMedia");
 
-  assert.equal(profileImagePath.admin?.condition?.({}, { actorInputMode: "profile" }), false);
-  assert.equal(profileImagePath.admin?.condition?.({}, { actorInputMode: "manual" }), true);
+  assert.equal(profileImageMedia.admin?.condition?.({}, { actorInputMode: "profile" }), false);
+  assert.equal(profileImageMedia.admin?.condition?.({}, { actorInputMode: "manual" }), true);
 });
 
 test("screen appearances can relate to a broadcast station", () => {

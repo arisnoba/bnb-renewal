@@ -263,9 +263,9 @@ test('media list keeps only generic default columns and hides custom detail fiel
   }
 })
 
-test('legacy thumbnail labels use representative image wording', () => {
+test('legacy thumbnail labels distinguish hidden migration fields', () => {
   assert.equal(fieldLabel(getNamedField(CastingAppearances, 'thumbnailPath')), '대표 이미지')
-  assert.equal(fieldLabel(getNamedField(ScreenAppearances, 'thumbnailPath')), '대표 이미지')
+  assert.equal(fieldLabel(getNamedField(ScreenAppearances, 'thumbnailPath')), '레거시 대표 이미지')
 })
 
 test('image default columns are removed from compact admin lists', () => {
