@@ -26,6 +26,7 @@ const queryableDirectCastingCompanies = [
   'arko-lab',
   'bnb-casting',
   'bx-model-agency',
+  'cna-agency',
   'imground',
 ] as const
 

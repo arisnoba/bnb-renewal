@@ -141,6 +141,8 @@ import * as migration_20260713_143000_site_settings_maintenance_mode from './202
 import * as migration_20260713_164000_curriculum_kids_center from './20260713_164000_curriculum_kids_center'
 import * as migration_20260713_165000_drop_site_settings_lock_relation from './20260713_165000_drop_site_settings_lock_relation'
 import * as migration_20260714_163000_casting_director_company_select from './20260714_163000_casting_director_company_select'
+import * as migration_20260714_174500_direct_casting_cna_agency from './20260714_174500_direct_casting_cna_agency'
+import * as migration_20260714_180000_direct_casting_avenue_center from './20260714_180000_direct_casting_avenue_center'
 
 export const migrations = [
   {
@@ -857,5 +859,15 @@ export const migrations = [
     up: migration_20260714_163000_casting_director_company_select.up,
     down: migration_20260714_163000_casting_director_company_select.down,
     name: '20260714_163000_casting_director_company_select',
+  },
+  {
+    up: migration_20260714_174500_direct_casting_cna_agency.up,
+    down: migration_20260714_174500_direct_casting_cna_agency.down,
+    name: '20260714_174500_direct_casting_cna_agency',
+  },
+  {
+    up: migration_20260714_180000_direct_casting_avenue_center.up,
+    down: migration_20260714_180000_direct_casting_avenue_center.down,
+    name: '20260714_180000_direct_casting_avenue_center',
   },
 ]

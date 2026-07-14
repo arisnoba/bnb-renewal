@@ -28,6 +28,7 @@ const companyOptions = [
   { label: 'ARKO Lab', value: 'arko-lab' },
   { label: 'IMGround', value: 'imground' },
   { label: 'BNB Casting', value: 'bnb-casting' },
+  { label: 'CNA Agency', value: 'cna-agency' },
   { label: 'BX Model Agency', value: 'bx-model-agency' },
 ]
 
@@ -35,6 +36,7 @@ const directCastingCompanyValues = new Set<string>(companyOptions.map((option) =
 
 const sourceCenterOptions = [
   { label: '아트센터', value: 'art' },
+  { label: '에비뉴센터', value: 'avenue' },
   { label: '키즈센터', value: 'kids' },
   { label: '하이틴센터', value: 'highteen' },
 ]
