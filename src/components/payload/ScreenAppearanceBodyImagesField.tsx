@@ -401,7 +401,7 @@ export const ScreenAppearanceBodyImagesField: FC = () => {
     >
       <div>
         <input
-          accept="image/avif,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
+          accept="image/avif,image/gif,image/jpeg,image/png,image/webp"
           disabled={controlsDisabled}
           multiple
           onChange={handleFileChange}

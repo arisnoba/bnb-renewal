@@ -16,6 +16,12 @@ import { fileURLToPath } from 'url'
 
 import { assertAdminImageUploadSize } from '@/lib/mediaUploadPolicy'
 import { deleteR2Object, hasR2Config } from '@/lib/r2'
+import {
+  MEDIA_UPLOAD_MIME_TYPES,
+  MEDIA_UPLOAD_TYPES,
+  uploadValidationMessage,
+  validateUploadedFile,
+} from '@/lib/uploadFileValidation'
 import { resolveMediaPublicUrl } from '@/utilities/resolveMediaPublicUrl'
 
 import { anyone } from '../access/anyone'
@@ -236,12 +242,30 @@ const removeGeneratedImageVariantsAfterChange: CollectionAfterChangeHook = async
   }
 }
 
-const validateAdminImageUploadSize: CollectionBeforeValidateHook = ({ req }) => {
-  if (req.context?.skipAdminImageUploadSizeLimit) {
+const validateAdminImageUpload: CollectionBeforeValidateHook = async ({ req }) => {
+  if (!req.context?.skipAdminImageUploadSizeLimit) {
+    assertAdminImageUploadSize(req.file)
+  }
+
+  if (!req.file) {
     return
   }
 
-  assertAdminImageUploadSize(req.file)
+  const bytes = req.file.data.length > 0
+    ? req.file.data
+    : req.file.tempFilePath
+      ? await fs.readFile(req.file.tempFilePath)
+      : req.file.data
+  const validation = validateUploadedFile({
+    allowedTypes: MEDIA_UPLOAD_TYPES,
+    bytes,
+    fileName: req.file.name,
+    mimeType: req.file.mimetype,
+  })
+
+  if (!validation.valid) {
+    throw new Error(uploadValidationMessage(validation))
+  }
 }
 
 export const Media: CollectionConfig = {
@@ -255,7 +279,7 @@ export const Media: CollectionConfig = {
   hooks: {
     afterChange: [removeGeneratedImageVariantsAfterChange],
     afterRead: [applyExternalUrlAfterRead],
-    beforeValidate: [validateAdminImageUploadSize],
+    beforeValidate: [validateAdminImageUpload],
   },
   admin: {
     defaultColumns: ['filename', 'alt', 'updatedAt'],
@@ -291,5 +315,6 @@ export const Media: CollectionConfig = {
     formatOptions: imageFormatOptions,
     focalPoint: true,
     imageSizes: mediaImageSizes,
+    mimeTypes: [...MEDIA_UPLOAD_MIME_TYPES],
   },
 }

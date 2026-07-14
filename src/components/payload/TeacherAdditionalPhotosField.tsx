@@ -249,7 +249,7 @@ function AdditionalPhotosField({ emptyMessage, helpText }: AdditionalPhotosField
 					갤러리 이미지 업로드
 				</div>
 				<input
-					accept="image/avif,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
+					accept="image/avif,image/gif,image/jpeg,image/png,image/webp"
 					disabled={controlsDisabled}
 					multiple
 					onChange={handleFileChange}

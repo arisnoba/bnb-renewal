@@ -11,15 +11,11 @@ import {
 import { resolveAdminImageDeletionTarget } from "@/lib/adminImageDeletionTarget";
 import { getPayloadClient } from "@/lib/payload";
 import { deleteR2Object, getR2PublicUrl, uploadR2Object } from "@/lib/r2";
-const IMAGE_EXTENSIONS = new Set([
-  ".avif",
-  ".gif",
-  ".jpeg",
-  ".jpg",
-  ".png",
-  ".svg",
-  ".webp",
-]);
+import {
+  IMAGE_UPLOAD_TYPES,
+  uploadValidationMessage,
+  validateUploadedFile,
+} from "@/lib/uploadFileValidation";
 
 export const runtime = "nodejs";
 
@@ -66,12 +62,6 @@ function sanitizeFileName(fileName: string) {
   return `${safeBasename}${extension}`;
 }
 
-function isAllowedImage(file: File) {
-  const extension = path.extname(file.name).toLowerCase();
-
-  return file.type.startsWith("image/") && IMAGE_EXTENSIONS.has(extension);
-}
-
 function previewObjectKey(value: unknown) {
   const key = typeof value === "string" ? value.trim().replace(/^\/+/, "") : "";
 
@@ -113,12 +103,20 @@ export async function POST(request: Request) {
     return jsonError("업로드할 이미지 파일이 없습니다.", 400);
   }
 
-  if (!isAllowedImage(file)) {
-    return jsonError("지원하지 않는 이미지 형식입니다.", 400);
-  }
-
   if (file.size > ADMIN_IMAGE_UPLOAD_LIMIT_BYTES) {
     return jsonError(ADMIN_IMAGE_UPLOAD_LIMIT_MESSAGE, 400);
+  }
+
+  const fileBuffer = Buffer.from(await file.arrayBuffer());
+  const validation = validateUploadedFile({
+    allowedTypes: IMAGE_UPLOAD_TYPES,
+    bytes: fileBuffer,
+    fileName: file.name,
+    mimeType: file.type,
+  });
+
+  if (!validation.valid) {
+    return jsonError(uploadValidationMessage(validation), 400);
   }
 
   const { month, year } = getStorageDateParts();
@@ -126,14 +124,13 @@ export async function POST(request: Request) {
     file.name,
   )}`;
   const storagePath = `admin-images/${year}/${month}/${fileName}`;
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
   let uploaded: Awaited<ReturnType<typeof uploadR2Object>>;
 
   try {
     uploaded = await uploadR2Object({
       body: fileBuffer,
       cacheControl: "public, max-age=31536000, immutable",
-      contentType: file.type,
+      contentType: validation.mimeType,
       key: storagePath,
     });
   } catch (error) {

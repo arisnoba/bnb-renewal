@@ -974,7 +974,7 @@ function FileInputField({
             {label} {required && <RequiredMark />}
           </FormLabel>
           <FileUpload
-            accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
+            accept=".pdf,.png,.jpg,.jpeg"
             files={uploadFiles}
             maxCount={1}
             maxSize={INQUIRY_ATTACHMENT_MAX_MEGABYTES}

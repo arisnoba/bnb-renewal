@@ -175,7 +175,7 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 				{field.required ? <span style={{ color: 'var(--theme-error-500)' }}> *</span> : null}
 			</label>
 			<input
-				accept="image/avif,image/gif,image/jpeg,image/png,image/svg+xml,image/webp"
+				accept="image/avif,image/gif,image/jpeg,image/png,image/webp"
 				disabled={controlsDisabled}
 				onChange={handleFileChange}
 				ref={inputRef}

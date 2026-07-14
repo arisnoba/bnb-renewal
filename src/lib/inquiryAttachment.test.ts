@@ -2,10 +2,18 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
+  INQUIRY_ATTACHMENT_EXTENSIONS,
   attachmentContentDisposition,
   inquiryAttachmentDownloadPath,
   isInquiryAttachmentObjectKey,
 } from './inquiryAttachment'
+
+test('문의 첨부는 이미지와 PDF 확장자만 허용한다', () => {
+  assert.deepEqual(
+    [...INQUIRY_ATTACHMENT_EXTENSIONS].sort(),
+    ['.jpeg', '.jpg', '.pdf', '.png'],
+  )
+})
 
 test('문의 첨부 R2 key는 전용 prefix 내부만 허용한다', () => {
   assert.equal(

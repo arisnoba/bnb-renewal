@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 
 import {
-  INQUIRY_ATTACHMENT_EXTENSIONS,
   INQUIRY_ATTACHMENT_MAX_BYTES,
 } from '@/lib/inquiryAttachment'
 import { consumeRateLimit, rateLimitHeaders } from '@/lib/apiRateLimit'
@@ -14,6 +13,10 @@ import {
   uploadPrivateR2Object,
 } from '@/lib/privateR2'
 import { verifyTurnstileToken } from '@/lib/turnstile'
+import {
+  CONSULT_ATTACHMENT_UPLOAD_TYPES,
+  validateUploadedFile,
+} from '@/lib/uploadFileValidation'
 import type { Inquiry } from '@/payload-types'
 
 type InquiryType = Inquiry['inquiryType']
@@ -134,7 +137,7 @@ export async function POST(request: Request) {
     }
   }
 
-  if (!hasValidAttachments(formData)) {
+  if (!(await hasValidAttachments(formData))) {
     return jsonError('invalid-attachment', 400)
   }
 
@@ -278,23 +281,31 @@ function isValidKoreanPhoneNumber(value: string) {
   )
 }
 
-function hasValidAttachments(formData: FormData) {
+async function hasValidAttachments(formData: FormData) {
   const files = formData
     .getAll('attachment')
     .filter((value): value is File => value instanceof File && value.size > 0)
 
-  return (
-    files.length <= maxAttachmentCount &&
-    files.every((file) => {
-      const safeName = safeFileName(file.name || 'attachment')
-      const extension = path.extname(safeName).toLowerCase()
+  if (files.length > maxAttachmentCount) {
+    return false
+  }
 
-      return (
-        file.size <= INQUIRY_ATTACHMENT_MAX_BYTES &&
-        INQUIRY_ATTACHMENT_EXTENSIONS.has(extension)
-      )
-    })
+  const validations = await Promise.all(
+    files.map(async (file) => {
+      if (file.size > INQUIRY_ATTACHMENT_MAX_BYTES) {
+        return false
+      }
+
+      return validateUploadedFile({
+        allowedTypes: CONSULT_ATTACHMENT_UPLOAD_TYPES,
+        bytes: new Uint8Array(await file.arrayBuffer()),
+        fileName: safeFileName(file.name || 'attachment'),
+        mimeType: file.type,
+      }).valid
+    }),
   )
+
+  return validations.every(Boolean)
 }
 
 function hasAttachment(formData: FormData) {
