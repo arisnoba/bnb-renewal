@@ -119,14 +119,14 @@ export function uploadValidationMessage(result: UploadFileValidationResult) {
   }
 
   if (result.reason === 'extension') {
-    return '지원하지 않는 파일 확장자입니다.'
+    return '지원하지 않는 파일 확장자입니다. 파일 이름만 바꾸지 말고, 원본 파일을 지원 형식으로 다시 저장한 뒤 업로드해 주세요.'
   }
 
   if (result.reason === 'mime') {
-    return '파일 확장자와 MIME 형식이 일치하지 않습니다.'
+    return '파일 확장자와 실제 파일 형식이 다릅니다. 파일 이름만 바꾸지 말고, 원본 파일을 열어 올바른 형식으로 다시 저장한 뒤 업로드해 주세요.'
   }
 
-  return '파일 내용이 선택한 형식과 일치하지 않습니다.'
+  return '업로드한 파일을 읽을 수 없거나 확장자와 실제 파일 형식이 다릅니다. 파일 이름만 바꾸지 말고, 원본 파일을 열어 다시 저장한 뒤 업로드해 주세요. 이미지라면 JPEG, PNG 또는 WebP 형식으로 저장해 주세요.'
 }
 
 function fileExtension(fileName: string) {
