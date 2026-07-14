@@ -54,3 +54,31 @@ test('media upload hook rejects SVG and accepts a matching PNG signature', async
     } as never),
   )
 })
+
+test('media upload hook uses Payload의 변환 후 WebP 메타데이터를 검사한다', async () => {
+  const hook = Media.hooks?.beforeValidate?.[0]
+
+  assert.equal(typeof hook, 'function')
+
+  if (typeof hook !== 'function') {
+    return
+  }
+
+  await assert.doesNotReject(
+    hook({
+      data: {
+        filename: 'profile.webp',
+        mimeType: 'image/webp',
+      },
+      req: {
+        context: {},
+        file: {
+          data: Buffer.from('RIFF0000WEBP'),
+          mimetype: 'image/jpeg',
+          name: 'profile.jpg',
+          size: 12,
+        },
+      },
+    } as never),
+  )
+})

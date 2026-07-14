@@ -242,7 +242,7 @@ const removeGeneratedImageVariantsAfterChange: CollectionAfterChangeHook = async
   }
 }
 
-const validateAdminImageUpload: CollectionBeforeValidateHook = async ({ req }) => {
+const validateAdminImageUpload: CollectionBeforeValidateHook = async ({ data, req }) => {
   if (!req.context?.skipAdminImageUploadSizeLimit) {
     assertAdminImageUploadSize(req.file)
   }
@@ -259,8 +259,11 @@ const validateAdminImageUpload: CollectionBeforeValidateHook = async ({ req }) =
   const validation = validateUploadedFile({
     allowedTypes: MEDIA_UPLOAD_TYPES,
     bytes,
-    fileName: req.file.name,
-    mimeType: req.file.mimetype,
+    // Payload applies the collection's WebP formatOptions before this hook. In that
+    // case req.file can contain transformed WebP bytes while retaining the original
+    // upload's filename and MIME type, so validate with the generated metadata.
+    fileName: typeof data?.filename === 'string' ? data.filename : req.file.name,
+    mimeType: typeof data?.mimeType === 'string' ? data.mimeType : req.file.mimetype,
   })
 
   if (!validation.valid) {
