@@ -168,10 +168,23 @@
 
 ### 6단계 — 사용하지 않는 API와 과도한 요청 표면 축소 (`P2`, `S~M`)
 
-- [ ] 앱에서 GraphQL 사용 여부를 다시 확인하고, 사용하지 않으면 비활성화한다.
-- [ ] Payload `maxDepth`를 실제 화면에 필요한 최소 수준으로 제한한다.
-- [ ] 상담/Turnstile 및 비용이 큰 공개 API에 IP·사용자 기준 rate limit을 적용한다.
-- [ ] Vercel/Cloudflare 설정과 중복 여부를 확인한 뒤 CSP 등 보안 헤더를 코드 또는 edge 설정의 한 곳에서 관리한다.
+- [x] 앱에서 GraphQL 사용 여부를 다시 확인하고, 사용하지 않으면 비활성화한다.
+  - 소스 전체에서 GraphQL 요청과 전용 라우트 등록이 없고, Payload catch-all에는 REST 핸들러만 연결되어 있음을 확인했다.
+  - 로컬 `/api/graphql` GET/POST가 모두 404이며, 별도 GraphQL 인터페이스를 새로 등록하지 않는 현재 구성을 유지한다.
+  - 직접 `graphql` 의존성의 정리는 Payload 패키지 업데이트와 함께 9단계에서 별도로 판단한다.
+- [x] Payload `maxDepth`를 실제 화면에 필요한 최소 수준으로 제한한다.
+  - 프론트와 관리자 쿼리의 최대 사용값 `depth: 3`을 기준으로 전역 `maxDepth: 3`을 적용했다.
+  - REST `depth=10` 요청 결과가 `depth=3`과 동일하게 제한됨을 로컬 API에서 확인했다.
+- [x] 상담/Turnstile 및 비용이 큰 공개 API에 IP·사용자 기준 rate limit을 적용한다.
+  - 상담은 IP당 10분 5회, Turnstile 검증은 IP당 1분 20회, 캐스팅 현황 추가 조회는 IP당 1분 60회로 제한했다.
+  - Vercel/Cloudflare 전달 IP를 우선 사용하고 식별자는 Payload 시크릿 기반 HMAC-SHA-256으로만 저장한다. 공통 헬퍼는 로그인 사용자 ID가 주어지면 IP보다 사용자 기준을 우선한다.
+  - 서버리스 인스턴스 간에도 공유되도록 기존 PostgreSQL `payload_kv`에 원자적으로 카운트하며, 별도 스키마 변경은 만들지 않았다.
+  - 동시 20회 요청에서 제한 10회만 허용되고 나머지 10회가 차단되며, 실제 라우트가 한도 초과 시 429와 `Retry-After`를 반환함을 확인했다.
+- [x] Vercel/Cloudflare 설정과 중복 여부를 확인한 뒤 CSP 등 보안 헤더를 코드 또는 edge 설정의 한 곳에서 관리한다.
+  - 2026-07-14 기준 Vercel Firewall은 커스텀 규칙 미설정, Attack Mode 꺼짐, System Mitigations 활성 상태여서 애플리케이션 rate limit과 중복되는 규칙이 없다.
+  - 실제 도메인은 Vercel에서 HSTS만 제공하고 CSP 등은 없었으며, Cloudflare proxy 응답 헤더도 확인되지 않았다.
+  - CSP, Permissions Policy, Referrer Policy, nosniff, frame 차단은 `config/security-headers.mjs` 한 곳에서 정의해 Next.js 전체 경로에 적용했다. HSTS는 기존 Vercel 플랫폼 설정을 유지한다.
+  - 상담 Turnstile, 네이버 지도, Payload 관리자 화면을 브라우저로 확인해 CSP 차단 회귀가 없음을 검증했다.
 
 완료 기준: 사용하지 않는 인터페이스와 비정상적으로 깊거나 반복적인 요청이 기본값으로 열려 있지 않다.
 

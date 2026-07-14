@@ -147,6 +147,7 @@ export default buildConfig({
   }),
   editor: defaultLexical,
   globals: applyGlobalAdminSaveLoadingOverlay([Main, MainStatistics, Footer, SiteSettings]),
+  maxDepth: 3,
   plugins,
   routes: {
     admin: '/admin',

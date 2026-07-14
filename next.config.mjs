@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { redirects } from './redirects.mjs'
+import { securityHeaders } from './config/security-headers.mjs'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -79,6 +80,12 @@ const experimentalConfig = {
 const nextConfig = {
   ...(allowedDevOrigins.length > 0 ? { allowedDevOrigins } : {}),
   experimental: experimentalConfig,
+  headers: async () => [
+    {
+      headers: securityHeaders,
+      source: '/(.*)',
+    },
+  ],
   images: {
     localPatterns: [
       {
@@ -140,6 +147,7 @@ const nextConfig = {
     remotePatterns,
   },
   reactStrictMode: true,
+  poweredByHeader: false,
   redirects,
   sassOptions: {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],

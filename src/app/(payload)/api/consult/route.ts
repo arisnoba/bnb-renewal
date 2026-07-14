@@ -6,6 +6,7 @@ import {
   INQUIRY_ATTACHMENT_EXTENSIONS,
   INQUIRY_ATTACHMENT_MAX_BYTES,
 } from '@/lib/inquiryAttachment'
+import { consumeRateLimit, rateLimitHeaders } from '@/lib/apiRateLimit'
 import { getPayloadClient } from '@/lib/payload'
 import {
   deletePrivateR2Object,
@@ -53,6 +54,26 @@ const phoneFields = new Set(['guardianPhone', 'partnerPhone', 'phone'])
 const maxAttachmentCount = 1
 
 export async function POST(request: Request) {
+  const rateLimit = await consumeRateLimit(request, {
+    limit: 5,
+    scope: 'consult',
+    windowMs: 10 * 60 * 1_000,
+  }).catch((error) => {
+    console.error('[consult] failed to check rate limit', error)
+    return null
+  })
+
+  if (!rateLimit) {
+    return jsonError('rate-limit-unavailable', 503)
+  }
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'too-many-requests', success: false },
+      { headers: rateLimitHeaders(rateLimit), status: 429 },
+    )
+  }
+
   const formData = await request.formData().catch(() => null)
 
   if (!formData) {

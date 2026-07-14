@@ -1,4 +1,5 @@
 import { centers, type CenterSlug } from '@/lib/centers'
+import { consumeRateLimit, rateLimitHeaders } from '@/lib/apiRateLimit'
 import configPromise from '@payload-config'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
@@ -14,6 +15,26 @@ const maxOffset = 500
 const yearPattern = /^\d{4}$/
 
 export async function GET(request: Request) {
+  const rateLimit = await consumeRateLimit(request, {
+    limit: 60,
+    scope: 'casting-status',
+    windowMs: 60_000,
+  }).catch((error) => {
+    console.error('[casting-status] failed to check rate limit', error)
+    return null
+  })
+
+  if (!rateLimit) {
+    return NextResponse.json({ error: 'rate-limit-unavailable' }, { status: 503 })
+  }
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'too-many-requests' },
+      { headers: rateLimitHeaders(rateLimit), status: 429 },
+    )
+  }
+
   const { searchParams } = new URL(request.url)
   const center = searchParams.get('center')
   const offset = normalizeOffset(searchParams.get('offset'))
