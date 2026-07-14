@@ -216,16 +216,16 @@ function CastingCompanySection({
 }
 
 function director(
-  createdAt: string,
+  publishedAt: string,
   name: string,
   image: string | undefined,
   careerItems: CastingDirector['careerItems'],
 ): CastingProfile {
   return {
     careerItems: normalizeCareerItems(careerItems),
-    createdAt,
     image,
     name,
+    publishedAt,
     role: '디렉터',
   }
 }
@@ -249,8 +249,9 @@ const queryCastingDirectorProfiles = cache(async () => {
         createdAt: true,
         personName: true,
         profileImageMedia: true,
+        publishedAt: true,
       },
-      sort: 'createdAt',
+      sort: 'publishedAt',
       where,
     })
 
@@ -268,7 +269,14 @@ function groupDirectorProfiles(directors: CastingDirector[]) {
     const image = mediaUrl(item.profileImageMedia)
     const profiles = profilesByCompany.get(companyKey) ?? []
 
-    profiles.push(director(item.createdAt, item.personName, image, item.careerItems))
+    profiles.push(
+      director(
+        item.publishedAt ?? item.createdAt,
+        item.personName,
+        image,
+        item.careerItems,
+      ),
+    )
     profilesByCompany.set(companyKey, profiles)
   }
 
@@ -298,13 +306,13 @@ function getCompanyProfiles(
     (profile, index, list) => list.findIndex((item) => item.name === profile.name) === index,
   )
   return [...uniqueProfiles].sort((left, right) => {
-    const dateDifference = registrationTime(left.createdAt) - registrationTime(right.createdAt)
+    const dateDifference = publicationTime(left.publishedAt) - publicationTime(right.publishedAt)
 
     return dateDifference || left.name.localeCompare(right.name, 'ko')
   })
 }
 
-function registrationTime(value: string) {
+function publicationTime(value: string) {
   const timestamp = Date.parse(value)
 
   return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp

@@ -19,9 +19,9 @@ export type CastingProfile = {
     content: string
     title: string
   }[]
-  createdAt: string
   image?: string
   name: string
+  publishedAt: string
   role: string
 }
 
