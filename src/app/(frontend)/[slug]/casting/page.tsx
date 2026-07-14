@@ -250,7 +250,7 @@ const queryCastingDirectorProfiles = cache(async () => {
         personName: true,
         profileImageMedia: true,
       },
-      sort: '-createdAt',
+      sort: 'createdAt',
       where,
     })
 
@@ -298,7 +298,7 @@ function getCompanyProfiles(
     (profile, index, list) => list.findIndex((item) => item.name === profile.name) === index,
   )
   return [...uniqueProfiles].sort((left, right) => {
-    const dateDifference = registrationTime(right.createdAt) - registrationTime(left.createdAt)
+    const dateDifference = registrationTime(left.createdAt) - registrationTime(right.createdAt)
 
     return dateDifference || left.name.localeCompare(right.name, 'ko')
   })
