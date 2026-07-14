@@ -49,7 +49,6 @@ import { CurriculumLessonRowLabel as CurriculumLessonRowLabel_e176a12055efebae77
 import { YouTubePreviewField as YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d } from '@/components/payload/YouTubePreviewField'
 import { AgencyActorRowLabel as AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d } from '@/components/payload/AgencyActorRowLabel'
 import { AuditionScheduleStartDateField as AuditionScheduleStartDateField_daeb064b600ba1e5aa9502ef326a111e } from '@/components/payload/AuditionScheduleStartDateField'
-import { CastingDirectorCompanySelectField as CastingDirectorCompanySelectField_582f7d10baebedaf06fc4d32bc869b76 } from '@/components/payload/CastingDirectorCompanySelectField'
 import { CastingDirectorCareerRowLabel as CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6 } from '@/components/payload/CastingDirectorCareerRowLabel'
 import { CastingAppearanceCastMemberRowLabel as CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296 } from '@/components/payload/CastingAppearanceCastMemberRowLabel'
 import { ScreenAppearancePerformerCell as ScreenAppearancePerformerCell_a565e0992e46624eb0f1816c0da918b8 } from '@/components/payload/ScreenAppearancePerformerCell'
@@ -135,7 +134,6 @@ export const importMap = {
   "@/components/payload/YouTubePreviewField#YouTubePreviewField": YouTubePreviewField_11e2dbffb39a3353ea45636c3370ef5d,
   "@/components/payload/AgencyActorRowLabel#AgencyActorRowLabel": AgencyActorRowLabel_f1394771a8ea8d2f5c2b5241bc5dae1d,
   "@/components/payload/AuditionScheduleStartDateField#AuditionScheduleStartDateField": AuditionScheduleStartDateField_daeb064b600ba1e5aa9502ef326a111e,
-  "@/components/payload/CastingDirectorCompanySelectField#CastingDirectorCompanySelectField": CastingDirectorCompanySelectField_582f7d10baebedaf06fc4d32bc869b76,
   "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel": CastingDirectorCareerRowLabel_8854e40b40c0690a664f77efb5be1bd6,
   "@/components/payload/CastingAppearanceCastMemberRowLabel#CastingAppearanceCastMemberRowLabel": CastingAppearanceCastMemberRowLabel_8ce86ae2f5eda746cac63653a594a296,
   "@/components/payload/ScreenAppearancePerformerCell#ScreenAppearancePerformerCell": ScreenAppearancePerformerCell_a565e0992e46624eb0f1816c0da918b8,

@@ -80,12 +80,6 @@ export const CastingDirectors: CollectionConfig = {
         label: "회사",
         required: true,
         options: castingDirectorCompanyOptions,
-        admin: {
-          components: {
-            Field:
-              "@/components/payload/CastingDirectorCompanySelectField#CastingDirectorCompanySelectField",
-          },
-        },
       },
     ]),
     {
