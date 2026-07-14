@@ -2,8 +2,16 @@ import { NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 
+import {
+  INQUIRY_ATTACHMENT_EXTENSIONS,
+  INQUIRY_ATTACHMENT_MAX_BYTES,
+} from '@/lib/inquiryAttachment'
 import { getPayloadClient } from '@/lib/payload'
-import { deleteR2Object, hasR2Config, uploadR2Object } from '@/lib/r2'
+import {
+  deletePrivateR2Object,
+  hasPrivateR2Config,
+  uploadPrivateR2Object,
+} from '@/lib/privateR2'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import type { Inquiry } from '@/payload-types'
 
@@ -43,8 +51,6 @@ const singleValueFields = [
 ] as const
 const phoneFields = new Set(['guardianPhone', 'partnerPhone', 'phone'])
 const maxAttachmentCount = 1
-const maxAttachmentSize = 10 * 1024 * 1024
-const allowedAttachmentExtensions = new Set(['.doc', '.docx', '.jpeg', '.jpg', '.pdf', '.png'])
 
 export async function POST(request: Request) {
   const formData = await request.formData().catch(() => null)
@@ -111,7 +117,7 @@ export async function POST(request: Request) {
     return jsonError('invalid-attachment', 400)
   }
 
-  if (hasAttachment(formData) && !hasR2Config()) {
+  if (hasAttachment(formData) && !hasPrivateR2Config()) {
     return jsonError('attachment-storage-unavailable', 500)
   }
 
@@ -138,7 +144,6 @@ export async function POST(request: Request) {
     if (uploadedAttachment) {
       data.attachmentFileName = uploadedAttachment.fileName
       data.attachmentObjectKey = uploadedAttachment.objectKey
-      data.attachmentUrl = uploadedAttachment.url
     }
 
     const inquiry = await payload.create({
@@ -153,7 +158,7 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     if (uploadedAttachment) {
-      await deleteR2Object(uploadedAttachment.objectKey).catch(() => undefined)
+      await deletePrivateR2Object(uploadedAttachment.objectKey).catch(() => undefined)
     }
 
     console.error('[consult] failed to create inquiry', error)
@@ -263,7 +268,10 @@ function hasValidAttachments(formData: FormData) {
       const safeName = safeFileName(file.name || 'attachment')
       const extension = path.extname(safeName).toLowerCase()
 
-      return file.size <= maxAttachmentSize && allowedAttachmentExtensions.has(extension)
+      return (
+        file.size <= INQUIRY_ATTACHMENT_MAX_BYTES &&
+        INQUIRY_ATTACHMENT_EXTENSIONS.has(extension)
+      )
     })
   )
 }
@@ -277,7 +285,6 @@ function hasAttachment(formData: FormData) {
 type UploadedAttachment = {
   fileName: string
   objectKey: string
-  url: string
 }
 
 async function uploadAttachment(
@@ -293,7 +300,7 @@ async function uploadAttachment(
   }
 
   const safeName = safeFileName(file.name || 'attachment')
-  const uploaded = await uploadR2Object({
+  const uploaded = await uploadPrivateR2Object({
     body: Buffer.from(await file.arrayBuffer()),
     cacheControl: 'private, max-age=0, no-store',
     contentDisposition: `attachment; filename="${safeName}"`,
@@ -304,7 +311,6 @@ async function uploadAttachment(
   return {
     fileName: safeName,
     objectKey: uploaded.objectKey,
-    url: uploaded.publicUrl,
   }
 }
 

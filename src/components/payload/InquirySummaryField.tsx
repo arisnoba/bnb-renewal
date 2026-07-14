@@ -2,6 +2,7 @@ import type { UIFieldServerComponent } from 'payload'
 import type { ReactNode } from 'react'
 
 import { formatAdminDate } from '@/lib/formatAdminDate'
+import { inquiryAttachmentDownloadPath } from '@/lib/inquiryAttachment'
 
 type InquiryRow = {
   label: string
@@ -116,12 +117,21 @@ function badgeValue(
   )
 }
 
-function attachmentLinkValue({ fileName, url }: { fileName: unknown; url: unknown }) {
-  if (typeof url !== 'string' || !url.trim()) {
+function attachmentLinkValue({
+  fileName,
+  inquiryId,
+  objectKey,
+}: {
+  fileName: unknown
+  inquiryId: unknown
+  objectKey: unknown
+}) {
+  const href = inquiryAttachmentDownloadPath(inquiryId, objectKey)
+
+  if (!href) {
     return '-'
   }
 
-  const href = url.trim()
   const label = typeof fileName === 'string' && fileName.trim() ? fileName.trim() : '첨부파일 다운로드'
 
   return (
@@ -295,7 +305,8 @@ function buildRows(data: InquiryData): InquiryRow[] {
         label: '첨부파일',
         value: attachmentLinkValue({
           fileName: data.attachmentFileName,
-          url: data.attachmentUrl,
+          inquiryId: data.id,
+          objectKey: data.attachmentObjectKey,
         }),
       },
       { label: '제휴 내용', value: textValue(data.partnershipContent) },

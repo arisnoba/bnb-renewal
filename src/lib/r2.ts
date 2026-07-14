@@ -1,6 +1,7 @@
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
@@ -183,6 +184,28 @@ export async function deleteR2Object(objectKey: string) {
       Key: objectKey,
     }),
   );
+}
+
+export async function getR2Object(objectKey: string) {
+  const config = getR2Config();
+  const response = await getR2Client().send(
+    new GetObjectCommand({
+      Bucket: config.bucket,
+      Key: objectKey,
+    }),
+  );
+  const body = await response.Body?.transformToByteArray();
+
+  if (!body) {
+    throw new Error("R2 객체 본문이 없습니다.");
+  }
+
+  return {
+    body,
+    contentDisposition: response.ContentDisposition,
+    contentLength: response.ContentLength,
+    contentType: response.ContentType,
+  };
 }
 
 export type R2ObjectSummary = {
