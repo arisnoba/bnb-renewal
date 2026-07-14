@@ -8,14 +8,9 @@ import {
   ADMIN_IMAGE_UPLOAD_LIMIT_BYTES,
   ADMIN_IMAGE_UPLOAD_LIMIT_MESSAGE,
 } from "@/lib/mediaUploadPolicy";
+import { resolveAdminImageDeletionTarget } from "@/lib/adminImageDeletionTarget";
 import { getPayloadClient } from "@/lib/payload";
-import { deleteR2Object, getR2ObjectKey, getR2PublicUrl, uploadR2Object } from "@/lib/r2";
-
-const LOCAL_UPLOAD_ROOT = path.resolve(
-  process.cwd(),
-  "public/uploads/admin-images",
-);
-const PUBLIC_UPLOAD_PREFIX = "/uploads/admin-images";
+import { deleteR2Object, getR2PublicUrl, uploadR2Object } from "@/lib/r2";
 const IMAGE_EXTENSIONS = new Set([
   ".avif",
   ".gif",
@@ -75,25 +70,6 @@ function isAllowedImage(file: File) {
   const extension = path.extname(file.name).toLowerCase();
 
   return file.type.startsWith("image/") && IMAGE_EXTENSIONS.has(extension);
-}
-
-function getLocalFilePath(publicPath: string) {
-  if (!publicPath.startsWith(`${PUBLIC_UPLOAD_PREFIX}/`)) {
-    return null;
-  }
-
-  const relativePath = publicPath
-    .slice(PUBLIC_UPLOAD_PREFIX.length + 1)
-    .split("/")
-    .filter(Boolean)
-    .join(path.sep);
-  const filePath = path.resolve(LOCAL_UPLOAD_ROOT, relativePath);
-
-  if (!filePath.startsWith(`${LOCAL_UPLOAD_ROOT}${path.sep}`)) {
-    return null;
-  }
-
-  return filePath;
 }
 
 function previewObjectKey(value: unknown) {
@@ -186,24 +162,24 @@ export async function DELETE(request: Request) {
     return jsonError("삭제할 이미지 경로가 없습니다.", 400);
   }
 
-  const objectKey = getR2ObjectKey(imagePath);
+  const deletionTarget = resolveAdminImageDeletionTarget(imagePath);
 
-  if (objectKey) {
+  if (!deletionTarget) {
+    return jsonError("관리자 이미지 경로만 삭제할 수 있습니다.", 400);
+  }
+
+  if (deletionTarget.kind === "r2") {
     try {
-      await deleteR2Object(objectKey);
+      await deleteR2Object(deletionTarget.key);
     } catch (error) {
       return logStorageError("R2 이미지 삭제에 실패했습니다.", error);
     }
   } else {
-    const localPath = getLocalFilePath(imagePath);
-
-    if (localPath) {
-      await unlink(localPath).catch((error: NodeJS.ErrnoException) => {
-        if (error.code !== "ENOENT") {
-          throw error;
-        }
-      });
-    }
+    await unlink(deletionTarget.path).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    });
   }
 
   return NextResponse.json({ success: true });

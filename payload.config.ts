@@ -52,6 +52,7 @@ import {
   resolvePayloadDatabasePoolMax,
   resolvePayloadDatabaseURL,
 } from './src/lib/payloadDatabaseURL'
+import { resolvePayloadSecret } from './src/lib/payloadSecret'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -150,7 +151,7 @@ export default buildConfig({
   routes: {
     admin: '/admin',
   },
-  secret: process.env.PAYLOAD_SECRET ?? 'bnb-renewal-dev-secret',
+  secret: resolvePayloadSecret(),
   serverURL: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
   sharp,
   typescript: {

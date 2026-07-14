@@ -6,7 +6,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 
-type R2Config = {
+export type R2Config = {
   bucket: string;
   publicBaseUrl: string;
 };

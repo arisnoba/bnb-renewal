@@ -27,7 +27,6 @@ type BulkParams = {
   publishAllLocales?: boolean
   publishSpecificLocale?: string
   select?: SelectType
-  showHiddenFields?: boolean
   sort?: string | string[]
   trash: boolean
   unpublishAllLocales?: boolean
@@ -93,7 +92,6 @@ function getBulkParams(req: PayloadRequest): BulkParams {
     publishAllLocales: parseBoolean(query.publishAllLocales),
     publishSpecificLocale: parseString(query.publishSpecificLocale),
     select: query.select as SelectType | undefined,
-    showHiddenFields: parseBoolean(query.showHiddenFields),
     sort: query.sort as string | string[] | undefined,
     trash: parseBoolean(query.trash) ?? false,
     unpublishAllLocales: parseBoolean(query.unpublishAllLocales),
@@ -313,7 +311,6 @@ async function reliableBulkUpdate(req: PayloadRequest, collection: CollectionCon
         publishAllLocales: params.publishAllLocales,
         publishSpecificLocale: params.publishSpecificLocale,
         req,
-        showHiddenFields: params.showHiddenFields,
         trash: params.trash,
         unpublishAllLocales: params.unpublishAllLocales,
       })
@@ -323,9 +320,8 @@ async function reliableBulkUpdate(req: PayloadRequest, collection: CollectionCon
         depth: 0,
         draft: params.draft,
         id,
-        overrideAccess: true,
+        overrideAccess: false,
         req,
-        showHiddenFields: params.showHiddenFields,
       })
       const mismatchedFields = verifyUpdatedFields(data, verifiedDoc)
 
@@ -383,7 +379,6 @@ async function reliableBulkDelete(req: PayloadRequest, collection: CollectionCon
         overrideAccess: false,
         overrideLock: params.overrideLock,
         req,
-        showHiddenFields: params.showHiddenFields,
         trash: params.trash,
       })
 
@@ -392,9 +387,8 @@ async function reliableBulkDelete(req: PayloadRequest, collection: CollectionCon
           collection: collection.slug as never,
           depth: 0,
           id,
-          overrideAccess: true,
+          overrideAccess: false,
           req,
-          showHiddenFields: params.showHiddenFields,
         })
         errors.push({
           id,
