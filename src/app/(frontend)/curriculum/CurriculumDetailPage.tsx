@@ -246,7 +246,7 @@ function CurriculumOverview({ model }: { model: DetailModel }) {
             Overview
           </p>
           <h1 className="type-headline-m font-black leading-[1.18] text-neutral-900">
-            {model.lessons[0]?.topic ?? model.title}
+            {model.title}
           </h1>
         </div>
       </div>
@@ -432,7 +432,7 @@ function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps
     summaryMeta: summaryMeta || timeRange,
     teacher: toTeacherSummary(teacher),
     timeRange,
-    title: className,
+    title: curriculum.title ?? className,
     tuitionFee: formatTuitionFee(curriculum.tuitionFee),
   }
 }
