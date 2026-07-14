@@ -38,7 +38,7 @@ type CurriculumCardItem = {
   slug: string
   startTime: string | null
   teacherName: string
-  topic: string
+  title: string
 }
 
 export type CurriculumPageCenter = Extract<CurriculumCenter, 'art' | 'avenue' | 'highteen'>
@@ -182,7 +182,7 @@ function CurriculumCard({
               className="transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               href={detailHref}
             >
-              {item.topic}
+              {item.title}
             </Link>
           </h3>
           <p className="mt-3 min-w-0 type-body-m font-medium text-neutral-500">{item.teacherName}</p>
@@ -305,7 +305,6 @@ function matchesTimeFilter(value: string | null | undefined, filter: string) {
 }
 
 function toCurriculumCardItem(curriculum: Curriculum): CurriculumCardItem {
-  const firstLesson = curriculum.curriculumLessons?.find((lesson) => lesson.topic || lesson.content)
   const teacher = typeof curriculum.teacher === 'object' ? (curriculum.teacher as Teacher) : null
 
   return {
@@ -315,7 +314,7 @@ function toCurriculumCardItem(curriculum: Curriculum): CurriculumCardItem {
     slug: curriculum.slug,
     startTime: normalizeTime(curriculum.educationStartTime),
     teacherName: teacher?.name ? `배우 ${teacher.name}` : '교육진 미정',
-    topic: firstLesson?.topic ?? curriculum.title ?? '강의 주제 미정',
+    title: curriculum.title ?? '커리큘럼 명 미정',
   }
 }
 
