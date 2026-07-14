@@ -13,6 +13,7 @@
     "check:design:fluid": "node scripts/check-fluid-styles.mjs",
     "check:design:rules": "node scripts/check-design-rules.mjs",
     "lint": "eslint .",
+    "pretypecheck": "npm run payload:generate-types",
     "test": "tsx --test 'src/**/*.test.ts' 'src/**/*.test.tsx'",
     "typecheck": "tsc --noEmit",
     "payload": "node --env-file=config/env/local-postgres.env ./node_modules/payload/bin.js",
