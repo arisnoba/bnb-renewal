@@ -47,7 +47,7 @@ export const CastingDirectorCompanySelectField: SelectFieldClientComponent = ({
       className={['field-type', 'select', field.admin?.className, showError ? 'error' : '']
         .filter(Boolean)
         .join(' ')}
-      style={{ display: 'grid', gap: 8, margin: '0 0 20px' }}
+      style={{ display: 'grid', gap: 8, margin: '0 0 20px', width: field.admin?.width }}
     >
       <FieldLabel label={field.label ?? '회사'} path={path} required={field.required} />
       <div className="field-type__wrap" style={{ position: 'relative' }}>
