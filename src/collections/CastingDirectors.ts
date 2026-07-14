@@ -23,7 +23,6 @@ const castingDirectorCompanyOptions = [
   { label: "ARKO LAB", value: "ARKO LAB" },
   { label: "IMGround", value: "IMGround" },
   { label: "BX Model Agency", value: "BX Model Agency" },
-  { label: "라인업", value: "라인업" },
 ];
 
 const revalidateCastingDirectorAfterChange = createCenterRevalidationAfterChange({
@@ -81,6 +80,12 @@ export const CastingDirectors: CollectionConfig = {
         label: "회사",
         required: true,
         options: castingDirectorCompanyOptions,
+        admin: {
+          components: {
+            Field:
+              "@/components/payload/CastingDirectorCompanySelectField#CastingDirectorCompanySelectField",
+          },
+        },
       },
     ]),
     {

@@ -2,10 +2,17 @@ import { MigrateDownArgs, MigrateUpArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-    UPDATE "casting_directors"
-    SET "company" = 'ARKO LAB'
-    WHERE "company" IN ('아르코랩', 'ARKO', '유캐스팅', 'U CASTING');
+    DELETE FROM "casting_directors"
+    WHERE "company" NOT IN (
+      'BNB Casting',
+      'CNA Agency',
+      'ARKO LAB',
+      'IMGround',
+      'BX Model Agency'
+    );
+  `)
 
+  await db.execute(sql`
     DO $$
     BEGIN
       CREATE TYPE "public"."enum_casting_directors_company" AS ENUM (
@@ -13,13 +20,15 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
         'CNA Agency',
         'ARKO LAB',
         'IMGround',
-        'BX Model Agency',
-        '라인업'
+        'BX Model Agency'
       );
     EXCEPTION
       WHEN duplicate_object THEN NULL;
     END $$;
 
+  `)
+
+  await db.execute(sql`
     ALTER TABLE "casting_directors"
       ALTER COLUMN "company" TYPE "public"."enum_casting_directors_company"
       USING "company"::"public"."enum_casting_directors_company";
@@ -31,7 +40,9 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
     ALTER TABLE "casting_directors"
       ALTER COLUMN "company" TYPE varchar
       USING "company"::varchar;
+  `)
 
+  await db.execute(sql`
     DROP TYPE IF EXISTS "public"."enum_casting_directors_company";
   `)
 }
