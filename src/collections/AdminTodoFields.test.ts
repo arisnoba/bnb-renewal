@@ -233,6 +233,7 @@ test('faq bulk edits do not clear existing centers with empty transient form val
     variants: [{ answer: '아트 답변', centerArt: true }],
   }
   const req = {
+    context: {},
     url: 'http://localhost:3000/api/faqs?where[id][in][0]=1',
     user: {
       role: 'admin',
