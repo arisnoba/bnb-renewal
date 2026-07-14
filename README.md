@@ -34,28 +34,33 @@
 - 레거시 원본 DB: `data/legacy_dumps`의 센터별 MariaDB dump
 - 파일/이미지 스토리지: `Cloudflare R2`
 
-권장 운영 방향은 `Vercel 기반 단일 앱 + Postgres + Cloudflare R2`다. 현재 기준은 [docs/02-프로젝트-운영-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/02-프로젝트-운영-정책.md:1)에 정리되어 있다.
+권장 운영 방향은 `Vercel 기반 단일 앱 + Postgres + Cloudflare R2`다. 현재 기준은 [프로젝트 운영 정책](docs/02-프로젝트-운영-정책.md)에 정리되어 있다.
 
 ## 2. 현재 구현 범위
 
 ### 공개 라우트 골격
 
-- `/`
-- `/news`
-- `/<center>`
-- `/<center>/faculty`
-- `/<center>/casting`
-- `/<center>/contact`
+`<center>`에는 `art`, `avenue`, `exam`, `highteen`, `kids`가 들어간다. 실제 노출 센터는 각 페이지의 센터 guard와 메뉴 설정을 따른다.
+
+- 전역: `/`, `/news`, `/artist-press`, `/profiles/<slug>`, `/consult`, `/privacy`, `/terms`
+- 센터 기본: `/<center>`, `/<center>/about`, `company`, `consult`, `facilities`, `faq`, `management`, `map`, `privacy`, `terms`
+- 센터 콘텐츠: `artist-press`, `casting-status`, `curriculum`, `direct-castings`, `news`, `profiles`, `rookies`, `schedule`, `screen-appearances`, `starcard`, `teachers`
+- 입시 결과: `/exam/university-results`, `/exam/arts-high-results`, `/exam/exam-passed-reviews`, `/exam/exam-passed-videos`
+- 센터별 안내: `admission`, `casting`, `casting-system`, `entertainment`, `exam-management`, `grade-system`, `how-to-use`, `profile-production`, `special-lecture`, `special-system`
+- 상세 URL은 목록 경로 아래 `<slug>`를 사용한다. 예: `/<center>/news/<slug>`, `/<center>/teachers/<slug>`.
+- Payload 관리자: `/admin`
 
 ### Payload 컬렉션
 
-- `users`
-- `pages`
-- `teachers`
-- `news`
-- `profiles`
-- `castings`
-- `agencies`
+현재 [payload.config.ts](payload.config.ts)에 등록된 컬렉션은 28개다.
+
+- 메인/운영: `main-banners`, `social-links`, `histories`, `terms`, `inquiries`, `users`, `media`
+- 교육: `teachers`, `curriculums`, `classrooms`, `highteen-special-classes`
+- 캐스팅/프로필: `agencies`, `casting-directors`, `direct-castings`, `casting-appearances`, `profiles`
+- 콘텐츠: `screen-appearances`, `broadcast-stations`, `artist-press`, `artist-press-agencies`, `news`, `faqs`, `star-cards`
+- 입시: `audition-schedules`, `exam-passed-reviews`, `exam-passed-videos`, `exam-results`, `exam-school-logos`
+
+글로벌 설정은 `main`, `main-statistics`, `footer`, `site-settings`다.
 
 ### 마이그레이션 스크립트
 
@@ -69,14 +74,14 @@
 
 ## 3. 디렉터리 가이드
 
-- [src/app](/Users/arisnoba/Documents/GitHub/bnb-renewal/src/app:1): 공개 사이트와 Payload 라우트
-- [src/collections](/Users/arisnoba/Documents/GitHub/bnb-renewal/src/collections:1): Payload 컬렉션 정의
-- [src/lib](/Users/arisnoba/Documents/GitHub/bnb-renewal/src/lib:1): 공용 유틸리티와 센터 매핑
-- [scripts](/Users/arisnoba/Documents/GitHub/bnb-renewal/scripts:1): 레거시 데이터 분리/정제/시드 스크립트
-- [data](/Users/arisnoba/Documents/GitHub/bnb-renewal/data:1): 원본 SQL, 분리본, 정제본, 요약 파일
-- [docs](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs:1): 현재 기준 정책 문서와 archive
-- [deliverables](/Users/arisnoba/Documents/GitHub/bnb-renewal/deliverables:1): SEO 관련 산출물
-- [plan](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan:1): 현재 작업 기록과 archive
+- [src/app](src/app): 공개 사이트와 Payload 라우트
+- [src/collections](src/collections): Payload 컬렉션 정의
+- [src/lib](src/lib): 공용 유틸리티와 센터 매핑
+- [scripts](scripts): 레거시 데이터 분리/정제/시드 스크립트
+- [data](data): 원본 SQL, 분리본, 정제본, 요약 파일
+- [docs](docs): 현재 기준 정책 문서와 archive
+- [deliverables](deliverables): SEO 관련 산출물
+- [plan](plan): 현재 작업 기록과 archive
 
 ## 4. 빠른 시작
 
@@ -89,6 +94,14 @@
 - `DATABASE_URL`
 - `PAYLOAD_SECRET`
 - `NEXT_PUBLIC_SITE_URL`
+
+상담 폼과 R2를 사용하는 환경에서는 아래 값도 준비한다.
+
+- Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
+- 공개 R2: `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_PUBLIC_BASE_URL`
+- 비공개 문의 첨부: `R2_PRIVATE_ACCESS_KEY_ID`, `R2_PRIVATE_SECRET_ACCESS_KEY`, `R2_PRIVATE_BUCKET`
+
+운영·미리보기 환경은 각각 별도의 `PAYLOAD_SECRET`을 사용한다. 전체 기준은 [보안 운영 인수인계](docs/10-보안-운영-인수인계.md)를 따른다.
 
 ### 2. 로컬 DB 실행
 
@@ -163,7 +176,7 @@ npm install
 ### 4. 마이그레이션 적용
 
 ```bash
-npm run db:migrate
+npm run db:local:migrate
 ```
 
 ### 5. 개발 서버 실행
@@ -175,6 +188,7 @@ npm run dev
 ### 6. 선택 검증
 
 ```bash
+npm test
 npm run lint
 npm run typecheck
 npm run legacy:db:verify
@@ -190,27 +204,29 @@ npm run legacy:db:verify
 - 구현 전에 관련 문서와 현재 코드를 먼저 읽는다.
 - 완료 전에는 가능한 검증을 수행하고, 못 한 검증은 명시한다.
 
-상세 규칙은 [docs/01-작업-규칙.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/01-작업-규칙.md:1)를 기준 문서로 사용한다.
+상세 규칙은 [작업 규칙](docs/01-작업-규칙.md)을 기준 문서로 사용한다.
 
 ## 6. 참고 문서
 
-- [docs/00-문서-인덱스.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/00-문서-인덱스.md:1): 문서 진입점과 archive 맵
-- [docs/01-작업-규칙.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/01-작업-규칙.md:1): 작업 방식과 검증 규칙
-- [docs/02-프로젝트-운영-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/02-프로젝트-운영-정책.md:1): 배포, DB, R2, 환경변수 기준
-- [docs/03-Payload-R2-Vercel-운영-주의사항.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/03-Payload-R2-Vercel-운영-주의사항.md:1): Payload + R2 + Vercel 운영 기준
-- [docs/04-레거시-마이그레이션-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/04-레거시-마이그레이션-정책.md:1): 레거시 DB/이미지 이관 기준
-- [docs/05-Payload-admin-운영-UX.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/05-Payload-admin-운영-UX.md:1): 관리자 작성 UX, Lexical, media, SEO 기준
-- [docs/06-IA-SEO-URL-정책.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/06-IA-SEO-URL-정책.md:1): IA, URL, SEO 기준
-- [docs/07-마이그레이션-정제-체크리스트.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/07-마이그레이션-정제-체크리스트.md:1): 로컬 정제 완료와 Neon 이전 전 게이트
-- [docs/08-R2-미디어-업로드-현황.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/08-R2-미디어-업로드-현황.md:1): R2 업로드 완료/대기 현황
-- [plan/현재작업.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan/현재작업.md:1): 현재 진행 상황과 검증 기록
+- [문서 인덱스](docs/00-문서-인덱스.md): 문서 진입점과 archive 맵
+- [작업 규칙](docs/01-작업-규칙.md): 작업 방식과 검증 규칙
+- [프로젝트 운영 정책](docs/02-프로젝트-운영-정책.md): 배포, DB, R2, 환경변수 기준
+- [Payload R2 Vercel 운영 주의사항](docs/03-Payload-R2-Vercel-운영-주의사항.md): Payload + R2 + Vercel 운영 기준
+- [레거시 마이그레이션 정책](docs/04-레거시-마이그레이션-정책.md): 레거시 DB/이미지 이관 기준
+- [Payload admin 운영 UX](docs/05-Payload-admin-운영-UX.md): 관리자 작성 UX, Lexical, media, SEO 기준
+- [IA SEO URL 정책](docs/06-IA-SEO-URL-정책.md): IA, URL, SEO 기준
+- [마이그레이션 정제 체크리스트](docs/07-마이그레이션-정제-체크리스트.md): 로컬 정제 완료와 Neon 이전 전 게이트
+- [R2 미디어 업로드 현황](docs/08-R2-미디어-업로드-현황.md): R2 업로드 완료/대기 현황
+- [DB 백업 복구 운영 메모](docs/09-DB-백업-복구-운영-메모.md): 원격 Neon 복구와 위험 작업 전 백업 기준
+- [보안 운영 인수인계](docs/10-보안-운영-인수인계.md): 보안 설정, 비공개 첨부 다운로드, 의존성 점검 절차
+- [현재 작업](plan/현재작업.md): 현재 진행 상황과 검증 기록
 
 ## 7. 지금 먼저 보면 좋은 순서
 
 새로 합류한 사람이면 아래 순서가 가장 빠르다.
 
 1. 이 `README.md`
-2. [docs/00-문서-인덱스.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/docs/00-문서-인덱스.md:1)
-3. [plan/현재작업.md](/Users/arisnoba/Documents/GitHub/bnb-renewal/plan/현재작업.md:1)
-4. 이번 작업에 해당하는 `docs/01~08` 기준 문서
-5. [payload.config.ts](/Users/arisnoba/Documents/GitHub/bnb-renewal/payload.config.ts:1)
+2. [문서 인덱스](docs/00-문서-인덱스.md)
+3. [현재 작업](plan/현재작업.md)
+4. 이번 작업에 해당하는 `docs/01~10` 기준 문서
+5. [payload.config.ts](payload.config.ts)
