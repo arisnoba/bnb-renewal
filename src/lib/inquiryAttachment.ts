@@ -3,6 +3,8 @@ const INQUIRY_ATTACHMENT_PREFIX = 'inquiries/attachments/'
 export const INQUIRY_ATTACHMENT_MAX_BYTES = 4 * 1024 * 1024
 export const INQUIRY_ATTACHMENT_MAX_MEGABYTES = 4
 export const INQUIRY_ATTACHMENT_EXTENSIONS = new Set([
+  '.doc',
+  '.docx',
   '.jpeg',
   '.jpg',
   '.pdf',

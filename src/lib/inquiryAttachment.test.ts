@@ -8,10 +8,10 @@ import {
   isInquiryAttachmentObjectKey,
 } from './inquiryAttachment'
 
-test('문의 첨부는 이미지와 PDF 확장자만 허용한다', () => {
+test('문의 첨부는 이미지, PDF, Word 확장자만 허용한다', () => {
   assert.deepEqual(
     [...INQUIRY_ATTACHMENT_EXTENSIONS].sort(),
-    ['.jpeg', '.jpg', '.pdf', '.png'],
+    ['.doc', '.docx', '.jpeg', '.jpg', '.pdf', '.png'],
   )
 })
 

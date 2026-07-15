@@ -1,7 +1,7 @@
 export const IMAGE_UPLOAD_TYPES = ['avif', 'gif', 'jpeg', 'png', 'webp'] as const
 export const VIDEO_UPLOAD_TYPES = ['mp4', 'webm'] as const
 export const MEDIA_UPLOAD_TYPES = [...IMAGE_UPLOAD_TYPES, ...VIDEO_UPLOAD_TYPES] as const
-export const CONSULT_ATTACHMENT_UPLOAD_TYPES = ['jpeg', 'png', 'pdf'] as const
+export const CONSULT_ATTACHMENT_UPLOAD_TYPES = ['doc', 'docx', 'jpeg', 'png', 'pdf'] as const
 export const MEDIA_UPLOAD_MIME_TYPES = [
   'image/avif',
   'image/gif',
@@ -12,7 +12,7 @@ export const MEDIA_UPLOAD_MIME_TYPES = [
   'video/webm',
 ] as const
 
-export type UploadFileType = (typeof MEDIA_UPLOAD_TYPES)[number] | 'pdf'
+export type UploadFileType = (typeof MEDIA_UPLOAD_TYPES)[number] | 'doc' | 'docx' | 'pdf'
 
 type UploadFileDefinition = {
   extensions: readonly string[]
@@ -36,6 +36,16 @@ const uploadFileDefinitions: Record<UploadFileType, UploadFileDefinition> = {
     extensions: ['.avif'],
     mimeType: 'image/avif',
     signatureMatches: isAvif,
+  },
+  doc: {
+    extensions: ['.doc'],
+    mimeType: 'application/msword',
+    signatureMatches: (bytes) => bytesStartWith(bytes, [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]),
+  },
+  docx: {
+    extensions: ['.docx'],
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    signatureMatches: (bytes) => bytesStartWith(bytes, [0x50, 0x4b, 0x03, 0x04]),
   },
   gif: {
     extensions: ['.gif'],

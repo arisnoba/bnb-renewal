@@ -10,6 +10,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type InputHTMLAttributes,
   type TextareaHTMLAttributes,
@@ -131,11 +132,20 @@ const phoneFieldNames = new Set(['guardianPhone', 'partnerPhone', 'phone'])
 
 declare global {
   interface Window {
-    consultTurnstileError?: () => void
-    consultTurnstileExpired?: () => void
-    consultTurnstileSuccess?: (token: string) => void
     turnstile?: {
-      reset?: () => void
+      remove?: (widgetId: string) => void
+      render?: (
+        container: HTMLElement,
+        options: {
+          callback: (token: string) => void
+          'error-callback': () => void
+          'expired-callback': () => void
+          language: string
+          sitekey: string
+          theme: 'light'
+        },
+      ) => string
+      reset?: (widgetId?: string) => void
     }
   }
 }
@@ -303,8 +313,11 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formResetKey, setFormResetKey] = useState(0)
+  const [isTurnstileScriptReady, setIsTurnstileScriptReady] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
   const [validationErrors, setValidationErrors] = useState<ValidationErrorMessages>({})
+  const turnstileContainerRef = useRef<HTMLDivElement>(null)
+  const turnstileWidgetIdRef = useRef<string | null>(null)
   const form = useForm<ConsultationFormValues>({
     defaultValues: getDefaultValues(initialInquiryType),
     mode: 'onSubmit',
@@ -356,31 +369,54 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
     setValidationErrors({})
   }, [form, initialInquiryType])
 
+  const handleTurnstileSuccess = useCallback((token: string) => {
+    setTurnstileToken(token)
+    setSubmitError((currentError) =>
+      currentError === turnstileRequiredMessage ? null : currentError,
+    )
+  }, [])
+
+  const handleTurnstileExpired = useCallback(() => {
+    setTurnstileToken('')
+  }, [])
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken('')
+    setSubmitError('자동 제출 방지 확인 중 오류가 발생했습니다. 다시 시도해 주세요.')
+  }, [])
+
   useEffect(() => {
-    window.consultTurnstileSuccess = (token: string) => {
-      setTurnstileToken(token)
-      setSubmitError((currentError) =>
-        currentError === turnstileRequiredMessage ? null : currentError,
-      )
-    }
-    window.consultTurnstileExpired = () => {
-      setTurnstileToken('')
-    }
-    window.consultTurnstileError = () => {
-      setTurnstileToken('')
-      setSubmitError('자동 제출 방지 확인 중 오류가 발생했습니다. 다시 시도해 주세요.')
+    const container = turnstileContainerRef.current
+    const turnstile = window.turnstile
+
+    if (!turnstileSiteKey || !isTurnstileScriptReady || !container || !turnstile?.render) {
+      return
     }
 
+    const widgetId = turnstile.render(container, {
+      callback: handleTurnstileSuccess,
+      'error-callback': handleTurnstileError,
+      'expired-callback': handleTurnstileExpired,
+      language: 'ko',
+      sitekey: turnstileSiteKey,
+      theme: 'light',
+    })
+    turnstileWidgetIdRef.current = widgetId
+
     return () => {
-      delete window.consultTurnstileSuccess
-      delete window.consultTurnstileExpired
-      delete window.consultTurnstileError
+      window.turnstile?.remove?.(widgetId)
+      turnstileWidgetIdRef.current = null
     }
-  }, [])
+  }, [
+    handleTurnstileError,
+    handleTurnstileExpired,
+    handleTurnstileSuccess,
+    isTurnstileScriptReady,
+  ])
 
   const resetTurnstile = useCallback(() => {
     setTurnstileToken('')
-    window.turnstile?.reset?.()
+    window.turnstile?.reset?.(turnstileWidgetIdRef.current ?? undefined)
   }, [])
 
   const handleValidSubmit = async (values: ConsultationFormValues) => {
@@ -406,7 +442,9 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
       })
 
       if (!response.ok) {
-        setSubmitError('상담 신청 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+        const result = (await response.json().catch(() => null)) as { error?: unknown } | null
+
+        setSubmitError(getConsultSubmitError(result?.error))
         resetTurnstile()
         return
       }
@@ -825,17 +863,13 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
             <Script
               async
               defer
-              src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+              onReady={() => setIsTurnstileScriptReady(true)}
+              src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
               strategy="afterInteractive"
             />
             <div
-              className="cf-turnstile min-h-16"
-              data-callback="consultTurnstileSuccess"
-              data-error-callback="consultTurnstileError"
-              data-expired-callback="consultTurnstileExpired"
-              data-language="ko"
-              data-sitekey={turnstileSiteKey}
-              data-theme="light"
+              className="min-h-16"
+              ref={turnstileContainerRef}
             />
           </>
         ) : (
@@ -974,7 +1008,7 @@ function FileInputField({
             {label} {required && <RequiredMark />}
           </FormLabel>
           <FileUpload
-            accept=".pdf,.png,.jpg,.jpeg"
+            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
             files={uploadFiles}
             maxCount={1}
             maxSize={INQUIRY_ATTACHMENT_MAX_MEGABYTES}
@@ -1420,6 +1454,21 @@ function toConsultFormData(values: ConsultationFormValues, turnstileToken: strin
   }
 
   return formData
+}
+
+function getConsultSubmitError(error: unknown) {
+  switch (error) {
+    case 'invalid-attachment':
+      return '첨부파일은 PDF, DOC, DOCX, PNG, JPG 형식만 올릴 수 있습니다. 파일을 확인해 주세요.'
+    case 'invalid-phone-number':
+      return '연락처를 확인해 주세요.'
+    case 'turnstile-verification-failed':
+      return '자동 제출 방지 확인이 만료되었거나 유효하지 않습니다. 다시 확인해 주세요.'
+    case 'too-many-requests':
+      return '짧은 시간에 요청이 많았습니다. 잠시 후 다시 시도해 주세요.'
+    default:
+      return '상담 신청 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+  }
 }
 
 function getEarliestPreferredDateValue(date = new Date()) {
