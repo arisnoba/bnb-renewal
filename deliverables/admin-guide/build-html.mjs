@@ -92,10 +92,12 @@ articleHtml = articleHtml.replace(
   },
 )
 
+let screenshotIndex = 0
+
 articleHtml = articleHtml.replace(
   /<p><img src="\.\/images\/([^"?]+)" alt="([^"]*)"><\/p>/g,
   (_, filename, alt) => {
-    const number = filename.match(/^(\d+)/)?.[1] ?? '--'
+    const number = String(++screenshotIndex).padStart(2, '0')
     const safeFilename = escapeHtml(filename)
     const safeAlt = escapeHtml(alt)
 
