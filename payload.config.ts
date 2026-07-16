@@ -33,6 +33,7 @@ import { Teachers } from './src/collections/Teachers'
 import { Terms } from './src/collections/Terms'
 import { Users } from './src/collections/Users'
 import { applyAdminCenterListFilter } from './src/collections/adminCenterListFilter'
+import { applyFriendlyAdminErrorMessages } from './src/collections/adminErrorMessages'
 import { applyAdminListSelectOptimization } from './src/collections/adminListSelectOptimization'
 import {
   applyAdminSaveLoadingOverlay,
@@ -94,6 +95,12 @@ export default buildConfig({
           createdAt: '등록일',
           updatedAt: '수정일',
         },
+        error: {
+          followingFieldsInvalid_one: '입력한 내용을 확인해 주세요:',
+          followingFieldsInvalid_other: '입력한 내용을 확인해 주세요:',
+          noFilesUploaded: '업로드할 파일을 선택해 주세요.',
+          valueMustBeUnique: '이미 등록된 값입니다.',
+        },
         'plugin-seo': {
           charactersLeftOver: '{{characters}} 자 남음',
         },
@@ -146,6 +153,9 @@ export default buildConfig({
     },
   }),
   editor: defaultLexical,
+  hooks: {
+    afterError: [applyFriendlyAdminErrorMessages],
+  },
   globals: applyGlobalAdminSaveLoadingOverlay([Main, MainStatistics, Footer, SiteSettings]),
   maxDepth: 3,
   plugins,
