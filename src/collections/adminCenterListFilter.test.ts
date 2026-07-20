@@ -5,11 +5,14 @@ import configPromise from '../../payload.config'
 import {
   adminCenterListFilterComponentPath,
   buildCenterListWhere,
+  buildCompanyListWhere,
   buildExamResultTypeListWhere,
   centerListFilterConfig,
   centerListFilterFieldName,
+  selectListFilterOptions,
   selectedExamResultTypeFromWhere,
   selectedCenterFromWhere,
+  selectedCompanyFromWhere,
 } from '../components/payload/AdminCenterListFilter.utils'
 
 const expectedQuickFilterCollections = [
@@ -74,6 +77,22 @@ test('center list filter detects single and multi center fields', async () => {
     hasMany: false,
   })
   assert.equal(centerListFilterFieldName(media.fields), undefined)
+})
+
+test('casting director company filter uses the collection select options', async () => {
+  const config = await configPromise
+  const castingDirectors = config.collections.find(
+    (collection) => collection.slug === 'casting-directors',
+  )
+
+  assert.ok(castingDirectors)
+  assert.deepEqual(selectListFilterOptions(castingDirectors.fields, 'company'), [
+    { label: 'BNB Casting', value: 'BNB Casting' },
+    { label: 'CNA Agency', value: 'CNA Agency' },
+    { label: 'ARKO LAB', value: 'ARKO LAB' },
+    { label: 'IMGround', value: 'IMGround' },
+    { label: 'BX Model Agency', value: 'BX Model Agency' },
+  ])
 })
 
 test('center list filter preserves other list filters while replacing prior center filters', () => {
@@ -289,5 +308,59 @@ test('exam result type list filter reads the active school filter from list wher
       },
     }),
     'university',
+  )
+})
+
+test('casting director company filter preserves other filters and removes center filters', () => {
+  assert.deepEqual(
+    buildCompanyListWhere({
+      company: 'CNA Agency',
+      existingWhere: {
+        and: [
+          { displayStatus: { equals: 'published' } },
+          { centers: { equals: 'art' } },
+          { company: { equals: 'BNB Casting' } },
+        ],
+      },
+    }),
+    {
+      and: [
+        { displayStatus: { equals: 'published' } },
+        { company: { equals: 'CNA Agency' } },
+      ],
+    },
+  )
+
+  assert.deepEqual(
+    buildCompanyListWhere({
+      company: 'all',
+      existingWhere: {
+        displayStatus: { equals: 'draft' },
+        company: { equals: 'ARKO LAB' },
+      },
+    }),
+    { displayStatus: { equals: 'draft' } },
+  )
+})
+
+test('casting director company filter reads the active company from list where clauses', () => {
+  assert.equal(
+    selectedCompanyFromWhere({
+      and: [
+        { displayStatus: { equals: 'published' } },
+        { company: { equals: 'IMGround' } },
+      ],
+    }),
+    'IMGround',
+  )
+
+  assert.equal(
+    selectedCompanyFromWhere({
+      page: 1,
+      where: {
+        company: { equals: 'BX Model Agency' },
+      },
+    }),
+    'BX Model Agency',
   )
 })

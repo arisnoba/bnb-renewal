@@ -12,6 +12,11 @@ export type CenterListFilterConfig = {
   hasMany: boolean
 }
 export type ExamResultTypeListFilterValue = 'all' | 'university' | 'arts_high_school'
+export type CompanyListFilterValue = string
+export type SelectListFilterOption = {
+  label: string
+  value: string
+}
 
 const validCenterValues = new Set<CenterListFilterValue>([
   'all',
@@ -56,7 +61,7 @@ function nestedFields(field: unknown): unknown[] {
 
 function findFieldNamed(
   fields: unknown[],
-  fieldName: CenterListFilterField,
+  fieldName: string,
 ): Record<string, unknown> | undefined {
   for (const field of fields) {
     const record = objectValue(field)
@@ -99,6 +104,29 @@ export function centerListFilterConfig(fields: unknown[]): CenterListFilterConfi
 
 export function centerListFilterFieldName(fields: unknown[]): CenterListFilterField | undefined {
   return centerListFilterConfig(fields)?.fieldName
+}
+
+export function selectListFilterOptions(
+  fields: unknown[],
+  fieldName: string,
+): SelectListFilterOption[] {
+  const options = findFieldNamed(fields, fieldName)?.options
+
+  if (!Array.isArray(options)) {
+    return []
+  }
+
+  return options.flatMap((option) => {
+    if (typeof option === 'string') {
+      return [{ label: option, value: option }]
+    }
+
+    const record = objectValue(option)
+
+    return typeof record?.label === 'string' && typeof record.value === 'string'
+      ? [{ label: record.label, value: record.value }]
+      : []
+  })
 }
 
 function omitListWhereFields(
@@ -158,6 +186,7 @@ const examResultTypeListFilterFieldSet = new Set<string>([
   'resultType',
   ...centerListFilterFields,
 ])
+const companyListFilterFieldSet = new Set<string>(['company', ...centerListFilterFields])
 
 function omitCenterListWhere(value: unknown): Record<string, unknown> | undefined {
   return omitListWhereFields(value, centerListFilterFieldSet)
@@ -360,6 +389,73 @@ export function selectedExamResultTypeFromWhere(
       const childValue = selectedExamResultTypeFromWhere(child)
 
       if (childValue && childValue !== 'all') {
+        return childValue
+      }
+    }
+  }
+
+  return undefined
+}
+
+export function buildCompanyListWhere({
+  company,
+  existingWhere,
+}: {
+  company: CompanyListFilterValue
+  existingWhere?: unknown
+}): Where {
+  const baseWhere = omitListWhereFields(existingWhere, companyListFilterFieldSet)
+  const nextCompanyWhere: Where | undefined =
+    company === 'all'
+      ? undefined
+      : {
+          company: {
+            equals: company,
+          },
+        }
+
+  if (!baseWhere && !nextCompanyWhere) {
+    return {}
+  }
+
+  if (!baseWhere) {
+    return nextCompanyWhere ?? {}
+  }
+
+  if (!nextCompanyWhere) {
+    return baseWhere as Where
+  }
+
+  return {
+    and: [baseWhere as Where, nextCompanyWhere],
+  }
+}
+
+export function selectedCompanyFromWhere(value: unknown): CompanyListFilterValue | undefined {
+  const record = objectValue(value)
+
+  if (!record) {
+    return undefined
+  }
+
+  const condition = objectValue(record.company)
+  const direct = condition?.equals
+
+  if (typeof direct === 'string' && direct !== 'all') {
+    return direct
+  }
+
+  for (const item of Object.values(record)) {
+    const itemValue = selectedCompanyFromWhere(item)
+
+    if (itemValue) {
+      return itemValue
+    }
+
+    for (const child of iterableWhereChildren(item)) {
+      const childValue = selectedCompanyFromWhere(child)
+
+      if (childValue) {
         return childValue
       }
     }

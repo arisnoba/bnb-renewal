@@ -5,12 +5,16 @@ import type { BeforeListTableClientProps } from 'payload'
 import { Button, useAuth, useConfig, useListQuery } from '@payloadcms/ui'
 
 import {
+  buildCompanyListWhere,
   buildExamResultTypeListWhere,
   buildCenterListWhere,
   centerListFilterConfig,
+  selectListFilterOptions,
+  selectedCompanyFromWhere,
   selectedExamResultTypeFromWhere,
   selectedCenterFromWhere,
   type CenterListFilterValue,
+  type CompanyListFilterValue,
   type ExamResultTypeListFilterValue,
 } from './AdminCenterListFilter.utils'
 
@@ -136,6 +140,36 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
   }
 
   const collectionConfig = getEntityConfig({ collectionSlug })
+
+  if (collectionSlug === 'casting-directors') {
+    const activeCompany =
+      selectedCompanyFromWhere(query?.where) ?? selectedCompanyFromWhere(query) ?? 'all'
+    const companyOptions: Array<QuickFilterOption<CompanyListFilterValue>> = [
+      { ariaLabel: '전체 회사 필터', label: '전체', value: 'all' },
+      ...selectListFilterOptions(collectionConfig.fields, 'company').map((option) => ({
+        ariaLabel: `${option.label} 회사 필터`,
+        label: option.label,
+        value: option.value,
+      })),
+    ]
+
+    return (
+      <QuickFilterBar
+        activeValue={activeCompany}
+        label="커스텀 필터"
+        onSelect={(company) => {
+          void refineListData({
+            where: buildCompanyListWhere({
+              company,
+              existingWhere: query?.where,
+            }),
+          })
+        }}
+        options={companyOptions}
+      />
+    )
+  }
+
   const centerFilterConfig = centerListFilterConfig(collectionConfig.fields)
 
   if (!centerFilterConfig) {
@@ -150,7 +184,7 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
   return (
     <QuickFilterBar
       activeValue={activeCenter}
-      label="센터 빠른 필터"
+      label="커스텀 필터"
       onSelect={(center) => {
         void refineListData({
           where: buildCenterListWhere({
