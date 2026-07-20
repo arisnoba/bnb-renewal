@@ -7,6 +7,7 @@ import { marked } from 'marked'
 const guideDirectory = dirname(fileURLToPath(import.meta.url))
 const markdownPath = join(guideDirectory, '관리자-사용-가이드.md')
 const outputPath = join(guideDirectory, '관리자-사용-가이드.html')
+const adminDataPath = join(guideDirectory, 'admin-guide.generated.json')
 
 const [markdown, stylesheet, clientScript] = await Promise.all([
   readFile(markdownPath, 'utf8'),
@@ -168,22 +169,22 @@ const html = `<!doctype html>
 ${stylesheet}
   </style>
 </head>
-<body>
+<body class="guide-page">
   <a class="skip-link" href="#guide-content">본문으로 바로가기</a>
 
   <header class="guide-hero">
     <div class="guide-hero__top">
-      <a class="guide-brand" href="#top" aria-label="가이드 처음으로">
+      <div class="guide-brand">
         <span>BNB</span>
         <strong>OPERATOR MANUAL</strong>
-      </a>
+      </div>
       <div class="guide-hero__actions">
         <span class="image-status" data-image-status>이미지 확인 중</span>
         <button class="print-button" type="button" data-print-guide>PDF로 저장</button>
       </div>
     </div>
 
-    <div class="guide-hero__body" id="top">
+    <div class="guide-hero__body">
       <p class="guide-kicker">PAYLOAD CMS · ADMIN GUIDE</p>
       <h1>${escapeHtml(title)}</h1>
       <p class="guide-summary">콘텐츠 등록부터 공개 확인까지, 실제 운영 흐름을 한 문서에서 빠르게 찾아보세요.</p>
@@ -246,6 +247,27 @@ ${clientScript.replaceAll('</script>', '<\\/script>')}
 </html>
 `
 
-await writeFile(outputPath, html)
+await Promise.all([
+  writeFile(outputPath, html),
+  writeFile(
+    adminDataPath,
+    `${JSON.stringify(
+      {
+        articleHtml,
+        metadata: {
+          adminUrl,
+          audience,
+          title,
+          updatedAt,
+          version,
+        },
+        navigationItems,
+      },
+      null,
+      2,
+    )}\n`,
+  ),
+])
 
-console.log(`관리자 가이드 HTML 생성 완료: ${outputPath}`)
+console.log(`관리자 가이드 생성 완료: ${outputPath}`)
+console.log(`관리자 화면 데이터 생성 완료: ${adminDataPath}`)

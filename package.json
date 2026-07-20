@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "admin-guide:build": "node deliverables/admin-guide/build-html.mjs",
     "dev": "node scripts/dev-local.mjs",
     "dev:remote": "next dev --webpack",
     "prebuild": "payload generate:types",

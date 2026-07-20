@@ -64,6 +64,7 @@ const databasePoolMax = resolvePayloadDatabasePoolMax()
 export default buildConfig({
   admin: {
     components: {
+      afterNavLinks: ['@/components/payload/AdminGuideNavLink#AdminGuideNavLink'],
       afterLogin: ['@/components/payload/AdminPasswordHelp#AdminLoginPasswordHelp'],
       graphics: {
         Logo: '@/components/payload/AdminLoginLogo#AdminLoginLogo',
@@ -71,6 +72,15 @@ export default buildConfig({
       views: {
         forgot: {
           Component: '@/components/payload/AdminPasswordHelp#AdminForgotPasswordNotice',
+        },
+        guide: {
+          Component: '@/components/payload/AdminGuideView#AdminGuideView',
+          exact: true,
+          meta: {
+            description: '배우앤배움 통합 사이트 관리자 사용 가이드',
+            title: '관리자 사용 가이드',
+          },
+          path: '/guide',
         },
       },
     },

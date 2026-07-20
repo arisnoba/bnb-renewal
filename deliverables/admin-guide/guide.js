@@ -79,7 +79,33 @@
     updateActiveSection()
   }
 
-  document.querySelector('[data-print-guide]')?.addEventListener('click', () => window.print())
+  const prepareImagesForPrint = async () => {
+    const images = shots
+      .map((shot) => shot.querySelector('[data-guide-image]'))
+      .filter(Boolean)
+
+    images.forEach((image) => {
+      image.loading = 'eager'
+
+      if (!image.src) image.src = image.dataset.src
+    })
+
+    await Promise.all(
+      images.map((image) => {
+        if (image.complete) return Promise.resolve()
+
+        return new Promise((resolve) => {
+          image.addEventListener('load', resolve, { once: true })
+          image.addEventListener('error', resolve, { once: true })
+        })
+      }),
+    )
+  }
+
+  document.querySelector('[data-print-guide]')?.addEventListener('click', async () => {
+    await prepareImagesForPrint()
+    window.print()
+  })
 
   const mobileButton = document.querySelector('[data-mobile-contents]')
   const mobileNavigation = document.querySelector('[data-mobile-navigation]')

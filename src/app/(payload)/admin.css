@@ -8,6 +8,32 @@
 	box-shadow: 0 8px 22px rgba(31, 94, 255, 0.28);
 }
 
+.bnb-admin-guide-nav {
+	width: 100%;
+	margin-top: calc(var(--base) * 0.75);
+	padding-top: calc(var(--base) * 0.75);
+	border-top: 1px solid var(--theme-elevation-150);
+}
+
+.bnb-admin-guide-nav__link {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--base) * 0.4);
+	min-height: calc(var(--base) * 1.8);
+	padding: 0 calc(var(--base) * 0.5);
+	border-radius: var(--style-radius-s);
+	color: var(--theme-elevation-700);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.bnb-admin-guide-nav__link:hover,
+.bnb-admin-guide-nav__link:focus-visible,
+.bnb-admin-guide-nav__link.is-active {
+	color: var(--theme-elevation-1000);
+	background: var(--theme-elevation-100);
+}
+
 #action-save:not(:disabled):hover,
 #action-save:not(:disabled):focus-visible {
 	box-shadow: 0 10px 26px rgba(31, 94, 255, 0.34);

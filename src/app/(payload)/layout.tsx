@@ -5,6 +5,7 @@ import '@payloadcms/next/css';
 import { RootLayout, handleServerFunctions } from '@payloadcms/next/layouts';
 
 import config from '../../../payload.config';
+import '../../../deliverables/admin-guide/guide.css';
 import './admin.css';
 import { importMap } from './admin/importMap.js';
 

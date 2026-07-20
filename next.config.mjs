@@ -146,6 +146,11 @@ const nextConfig = {
     qualities: [100],
     remotePatterns,
   },
+  outputFileTracingIncludes: {
+    '/api/admin-guide/images/[filename]': [
+      './deliverables/admin-guide/images/**/*',
+    ],
+  },
   reactStrictMode: true,
   poweredByHeader: false,
   redirects,

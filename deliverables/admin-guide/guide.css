@@ -1,4 +1,4 @@
-:root {
+.guide-page {
   color-scheme: light;
   --ink: #171717;
   --muted: #686868;
@@ -14,19 +14,6 @@
   font-family: Pretendard, "Pretendard Variable", "Apple SD Gothic Neo", Inter, system-ui, sans-serif;
   font-synthesis: none;
   line-height: 1.6;
-  text-rendering: optimizeLegibility;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 28px;
-}
-
-body {
   min-width: 320px;
   margin: 0;
   color: var(--ink);
@@ -35,13 +22,24 @@ body {
     var(--paper);
   word-break: keep-all;
   overflow-wrap: break-word;
+  text-rendering: optimizeLegibility;
 }
 
-a {
+.guide-page,
+.guide-page * {
+  box-sizing: border-box;
+}
+
+html:has(.guide-page) {
+  scroll-behavior: smooth;
+  scroll-padding-top: 28px;
+}
+
+.guide-page a {
   color: inherit;
 }
 
-button {
+.guide-page button {
   font: inherit;
 }
 
@@ -159,6 +157,10 @@ button {
 }
 
 .print-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   min-height: 40px;
   padding: 0 16px;
   border: 1px solid rgb(255 255 255 / 28%);
@@ -195,6 +197,7 @@ button {
   font-weight: 720;
   line-height: 1.04;
   letter-spacing: -0.058em;
+  text-wrap: balance;
 }
 
 .guide-summary {
@@ -210,7 +213,7 @@ button {
   display: grid;
   grid-template-columns: minmax(220px, 1.4fr) minmax(260px, 1.6fr) 120px 140px;
   gap: 1px;
-  max-width: 1040px;
+  /* max-width: 1040px; */
   margin: 56px 0 0;
   border: 1px solid rgb(255 255 255 / 16%);
   background: rgb(255 255 255 / 16%);
@@ -340,7 +343,7 @@ button {
 }
 
 .guide-content {
-  width: min(100%, 900px);
+  width: 100%;
 }
 
 .guide-article {
@@ -556,7 +559,7 @@ button {
 
 .guide-shot__frame {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 18 / 11;
   border: 1px solid #292929;
   border-radius: 14px;
   background: #d9d5cc;
@@ -581,6 +584,14 @@ button {
 }
 
 .guide-shot.has-image .guide-shot__placeholder {
+  display: none;
+}
+
+.guide-page--admin .guide-shot__image {
+  opacity: 1;
+}
+
+.guide-page--admin .guide-shot__placeholder {
   display: none;
 }
 
@@ -809,7 +820,7 @@ button {
   display: none;
 }
 
-:focus-visible {
+.guide-page :focus-visible {
   outline: 3px solid rgb(200 0 0 / 35%);
   outline-offset: 3px;
 }
@@ -838,7 +849,10 @@ button {
     z-index: 30;
     right: 18px;
     bottom: 18px;
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     min-width: 58px;
     height: 48px;
     border: 0;
@@ -876,6 +890,9 @@ button {
   }
 
   .mobile-navigation__header button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 0;
     color: var(--brand);
     background: transparent;
@@ -1025,13 +1042,13 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  .guide-page {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
+  .guide-page *,
+  .guide-page *::before,
+  .guide-page *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
@@ -1043,9 +1060,28 @@ button {
     margin: 16mm 14mm 18mm;
   }
 
-  body {
+  .guide-page {
+    --paper: #fff;
+    --surface: #fff;
     color: #000;
     background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .admin-guide-view > .nav,
+  .admin-guide-view > .template-default__wrap > .app-header,
+  .template-default__nav-toggler-wrapper {
+    display: none !important;
+  }
+
+  .admin-guide-view,
+  .admin-guide-view > .template-default__wrap {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
   }
 
   .guide-hero {
@@ -1060,6 +1096,7 @@ button {
   .guide-rail,
   .mobile-contents,
   .mobile-navigation,
+  .skip-link,
   .heading-link {
     display: none !important;
   }
@@ -1110,21 +1147,42 @@ button {
     padding: 0;
     border: 0;
     border-radius: 0;
+    background: #fff;
     box-shadow: none;
   }
 
   .guide-article h2 {
-    break-before: page;
-    margin-top: 0;
-    padding-top: 8mm;
+    break-before: auto;
+    break-after: avoid-page;
+    margin-top: 12mm;
+    padding-top: 0;
   }
 
-  .guide-article h2:first-child {
-    break-before: auto;
+  .guide-article h2:not(:first-child) {
+    padding-top: 5mm;
+    border-top: 0;
+    background: linear-gradient(
+      90deg,
+      var(--brand) 0 22mm,
+      var(--ink) 22mm 100%
+    ) top left / 100% 1.2mm no-repeat;
+  }
+
+  .guide-article h2:not(:first-child)::before {
+    display: none;
   }
 
   .guide-article h3,
-  .guide-article h4,
+  .guide-article h4 {
+    break-after: avoid-page;
+  }
+
+  .guide-article p,
+  .guide-article li {
+    orphans: 3;
+    widows: 3;
+  }
+
   .guide-article table,
   .guide-article blockquote,
   .guide-shot {
