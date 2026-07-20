@@ -1220,7 +1220,7 @@ html:has(.guide-page) {
       <dl class="guide-meta">
         <div><dt>대상</dt><dd>배우앤배움 사이트 운영 담당자</dd></div>
         <div><dt>관리자</dt><dd>https://[운영 도메인]/admin</dd></div>
-        <div><dt>버전</dt><dd>v1.1</dd></div>
+        <div><dt>버전</dt><dd>v1.2</dd></div>
         <div><dt>갱신</dt><dd>2026-07-20</dd></div>
       </dl>
     </div>
@@ -2624,16 +2624,49 @@ html:has(.guide-page) {
 <p>새 계정 생성, 계정 삭제, 역할·센터 변경은 통합 관리자 권한이 필요합니다. 센터매니저는 본인 계정만 확인·수정할 수 있고 역할과 센터를 바꿀 수 없습니다.</p>
 <p>문서가 다른 관리자에 의해 잠겨 있다면 실제 편집 중인지 먼저 확인합니다. <strong>강제 잠금 해제</strong>는 편집자가 없는데 잠금이 비정상적으로 남은 경우에만 사용합니다.</p>
 <h3 id="14-2-전체-사이트-점검모드" tabindex="-1">14-2. 전체 사이트 점검모드<a class="heading-link" href="#14-2-전체-사이트-점검모드" aria-label="14-2. 전체 사이트 점검모드 바로가기">#</a></h3>
+<p>전체 사이트 점검모드는 서버 점검, 배포 확인, 긴급 장애 대응처럼 방문자의 사이트 이용을 잠시 중단해야 할 때 사용하는 기능입니다. 켜는 즉시 아트·입시·키즈·하이틴·애비뉴센터를 포함한 <strong>모든 공개 페이지가 하나의 점검 안내 화면으로 전환</strong>됩니다. 센터별로 따로 켜거나 특정 페이지만 점검 화면으로 바꾸는 기능은 아닙니다.</p>
 <p>이 메뉴는 최고관리자에게만 보입니다.</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>점검모드가 켜졌을 때</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>로그아웃한 일반 방문자</td>
+<td>접속한 주소와 관계없이 점검 제목, 안내문, 대표전화가 있는 점검 화면을 봅니다.</td>
+</tr>
+<tr>
+<td>Payload 관리자</td>
+<td><code>/admin</code>에 계속 접속해 콘텐츠와 설정을 관리할 수 있습니다.</td>
+</tr>
+<tr>
+<td>로그인한 관리자·센터 계정</td>
+<td>공개 페이지를 정상 화면으로 볼 수 있습니다. 점검 화면 확인에는 사용하지 않습니다.</td>
+</tr>
+<tr>
+<td>검색 엔진</td>
+<td>점검 중인 페이지를 검색 결과에 새로 수집하지 않도록 임시 비노출 정보가 전달됩니다.</td>
+</tr>
+</tbody></table>
+<p>점검 화면에서는 일반 사이트의 헤더, 푸터, 배너와 콘텐츠가 표시되지 않습니다. <strong>점검 화면 제목</strong>과 <strong>점검 화면 안내문</strong>은 모든 센터에 공통으로 적용되고, 하단에는 대표전화와 고객센터 운영시간이 함께 표시됩니다.</p>
+<h4 id="점검모드-켜기-전-준비" tabindex="-1">점검모드 켜기 전 준비<a class="heading-link" href="#점검모드-켜기-전-준비" aria-label="점검모드 켜기 전 준비 바로가기">#</a></h4>
+<ol>
+<li>실제 점검 시작 시각과 종료 예정 시각을 담당자끼리 먼저 공유합니다.</li>
+<li>방문자가 현재 상황을 이해할 수 있도록 제목과 안내문을 작성합니다.</li>
+<li>종료 예정 시각을 안내해야 한다면 안내문에 함께 적습니다.</li>
+<li>관리자 작업이 끝난 뒤 점검모드를 끌 담당자를 정합니다.</li>
+</ol>
+<h4 id="점검모드-켜기" tabindex="-1">점검모드 켜기<a class="heading-link" href="#점검모드-켜기" aria-label="점검모드 켜기 바로가기">#</a></h4>
 <ol>
 <li><strong>시스템관리 → 사이트 설정</strong>을 선택합니다.</li>
-<li>점검 화면 제목과 안내문을 먼저 작성합니다.</li>
+<li><strong>점검 화면 제목</strong>과 <strong>점검 화면 안내문</strong>을 먼저 입력합니다.</li>
 <li><strong>전체 사이트 점검모드</strong>를 켭니다.</li>
 <li>저장합니다.</li>
-<li>로그아웃 상태 또는 시크릿 창에서 공개 사이트를 확인합니다.</li>
+<li>로그아웃 상태 또는 시크릿 창에서 서로 다른 센터 주소를 2개 이상 열어 점검 화면이 표시되는지 확인합니다.</li>
 </ol>
 <p>로그인한 관리자와 센터 계정은 점검모드 중에도 일반 공개 화면을 볼 수 있으므로, 관리자 로그인 상태의 브라우저만으로 점검 화면 노출 여부를 판단하면 안 됩니다.</p>
-<p>점검이 끝나면 같은 화면에서 점검모드를 끄고 저장한 뒤 시크릿 창에서 사이트가 다시 열리는지 확인합니다.</p>
 
       <figure class="guide-shot" data-guide-shot>
         <div class="guide-shot__frame">
@@ -2677,6 +2710,60 @@ html:has(.guide-page) {
         </div>
         <figcaption><span>15</span>사이트 점검모드 설정</figcaption>
       </figure>
+<h4 id="방문자에게-보이는-점검-화면" tabindex="-1">방문자에게 보이는 점검 화면<a class="heading-link" href="#방문자에게-보이는-점검-화면" aria-label="방문자에게 보이는 점검 화면 바로가기">#</a></h4>
+<p>아래 화면이 일반 방문자에게 표시되는 실제 점검 화면입니다. 제목, 안내문, 대표전화와 운영시간이 맞는지 확인합니다. 점검모드를 켰는데 기존 사이트 화면이 보이면 먼저 로그아웃하거나 시크릿 창에서 다시 접속합니다.</p>
+
+      <figure class="guide-shot" data-guide-shot>
+        <div class="guide-shot__frame">
+          <img
+            class="guide-shot__image"
+            data-guide-image
+            data-src="./images/16-maintenance-page.png"
+            alt="전체 사이트 점검 중 방문자 화면"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="guide-shot__placeholder" data-guide-placeholder aria-hidden="true">
+            <div class="dummy-browser">
+              <div class="dummy-browser__bar">
+                <span></span><span></span><span></span>
+                <div class="dummy-browser__address">/admin</div>
+              </div>
+              <div class="dummy-admin">
+                <div class="dummy-admin__rail">
+                  <div class="dummy-admin__brand">B</div>
+                  <i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="dummy-admin__content">
+                  <div class="dummy-admin__eyebrow">SCREEN 16</div>
+                  <div class="dummy-admin__title">전체 사이트 점검 중 방문자 화면</div>
+                  <div class="dummy-admin__layout">
+                    <div class="dummy-admin__main">
+                      <b></b><b></b><b></b>
+                      <div class="dummy-admin__table"><i></i><i></i><i></i><i></i></div>
+                    </div>
+                    <div class="dummy-admin__side"><b></b><i></i><i></i><i></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guide-shot__notice">
+              <span>캡처 이미지 자리</span>
+              <code>images/16-maintenance-page.png</code>
+            </div>
+          </div>
+        </div>
+        <figcaption><span>16</span>전체 사이트 점검 중 방문자 화면</figcaption>
+      </figure>
+<h4 id="점검모드-끄기" tabindex="-1">점검모드 끄기<a class="heading-link" href="#점검모드-끄기" aria-label="점검모드 끄기 바로가기">#</a></h4>
+<ol>
+<li><strong>시스템관리 → 사이트 설정</strong>으로 돌아갑니다.</li>
+<li><strong>전체 사이트 점검모드</strong>를 끕니다.</li>
+<li>저장합니다.</li>
+<li>시크릿 창에서 아트·입시·키즈·하이틴·애비뉴센터의 메인 주소를 확인합니다.</li>
+<li>모든 센터에서 일반 사이트의 헤더와 콘텐츠가 다시 표시되면 점검 종료를 담당자에게 공유합니다.</li>
+</ol>
+<p>점검모드는 저장 즉시 전체 공개 사이트에 영향을 주므로 예약용으로 미리 켜두지 않습니다. 작업이 끝났는데도 끄지 않으면 일반 방문자는 계속 사이트를 이용할 수 없으므로, 해제 확인까지 점검 작업의 일부로 처리합니다.</p>
 <h2 id="15-발행-전-확인과-문제-해결" tabindex="-1">15. 발행 전 확인과 문제 해결<a class="heading-link" href="#15-발행-전-확인과-문제-해결" aria-label="15. 발행 전 확인과 문제 해결 바로가기">#</a></h2>
 <h3 id="발행-전-체크리스트" tabindex="-1">발행 전 체크리스트<a class="heading-link" href="#발행-전-체크리스트" aria-label="발행 전 체크리스트 바로가기">#</a></h3>
 <ul>
@@ -2928,7 +3015,7 @@ html:has(.guide-page) {
 
       <footer class="guide-footer">
         <span>BNB OPERATOR MANUAL</span>
-        <p>v1.1 · 2026-07-20</p>
+        <p>v1.2 · 2026-07-20</p>
       </footer>
     </main>
   </div>
