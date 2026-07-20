@@ -1,0 +1,179 @@
+name: Daily Neon database backup
+
+on:
+  schedule:
+    # Daily at 02:17 KST (17:17 UTC on the previous day).
+    - cron: '17 17 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-neon-database-backup
+  cancel-in-progress: false
+
+env:
+  POSTGRES_IMAGE: postgres:17-alpine
+  R2_BACKUP_BUCKET: baewoo-private
+  R2_BACKUP_PREFIX: database-backups/production
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: Production – bnb-renewal
+    timeout-minutes: 30
+    env:
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      AWS_EC2_METADATA_DISABLED: 'true'
+
+    steps:
+      - name: Validate backup configuration
+        run: |
+          set -euo pipefail
+
+          required_names=(
+            DATABASE_URL_UNPOOLED
+            R2_ENDPOINT
+            AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY
+          )
+
+          for name in "${required_names[@]}"; do
+            if [ -z "${!name:-}" ]; then
+              echo "Required backup configuration is missing: $name" >&2
+              exit 1
+            fi
+          done
+
+          if [ "$R2_BACKUP_BUCKET" != "baewoo-private" ]; then
+            echo "Unexpected backup bucket: $R2_BACKUP_BUCKET" >&2
+            exit 1
+          fi
+
+          if [ "$R2_BACKUP_PREFIX" != "database-backups/production" ]; then
+            echo "Unexpected backup prefix: $R2_BACKUP_PREFIX" >&2
+            exit 1
+          fi
+
+          aws --version
+          docker --version
+
+      - name: Create and validate PostgreSQL backup
+        id: backup
+        run: |
+          set -euo pipefail
+
+          backup_dir="$RUNNER_TEMP/database-backup"
+          timestamp="$(date -u +'%Y%m%dT%H%M%SZ')"
+          date_path="$(TZ=Asia/Seoul date +'%Y/%m/%d')"
+          archive_name="bnb-renewal-${timestamp}.dump"
+          archive_path="$backup_dir/$archive_name"
+          checksum_path="$archive_path.sha256"
+          restore_list_path="$archive_path.list"
+          object_prefix="${R2_BACKUP_PREFIX}/${date_path}"
+
+          mkdir -p "$backup_dir"
+          docker pull "$POSTGRES_IMAGE"
+
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            --env DATABASE_URL_UNPOOLED \
+            --env BACKUP_FILE="$archive_name" \
+            --volume "$backup_dir:/backup" \
+            "$POSTGRES_IMAGE" \
+            sh -eu -c 'pg_dump "$DATABASE_URL_UNPOOLED" --format=custom --compress=9 --file="/backup/$BACKUP_FILE"'
+
+          test -s "$archive_path"
+
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            --env BACKUP_FILE="$archive_name" \
+            --volume "$backup_dir:/backup:ro" \
+            "$POSTGRES_IMAGE" \
+            sh -eu -c 'pg_restore --list "/backup/$BACKUP_FILE"' \
+            > "$restore_list_path"
+
+          toc_entries="$(awk 'NF && $1 !~ /^;/' "$restore_list_path" | wc -l | tr -d ' ')"
+          if [ "$toc_entries" -lt 1 ]; then
+            echo "Backup archive contains no restore entries." >&2
+            exit 1
+          fi
+
+          (
+            cd "$backup_dir"
+            sha256sum "$archive_name" > "$archive_name.sha256"
+          )
+
+          archive_size="$(stat -c '%s' "$archive_path")"
+          archive_key="${object_prefix}/${archive_name}"
+          checksum_key="${archive_key}.sha256"
+
+          {
+            echo "archive_path=$archive_path"
+            echo "checksum_path=$checksum_path"
+            echo "archive_key=$archive_key"
+            echo "checksum_key=$checksum_key"
+            echo "archive_size=$archive_size"
+            echo "toc_entries=$toc_entries"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload backup to private R2
+        env:
+          ARCHIVE_KEY: ${{ steps.backup.outputs.archive_key }}
+          ARCHIVE_PATH: ${{ steps.backup.outputs.archive_path }}
+          CHECKSUM_KEY: ${{ steps.backup.outputs.checksum_key }}
+          CHECKSUM_PATH: ${{ steps.backup.outputs.checksum_path }}
+          EXPECTED_SIZE: ${{ steps.backup.outputs.archive_size }}
+        run: |
+          set -euo pipefail
+
+          aws s3 cp "$ARCHIVE_PATH" "s3://${R2_BACKUP_BUCKET}/${ARCHIVE_KEY}" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --no-progress \
+            --only-show-errors
+
+          aws s3 cp "$CHECKSUM_PATH" "s3://${R2_BACKUP_BUCKET}/${CHECKSUM_KEY}" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --no-progress \
+            --only-show-errors
+
+          remote_size="$(aws s3api head-object \
+            --bucket "$R2_BACKUP_BUCKET" \
+            --key "$ARCHIVE_KEY" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --query 'ContentLength' \
+            --output text)"
+
+          aws s3api head-object \
+            --bucket "$R2_BACKUP_BUCKET" \
+            --key "$CHECKSUM_KEY" \
+            --endpoint-url "$R2_ENDPOINT" \
+            > /dev/null
+
+          if [ "$remote_size" != "$EXPECTED_SIZE" ]; then
+            echo "Uploaded backup size mismatch: expected=$EXPECTED_SIZE actual=$remote_size" >&2
+            exit 1
+          fi
+
+      - name: Write backup summary
+        env:
+          ARCHIVE_KEY: ${{ steps.backup.outputs.archive_key }}
+          ARCHIVE_SIZE: ${{ steps.backup.outputs.archive_size }}
+          TOC_ENTRIES: ${{ steps.backup.outputs.toc_entries }}
+        run: |
+          {
+            echo "### Daily Neon database backup"
+            echo ""
+            echo "| Item | Value |"
+            echo "| --- | --- |"
+            echo "| R2 bucket | \`$R2_BACKUP_BUCKET\` |"
+            echo "| Object key | \`$ARCHIVE_KEY\` |"
+            echo "| Archive bytes | $ARCHIVE_SIZE |"
+            echo "| Restore entries | $TOC_ENTRIES |"
+            echo "| Retention | 15 days by R2 prefix lifecycle |"
+          } >> "$GITHUB_STEP_SUMMARY"
