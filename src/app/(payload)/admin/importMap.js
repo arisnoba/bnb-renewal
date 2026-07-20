@@ -72,6 +72,7 @@ import { FaqAnswerVariantRowLabel as FaqAnswerVariantRowLabel_bcd55890f29df5d096
 import { StarCardBodyImagesField as StarCardBodyImagesField_4651afda955252646e70363072999e1a } from '@/components/payload/StarCardBodyImagesField'
 import { StarCardBodyImageRowLabel as StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e } from '@/components/payload/StarCardBodyImageRowLabel'
 import { InquirySummaryField as InquirySummaryField_af4a424d7191079ec9ff3344f002f212 } from '@/components/payload/InquirySummaryField'
+import { UserPasswordSaveAction as UserPasswordSaveAction_f41a63f1306e4f71a97f2a21ffb2f989 } from '@/components/payload/UserSaveButton'
 import { ForceUnlockHelp as ForceUnlockHelp_dec636a31a0ad194f79ef16134ea6cc5 } from '@/components/payload/ForceUnlockHelp'
 import { MainBannerAutoplayDelayField as MainBannerAutoplayDelayField_13fce165629ba3ed7b132adb9cc09af9 } from '@/components/payload/MainBannerAutoplayDelayField'
 import { MainBannerOrderRowLabel as MainBannerOrderRowLabel_1367d5c7871b1fb50a0483d3ac77fa38 } from '@/Main/RowLabel'
@@ -159,6 +160,7 @@ export const importMap = {
   "@/components/payload/StarCardBodyImagesField#StarCardBodyImagesField": StarCardBodyImagesField_4651afda955252646e70363072999e1a,
   "@/components/payload/StarCardBodyImageRowLabel#StarCardBodyImageRowLabel": StarCardBodyImageRowLabel_89773560a08dfba2bf8b24feee405e1e,
   "@/components/payload/InquirySummaryField#InquirySummaryField": InquirySummaryField_af4a424d7191079ec9ff3344f002f212,
+  "@/components/payload/UserSaveButton#UserPasswordSaveAction": UserPasswordSaveAction_f41a63f1306e4f71a97f2a21ffb2f989,
   "@/components/payload/ForceUnlockHelp#ForceUnlockHelp": ForceUnlockHelp_dec636a31a0ad194f79ef16134ea6cc5,
   "@/components/payload/MainBannerAutoplayDelayField#MainBannerAutoplayDelayField": MainBannerAutoplayDelayField_13fce165629ba3ed7b132adb9cc09af9,
   "@/Main/RowLabel#MainBannerOrderRowLabel": MainBannerOrderRowLabel_1367d5c7871b1fb50a0483d3ac77fa38,

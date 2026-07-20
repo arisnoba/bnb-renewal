@@ -1,10 +1,15 @@
-#action-save {
+#action-save,
+#password-action-save {
+	--btn-font-weight: 700;
+}
+
+#action-save:not(.btn--disabled):not(:disabled),
+#password-action-save:not(.btn--disabled):not(:disabled) {
 	--bg-color: #1f5eff;
 	--hover-bg: #1748c7;
 	--color: #ffffff;
 	--btn-border: 1px solid #1f5eff;
 	--hover-btn-border: 1px solid #1748c7;
-	--btn-font-weight: 700;
 	box-shadow: 0 8px 22px rgba(31, 94, 255, 0.28);
 }
 
@@ -35,12 +40,16 @@
 }
 
 #action-save:not(:disabled):hover,
-#action-save:not(:disabled):focus-visible {
+#action-save:not(:disabled):focus-visible,
+#password-action-save:not(:disabled):hover,
+#password-action-save:not(:disabled):focus-visible {
 	box-shadow: 0 10px 26px rgba(31, 94, 255, 0.34);
 }
 
 #action-save.btn--disabled,
-#action-save:disabled {
+#action-save:disabled,
+#password-action-save.btn--disabled,
+#password-action-save:disabled {
 	box-shadow: none;
 }
 

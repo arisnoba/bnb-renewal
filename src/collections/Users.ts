@@ -144,6 +144,15 @@ export const Users: CollectionConfig = {
       required: true,
     },
     {
+      name: 'passwordSaveAction',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/components/payload/UserSaveButton#UserPasswordSaveAction',
+        },
+      },
+    },
+    {
       name: 'forceUnlockHelp',
       type: 'ui',
       admin: {
