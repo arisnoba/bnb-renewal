@@ -1,5 +1,7 @@
 import type { Access, CollectionBeforeValidateHook, CollectionConfig, FieldAccess } from 'payload'
 
+import { resolveUserAuth } from '@/lib/userAuth'
+
 import { globalAdminOnly } from './access'
 import { centerOptions, isGlobalAdminUser } from './shared'
 
@@ -92,7 +94,7 @@ export const Users: CollectionConfig = {
     read: readUsers,
     update: updateUsers,
   },
-  auth: true,
+  auth: resolveUserAuth(),
   hooks: {
     beforeValidate: [normalizeUserPermissionLevel],
   },
