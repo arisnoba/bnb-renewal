@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { normalizeAdminListURL, routingURL } from './proxy'
+import { canonicalAdminURL, normalizeAdminListURL, routingURL } from './proxy'
 
 test('routing URL restores the public host and protocol from proxy headers', () => {
   const request = {
@@ -14,6 +14,24 @@ test('routing URL restores the public host and protocol from proxy headers', () 
   }
 
   assert.equal(routingURL(request).href, 'https://exam.baewooenm.com/teachers?page=2')
+})
+
+test('center-domain admin routes redirect to the canonical www host', () => {
+  const adminURL = canonicalAdminURL(
+    new URL('https://exam.baewooenm.com/admin/collections/news?page=2'),
+  )
+
+  assert.equal(
+    adminURL?.href,
+    'https://www.baewooenm.com/admin/collections/news?page=2',
+  )
+  assert.equal(
+    canonicalAdminURL(new URL('https://baewooenm.com/admin/login'))?.href,
+    'https://www.baewooenm.com/admin/login',
+  )
+  assert.equal(canonicalAdminURL(new URL('https://www.baewooenm.com/admin')), undefined)
+  assert.equal(canonicalAdminURL(new URL('https://exam.baewooenm.com/news')), undefined)
+  assert.equal(canonicalAdminURL(new URL('https://preview.example.com/admin')), undefined)
 })
 
 test('single-center admin lists rewrite stale contains center filters', () => {

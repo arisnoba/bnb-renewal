@@ -2,7 +2,12 @@ import type { NextRequest } from 'next/server'
 
 import { NextResponse } from 'next/server'
 
-import { centerDomainRoute } from '@/lib/centerDomains'
+import {
+  apexHostname,
+  centerDomainRoute,
+  centerFromHostname,
+  primaryHostname,
+} from '@/lib/centerDomains'
 
 const validCenterFilterValues = new Set(['all', 'art', 'avenue', 'exam', 'highteen', 'kids'])
 const singleCentersAdminListPaths = new Set([
@@ -73,14 +78,38 @@ export function routingURL(request: Pick<NextRequest, 'headers' | 'url'>) {
   return url
 }
 
+export function canonicalAdminURL(url: URL) {
+  const isAdminPath = url.pathname === '/admin' || url.pathname.startsWith('/admin/')
+  const isNonCanonicalProductionHost =
+    url.hostname === apexHostname || Boolean(centerFromHostname(url.hostname))
+
+  if (!isAdminPath || !isNonCanonicalProductionHost) {
+    return undefined
+  }
+
+  const canonicalURL = new URL(url)
+  canonicalURL.hostname = primaryHostname
+  canonicalURL.port = ''
+  canonicalURL.protocol = 'https:'
+
+  return canonicalURL
+}
+
 export function proxy(request: NextRequest) {
-  const normalizedURL = normalizeAdminListURL(request.nextUrl)
+  const requestURL = routingURL(request)
+  const adminURL = canonicalAdminURL(requestURL)
+
+  if (adminURL) {
+    return NextResponse.redirect(adminURL, 308)
+  }
+
+  const normalizedURL = normalizeAdminListURL(requestURL)
 
   if (normalizedURL) {
     return NextResponse.redirect(normalizedURL)
   }
 
-  const domainRoute = centerDomainRoute(routingURL(request))
+  const domainRoute = centerDomainRoute(requestURL)
 
   if (domainRoute?.type === 'redirect') {
     return NextResponse.redirect(domainRoute.url, 308)

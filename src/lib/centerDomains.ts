@@ -4,7 +4,7 @@ import { centers } from './centers'
 
 export const primaryHostname = 'www.baewooenm.com'
 
-const apexHostname = 'baewooenm.com'
+export const apexHostname = 'baewooenm.com'
 const centerSlugs = Object.keys(centers) as CenterSlug[]
 const centerSlugSet = new Set<CenterSlug>(centerSlugs)
 
