@@ -21,10 +21,12 @@ import { getPayloadClient } from '@/lib/payload'
 import { FrontendChrome } from './FrontendChrome.client'
 import { MaintenancePage } from './MaintenancePage'
 import { NavigationTopLoader } from './NavigationTopLoader.client'
+import { CenterDomainProvider } from './CenterDomainContext.client'
 
 import './globals.css'
 import '@/styles/style.scss'
 import { getServerSideURL } from '@/utilities/getURL'
+import { centerFromHostname } from '@/lib/centerDomains'
 
 async function getSiteSettings() {
   try {
@@ -51,6 +53,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const requestHeaders = await headers()
+  const domainCenter = centerFromHostname(requestHeaders.get('host') ?? '')
   const siteSettings = await getSiteSettings()
   const bypassUser = await getFrontendMaintenanceBypassUser()
   const showMaintenancePage = isMaintenanceModeEnabled(siteSettings) && !bypassUser
@@ -58,21 +62,23 @@ export default async function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
-        <NavigationTopLoader />
-        <AdminBar />
+        <CenterDomainProvider center={domainCenter}>
+          <NavigationTopLoader />
+          <AdminBar />
 
-        {showMaintenancePage ? (
-          <MaintenancePage settings={siteSettings} />
-        ) : (
-          <>
-            <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={false}>
-              {children}
-            </FrontendChrome>
-            <CookieBanner />
-          </>
-        )}
-        <Toaster position="top-center" richColors />
-        <SpeedInsights />
+          {showMaintenancePage ? (
+            <MaintenancePage settings={siteSettings} />
+          ) : (
+            <>
+              <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={false}>
+                {children}
+              </FrontendChrome>
+              <CookieBanner />
+            </>
+          )}
+          <Toaster position="top-center" richColors />
+          <SpeedInsights />
+        </CenterDomainProvider>
       </body>
     </html>
   )

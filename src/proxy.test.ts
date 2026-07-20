@@ -1,7 +1,20 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { normalizeAdminListURL } from './proxy'
+import { normalizeAdminListURL, routingURL } from './proxy'
+
+test('routing URL restores the public host and protocol from proxy headers', () => {
+  const request = {
+    headers: new Headers({
+      host: 'localhost:3000',
+      'x-forwarded-host': 'exam.baewooenm.com',
+      'x-forwarded-proto': 'https',
+    }),
+    url: 'http://localhost:3000/teachers?page=2',
+  }
+
+  assert.equal(routingURL(request).href, 'https://exam.baewooenm.com/teachers?page=2')
+})
 
 test('single-center admin lists rewrite stale contains center filters', () => {
   const url = new URL(

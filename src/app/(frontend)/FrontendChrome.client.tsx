@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation'
 import React from 'react'
 
+import { useIsCenterDomain } from './CenterDomainContext.client'
+
 export function FrontendChrome({
   children,
   footer,
@@ -15,7 +17,8 @@ export function FrontendChrome({
   initialIsGatePage: boolean
 }) {
   const pathname = usePathname()
-  const isGatePage = pathname ? pathname === '/' : initialIsGatePage
+  const isCenterDomain = useIsCenterDomain()
+  const isGatePage = !isCenterDomain && (pathname ? pathname === '/' : initialIsGatePage)
 
   return (
     <>

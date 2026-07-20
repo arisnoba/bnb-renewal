@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
 import { ArrowLeft, ChevronDown, ChevronRight, Menu, Minus, Plus } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 import type { FamilySiteLink } from '@/Footer/familySites'
 import type { CenterSlug } from '@/lib/centers'
@@ -17,7 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { getHeaderMenu, headerCenterFromPathname, type HeaderMenuGroup } from './menu'
+import { getHeaderMenu, type HeaderMenuGroup } from './menu'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 
 type HeaderNavProps = {
   familySites: FamilySiteLink[]
@@ -27,8 +28,7 @@ type HeaderNavProps = {
 const headerCenterOptions: CenterSlug[] = ['art', 'exam', 'highteen', 'kids', 'avenue']
 
 export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenChange }) => {
-  const pathname = usePathname()
-  const center = headerCenterFromPathname(pathname)
+  const center = useCurrentCenter()
   const menuGroups = getHeaderMenu(center)
   const consultHref = `/${center}/consult`
   const navZoneRef = useRef<HTMLDivElement | null>(null)

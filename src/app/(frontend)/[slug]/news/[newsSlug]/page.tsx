@@ -10,6 +10,7 @@ import {
   hasLexicalContent,
 } from '@/utilities/newsFallbacks'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { publicCenterPath } from '@/lib/centerDomains'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -94,7 +95,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const description = news ? getNewsDescription(news) : undefined
   const imageUrl = news ? getNewsMetaImageUrl(news) : undefined
   const title = news?.meta?.title || news?.title || '뉴스'
-  const canonicalPath = news ? getNewsUrl({ id: news.id }, center) : `/${center}/news`
+  const canonicalPath = publicCenterPath(
+    news ? getNewsUrl({ id: news.id }, center) : `/${center}/news`,
+    center,
+  )
 
   return {
     description,

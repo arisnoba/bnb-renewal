@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { centers, type CenterSlug } from '@/lib/centers'
+import { centerOrigin } from '@/lib/centerDomains'
 import { centerOpenGraphImage } from '@/utilities/mergeOpenGraph'
 
 type Args = {
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const openGraphImage = centerOpenGraphImage(center)
 
   return {
+    metadataBase: new URL(centerOrigin(center)),
     icons: {
       icon: [
         { url: centerFaviconPath(center, 'favicon.ico'), sizes: 'any' },

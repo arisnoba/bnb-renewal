@@ -37,7 +37,7 @@ export async function Footer() {
 
             <FooterPolicyLinks initialCenter={initialCenter} />
 
-            <FooterAddress centerInfos={centerInfos} initialPathname={null} />
+            <FooterAddress centerInfos={centerInfos} />
 
             <p className="text-sm leading-[1.2] tracking-normal text-white/40">
               ©{copyrightYear} BNB INDUSTRY. All rights reserved.
@@ -49,7 +49,7 @@ export async function Footer() {
               <FooterTextLinks links={familySites} />
             </FooterLinkGroup>
             <FooterLinkGroup title="SOCIAL">
-              <FooterSocialLinks centerInfos={centerInfos} initialPathname={null} />
+              <FooterSocialLinks centerInfos={centerInfos} />
             </FooterLinkGroup>
           </div>
         </div>

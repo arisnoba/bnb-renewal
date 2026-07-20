@@ -3,20 +3,18 @@
 import type { FooterCenterInfo } from './centerInfo'
 
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import React from 'react'
 
-import { footerSocialLinksForPathname } from './centerInfo'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
+import { footerCenterInfoForCenter, footerSocialLinks } from './centerInfo'
 
 export function FooterSocialLinks({
   centerInfos,
-  initialPathname,
 }: {
   centerInfos: FooterCenterInfo[]
-  initialPathname: string | null
 }) {
-  const pathname = usePathname() ?? initialPathname
-  const socialLinks = footerSocialLinksForPathname(centerInfos, pathname)
+  const center = useCurrentCenter()
+  const socialLinks = footerSocialLinks(footerCenterInfoForCenter(centerInfos, center))
 
   if (socialLinks.length === 0) {
     return null

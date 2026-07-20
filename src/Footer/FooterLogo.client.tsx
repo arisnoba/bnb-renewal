@@ -2,17 +2,15 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
 
 import { centerLogoFor } from '@/lib/centerLogos'
-import { centerSlugFromPathname } from './centerInfo'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 
 export function FooterLogo({ initialCenter }: { initialCenter: CenterSlug }) {
-  const pathname = usePathname()
-  const center = centerSlugFromPathname(pathname) ?? initialCenter
+  const center = useCurrentCenter(initialCenter)
   const logo = centerLogoFor(center)
 
   return (

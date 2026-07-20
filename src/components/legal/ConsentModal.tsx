@@ -1,12 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { centerSlugFromPathname } from '@/Footer/centerInfo'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 import {
   Dialog,
   DialogContent,
@@ -27,8 +26,7 @@ export function ConsentModal({
   const [open, setOpen] = useState(false)
   const [termsChecked, setTermsChecked] = useState(false)
   const [privacyChecked, setPrivacyChecked] = useState(false)
-  const pathname = usePathname()
-  const center = centerSlugFromPathname(pathname) ?? 'art'
+  const center = useCurrentCenter()
   const canSubmit = termsChecked && privacyChecked
 
   function agree() {

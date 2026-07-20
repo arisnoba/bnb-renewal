@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import {
   createContext,
@@ -46,7 +45,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { centerSlugFromPathname } from '@/Footer/centerInfo'
+import { useCurrentCenter } from '../CenterDomainContext.client'
 import { INQUIRY_ATTACHMENT_MAX_MEGABYTES } from '@/lib/inquiryAttachment'
 import { cn } from '@/utilities/ui'
 import { inquiryTypeValues, type InquiryType } from './inquiryTypeParams'
@@ -306,8 +305,7 @@ const ValidationFeedbackContext = createContext<{
 })
 
 export function ConsultationForm({ initialInquiryType }: { initialInquiryType: InquiryType }) {
-  const pathname = usePathname()
-  const center = centerSlugFromPathname(pathname) ?? 'art'
+  const center = useCurrentCenter()
   const privacyHref = `/${center}/privacy`
   const earliestPreferredDate = useMemo(() => getEarliestPreferredDateValue(), [])
   const [submitError, setSubmitError] = useState<string | null>(null)

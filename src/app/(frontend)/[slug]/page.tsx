@@ -45,7 +45,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
       {
         description,
         title: absoluteTitle,
-        url: `/${center}`,
+        url: '/',
       },
       { center },
     ),

@@ -1,6 +1,7 @@
 import { getHeaderMenu } from '@/Header/Nav/menu'
 
 import type { CenterSlug } from './centers'
+import { centerFromPathname, centerOrigin, publicCenterPath } from './centerDomains'
 import { centerLocationList, centerLocations } from './centerLocations'
 
 type LlmsTxtEntry = {
@@ -209,7 +210,7 @@ export function generateLlmsTxt({ baseUrl }: { baseUrl: string }) {
     '- 공식 브랜드: 배우앤배움(BNB)',
     '- 운영 센터: 아트센터, 입시센터, 키즈센터, 하이틴센터, 애비뉴센터',
     '- 주요 영역: 매체 연기 교육, 연극영화과 입시, 아역·청소년 연기 교육, 캐스팅 및 배우 케어',
-    '- 공개 URL 구조: 센터별 주요 페이지는 `/{center}/...` 경로를 사용합니다.',
+    '- 공개 URL 구조: 센터별 주요 페이지는 `{center}.baewooenm.com/...` 서브도메인을 사용합니다.',
     '- 대표 문의 전화: 1577-9929',
     '- 주요 위치: 서울 서초구 반포동·잠원동 일대 센터별 운영',
     '',
@@ -249,5 +250,11 @@ function normalizeBaseUrl(baseUrl: string) {
 }
 
 function absoluteUrl(baseUrl: string, path: string) {
+  const center = centerFromPathname(path)
+
+  if (center) {
+    return new URL(publicCenterPath(path, center), `${centerOrigin(center)}/`).toString()
+  }
+
   return new URL(path, `${baseUrl}/`).toString()
 }

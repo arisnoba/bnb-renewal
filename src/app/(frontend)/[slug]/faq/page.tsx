@@ -23,7 +23,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   return {
     alternates: {
-      canonical: `/${center}/faq`,
+      canonical: '/faq',
     },
     description: `${centerLabel} 입학, 수업, 수강료, 캐스팅, 이용방법 관련 자주하는 질문과 답변을 확인하세요.`,
     title: '자주하는 질문',

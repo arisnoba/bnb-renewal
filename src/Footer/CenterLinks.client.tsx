@@ -1,16 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
 
-import { centerSlugFromPathname } from './centerInfo'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 
 export function FooterCenterLinks({ initialCenter = 'art' }: { initialCenter?: CenterSlug }) {
-  const pathname = usePathname()
-  const center = centerSlugFromPathname(pathname) ?? initialCenter
+  const center = useCurrentCenter(initialCenter)
   const consultHref = `/${center}/consult`
   const customerLinks = [
     { href: 'tel:15779929', label: '대표전화', value: '1577-9929' },
@@ -51,8 +49,7 @@ export function FooterCenterLinks({ initialCenter = 'art' }: { initialCenter?: C
 }
 
 export function FooterPolicyLinks({ initialCenter = 'art' }: { initialCenter?: CenterSlug }) {
-  const pathname = usePathname()
-  const center = centerSlugFromPathname(pathname) ?? initialCenter
+  const center = useCurrentCenter(initialCenter)
 
   return (
     <nav

@@ -1,14 +1,13 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 
 import type { FamilySiteLink } from '@/Footer/familySites'
 
 import { Logo } from '@/components/Logo/Logo'
 import { centerLogoFor } from '@/lib/centerLogos'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 import { HeaderNav } from './Nav'
-import { headerCenterFromPathname } from './Nav/menu'
 import './index.scss'
 
 type HeaderClientProps = {
@@ -20,8 +19,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ familySites }) => {
   const headerRef = useRef<HTMLElement | null>(null)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const pathname = usePathname()
-  const center = headerCenterFromPathname(pathname)
+  const center = useCurrentCenter()
   const centerLogo = centerLogoFor(center)
 
   useEffect(() => {

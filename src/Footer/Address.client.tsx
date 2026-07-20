@@ -2,20 +2,18 @@
 
 import type { FooterCenterInfo } from './centerInfo'
 
-import { usePathname } from 'next/navigation'
 import React from 'react'
 
-import { footerAddressLines, footerCenterInfoForPathname } from './centerInfo'
+import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
+import { footerAddressLines, footerCenterInfoForCenter } from './centerInfo'
 
 export function FooterAddress({
   centerInfos,
-  initialPathname,
 }: {
   centerInfos: FooterCenterInfo[]
-  initialPathname: string | null
 }) {
-  const pathname = usePathname() ?? initialPathname
-  const addressLines = footerAddressLines(footerCenterInfoForPathname(centerInfos, pathname))
+  const center = useCurrentCenter()
+  const addressLines = footerAddressLines(footerCenterInfoForCenter(centerInfos, center))
 
   return (
     <address className="not-italic text-sm leading-normal tracking-normal text-white/40">
