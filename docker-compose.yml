@@ -15,7 +15,7 @@ services:
       - ./data/legacy_dumps:/legacy_dumps:ro
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: bnb-renewal-postgres
     environment:
       POSTGRES_DB: bnb_renewal
