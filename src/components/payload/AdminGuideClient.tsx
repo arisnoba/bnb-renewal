@@ -212,8 +212,7 @@ export function AdminGuideClient() {
       <header className="guide-hero">
         <div className="guide-hero__top">
           <div className="guide-brand">
-            <span>BNB</span>
-            <strong>OPERATOR MANUAL</strong>
+            <strong>BNB OPERATOR MANUAL</strong>
           </div>
           <div className="guide-hero__actions">
             <span
