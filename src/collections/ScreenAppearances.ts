@@ -429,6 +429,7 @@ export const ScreenAppearances: CollectionConfig = {
               label: "대표 이미지",
               relationTo: "media",
               admin: {
+                description: "1120×620px 이상의 이미지를 권장합니다.",
                 width: "50%",
               },
             },

@@ -77,7 +77,7 @@ export async function CurriculumDetailPage({
   contentCenter,
   curriculumSlug,
 }: CurriculumDetailPageProps) {
-  const dataCenter: CurriculumContentCenter = contentCenter ?? (center === 'avenue' ? 'art' : center)
+  const dataCenter: CurriculumContentCenter = contentCenter ?? center
   const curriculum = await queryCurriculumBySlug({
     center: dataCenter,
     slug: curriculumSlug,

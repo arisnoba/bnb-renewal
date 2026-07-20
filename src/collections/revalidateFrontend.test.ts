@@ -72,7 +72,7 @@ test('exam result detail frontend paths include result type routes', () => {
   )
 })
 
-test('curriculum detail frontend paths include avenue for shared art content', () => {
+test('curriculum detail frontend paths revalidate only the selected centers', () => {
   assert.deepEqual(
     curriculumDetailFrontendPaths({
       centers: ['art'],
@@ -84,9 +84,15 @@ test('curriculum detail frontend paths include avenue for shared art content', (
       '/art/curriculum/old-slug',
       '/highteen/curriculum/123',
       '/highteen/curriculum/old-slug',
-      '/avenue/curriculum/123',
-      '/avenue/curriculum/old-slug',
     ],
+  )
+
+  assert.deepEqual(
+    curriculumDetailFrontendPaths({
+      centers: ['avenue'],
+      slugs: ['avenue-class'],
+    }),
+    ['/avenue/curriculum/avenue-class'],
   )
 })
 

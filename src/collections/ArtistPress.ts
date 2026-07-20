@@ -165,6 +165,9 @@ export const ArtistPress: CollectionConfig = {
             type: "upload",
             label: "대표 이미지",
             relationTo: "media",
+            admin: {
+              description: "600×450px 이상의 이미지를 권장합니다.",
+            },
           },
           {
             name: "agencyLogoMedia",

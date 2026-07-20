@@ -46,7 +46,8 @@ const statusOptions = [
   { label: '공개', value: 'published' },
 ]
 const duplicatedTitleSuffix = ' - 복제됨'
-const mainBannerImageUploadDescription = `이미지는 ${ADMIN_IMAGE_UPLOAD_LIMIT_LABEL} 이하로 압축한 운영본만 업로드할 수 있습니다.`
+const mainBannerDesktopImageUploadDescription = `1920×1080px 이미지를 권장합니다. ${ADMIN_IMAGE_UPLOAD_LIMIT_LABEL} 이하로 압축한 운영본만 업로드할 수 있습니다.`
+const mainBannerMobileImageUploadDescription = `750×1062px 이미지를 권장합니다. ${ADMIN_IMAGE_UPLOAD_LIMIT_LABEL} 이하로 압축한 운영본만 업로드할 수 있습니다.`
 const mainBannerDesktopVideoUploadDescription = `선택 사항입니다. 데스크톱 배경 영상은 ${MAIN_BANNER_DESKTOP_VIDEO_RECOMMENDED_LIMIT_LABEL} 이하, 10초 내외, 무음 반복용 MP4/WebM을 권장합니다. 포스터 이미지는 데스크톱 이미지를 사용합니다.`
 const mainBannerMobileVideoUploadDescription = `선택 사항입니다. 모바일 배경 영상은 ${MAIN_BANNER_MOBILE_VIDEO_RECOMMENDED_LIMIT_LABEL} 이하, 10초 내외, 무음 반복용 MP4/WebM을 권장합니다. 비워두면 데스크톱 영상을 모바일에도 사용합니다.`
 
@@ -593,7 +594,7 @@ export const MainBanners: CollectionConfig = {
               label: '데스크톱 이미지',
               relationTo: 'media',
               admin: {
-                description: mainBannerImageUploadDescription,
+                description: mainBannerDesktopImageUploadDescription,
               },
               validate: requiredValue('데스크톱 이미지를 선택해야 합니다.'),
             },
@@ -603,7 +604,7 @@ export const MainBanners: CollectionConfig = {
               label: '모바일 이미지',
               relationTo: 'media',
               admin: {
-                description: `${mainBannerImageUploadDescription} 비워두면 데스크톱 이미지를 모바일에도 사용합니다.`,
+                description: `${mainBannerMobileImageUploadDescription} 비워두면 데스크톱 이미지를 모바일에도 사용합니다.`,
               },
             },
             {

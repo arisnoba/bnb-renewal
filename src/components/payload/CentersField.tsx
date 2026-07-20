@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 
 const validCenters = new Set(['art', 'exam', 'kids', 'highteen', 'avenue']);
 const restrictedCenterDescription =
-	'소속 센터가 자동 선택됩니다. 센터 변경은 센터 통합 매니저 이상만 가능합니다.';
+		'소속 센터가 자동 선택됩니다. 센터 변경은 센터 통합 매니저 이상만 가능합니다. 여러 센터가 지정된 기존 콘텐츠를 수정하면 선택된 모든 센터에 함께 반영됩니다.';
 
 function getUserCenter(user: unknown) {
 	if (!user || typeof user !== 'object') {

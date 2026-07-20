@@ -152,6 +152,9 @@ export const displayStatusOptions = [
   { label: "비공개", value: "archived" },
 ];
 
+export const sharedAdminContentWarning =
+  "공용 설정입니다. 저장하거나 삭제하면 여러 센터에 영향을 줄 수 있으므로 담당자와 확인한 뒤 수정해 주세요.";
+
 const publishingStatusSelectField =
   "@/components/payload/PublishingStatusSelectField#PublishingStatusSelectField";
 

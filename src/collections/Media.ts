@@ -26,6 +26,7 @@ import { resolveMediaPublicUrl } from '@/utilities/resolveMediaPublicUrl'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { sharedAdminContentWarning } from './shared'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -286,6 +287,7 @@ export const Media: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['filename', 'alt', 'updatedAt'],
+    description: sharedAdminContentWarning,
   },
   fields: [
     {

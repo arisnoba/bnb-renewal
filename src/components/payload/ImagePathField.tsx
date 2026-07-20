@@ -174,6 +174,14 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path: pathFrom
 				{label}
 				{field.required ? <span style={{ color: 'var(--theme-error-500)' }}> *</span> : null}
 			</label>
+			<p
+				style={{
+					color: 'var(--theme-elevation-600)',
+					fontSize: 12,
+					margin: 0,
+				}}>
+				이 필드는 파일을 직접 업로드합니다. 기존 미디어 검색은 지원하지 않으며, 업로드 후 콘텐츠를 저장해야 반영됩니다.
+			</p>
 			<input
 				accept="image/avif,image/gif,image/jpeg,image/png,image/webp"
 				disabled={controlsDisabled}

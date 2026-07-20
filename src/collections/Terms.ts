@@ -3,6 +3,7 @@ import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { newsBodyEditor } from './News'
+import { sharedAdminContentWarning } from './shared'
 
 const legalDocumentTypeLabels = {
   privacy: '개인정보처리방침',
@@ -42,6 +43,7 @@ export const Terms: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['title', 'documentType', 'effectiveDate', 'updatedAt'],
+    description: sharedAdminContentWarning,
     group: '회사정보',
     useAsTitle: 'title',
   },

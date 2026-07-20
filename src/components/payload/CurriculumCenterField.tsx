@@ -84,6 +84,16 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
           관리자 분류와 보관용으로 사용되며 공개 페이지에 자동 노출되지 않습니다.
         </p>
       ) : null}
+      {value === 'avenue' ? (
+        <p
+          style={{
+            color: 'var(--theme-elevation-600)',
+            fontSize: 12,
+            margin: '4px 0 0',
+          }}>
+          애비뉴센터 커리큘럼은 저장 후 애비뉴센터 공개 페이지에 자동 노출됩니다.
+        </p>
+      ) : null}
       {!canEditCenter ? (
         <p
           style={{

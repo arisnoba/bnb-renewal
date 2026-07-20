@@ -2,6 +2,7 @@ import type { CollectionBeforeValidateHook, CollectionConfig, Field, Validate } 
 
 import { allowAll, loggedInOnly } from "./access";
 import { normalizeUploadedMediaPrefixes } from "./mediaPrefixNormalization";
+import { sharedAdminContentWarning } from "./shared";
 import {
   createFinalizeIdSlugAfterCreate,
   createIdSlugBeforeValidate,
@@ -57,6 +58,7 @@ export const BroadcastStations: CollectionConfig = {
   },
   admin: {
     defaultColumns: ["stationName", "slug", "logoMedia", "updatedAt"],
+    description: sharedAdminContentWarning,
     group: "캐스팅/오디션",
     useAsTitle: "stationName",
   },
@@ -90,6 +92,7 @@ export const BroadcastStations: CollectionConfig = {
       validate: validateLogoMedia,
       admin: {
         className: "bnb-admin-required-field",
+        description: "400×400px 이상의 정사각형 이미지를 권장합니다.",
       },
     },
   ],

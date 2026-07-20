@@ -71,6 +71,9 @@ export const ExamSchoolLogos: CollectionConfig = {
       type: "upload",
       label: "로고 이미지",
       relationTo: "media",
+      admin: {
+        description: "400×400px 이상의 정사각형 이미지를 권장합니다.",
+      },
     },
     ...sidebarFields([centersField, authorNameField]),
   ],

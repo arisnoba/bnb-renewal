@@ -153,7 +153,7 @@
 | 등급제 교육관리시스템 (Mobile) | BNB_02교육_01등급제교육관리시스템 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:2143) | ❌ |
 | 교육진 소개 목록 | bnb_아트센터_02교육_03교육진 소개 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:120) | ❌ |
 | 교육진 소개 상세 | bnb_아트센터_02교육_03교육진 소개_상세 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:245) | ❌ |
-| 커리큘럼 (Desktop) | 04커리큘럼_1 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:2492) | ✅ `/art/curriculum`, `/highteen/curriculum`, `/kids/curriculum` |
+| 커리큘럼 (Desktop) | 04커리큘럼_1 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:2492) | ✅ `/art/curriculum`, `/avenue/curriculum`, `/highteen/curriculum`, `/kids/curriculum` |
 | 강의 검색 결과 | 배우앤배움_강의검색결과 | [바로가기](https://www.figma.com/design/uJrO9GmJsQkqnKO6XLNoW6/BNB-Renewal-sRgb--26.04.01~-?node-id=1:2652) | ❌ |
 
 ---

@@ -2,6 +2,7 @@ import type { CollectionConfig, Validate } from 'payload'
 
 import { allowAll, loggedInOnly } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
+import { sharedAdminContentWarning } from './shared'
 
 const requiredText =
   (message: string): Validate<unknown> =>
@@ -29,6 +30,7 @@ export const Classrooms: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['title', 'photos', 'updatedAt'],
+    description: sharedAdminContentWarning,
     group: '교육',
     useAsTitle: 'title',
   },

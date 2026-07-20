@@ -272,11 +272,6 @@ type CurriculumRevalidationDoc = TypeWithID & {
 
 function curriculumFrontendCenters(...values: unknown[]) {
   const centers = values.flatMap((value) => selectedFrontendCenters(value));
-
-  if (centers.includes("art")) {
-    centers.push("avenue");
-  }
-
   return Array.from(new Set(centers));
 }
 

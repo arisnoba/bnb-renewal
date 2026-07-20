@@ -2,6 +2,7 @@ import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
 
 import { authenticated } from '../access/authenticated'
 import { anyone } from '../access/anyone'
+import { sharedAdminContentWarning } from './shared'
 
 const normalizeHistory: CollectionBeforeValidateHook = ({ data }) => {
   if (!data) {
@@ -45,6 +46,7 @@ export const Histories: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['title', 'year', 'updatedAt'],
+    description: sharedAdminContentWarning,
     group: '회사정보',
     useAsTitle: 'title',
   },

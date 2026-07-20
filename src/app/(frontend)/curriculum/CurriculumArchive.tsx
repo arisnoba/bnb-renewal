@@ -42,7 +42,7 @@ type CurriculumCardItem = {
 }
 
 export type CurriculumPageCenter = Extract<CurriculumCenter, 'art' | 'avenue' | 'highteen'>
-export type CurriculumContentCenter = Extract<CurriculumCenter, 'art' | 'highteen'>
+export type CurriculumContentCenter = CurriculumPageCenter
 
 const curriculumCenters = new Set<CurriculumPageCenter>(['art', 'avenue', 'highteen'])
 
@@ -51,7 +51,7 @@ export function isCurriculumCenter(center: CenterSlug): center is CurriculumPage
 }
 
 export function curriculumContentCenter(center: CurriculumPageCenter): CurriculumContentCenter {
-  return center === 'avenue' ? 'art' : center
+  return center
 }
 
 export async function CurriculumArchive({ center, filters }: CurriculumArchiveProps) {
