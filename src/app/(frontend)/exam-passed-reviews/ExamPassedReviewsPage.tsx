@@ -213,6 +213,7 @@ function ExamPassedReviewCard({ item }: { item: ExamPassedReviewListItem }) {
         aria-label={`${studentName} 합격후기 보기`}
         className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         href={href}
+        prefetch={false}
       >
         <div className="section-exam-passed-review-card__media relative aspect-[67/62] overflow-hidden bg-neutral-100">
           {imageUrl ? (

@@ -12,7 +12,7 @@ import { ChevronRight } from 'lucide-react'
 import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import {
@@ -70,7 +70,11 @@ export async function ScreenAppearanceDetailPage({
     { label: '방영일', value: formatDate(appearance.airDateLabel) },
   ].filter((item) => item.value)
   const careerGroups = getCareerGroups(appearance)
-  const adjacent = await queryAdjacentScreenAppearances({ center, id: appearance.id })
+  const adjacent = await queryAdjacentScreenAppearances({
+    center,
+    id: appearance.id,
+    publishedAt: appearance.publishedAt,
+  })
   const backHref = `/${center}/screen-appearances`
   const backLabel = 'BNB 출연장면'
 
@@ -257,42 +261,29 @@ const queryScreenAppearanceBySlug = cache(
 )
 
 const queryAdjacentScreenAppearances = cache(
-  async ({ center, id }: { center: CenterSlug; id: number }) => {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-        collection: 'screen-appearances',
-        depth: 1,
-        limit: 1000,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          actorInputMode: true,
-          linkedProfiles: true,
-          performerName: true,
-          projectTitle: true,
-          slug: true,
-          title: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            {
-              centers: {
-                equals: center,
-              },
-            },
-          ],
-        },
-      })
+  async ({
+    center,
+    id,
+    publishedAt,
+  }: {
+    center: CenterSlug
+    id: number
+    publishedAt?: string | null
+  }) => {
+    if (!publishedAt) {
+      return {
+        nextHref: null,
+        nextLabel: '다음 출연장면',
+        previousHref: null,
+        previousLabel: '이전 출연장면',
+      }
+    }
 
-    const index = result.docs.findIndex((item) => item.id === id)
-    const previous = index >= 0 ? result.docs[index + 1] : undefined
-    const next = index > 0 ? result.docs[index - 1] : undefined
+    const payload = await getPayload({ config: configPromise })
+    const [previous, next] = await Promise.all([
+      queryAdjacentScreenAppearance({ center, direction: 'previous', id, payload, publishedAt }),
+      queryAdjacentScreenAppearance({ center, direction: 'next', id, payload, publishedAt }),
+    ])
     const pathPrefix = `/${center}/screen-appearances`
 
     return {
@@ -303,6 +294,59 @@ const queryAdjacentScreenAppearances = cache(
     }
   },
 )
+
+async function queryAdjacentScreenAppearance({
+  center,
+  direction,
+  id,
+  payload,
+  publishedAt,
+}: {
+  center: CenterSlug
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+}) {
+  const isNext = direction === 'next'
+  const operator = isNext ? 'greater_than' : 'less_than'
+  const where: Where = {
+    and: [
+      { displayStatus: { equals: 'published' } },
+      { centers: { equals: center } },
+      {
+        or: [
+          { publishedAt: { [operator]: publishedAt } },
+          {
+            and: [
+              { publishedAt: { equals: publishedAt } },
+              { id: { [operator]: id } },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  const result = await payload.find({
+    collection: 'screen-appearances',
+    depth: 1,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      actorInputMode: true,
+      linkedProfiles: true,
+      performerName: true,
+      projectTitle: true,
+      slug: true,
+      title: true,
+    },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where,
+  })
+
+  return result.docs[0]
+}
 
 function getPerformer(appearance: ScreenAppearance, center: CenterSlug): PerformerInfo {
   if (appearance.actorInputMode === 'manual') {

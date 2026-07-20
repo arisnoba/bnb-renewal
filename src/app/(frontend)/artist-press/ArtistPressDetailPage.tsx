@@ -7,9 +7,10 @@ import {
 } from '@/utilities/artistPressFallbacks'
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import {
@@ -36,7 +37,11 @@ export async function ArtistPressDetailPage({
   const description = artistPress.meta?.description?.trim() || undefined
   const body = hasArtistPressLexicalContent(artistPress.body) ? artistPress.body : undefined
   const eyebrow = [artistPress.actorName, artistPress.generation].filter(Boolean).join(' ')
-  const adjacent = await queryAdjacentArtistPress({ center, id: artistPress.id })
+  const adjacent = await queryAdjacentArtistPress({
+    center,
+    id: artistPress.id,
+    publishedAt: artistPress.publishedAt,
+  })
   const backHref = center ? `/${center}/artist-press` : '/artist-press'
   const backLabel = 'BNB출신 아티스트'
 
@@ -83,6 +88,22 @@ export async function generateArtistPressDetailMetadata(
 
 const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
+
+  if (!draft) {
+    return unstable_cache(
+      () => queryArtistPressDocument({ draft: false, slug }),
+      ['frontend-artist-press-detail', slug],
+      {
+        revalidate: 600,
+        tags: ['frontend_artist_press'],
+      },
+    )()
+  }
+
+  return queryArtistPressDocument({ draft: true, slug })
+})
+
+async function queryArtistPressDocument({ draft, slug }: { draft: boolean; slug: string }) {
   const payload = await getPayload({ config: configPromise })
   const result = await payload.find({
     collection: 'artist-press',
@@ -111,32 +132,97 @@ const queryArtistPressBySlug = cache(async ({ slug }: { slug: string }) => {
   })
 
   return (result.docs?.[0] as ArtistPress | undefined) || null
-})
+}
 
 const queryAdjacentArtistPress = cache(
-  async ({ center, id }: { center?: CenterSlug; id: number }) => {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-        collection: 'artist-press',
-        depth: 0,
-        limit: 1000,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          slug: true,
-        },
-        sort: '-publishedAt',
-        where: publishedArtistPressWhere(center),
-      })
+  async ({
+    center,
+    id,
+    publishedAt,
+  }: {
+    center?: CenterSlug
+    id: number
+    publishedAt?: string | null
+  }) => {
+    if (!publishedAt) {
+      return { nextHref: null, previousHref: null }
+    }
 
-    const index = result.docs.findIndex((item) => item.id === id)
-    const previous = index >= 0 ? result.docs[index + 1] : undefined
-    const next = index > 0 ? result.docs[index - 1] : undefined
+    return unstable_cache(
+      () => queryAdjacentArtistPressItems({ center, id, publishedAt }),
+      ['frontend-artist-press-adjacent', center ?? 'all', String(id), publishedAt],
+      {
+        revalidate: 600,
+        tags: ['frontend_artist_press'],
+      },
+    )()
+  },
+)
+
+async function queryAdjacentArtistPressItems({
+  center,
+  id,
+  publishedAt,
+}: {
+  center?: CenterSlug
+  id: number
+  publishedAt: string
+}) {
+    const payload = await getPayload({ config: configPromise })
+    const [previous, next] = await Promise.all([
+      queryAdjacentArtistPressItem({ center, direction: 'previous', id, payload, publishedAt }),
+      queryAdjacentArtistPressItem({ center, direction: 'next', id, payload, publishedAt }),
+    ])
     const pathPrefix = center ? `/${center}/artist-press` : '/artist-press'
 
     return {
       nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
       previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
     }
-  },
-)
+}
+
+async function queryAdjacentArtistPressItem({
+  center,
+  direction,
+  id,
+  payload,
+  publishedAt,
+}: {
+  center?: CenterSlug
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+}) {
+  const isNext = direction === 'next'
+  const dateOperator = isNext ? 'greater_than' : 'less_than'
+  const idOperator = isNext ? 'greater_than' : 'less_than'
+  const where: Where = {
+    and: [
+      publishedArtistPressWhere(center),
+      {
+        or: [
+          { publishedAt: { [dateOperator]: publishedAt } },
+          {
+            and: [
+              { publishedAt: { equals: publishedAt } },
+              { id: { [idOperator]: id } },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  const result = await payload.find({
+    collection: 'artist-press',
+    depth: 0,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: { slug: true },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where,
+  })
+
+  return result.docs[0]
+}

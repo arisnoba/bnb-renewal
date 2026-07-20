@@ -188,11 +188,13 @@ const normalizeSocialLinkData: CollectionBeforeValidateHook = ({ data, operation
 }
 
 const revalidateSocialLinkAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ['frontend_social_links'],
   reason: 'social link',
   suffixes: [''],
 })
 
 const revalidateSocialLinkAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ['frontend_social_links'],
   reason: 'social link',
   suffixes: [''],
 })

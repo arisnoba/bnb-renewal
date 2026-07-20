@@ -38,8 +38,14 @@ async function getSiteSettings() {
 
 async function getFrontendMaintenanceBypassUser() {
   try {
-    const payload = await getPayloadClient()
     const requestHeaders = await headers()
+    const cookieHeader = requestHeaders.get('cookie') ?? ''
+
+    if (!/(?:^|;\s*)payload-token=/.test(cookieHeader)) {
+      return null
+    }
+
+    const payload = await getPayloadClient()
     const { user } = await payload.auth({ headers: requestHeaders })
 
     return user && (isGlobalAdminUser(user) || userCenterValue(user)) ? user : null

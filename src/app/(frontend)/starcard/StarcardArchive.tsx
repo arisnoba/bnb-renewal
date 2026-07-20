@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { ChevronRight } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload, type Payload, type Where } from 'payload'
@@ -89,9 +90,18 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
 }
 
 async function queryStarcards(center: CenterSlug) {
-  const payload = await getPayload({ config: configPromise })
+  return unstable_cache(
+    async () => {
+      const payload = await getPayload({ config: configPromise })
 
-  return findStarcards({ center, payload })
+      return findStarcards({ center, payload })
+    },
+    ['frontend-star-cards', center],
+    {
+      revalidate: 600,
+      tags: [`frontend_star_cards_${center}`],
+    },
+  )()
 }
 
 export async function findStarcards({
@@ -130,6 +140,14 @@ export async function findStarcards({
     depth: 1,
     limit: 100,
     overrideAccess: false,
+    select: {
+      body: true,
+      bodyImages: true,
+      category: true,
+      discountRate: true,
+      mapUrl: true,
+      title: true,
+    },
     sort: 'displayOrder',
     where,
   })

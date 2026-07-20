@@ -8,7 +8,7 @@ import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import {
@@ -40,7 +40,11 @@ export async function CastingStatusDetailPage({
     { label: '캐스팅', value: casting.castingCompany },
   ].filter((item) => normalizeText(item.value))
   const castMembers = normalizeCastMembers(casting.castMembers)
-  const adjacent = await queryAdjacentCastingStatus({ center, id: casting.id })
+  const adjacent = await queryAdjacentCastingStatus({
+    center,
+    id: casting.id,
+    publishedAt: casting.publishedAt,
+  })
   const backHref = `/${center}/casting-status`
   const backLabel = '진행중인 캐스팅 출연현황'
 
@@ -201,34 +205,29 @@ const queryCastingStatusBySlug = cache(
 )
 
 const queryAdjacentCastingStatus = cache(
-  async ({ center, id }: { center: CenterSlug; id: number }) => {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-        collection: 'casting-appearances',
-        depth: 0,
-        limit: 1000,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          slug: true,
-          title: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            createCenterWhere(center),
-          ],
-        },
-      })
+  async ({
+    center,
+    id,
+    publishedAt,
+  }: {
+    center: CenterSlug
+    id: number
+    publishedAt?: string | null
+  }) => {
+    if (!publishedAt) {
+      return {
+        nextHref: null,
+        nextLabel: '다음 캐스팅',
+        previousHref: null,
+        previousLabel: '이전 캐스팅',
+      }
+    }
 
-    const index = result.docs.findIndex((item) => item.id === id)
-    const previous = index >= 0 ? result.docs[index + 1] : undefined
-    const next = index > 0 ? result.docs[index - 1] : undefined
+    const payload = await getPayload({ config: configPromise })
+    const [previous, next] = await Promise.all([
+      queryAdjacentCastingStatusItem({ center, direction: 'previous', id, payload, publishedAt }),
+      queryAdjacentCastingStatusItem({ center, direction: 'next', id, payload, publishedAt }),
+    ])
     const pathPrefix = `/${center}/casting-status`
 
     return {
@@ -239,6 +238,52 @@ const queryAdjacentCastingStatus = cache(
     }
   },
 )
+
+async function queryAdjacentCastingStatusItem({
+  center,
+  direction,
+  id,
+  payload,
+  publishedAt,
+}: {
+  center: CenterSlug
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+}) {
+  const isNext = direction === 'next'
+  const operator = isNext ? 'greater_than' : 'less_than'
+  const where: Where = {
+    and: [
+      { displayStatus: { equals: 'published' } },
+      createCenterWhere(center),
+      {
+        or: [
+          { publishedAt: { [operator]: publishedAt } },
+          {
+            and: [
+              { publishedAt: { equals: publishedAt } },
+              { id: { [operator]: id } },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  const result = await payload.find({
+    collection: 'casting-appearances',
+    depth: 0,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: { slug: true, title: true },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where,
+  })
+
+  return result.docs[0]
+}
 
 function EpisodeList({ episodeNumbers }: { episodeNumbers: string }) {
   const episodes = splitEpisodeNumbers(episodeNumbers)

@@ -10,7 +10,7 @@ import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import {
@@ -60,7 +60,11 @@ export async function TeacherDetailPage({
   const representativeWorks = ((teacher.representativeWorks ?? []) as TeacherRepresentativeWork[])
     .filter((work) => work.title || work.description || work.posterMedia || work.posterPath)
     .slice(0, 8)
-  const adjacent = await queryAdjacentTeachers({ center, slug: teacher.slug })
+  const adjacent = await queryAdjacentTeachers({
+    center,
+    displayOrder: teacher.displayOrder,
+    id: teacher.id,
+  })
   const backHref = `/${center}/teachers`
   const backLabel = '교육진 소개'
 
@@ -209,56 +213,88 @@ const queryTeacherBySlug = cache(async ({ center, slug }: { center: CenterSlug; 
   return teacher
 })
 
-const queryAdjacentTeachers = cache(async ({ center, slug }: { center: CenterSlug; slug: string }) => {
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-      collection: 'teachers',
-      depth: 0,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        name: true,
-        slug: true,
+const queryAdjacentTeachers = cache(
+  async ({
+    center,
+    displayOrder,
+    id,
+  }: {
+    center: CenterSlug
+    displayOrder?: number | null
+    id: number
+  }) => {
+    if (displayOrder == null) {
+      return {
+        nextHref: null,
+        nextLabel: '다음 강사',
+        previousHref: null,
+        previousLabel: '이전 강사',
+      }
+    }
+
+    const payload = await getPayload({ config: configPromise })
+    const [previous, next] = await Promise.all([
+      queryAdjacentTeacher({ center, direction: 'previous', displayOrder, id, payload }),
+      queryAdjacentTeacher({ center, direction: 'next', displayOrder, id, payload }),
+    ])
+    const pathPrefix = `/${center}/teachers`
+
+    return {
+      nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
+      nextLabel: next?.name ? `배우 ${next.name}` : '다음 강사',
+      previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
+      previousLabel: previous?.name ? `배우 ${previous.name}` : '이전 강사',
+    }
+  },
+)
+
+async function queryAdjacentTeacher({
+  center,
+  direction,
+  displayOrder,
+  id,
+  payload,
+}: {
+  center: CenterSlug
+  direction: 'next' | 'previous'
+  displayOrder: number
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+}) {
+  const isNext = direction === 'next'
+  const operator = isNext ? 'greater_than' : 'less_than'
+  const where: Where = {
+    and: [
+      { status: { equals: 'published' } },
+      {
+        or: [{ centers: { contains: center } }, { centers: { contains: 'all' } }],
       },
-      sort: 'displayOrder',
-      where: {
-        and: [
+      {
+        or: [
+          { displayOrder: { [operator]: displayOrder } },
           {
-            status: {
-              equals: 'published',
-            },
-          },
-          {
-            or: [
-              {
-                centers: {
-                  contains: center,
-                },
-              },
-              {
-                centers: {
-                  contains: 'all',
-                },
-              },
+            and: [
+              { displayOrder: { equals: displayOrder } },
+              { id: { [operator]: id } },
             ],
           },
         ],
       },
-    })
-
-  const index = result.docs.findIndex((item) => item.slug === slug)
-  const previous = index > 0 ? result.docs[index - 1] : undefined
-  const next = index >= 0 ? result.docs[index + 1] : undefined
-  const pathPrefix = `/${center}/teachers`
-
-  return {
-    nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
-    nextLabel: next?.name ? `배우 ${next.name}` : '다음 강사',
-    previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
-    previousLabel: previous?.name ? `배우 ${previous.name}` : '이전 강사',
+    ],
   }
-})
+  const result = await payload.find({
+    collection: 'teachers',
+    depth: 0,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: { name: true, slug: true },
+    sort: isNext ? ['displayOrder', 'id'] : ['-displayOrder', '-id'],
+    where,
+  })
+
+  return result.docs[0]
+}
 
 function teacherBelongsToCenter(teacher: Teacher, center: CenterSlug) {
   return teacher.centers.includes('all') || teacher.centers.includes(center)

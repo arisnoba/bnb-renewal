@@ -211,7 +211,7 @@ function NewsCard({
   const publishedAt = formatDate(news.publishedAt)
 
   return (
-    <Link className="section-news-card group" href={getNewsUrl(news, center)}>
+    <Link className="section-news-card group" href={getNewsUrl(news, center)} prefetch={false}>
       <article className="section-news-card__inner">
         <div className="section-news-card__media">
           {media ? (

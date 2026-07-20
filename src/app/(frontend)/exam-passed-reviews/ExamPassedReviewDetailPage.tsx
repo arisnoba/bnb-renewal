@@ -9,7 +9,7 @@ import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import { cache } from 'react'
 
 import {
@@ -38,7 +38,10 @@ export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
   const imageUrl = normalizeImageUrl(review.studentImagePath)
   const interviews = getInterviews(review)
   const body = hasLexicalContent(review.body) ? review.body : null
-  const adjacent = await queryAdjacentExamPassedReviews(review.id)
+  const adjacent = await queryAdjacentExamPassedReviews({
+    id: review.id,
+    publishedAt: review.publishedAt,
+  })
   const backLabel = '수강생 합격후기'
 
   return (
@@ -182,55 +185,84 @@ const queryExamPassedReviewBySlug = cache(async (slug: string) => {
   return (result.docs?.[0] as ExamPassedReviewDetail | undefined) || null
 })
 
-const queryAdjacentExamPassedReviews = cache(async (id: number) => {
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-      collection: 'exam-passed-reviews',
-      depth: 0,
-      limit: 1000,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        resultSummary: true,
-        slug: true,
-        studentName: true,
-        title: true,
-      },
-      sort: '-publishedAt',
-      where: {
-        and: [
-          {
-            displayStatus: {
-              equals: 'published',
-            },
-          },
-          {
-            or: [
-              {
-                centers: {
-                  contains: center,
-                },
-              },
-              {
-                centers: {
-                  contains: 'all',
-                },
-              },
-            ],
-          },
-        ],
-      },
-    })
+const queryAdjacentExamPassedReviews = cache(async ({
+  id,
+  publishedAt,
+}: {
+  id: number
+  publishedAt?: string | null
+}) => {
+  if (!publishedAt) {
+    return {
+      nextHref: null,
+      nextLabel: '다음 합격후기',
+      previousHref: null,
+      previousLabel: '이전 합격후기',
+    }
+  }
 
-  const index = result.docs.findIndex((item) => item.id === id)
-  const previous = index >= 0 ? result.docs[index + 1] : undefined
-  const next = index > 0 ? result.docs[index - 1] : undefined
+  const payload = await getPayload({ config: configPromise })
+  const [previous, next] = await Promise.all([
+    queryAdjacentExamPassedReview({ direction: 'previous', id, payload, publishedAt }),
+    queryAdjacentExamPassedReview({ direction: 'next', id, payload, publishedAt }),
+  ])
 
   return {
     nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
     previousHref: previous?.id ? `${pathPrefix}/${encodeURIComponent(String(previous.id))}` : null,
   }
 })
+
+async function queryAdjacentExamPassedReview({
+  direction,
+  id,
+  payload,
+  publishedAt,
+}: {
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+}) {
+  const isNext = direction === 'next'
+  const operator = isNext ? 'greater_than' : 'less_than'
+  const where: Where = {
+    and: [
+      { displayStatus: { equals: 'published' } },
+      {
+        or: [{ centers: { contains: center } }, { centers: { contains: 'all' } }],
+      },
+      {
+        or: [
+          { publishedAt: { [operator]: publishedAt } },
+          {
+            and: [
+              { publishedAt: { equals: publishedAt } },
+              { id: { [operator]: id } },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  const result = await payload.find({
+    collection: 'exam-passed-reviews',
+    depth: 0,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: {
+      resultSummary: true,
+      slug: true,
+      studentName: true,
+      title: true,
+    },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where,
+  })
+
+  return result.docs[0]
+}
 
 function getReviewTitle(review: Pick<ExamPassedReview, 'resultSummary' | 'studentName' | 'title'>) {
   return (

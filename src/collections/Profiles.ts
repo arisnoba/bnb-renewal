@@ -4,6 +4,10 @@ import { getDefaultProfileFilterValue, isKnownProfileFilterValue, isProfileFilte
 import { centerScopedCollectionAccess } from './access';
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization';
 import {
+	createCenterRevalidationAfterChange,
+	createCenterRevalidationAfterDelete,
+} from './revalidateFrontend';
+import {
 	adminRow,
 	adminTabs,
 	authorNameField,
@@ -27,6 +31,20 @@ type ProfileSlugDoc = {
 type ProfileSlugPayload = {
 	find: (args: { collection: 'profiles'; depth: number; limit: number; overrideAccess: boolean; pagination: false }) => Promise<{ docs: ProfileSlugDoc[] }>;
 };
+
+const revalidateProfileAfterChange = createCenterRevalidationAfterChange({
+	cacheTagPrefixes: ['frontend_profiles'],
+	cacheTags: ['frontend_profiles'],
+	reason: 'profile',
+	suffixes: ['', 'rookies', 'profiles'],
+});
+
+const revalidateProfileAfterDelete = createCenterRevalidationAfterDelete({
+	cacheTagPrefixes: ['frontend_profiles'],
+	cacheTags: ['frontend_profiles'],
+	reason: 'profile',
+	suffixes: ['', 'rookies', 'profiles'],
+});
 
 function profileFilterCenters({ data, originalDoc, siblingData }: ProfileFilterContext) {
 	return siblingData?.centers ?? data?.centers ?? originalDoc?.centers;
@@ -128,8 +146,10 @@ export const Profiles: CollectionConfig = {
 	defaultSort: '-publishedAt',
 	hooks: {
 		afterChange: [
+			revalidateProfileAfterChange,
 			normalizeUploadedMediaPrefixes([{ path: 'profileImageMedia', role: 'profiles.profile-image' }]),
 		],
+		afterDelete: [revalidateProfileAfterDelete],
 		beforeValidate: [centerScopedBeforeValidate],
 	},
 	fields: [

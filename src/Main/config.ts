@@ -7,7 +7,7 @@ import type {
   GlobalConfig,
   Validate,
 } from 'payload'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 import { centerOptions, type CenterValue, isGlobalAdminUser, userCenterValue } from '@/collections/shared'
 
@@ -130,6 +130,8 @@ export const revalidateMainCenterPaths: GlobalAfterChangeHook = ({ doc, req }) =
   if (req.context.disableRevalidate) {
     return doc
   }
+
+  revalidateTag('global_main', 'max')
 
   for (const path of mainCenterPaths()) {
     req.payload.logger.info(`Revalidating main path ${path}`)

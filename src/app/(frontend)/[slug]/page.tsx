@@ -1,15 +1,14 @@
 import type { Metadata } from 'next'
 
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
-import React, { cache } from 'react'
+import React from 'react'
 
 import { MainBannerSection } from '@/Main/BannerSection'
 import { CenterHomeSections } from '@/Main/CenterHomeSections'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type { Main, MainStatistic } from '@/payload-types'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { getCachedGlobal } from '@/utilities/getGlobals'
 
 export const revalidate = 600
 
@@ -106,28 +105,21 @@ export default async function Page({ params: paramsPromise }: Args) {
   )
 }
 
-const queryMainGlobal = cache(async () => {
-  try {
-    const payload = await getPayload({ config: configPromise })
+const cachedMainGlobal = getCachedGlobal('main', 3)
+const cachedMainStatisticsGlobal = getCachedGlobal('main-statistics', 1)
 
-    return (await payload.findGlobal({
-      slug: 'main',
-      depth: 3,
-    })) as Main
+async function queryMainGlobal() {
+  try {
+    return (await cachedMainGlobal()) as Main
   } catch {
     return null
   }
-})
+}
 
-const queryMainStatisticsGlobal = cache(async () => {
+async function queryMainStatisticsGlobal() {
   try {
-    const payload = await getPayload({ config: configPromise })
-
-    return (await payload.findGlobal({
-      slug: 'main-statistics',
-      depth: 1,
-    })) as MainStatistic
+    return (await cachedMainStatisticsGlobal()) as MainStatistic
   } catch {
     return null
   }
-})
+}

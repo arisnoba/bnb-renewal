@@ -188,6 +188,7 @@ function ArtistPressCard({
     <Link
       className="section-artist-press-card"
       href={getArtistPressUrl(artistPress, center)}
+      prefetch={false}
     >
       <article className="section-artist-press-card__inner">
         <div className="section-artist-press-card__media">

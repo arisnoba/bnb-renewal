@@ -125,11 +125,13 @@ const normalizeTeacherSlugBeforeChange: CollectionBeforeChangeHook = (args) =>
   normalizeTeacherSlugData(args);
 
 const revalidateTeacherAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ["frontend_teachers"],
   reason: "teacher",
   suffixes: ["", "teachers"],
 });
 
 const revalidateTeacherAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ["frontend_teachers"],
   reason: "teacher",
   suffixes: ["", "teachers"],
 });

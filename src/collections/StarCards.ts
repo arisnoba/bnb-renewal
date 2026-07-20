@@ -3,6 +3,10 @@ import type { CollectionConfig, SelectField, Validate } from 'payload'
 import { centerScopedPublishedCollectionAccess } from './access'
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization'
 import {
+  createCenterRevalidationAfterChange,
+  createCenterRevalidationAfterDelete,
+} from './revalidateFrontend'
+import {
   adminRow,
   adminTabs,
   authorNameField,
@@ -57,6 +61,16 @@ const validateStarCardCategory: Validate<unknown> = (value) => {
 
 const setStarCardSlug = createIdSlugBeforeValidate()
 const finalizeStarCardSlugAfterCreate = createFinalizeIdSlugAfterCreate('star-cards')
+const revalidateStarCardAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ['frontend_star_cards'],
+  reason: 'star card',
+  suffixes: ['starcard'],
+})
+const revalidateStarCardAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ['frontend_star_cards'],
+  reason: 'star card',
+  suffixes: ['starcard'],
+})
 
 export const StarCards: CollectionConfig = {
   slug: 'star-cards',
@@ -81,10 +95,12 @@ export const StarCards: CollectionConfig = {
   hooks: {
     afterChange: [
       finalizeStarCardSlugAfterCreate,
+      revalidateStarCardAfterChange,
       normalizeUploadedMediaPrefixes([
         { path: 'bodyImages.*.imageMedia', role: 'star-cards.image' },
       ]),
     ],
+    afterDelete: [revalidateStarCardAfterDelete],
     beforeValidate: [centerScopedBeforeValidate, setStarCardSlug],
   },
   fields: [

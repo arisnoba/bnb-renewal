@@ -256,6 +256,7 @@ function DirectCastingCard({
       aria-label={`${casting.title} 엔딩크레딧 보기`}
       className="group section-direct-casting-card relative block overflow-hidden rounded-xl bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       href={href}
+      prefetch={false}
     >
       <div className="section-direct-casting-card__media relative aspect-[265/380] overflow-hidden">
         {media ? (

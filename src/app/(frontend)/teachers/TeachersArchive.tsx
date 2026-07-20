@@ -3,6 +3,7 @@ import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { getPayload, type Payload, type Where } from 'payload'
 import React from 'react'
 
@@ -39,7 +40,6 @@ export async function findTeachers({
 }
 
 export async function TeachersArchive({ center }: TeachersArchiveProps) {
-  const payload = await getPayload({ config: configPromise })
   const decoIcons = getPageDecoIcons(3, `teachers-${center}`)
   const where: Where = {
     and: [
@@ -65,7 +65,18 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
     ],
   }
 
-  const teachers = await findTeachers({ payload, where })
+  const teachers = await unstable_cache(
+    async () => {
+      const payload = await getPayload({ config: configPromise })
+
+      return findTeachers({ payload, where })
+    },
+    ['frontend-teachers', center],
+    {
+      revalidate: 600,
+      tags: [`frontend_teachers_${center}`],
+    },
+  )()
 
   return (
     <main className="page page-dark page-teachers-archive" data-center={center}>

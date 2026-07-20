@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -85,7 +86,6 @@ export async function RookiesArchive({
   page = 1,
   search,
 }: RookiesArchiveProps) {
-  const payload = await getPayload({ config: configPromise })
   const currentPage = Math.max(1, page)
   const rookieFilters = getRookieFilters(center)
   const filter = normalizeRookieFilter(activeFilter, rookieFilters)
@@ -142,7 +142,18 @@ export async function RookiesArchive({
     ],
   }
 
-  const rookies = await findRookies({ page: currentPage, payload, where })
+  const rookies = await unstable_cache(
+    async () => {
+      const payload = await getPayload({ config: configPromise })
+
+      return findRookies({ page: currentPage, payload, where })
+    },
+    ['frontend-rookies', center, filter ?? 'all', searchQuery ?? '', String(currentPage)],
+    {
+      revalidate: 600,
+      tags: [`frontend_profiles_${center}`],
+    },
+  )()
 
   const totalPages = Math.max(rookies.totalPages || 1, 1)
   const heroImage = getArtistHeroImage(center)
@@ -269,7 +280,11 @@ function RookieCard({
   const legacyImagePath = publishedImageSrc(profile.profileImagePath) || undefined
 
   return (
-    <Link className="section-rookies-card" href={`/${center}/profiles/${encodeURIComponent(profile.slug)}`}>
+    <Link
+      className="section-rookies-card"
+      href={`/${center}/profiles/${encodeURIComponent(profile.slug)}`}
+      prefetch={false}
+    >
       <article className="section-rookies-card__inner">
         <div className="section-rookies-card__media">
           {hasMediaImage ? (

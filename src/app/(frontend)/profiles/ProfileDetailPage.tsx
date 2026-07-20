@@ -5,9 +5,10 @@ import type { Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import React, { cache } from 'react'
 
 import {
@@ -57,7 +58,11 @@ export async function ProfileDetailPage({
   ].filter((item): item is ProfileImageItem => Boolean(item))
   const backHref = center ? `/${center}/rookies` : '/profiles'
   const backLabel = center ? 'BNB 루키' : '프로필'
-  const adjacent = await queryAdjacentProfiles({ center, slug: profile.slug })
+  const adjacent = await queryAdjacentProfiles({
+    center,
+    id: profile.id,
+    publishedAt: profile.publishedAt,
+  })
 
   return (
     <DetailPage center={center}>
@@ -171,6 +176,26 @@ export async function profileCanonicalPath(slug: string) {
 
 const queryProfileBySlug = cache(async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
   const { isEnabled: draft } = await draftMode()
+
+  const profile = draft
+    ? await queryProfileDocument({ draft: true, slug })
+    : await unstable_cache(
+        () => queryProfileDocument({ draft: false, slug }),
+        ['frontend-profile-detail', slug],
+        {
+          revalidate: 600,
+          tags: ['frontend_profiles'],
+        },
+      )()
+
+  if (!profile || (center && !profileBelongsToCenter(profile, center))) {
+    return null
+  }
+
+  return profile
+})
+
+async function queryProfileDocument({ draft, slug }: { draft: boolean; slug: string }) {
   const payload = await getPayload({ config: configPromise })
   const result = await payload.find({
     collection: 'profiles',
@@ -198,68 +223,118 @@ const queryProfileBySlug = cache(async ({ center, slug }: { center?: CenterSlug;
     },
   })
 
-  const profile = (result.docs?.[0] as Profile | undefined) || null
-
-  if (!profile || (center && !profileBelongsToCenter(profile, center))) {
-    return null
-  }
-
-  return profile
-})
+  return (result.docs?.[0] as Profile | undefined) || null
+}
 
 const queryAdjacentProfiles = cache(
-  async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-        collection: 'profiles',
-        depth: 0,
-        limit: 1000,
-        overrideAccess: false,
-        pagination: false,
-        select: {
-          slug: true,
-        },
-        sort: '-publishedAt',
-        where: {
-          and: [
-            {
-              displayStatus: {
-                equals: 'published',
-              },
-            },
-            ...(center
-              ? [
-                  {
-                    or: [
-                      {
-                        centers: {
-                          contains: center,
-                        },
-                      },
-                      {
-                        centers: {
-                          contains: 'all',
-                        },
-                      },
-                    ],
-                  },
-                ]
-              : []),
-          ],
-        },
-      })
+  async ({
+    center,
+    id,
+    publishedAt,
+  }: {
+    center?: CenterSlug
+    id: number
+    publishedAt?: string | null
+  }) => {
+    if (!publishedAt) {
+      return { nextHref: null, previousHref: null }
+    }
 
-    const index = result.docs.findIndex((item) => item.slug === slug)
-    const previous = index >= 0 ? result.docs[index + 1] : undefined
-    const next = index > 0 ? result.docs[index - 1] : undefined
+    return unstable_cache(
+      () => queryAdjacentProfileItems({ center, id, publishedAt }),
+      ['frontend-profile-adjacent', center ?? 'all', String(id), publishedAt],
+      {
+        revalidate: 600,
+        tags: ['frontend_profiles'],
+      },
+    )()
+  },
+)
+
+async function queryAdjacentProfileItems({
+  center,
+  id,
+  publishedAt,
+}: {
+  center?: CenterSlug
+  id: number
+  publishedAt: string
+}) {
+    const payload = await getPayload({ config: configPromise })
+    const [previous, next] = await Promise.all([
+      queryAdjacentProfileItem({ center, direction: 'previous', id, payload, publishedAt }),
+      queryAdjacentProfileItem({ center, direction: 'next', id, payload, publishedAt }),
+    ])
     const pathPrefix = center ? `/${center}/profiles` : '/profiles'
 
     return {
       nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,
       previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
     }
-  },
-)
+}
+
+function publishedProfilesWhere(center?: CenterSlug): Where {
+  return {
+    and: [
+      { displayStatus: { equals: 'published' } },
+      ...(center
+        ? [
+            {
+              or: [
+                { centers: { contains: center } },
+                { centers: { contains: 'all' } },
+              ],
+            },
+          ]
+        : []),
+    ],
+  }
+}
+
+async function queryAdjacentProfileItem({
+  center,
+  direction,
+  id,
+  payload,
+  publishedAt,
+}: {
+  center?: CenterSlug
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+}) {
+  const isNext = direction === 'next'
+  const dateOperator = isNext ? 'greater_than' : 'less_than'
+  const idOperator = isNext ? 'greater_than' : 'less_than'
+  const result = await payload.find({
+    collection: 'profiles',
+    depth: 0,
+    limit: 1,
+    overrideAccess: false,
+    pagination: false,
+    select: { slug: true },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where: {
+      and: [
+        publishedProfilesWhere(center),
+        {
+          or: [
+            { publishedAt: { [dateOperator]: publishedAt } },
+            {
+              and: [
+                { publishedAt: { equals: publishedAt } },
+                { id: { [idOperator]: id } },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  })
+
+  return result.docs[0]
+}
 
 function profileBelongsToCenter(profile: Profile, center: CenterSlug) {
   return profile.centers.includes('all') || profile.centers.includes(center)

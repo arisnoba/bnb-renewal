@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- Home cards use mixed Payload/R2/local URLs already normalized by getMediaUrl. */
 import configPromise from '@payload-config'
 import { ChevronRight, GraduationCap, Info } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { cache, type ReactNode } from 'react'
 import { getPayload, type Where } from 'payload'
@@ -291,6 +292,7 @@ function CourseSearchSection({
             <Link
               className="inline-flex items-center gap-2 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
               href={gradeSystemHref}
+              prefetch={false}
             >
               등급기준
               <Info aria-hidden="true" className="size-4" strokeWidth={2} />
@@ -475,6 +477,7 @@ function ArtistPressHomeSection({
           <Link
             className="section-center-home-artist-press__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
             href={`/${center}/artist-press`}
+            prefetch={false}
           >
             <span className="type-title-s font-extrabold leading-normal">BNB ARTIST</span>
             <span className="inline-flex items-center gap-2 type-label-s font-bold leading-[1.2]">
@@ -513,6 +516,7 @@ function ExamPassedReviewsHomeSection({ reviews }: { reviews: HomeExamPassedRevi
           <Link
             className="section-center-home-exam-reviews__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
             href="/exam/passed-reviews"
+            prefetch={false}
           >
             <span className="type-title-s font-extrabold leading-normal">
               수강생
@@ -543,6 +547,7 @@ function ArtistPressFeaturedCard({
     <Link
       className="group section-center-home-artist-press-featured col-span-2 row-span-2 overflow-hidden bg-white text-neutral-950 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
       href={artistPress ? getArtistPressUrl(artistPress, center) : `/${center}/artist-press`}
+      prefetch={false}
     >
       {imageUrl ? (
         <img
@@ -590,6 +595,7 @@ function ArtistPressMiniCard({
     <Link
       className="group section-center-home-artist-press-mini relative aspect-square overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:aspect-auto md:min-h-[184px]"
       href={getArtistPressUrl(artistPress, center)}
+      prefetch={false}
     >
       {imageUrl ? (
         <img
@@ -631,6 +637,7 @@ function ExamPassedReviewFeaturedCard({ review }: { review?: HomeExamPassedRevie
       aria-label={`${studentName} 합격 후기 보기`}
       className="group section-center-home-exam-review-featured col-span-2 row-span-2 overflow-hidden bg-white text-neutral-950 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
       href={href}
+      prefetch={false}
     >
       <div className="relative aspect-4/3 overflow-hidden bg-neutral-900">
         {imageUrl ? (
@@ -670,6 +677,7 @@ function ExamPassedReviewMiniCard({ review }: { review: HomeExamPassedReview }) 
       aria-label={`${studentName} 합격 후기 보기`}
       className="group section-center-home-exam-review-mini relative aspect-square overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:aspect-auto md:min-h-[184px]"
       href={examPassedReviewHref(review)}
+      prefetch={false}
     >
       {imageUrl ? (
         <img
@@ -744,6 +752,7 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
                 className="section-center-home-news-item grid gap-6 border-b border-white/15 py-7 text-white transition hover:text-brand md:grid-cols-[180px_1fr_96px] md:items-center"
                 href={getNewsUrl(item, center)}
                 key={item.id}
+                prefetch={false}
               >
                 <span>
                   <span className="block type-title-s font-bold leading-[1.2] text-brand">
@@ -930,6 +939,7 @@ function HomeCtaCard({
     <Link
       className="group section-center-home-cta-card relative flex h-[270px] items-center justify-center overflow-hidden px-5 text-center outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-inset lg:min-h-[540px]"
       href={href}
+      prefetch={false}
     >
       {media ??
         (image ? (
@@ -1040,6 +1050,7 @@ function ButtonLink({
     <Link
       className={`inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-3 type-label-l font-semibold leading-[1.2] text-white transition hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${className}`}
       href={href}
+      prefetch={false}
     >
       {children}
       <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
@@ -1232,7 +1243,27 @@ function formatDate(value: string | null | undefined) {
   return `${year}.${month}.${day}`
 }
 
-const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHomeData> => {
+const queryCenterHomeData = cache((center: CenterSlug): Promise<CenterHomeData> => {
+  return unstable_cache(
+    () => queryCenterHomeDataUncached(center),
+    ['frontend-center-home', center],
+    {
+      revalidate: 600,
+      tags: [
+        `frontend_artist_press_${center}`,
+        `frontend_curriculums_${center}`,
+        `frontend_news_${center}`,
+        `frontend_screen_appearances_${center}`,
+        `frontend_social_links_${center}`,
+        'frontend_exam_passed_reviews',
+        'frontend_exam_passed_videos',
+        'global_footer',
+      ],
+    },
+  )()
+})
+
+async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHomeData> {
   const payload = await getPayload({ config: configPromise })
   const shouldQueryCurriculums = hasSearchableHomeCurriculum(center)
   const [
@@ -1411,7 +1442,7 @@ const queryCenterHomeData = cache(async (center: CenterSlug): Promise<CenterHome
     socialAccounts: centerSocialAccounts(footer as Footer, center),
     socialLinks: socialLinks.docs as HomeSocialLink[],
   }
-})
+}
 
 function centerArrayWhere(center: CenterSlug): Where {
   return {

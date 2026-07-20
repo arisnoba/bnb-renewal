@@ -44,6 +44,7 @@ export async function DirectCastingDetailPage({
     center,
     company: primaryCompany,
     id: casting.id,
+    publishedAt: casting.publishedAt,
   })
 
   return (
@@ -146,13 +147,24 @@ const queryAdjacentDirectCastings = cache(
     center,
     company,
     id,
+    publishedAt,
   }: {
     center: CenterSlug
     company?: ReturnType<typeof directCastingCompanyValues>[number]
     id: number
+    publishedAt?: string | null
   }) => {
+    if (!publishedAt) {
+      return {
+        nextHref: null,
+        nextLabel: '다음 다이렉트 캐스팅',
+        previousHref: null,
+        previousLabel: '이전 다이렉트 캐스팅',
+      }
+    }
+
     const payload = await getPayload({ config: configPromise })
-    const where: Where = {
+    const publishedWhere: Where = {
       and: [
         {
           displayStatus: {
@@ -175,23 +187,22 @@ const queryAdjacentDirectCastings = cache(
           : []),
       ],
     }
-    const result = await payload.find({
-        collection: 'direct-castings',
-        depth: 0,
-        limit: 1000,
-        overrideAccess: true,
-        pagination: false,
-        select: {
-          slug: true,
-          title: true,
-        },
-        sort: '-publishedAt',
-        where,
-      })
-
-    const index = result.docs.findIndex((item) => item.id === id)
-    const previous = index >= 0 ? result.docs[index + 1] : undefined
-    const next = index > 0 ? result.docs[index - 1] : undefined
+    const [previous, next] = await Promise.all([
+      queryAdjacentDirectCasting({
+        direction: 'previous',
+        id,
+        payload,
+        publishedAt,
+        publishedWhere,
+      }),
+      queryAdjacentDirectCasting({
+        direction: 'next',
+        id,
+        payload,
+        publishedAt,
+        publishedWhere,
+      }),
+    ])
     const pathPrefix = `/${center}/direct-castings`
 
     return {
@@ -202,6 +213,50 @@ const queryAdjacentDirectCastings = cache(
     }
   },
 )
+
+async function queryAdjacentDirectCasting({
+  direction,
+  id,
+  payload,
+  publishedAt,
+  publishedWhere,
+}: {
+  direction: 'next' | 'previous'
+  id: number
+  payload: Awaited<ReturnType<typeof getPayload>>
+  publishedAt: string
+  publishedWhere: Where
+}) {
+  const isNext = direction === 'next'
+  const operator = isNext ? 'greater_than' : 'less_than'
+  const result = await payload.find({
+    collection: 'direct-castings',
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+    pagination: false,
+    select: { slug: true, title: true },
+    sort: isNext ? ['publishedAt', 'id'] : ['-publishedAt', '-id'],
+    where: {
+      and: [
+        publishedWhere,
+        {
+          or: [
+            { publishedAt: { [operator]: publishedAt } },
+            {
+              and: [
+                { publishedAt: { equals: publishedAt } },
+                { id: { [operator]: id } },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  })
+
+  return result.docs[0]
+}
 
 function directCastingBackHref({
   center,

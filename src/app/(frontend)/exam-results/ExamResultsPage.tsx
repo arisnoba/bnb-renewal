@@ -273,6 +273,7 @@ function ExamResultCard({
       aria-label={`${displayTitle} 상세 보기`}
       className="group block rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
       href={href}
+      prefetch={false}
     >
       <article className="section-exam-result-card overflow-hidden rounded-xl border border-neutral-300 bg-white">
         <div className="section-exam-result-card__media relative aspect-270/268 overflow-hidden bg-neutral-100">

@@ -70,6 +70,7 @@ function TeacherCard({
     <Link
       className="section-teachers-card group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
       href={`/${center}/teachers/${encodeURIComponent(teacher.slug)}`}
+      prefetch={false}
     >
       <article className="section-teachers-card__inner relative aspect-square overflow-hidden bg-transparent">
         <div

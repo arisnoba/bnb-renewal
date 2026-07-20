@@ -256,11 +256,13 @@ const curriculumBeforeValidate: CollectionBeforeValidateHook = ({ data, original
 };
 
 const revalidateCurriculumAfterChange = createCenterRevalidationAfterChange({
+  cacheTagPrefixes: ['frontend_curriculums'],
   reason: "curriculum",
   suffixes: ["", "curriculum"],
 });
 
 const revalidateCurriculumAfterDelete = createCenterRevalidationAfterDelete({
+  cacheTagPrefixes: ['frontend_curriculums'],
   reason: "curriculum",
   suffixes: ["", "curriculum"],
 });
