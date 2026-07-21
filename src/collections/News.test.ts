@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { News, canViewNewsAPITab, setNewsSlugBeforeValidate } from './News'
+import { setNewsSlugBeforeValidate } from './News'
 
 async function runNewsSlugHook({
   data,
@@ -37,22 +37,6 @@ test('news beforeValidate hook uses pending create slugs without querying existi
   })
 
   assert.match(String(data.slug), /^pending-[0-9a-f-]{36}$/)
-})
-
-test('news API admin tab is visible only to master-level admins', () => {
-  const condition = News.admin?.components?.views?.edit?.api?.tab?.condition
-
-  assert.equal(condition, canViewNewsAPITab)
-  assert.equal(canViewNewsAPITab({ req: { user: { role: 'master' } } }), true)
-  assert.equal(
-    canViewNewsAPITab({ req: { user: { permissionLevel: 100, role: 'manager' } } }),
-    true,
-  )
-  assert.equal(canViewNewsAPITab({ req: { user: { role: 'admin' } } }), false)
-  assert.equal(
-    canViewNewsAPITab({ req: { user: { permissionLevel: 80, role: 'manager' } } }),
-    false,
-  )
 })
 
 test('news beforeValidate hook ignores manually supplied create slugs', async () => {

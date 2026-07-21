@@ -33,6 +33,10 @@ import { StarCards } from './src/collections/StarCards'
 import { Teachers } from './src/collections/Teachers'
 import { Terms } from './src/collections/Terms'
 import { Users } from './src/collections/Users'
+import {
+  applyGlobalMasterAdminAPITab,
+  applyMasterAdminAPITab,
+} from './src/collections/adminAPITab'
 import { applyAdminCenterListFilter } from './src/collections/adminCenterListFilter'
 import { applyFriendlyAdminErrorMessages } from './src/collections/adminErrorMessages'
 import { applyAdminListSelectOptimization } from './src/collections/adminListSelectOptimization'
@@ -115,40 +119,42 @@ export default buildConfig({
       },
     },
   },
-  collections: applyReliableBulkEndpoints(
-    applyAdminCenterListFilter(
-      applyAdminListSelectOptimization(
-        applyAdminTimestampFields(
-          applyAdminSaveLoadingOverlay([
-            MainBanners,
-            SocialLinks,
-            Histories,
-            Terms,
-            Teachers,
-            Curriculums,
-            Classrooms,
-            HighteenSpecialClasses,
-            Agencies,
-            AuditionSchedules,
-            CastingDirectors,
-            DirectCastings,
-            CastingAppearances,
-            ScreenAppearances,
-            BroadcastStations,
-            Profiles,
-            ArtistPress,
-            ArtistPressAgencies,
-            ExamPassedReviews,
-            ExamPassedVideos,
-            ExamResults,
-            ExamSchoolLogos,
-            News,
-            Faqs,
-            StarCards,
-            Inquiries,
-            Users,
-            Media,
-          ]),
+  collections: applyMasterAdminAPITab(
+    applyReliableBulkEndpoints(
+      applyAdminCenterListFilter(
+        applyAdminListSelectOptimization(
+          applyAdminTimestampFields(
+            applyAdminSaveLoadingOverlay([
+              MainBanners,
+              SocialLinks,
+              Histories,
+              Terms,
+              Teachers,
+              Curriculums,
+              Classrooms,
+              HighteenSpecialClasses,
+              Agencies,
+              AuditionSchedules,
+              CastingDirectors,
+              DirectCastings,
+              CastingAppearances,
+              ScreenAppearances,
+              BroadcastStations,
+              Profiles,
+              ArtistPress,
+              ArtistPressAgencies,
+              ExamPassedReviews,
+              ExamPassedVideos,
+              ExamResults,
+              ExamSchoolLogos,
+              News,
+              Faqs,
+              StarCards,
+              Inquiries,
+              Users,
+              Media,
+            ]),
+          ),
         ),
       ),
     ),
@@ -169,7 +175,9 @@ export default buildConfig({
   hooks: {
     afterError: [applyFriendlyAdminErrorMessages],
   },
-  globals: applyGlobalAdminSaveLoadingOverlay([Main, MainStatistics, Footer, SiteSettings]),
+  globals: applyGlobalMasterAdminAPITab(
+    applyGlobalAdminSaveLoadingOverlay([Main, MainStatistics, Footer, SiteSettings]),
+  ),
   maxDepth: 3,
   plugins,
   routes: {
