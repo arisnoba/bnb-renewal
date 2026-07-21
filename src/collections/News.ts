@@ -45,7 +45,6 @@ import {
   centerScopedBeforeValidate,
   centersField,
   displayStatusOptions,
-  isMasterAdminUser,
   publishedAtField,
   publishingStatusSelectAdmin,
   sidebarFields,
@@ -282,10 +281,6 @@ function isUnchangedNewsBulkUpdateValue({
   return isNewsBulkUpdateRequest({ operation, req }) && valuesEqual(value, previousValue);
 }
 
-export function canViewNewsAPITab({ req }: { req?: { user?: unknown } }) {
-  return isMasterAdminUser(req?.user);
-}
-
 const filterNewsCategoryOptions: NonNullable<SelectField["filterOptions"]> = ({
   data,
   options,
@@ -336,17 +331,6 @@ export const News: CollectionConfig = {
       "publishedAt",
       "updatedAt",
     ],
-    components: {
-      views: {
-        edit: {
-          api: {
-            tab: {
-              condition: canViewNewsAPITab,
-            },
-          },
-        },
-      },
-    },
     enableListViewSelectAPI: true,
     group: "운영/소식",
     useAsTitle: "title",
