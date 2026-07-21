@@ -8,6 +8,7 @@ import {
   centerFromHostname,
   primaryHostname,
 } from '@/lib/centerDomains'
+import { legacyCenterRoute } from '@/lib/legacyCenterRoutes'
 
 const validCenterFilterValues = new Set(['all', 'art', 'avenue', 'exam', 'highteen', 'kids'])
 const singleCentersAdminListPaths = new Set([
@@ -107,6 +108,12 @@ export function proxy(request: NextRequest) {
 
   if (normalizedURL) {
     return NextResponse.redirect(normalizedURL)
+  }
+
+  const legacyRoute = legacyCenterRoute(requestURL)
+
+  if (legacyRoute) {
+    return NextResponse.redirect(legacyRoute.url, 308)
   }
 
   const domainRoute = centerDomainRoute(requestURL)

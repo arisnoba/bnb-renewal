@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { NextRequest } from 'next/server'
 
-import { canonicalAdminURL, normalizeAdminListURL, routingURL } from './proxy'
+import { canonicalAdminURL, normalizeAdminListURL, proxy, routingURL } from './proxy'
 
 test('routing URL restores the public host and protocol from proxy headers', () => {
   const request = {
@@ -14,6 +15,26 @@ test('routing URL restores the public host and protocol from proxy headers', () 
   }
 
   assert.equal(routingURL(request).href, 'https://exam.baewooenm.com/teachers?page=2')
+})
+
+test('proxy redirects legacy PHP routes before center-domain rewrites', () => {
+  const request = new NextRequest(
+    'http://localhost:3000/web/bbs/content.php?co_id=parents',
+    {
+      headers: {
+        host: 'localhost:3000',
+        'x-forwarded-host': 'baewoo.co.kr',
+        'x-forwarded-proto': 'https',
+      },
+    },
+  )
+  const response = proxy(request)
+
+  assert.equal(response.status, 308)
+  assert.equal(
+    response.headers.get('location'),
+    'https://art.baewooenm.com/company#company-affiliates',
+  )
 })
 
 test('center-domain admin routes redirect to the canonical www host', () => {
