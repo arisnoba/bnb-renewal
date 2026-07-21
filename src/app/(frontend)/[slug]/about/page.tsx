@@ -7,6 +7,7 @@ import { ChevronRight } from 'lucide-react'
 import { getAboutHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { centers, type CenterSlug } from '@/lib/centers'
+import { centerOrigin } from '@/lib/centerDomains'
 
 type Args = {
   params: Promise<{
@@ -54,7 +55,7 @@ const centerIntroductions: CenterIntro[] = [
     imageSrc: '/assets/center-about/art-kim-minsik.png',
     imageAlt: '아트센터 센터장 김민식',
     caption: '센터장 김민식',
-    href: '/art',
+    href: centerOrigin('art'),
     linkLabel: 'Art Center',
   },
   {
@@ -69,7 +70,7 @@ const centerIntroductions: CenterIntro[] = [
     imageSrc: '/assets/center-about/exam-kim-byeonghyeon.png',
     imageAlt: '입시센터 센터장 김병현',
     caption: '센터장 김병현',
-    href: '/exam',
+    href: centerOrigin('exam'),
     linkLabel: 'Exam Center',
   },
   {
@@ -85,7 +86,7 @@ const centerIntroductions: CenterIntro[] = [
     imageSrc: '/assets/center-about/highteen-kim-yeseul.png',
     imageAlt: '하이틴센터 센터장 김예슬',
     caption: '센터장 김예슬',
-    href: '/highteen',
+    href: centerOrigin('highteen'),
     linkLabel: 'High-teen Center',
   },
   {
@@ -102,7 +103,7 @@ const centerIntroductions: CenterIntro[] = [
     imageSrc: '/assets/center-about/kids-lee-eonju.png',
     imageAlt: '키즈센터 센터장 이언주',
     caption: '센터장 이언주',
-    href: '/kids',
+    href: centerOrigin('kids'),
     linkLabel: 'Kids Center',
   },
   {
@@ -118,7 +119,7 @@ const centerIntroductions: CenterIntro[] = [
     imageSrc: '/assets/center-about/avenue-yoo-hana.png',
     imageAlt: '에비뉴센터 센터장 유하나',
     caption: '센터장 유하나',
-    href: '/avenue',
+    href: centerOrigin('avenue'),
     linkLabel: 'AVENUE CENTER',
   },
 ]

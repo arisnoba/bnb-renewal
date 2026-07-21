@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { FamilySiteLink } from '@/Footer/familySites'
 
 import { Logo } from '@/components/Logo/Logo'
+import { centerOrigin } from '@/lib/centerDomains'
 import { centerLogoFor } from '@/lib/centerLogos'
 import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 import { HeaderNav } from './Nav'
@@ -72,7 +73,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ familySites }) => {
       data-scrolled={isScrolled ? 'true' : undefined}
     >
       <div className="container-fluid site-header__inner">
-        <Link className="site-header__logo" href={`/${center}`} prefetch={false}>
+        <Link className="site-header__logo" href={centerOrigin(center)} prefetch={false}>
           <Logo loading="eager" priority="high" {...centerLogo} />
         </Link>
         <HeaderNav familySites={familySites} onMegaOpenChange={setIsMegaOpen} />

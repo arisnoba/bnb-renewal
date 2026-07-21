@@ -71,7 +71,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     linkedExamReviewItems: [{ review: examReview({ id: 10, title: '합격후기' }) }],
   } as unknown as MainBanner
 
-  assert.equal(mainBannerAnchorHref('art'), '/art#profiles')
+  assert.equal(mainBannerAnchorHref('art'), 'https://art.baewooenm.com#profiles')
   assert.deepEqual(mainBannerMarqueeItems(banner, 'art'), [
     {
       type: 'card',
@@ -127,7 +127,7 @@ test('main banner profile links fall back to center anchor when slug is missing'
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/art#profiles',
+      href: 'https://art.baewooenm.com#profiles',
       image: null,
       imageAlt: '김배우',
       label: '김배우',
@@ -180,7 +180,7 @@ test('main banner slides expose linked exam reviews for exam center', () => {
     ],
   } as unknown as MainBanner
 
-  assert.equal(mainBannerAnchorHref('exam'), '/exam#exam-passed-reviews')
+  assert.equal(mainBannerAnchorHref('exam'), 'https://exam.baewooenm.com#exam-passed-reviews')
   const slide = toSlide(banner, 'exam')
 
   assert.deepEqual(slide.decorImages, [
@@ -241,7 +241,7 @@ test('main banner exam review links fall back to center anchor when slug is miss
     {
       type: 'card',
       buttonLabel: '후기 보기',
-      href: '/exam#exam-passed-reviews',
+      href: 'https://exam.baewooenm.com#exam-passed-reviews',
       image: null,
       imageAlt: '이학생',
       label: '이학생 | 한예종',

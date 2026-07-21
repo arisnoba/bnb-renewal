@@ -2,6 +2,7 @@ import type { Footer } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
 
 import { centers } from '@/lib/centers'
+import { centerOrigin } from '@/lib/centerDomains'
 
 export type FooterCenterInfo = NonNullable<Footer['centerInfos']>[number]
 export type FooterSocialLink = {
@@ -24,7 +25,7 @@ const fallbackCenterInfo: FooterCenterInfo = {
   instagramUrl: 'https://www.instagram.com/bnb_official',
   naverBlogUrl: 'https://blog.naver.com/bnb__univ',
   operationRegistrationNumber: '제10617호',
-  url: '/art',
+  url: centerOrigin('art'),
   youtubeUrl: 'https://www.youtube.com/@BNB_ENM',
 }
 

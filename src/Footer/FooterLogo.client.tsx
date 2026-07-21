@@ -6,6 +6,7 @@ import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
 
+import { centerOrigin } from '@/lib/centerDomains'
 import { centerLogoFor } from '@/lib/centerLogos'
 import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 
@@ -14,7 +15,7 @@ export function FooterLogo({ initialCenter }: { initialCenter: CenterSlug }) {
   const logo = centerLogoFor(center)
 
   return (
-    <Link aria-label={`${logo.alt} 홈`} href={`/${center}`} prefetch={false}>
+    <Link aria-label={`${logo.alt} 홈`} href={centerOrigin(center)} prefetch={false}>
       <Image alt="" height={logo.height} priority src={logo.src} width={logo.width} />
     </Link>
   )

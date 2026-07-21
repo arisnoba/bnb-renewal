@@ -1,5 +1,6 @@
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { centerOrigin } from '@/lib/centerDomains'
 
 type GateNotFoundView = {
   actionLabel: string
@@ -13,7 +14,7 @@ type CenterNotFoundView = {
   actionLabel: string
   center: CenterSlug
   description: string
-  href: `/${CenterSlug}`
+  href: string
   label: string
   scope: 'center'
 }
@@ -38,7 +39,7 @@ export function notFoundViewFromPathname(pathname: string | null | undefined): N
       actionLabel: `${label} 메인으로 이동`,
       center,
       description: `${label}에서 요청하신 페이지를 찾을 수 없습니다. 센터 메인에서 필요한 메뉴를 다시 선택해 주세요.`,
-      href: `/${center}`,
+      href: centerOrigin(center),
       label,
       scope: 'center',
     }
