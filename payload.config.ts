@@ -55,9 +55,11 @@ import { plugins } from './src/plugins'
 import { HighteenSpecialClasses } from './src/collections/HighteenSpecialClasses'
 import { Inquiries } from './src/collections/Inquiries'
 import {
+  resolvePayloadDatabaseIdleTimeoutMillis,
   resolvePayloadDatabasePoolMax,
   resolvePayloadDatabaseURL,
 } from './src/lib/payloadDatabaseURL'
+import { payloadPostgres } from './src/lib/payloadPostgres'
 import { resolvePayloadSecret } from './src/lib/payloadSecret'
 
 const filename = fileURLToPath(import.meta.url)
@@ -65,6 +67,7 @@ const dirname = path.dirname(filename)
 
 const databaseURL = resolvePayloadDatabaseURL()
 const databasePoolMax = resolvePayloadDatabasePoolMax()
+const databaseIdleTimeoutMillis = resolvePayloadDatabaseIdleTimeoutMillis()
 
 export default buildConfig({
   admin: {
@@ -161,8 +164,10 @@ export default buildConfig({
   ),
   db: postgresAdapter({
     migrationDir: path.resolve(dirname, './src/migrations'),
+    pg: payloadPostgres,
     pool: {
       connectionString: databaseURL,
+      idleTimeoutMillis: databaseIdleTimeoutMillis,
       max: databasePoolMax,
     },
   }),

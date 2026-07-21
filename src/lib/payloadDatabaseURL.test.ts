@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import {
+  resolvePayloadDatabaseIdleTimeoutMillis,
   resolvePayloadDatabasePoolMax,
   resolvePayloadDatabaseURL,
 } from './payloadDatabaseURL'
@@ -46,6 +47,14 @@ test('normalizes deprecated pg SSL modes to verify-full', () => {
 
 test('uses conservative pooled connection count on Vercel runtime', () => {
   assert.equal(resolvePayloadDatabasePoolMax({ VERCEL: '1' }), 3)
+})
+
+test('uses a short idle timeout on Vercel runtime', () => {
+  assert.equal(resolvePayloadDatabaseIdleTimeoutMillis({ VERCEL: '1' }), 5_000)
+})
+
+test('keeps the driver idle timeout outside Vercel runtime', () => {
+  assert.equal(resolvePayloadDatabaseIdleTimeoutMillis({}), undefined)
 })
 
 test('allows overriding payload database pool max', () => {
