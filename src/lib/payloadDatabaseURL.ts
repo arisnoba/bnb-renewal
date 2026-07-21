@@ -39,6 +39,10 @@ export function resolvePayloadDatabasePoolMax(env: Env = process.env) {
   return env.VERCEL === '1' ? 3 : undefined
 }
 
+export function resolvePayloadDatabaseIdleTimeoutMillis(env: Env = process.env) {
+  return env.VERCEL === '1' ? 5_000 : undefined
+}
+
 function parsePositiveInteger(value: string | undefined) {
   if (!value) {
     return undefined
