@@ -98,8 +98,15 @@
 상담 폼과 R2를 사용하는 환경에서는 아래 값도 준비한다.
 
 - Turnstile: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
+- 이메일: `RESEND_API_KEY`, `INQUIRY_NOTIFICATION_EMAIL` (센터별 주소가 없을 때 사용하는 기본 수신자)
 - 공개 R2: `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_PUBLIC_BASE_URL`
 - 비공개 문의 첨부: `R2_PRIVATE_ACCESS_KEY_ID`, `R2_PRIVATE_SECRET_ACCESS_KEY`, `R2_PRIVATE_BUCKET`
+
+문의 알림 메일은 `INQUIRY_NOTIFICATION_EMAIL`로 먼저 테스트한다. 운영에서 센터별 수신자를 분리할 때는
+`INQUIRY_NOTIFICATION_EMAIL_ART`, `INQUIRY_NOTIFICATION_EMAIL_EXAM`, `INQUIRY_NOTIFICATION_EMAIL_KIDS`,
+`INQUIRY_NOTIFICATION_EMAIL_HIGHTEEN`, `INQUIRY_NOTIFICATION_EMAIL_AVENUE`,
+`INQUIRY_NOTIFICATION_EMAIL_PARTNERSHIP`을 설정하며, 센터별 주소가 기본 수신자보다 우선한다.
+하나의 환경변수에 여러 수신자를 지정할 때는 `first@example.com,second@example.com`처럼 콤마로 구분한다.
 
 운영·미리보기 환경은 각각 별도의 `PAYLOAD_SECRET`을 사용한다. 전체 기준은 [보안 운영 인수인계](docs/10-보안-운영-인수인계.md)를 따른다.
 

@@ -5,6 +5,7 @@ import path from 'node:path'
 import {
   INQUIRY_ATTACHMENT_MAX_BYTES,
 } from '@/lib/inquiryAttachment'
+import { sendInquiryNotification } from '@/lib/inquiryNotification'
 import { consumeRateLimit, rateLimitHeaders } from '@/lib/apiRateLimit'
 import { getPayloadClient } from '@/lib/payload'
 import {
@@ -174,6 +175,13 @@ export async function POST(request: Request) {
       collection: 'inquiries',
       data: data as never,
       overrideAccess: true,
+    })
+
+    await sendInquiryNotification({ inquiry, payload }).catch((error) => {
+      console.error('[consult] failed to send inquiry notification', {
+        error,
+        inquiryId: inquiry.id,
+      })
     })
 
     return NextResponse.json({
