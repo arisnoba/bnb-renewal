@@ -12,6 +12,11 @@ import {
   type LegalDocument,
 } from '@/components/legal/legalDocuments'
 import type { LegalVersionOption } from '@/components/legal/LegalVersionSelect'
+import {
+  formatLegalDate,
+  legalDateKey,
+  sortByLegalDateDescending,
+} from '@/lib/legalDates'
 
 export type LegalDocumentType = 'privacy' | 'terms'
 
@@ -75,7 +80,10 @@ export async function getLegalTermPageData(
     },
   })
 
-  const versions = versionsResult.docs as TypeWithVersion<Term>[]
+  const versions = sortByLegalDateDescending(
+    versionsResult.docs as TypeWithVersion<Term>[],
+    (version) => version.version.effectiveDate ?? version.updatedAt,
+  )
   const selectableVersions = getSelectableVersions(current, versions)
   const selectedVersion = requestedVersion
     ? selectableVersions.find((version) => String(version.id) === requestedVersion)
@@ -95,27 +103,34 @@ export async function getLegalTermPageData(
 }
 
 function buildVersionOptions(current: Term, versions: TypeWithVersion<Term>[]): LegalVersionOption[] {
-  return [
+  const options = [
     {
+      date: current.effectiveDate ?? current.updatedAt,
       label: formatLegalDate(current.effectiveDate ?? current.updatedAt),
       value: '',
     },
     ...versions.map((version) => ({
+      date: version.version.effectiveDate ?? version.updatedAt,
       label: formatLegalDate(version.version.effectiveDate ?? version.updatedAt),
       value: String(version.id),
     })),
   ]
+
+  return sortByLegalDateDescending(options, (option) => option.date).map((option) => ({
+    label: option.label,
+    value: option.value,
+  }))
 }
 
 function getSelectableVersions(current: Term, versions: TypeWithVersion<Term>[]) {
-  const seenEffectiveDates = new Set([versionDateKey(current.effectiveDate ?? current.updatedAt)])
+  const seenEffectiveDates = new Set([legalDateIdentity(current.effectiveDate ?? current.updatedAt)])
 
   return versions.filter((version) => {
     if (isCurrentSnapshot(current, version)) {
       return false
     }
 
-    const key = versionDateKey(version.version.effectiveDate ?? version.updatedAt)
+    const key = legalDateIdentity(version.version.effectiveDate ?? version.updatedAt)
     if (seenEffectiveDates.has(key)) {
       return false
     }
@@ -134,32 +149,8 @@ function isCurrentSnapshot(current: Term, version: TypeWithVersion<Term>) {
   )
 }
 
-function versionDateKey(value: string | null | undefined) {
-  if (!value) {
-    return 'unknown'
-  }
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return date.toISOString().slice(0, 10)
+function legalDateIdentity(value: string | null | undefined) {
+  return legalDateKey(value) ?? value ?? 'unknown'
 }
 
-export function formatLegalDate(value: string | null | undefined) {
-  if (!value) {
-    return '날짜 미정'
-  }
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat('ko-KR', {
-    day: 'numeric',
-    month: 'numeric',
-    year: 'numeric',
-  }).format(date)
-}
+export { formatLegalDate } from '@/lib/legalDates'
