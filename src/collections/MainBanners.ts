@@ -10,6 +10,7 @@ import type {
 import { revalidatePath } from 'next/cache'
 
 import type { MainBanner } from '@/payload-types'
+import { MAIN_BANNER_ORDER_LIMIT } from '@/Main/constants'
 
 import {
   ADMIN_IMAGE_UPLOAD_LIMIT_LABEL,
@@ -478,7 +479,7 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
     [centerOrderField]: [
       { banner: doc.id },
       ...mainBannerOrderWithout(currentRows, doc.id),
-    ],
+    ].slice(0, MAIN_BANNER_ORDER_LIMIT),
   }
 
   if (shouldMoveFromPreviousCenter && previousCenter) {

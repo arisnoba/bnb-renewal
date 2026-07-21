@@ -248,7 +248,13 @@ test('main banner save prepends new banner to its center order', async () => {
           findGlobalReq = operationReq
 
           return {
-            examBanners: [{ banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
+            examBanners: [
+              { banner: 5 },
+              { banner: 4 },
+              { banner: 3 },
+              { banner: 2 },
+              { banner: { id: 1, title: '가장 오래된 배너' } },
+            ],
           }
         },
         updateGlobal: async ({ data, req: operationReq }: { data: unknown; req?: unknown }) => {
@@ -260,7 +266,13 @@ test('main banner save prepends new banner to its center order', async () => {
   })
 
   assert.deepEqual(updatedData, {
-    examBanners: [{ banner: 7 }, { banner: 5 }, { banner: { id: 1, title: '기존 배너' } }],
+    examBanners: [
+      { banner: 7 },
+      { banner: 5 },
+      { banner: 4 },
+      { banner: 3 },
+      { banner: 2 },
+    ],
   })
   assert.equal(
     (findGlobalReq as { transactionID?: unknown })?.transactionID,

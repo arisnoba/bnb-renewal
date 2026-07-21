@@ -10,6 +10,7 @@ import type { CenterSlug } from '@/lib/centers'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
+import { MAIN_BANNER_ORDER_LIMIT } from './constants'
 import {
   DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY,
   MainBannerSlider,
@@ -385,7 +386,7 @@ function rowBanner(row: MainBannerOrderRow): MainBanner | null {
 
 export function MainBannerSection({ center, main, statistics }: MainBannerSectionProps) {
   const now = new Date()
-  const rows = main?.[centerOrderField[center]] ?? []
+  const rows = (main?.[centerOrderField[center]] ?? []).slice(0, MAIN_BANNER_ORDER_LIMIT)
   const autoplaySettings = mainBannerAutoplaySettings(main, center)
   const activeBanners = rows
     .map(rowBanner)

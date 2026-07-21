@@ -11,6 +11,8 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 
 import { centerOptions, type CenterValue, isGlobalAdminUser, userCenterValue } from '@/collections/shared'
 
+import { MAIN_BANNER_ORDER_LIMIT } from './constants'
+
 const defaultAutoplayDelay = 5000
 
 const requiredValue =
@@ -76,7 +78,7 @@ export function normalizeMainBannerOrderData(
       continue
     }
 
-    const normalizedRows = value.filter(hasBannerValue)
+    const normalizedRows = value.filter(hasBannerValue).slice(0, MAIN_BANNER_ORDER_LIMIT)
 
     if (Array.isArray(data[fieldName]) || normalizedRows.length !== value.length) {
       nextData[fieldName] = normalizedRows
@@ -147,6 +149,7 @@ function centerBannerOrderField(center: CenterValue): Field {
   return {
     name: `${center}Banners`,
     type: 'array',
+    maxRows: MAIN_BANNER_ORDER_LIMIT,
     access: {
       update: canUpdateCenter(center),
     },
@@ -159,7 +162,7 @@ function centerBannerOrderField(center: CenterValue): Field {
       components: {
         RowLabel: '@/Main/RowLabel#MainBannerOrderRowLabel',
       },
-      description: '배열 순서가 실제 메인 노출 순서입니다.',
+      description: `최대 ${MAIN_BANNER_ORDER_LIMIT}개까지 등록할 수 있으며, 배열 순서가 실제 메인 노출 순서입니다. 신규 배너는 맨 앞에 추가되고, ${MAIN_BANNER_ORDER_LIMIT}개를 초과하면 맨 뒤 배너가 목록에서 제외됩니다. 예약이 종료된 배너는 목록에 남아 있지만 사이트에는 노출되지 않습니다.`,
       initCollapsed: true,
     },
     fields: [

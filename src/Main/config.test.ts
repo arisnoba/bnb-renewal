@@ -122,6 +122,11 @@ test('main global exposes center-specific banner order arrays', async () => {
       '전환속도는 0보다 큰 숫자로 입력해야 합니다.',
     )
     assert.equal(field.type, 'array')
+    assert.equal(field.maxRows, 5)
+    assert.equal(
+      field.admin?.description,
+      '최대 5개까지 등록할 수 있으며, 배열 순서가 실제 메인 노출 순서입니다. 신규 배너는 맨 앞에 추가되고, 5개를 초과하면 맨 뒤 배너가 목록에서 제외됩니다. 예약이 종료된 배너는 목록에 남아 있지만 사이트에는 노출되지 않습니다.',
+    )
     assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center } } }), true)
     assert.equal(await field.access?.update?.({ req: { user: { role: 'manager', center: 'exam' } } }), center === 'exam')
     assert.equal(await field.access?.update?.({ req: { user: { role: 'admin', center: 'exam' } } }), true)
@@ -193,6 +198,30 @@ test('main global removes empty banner order rows before validation', () => {
       kidsBanners: [
         { banner: 3 },
         { banner: { id: 5, title: '기존 키즈 배너' } },
+      ],
+    },
+  )
+})
+
+test('main global keeps only the first five banner order rows', () => {
+  assert.deepEqual(
+    normalizeMainBannerOrderData({
+      artBanners: [
+        { banner: 6 },
+        { banner: 5 },
+        { banner: 4 },
+        { banner: 3 },
+        { banner: 2 },
+        { banner: 1 },
+      ],
+    }),
+    {
+      artBanners: [
+        { banner: 6 },
+        { banner: 5 },
+        { banner: 4 },
+        { banner: 3 },
+        { banner: 2 },
       ],
     },
   )
