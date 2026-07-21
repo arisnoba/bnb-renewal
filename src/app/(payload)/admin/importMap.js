@@ -80,7 +80,6 @@ import { CenterInfoRowLabel as CenterInfoRowLabel_1f6ff6ff633e3695d348f4f3c58f14
 import { AdminLoginLogo as AdminLoginLogo_96915ddba92652a664a5ad6e084903b8 } from '@/components/payload/AdminLoginLogo'
 import { AdminLoginPasswordHelp as AdminLoginPasswordHelp_6a986fab7c40c5330bff7e81506c22d3 } from '@/components/payload/AdminPasswordHelp'
 import { AdminGuideNavLink as AdminGuideNavLink_dd85a1bef998683e1cd3e258e79b043d } from '@/components/payload/AdminGuideNavLink'
-import { AdminForgotPasswordNotice as AdminForgotPasswordNotice_6a986fab7c40c5330bff7e81506c22d3 } from '@/components/payload/AdminPasswordHelp'
 import { AdminGuideView as AdminGuideView_5924cf2156d4e0e7969821b6b55eb61b } from '@/components/payload/AdminGuideView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -168,7 +167,6 @@ export const importMap = {
   "@/components/payload/AdminLoginLogo#AdminLoginLogo": AdminLoginLogo_96915ddba92652a664a5ad6e084903b8,
   "@/components/payload/AdminPasswordHelp#AdminLoginPasswordHelp": AdminLoginPasswordHelp_6a986fab7c40c5330bff7e81506c22d3,
   "@/components/payload/AdminGuideNavLink#AdminGuideNavLink": AdminGuideNavLink_dd85a1bef998683e1cd3e258e79b043d,
-  "@/components/payload/AdminPasswordHelp#AdminForgotPasswordNotice": AdminForgotPasswordNotice_6a986fab7c40c5330bff7e81506c22d3,
   "@/components/payload/AdminGuideView#AdminGuideView": AdminGuideView_5924cf2156d4e0e7969821b6b55eb61b,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

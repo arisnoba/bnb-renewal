@@ -2,6 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { buildConfig } from 'payload'
 import { ko } from 'payload/i18n/ko'
 import sharp from 'sharp'
@@ -70,9 +71,6 @@ export default buildConfig({
         Logo: '@/components/payload/AdminLoginLogo#AdminLoginLogo',
       },
       views: {
-        forgot: {
-          Component: '@/components/payload/AdminPasswordHelp#AdminForgotPasswordNotice',
-        },
         guide: {
           Component: '@/components/payload/AdminGuideView#AdminGuideView',
           exact: true,
@@ -163,6 +161,11 @@ export default buildConfig({
     },
   }),
   editor: defaultLexical,
+  email: resendAdapter({
+    apiKey: process.env.RESEND_API_KEY ?? '',
+    defaultFromAddress: 'no-reply@baewooenm.com',
+    defaultFromName: '배우앤배움',
+  }),
   hooks: {
     afterError: [applyFriendlyAdminErrorMessages],
   },
