@@ -5,6 +5,7 @@ import Link from 'next/link'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { cn } from '@/utilities/ui'
 
 export type FaqCategoryTab = {
@@ -45,14 +46,14 @@ export function FaqArchiveClient({
     {
       active: !activeCategory,
       count: totalCount,
-      href: `/${center}/faq`,
+      href: centerPublicHref(center, '/faq'),
       value: null,
       label: '전체',
     },
     ...categoryTabs.map((category) => ({
       active: activeCategory === category.value,
       count: category.count,
-      href: `/${center}/faq?category=${category.value}`,
+      href: centerPublicHref(center, `/faq?category=${category.value}`),
       label: category.label,
       value: category.value,
     })),
@@ -99,7 +100,7 @@ export function FaqArchiveClient({
     <>
       <div className="section-faq-list__tools">
         <form
-          action={`/${center}/faq`}
+          action={centerPublicHref(center, '/faq')}
           className="section-faq-list__search"
           onSubmit={(event) => {
             event.preventDefault()

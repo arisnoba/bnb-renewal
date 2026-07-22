@@ -12,6 +12,7 @@ import {
   getCenterLabel,
   type CenterSlug,
 } from "@/lib/centers";
+import { centerPublicHref } from "@/lib/centerDomains";
 
 import { CastingCenterHeroVisual } from "../../_components/CastingCenterHeroVisual";
 import { HeroMosaicDim } from "../../_components/HeroMosaicDim";
@@ -300,7 +301,7 @@ export default async function CastingSystemPage({ params }: Args) {
                   {item.id === "profile" ? (
                     <Link
                       className="section-casting-system-card__link mt-2 inline-flex w-fit items-center gap-2.5 type-label-l font-bold text-neutral-900 transition hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
-                      href={`/${center}/profile-production`}
+                      href={centerPublicHref(center, "/profile-production")}
                     >
                       프로필 제작 절차 안내
                       <ChevronRight

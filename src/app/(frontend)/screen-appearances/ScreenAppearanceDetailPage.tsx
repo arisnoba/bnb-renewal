@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type {
   Media as PayloadMedia,
   Profile,
@@ -75,7 +76,7 @@ export async function ScreenAppearanceDetailPage({
     id: appearance.id,
     publishedAt: appearance.publishedAt,
   })
-  const backHref = `/${center}/screen-appearances`
+  const backHref = centerPublicHref(center, '/screen-appearances')
   const backLabel = 'BNB 출연장면'
 
   return (
@@ -284,7 +285,7 @@ const queryAdjacentScreenAppearances = cache(
       queryAdjacentScreenAppearance({ center, direction: 'previous', id, payload, publishedAt }),
       queryAdjacentScreenAppearance({ center, direction: 'next', id, payload, publishedAt }),
     ])
-    const pathPrefix = `/${center}/screen-appearances`
+    const pathPrefix = centerPublicHref(center, '/screen-appearances')
 
     return {
       nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
@@ -369,7 +370,9 @@ function getPerformer(appearance: ScreenAppearance, center: CenterSlug): Perform
   return {
     className: getProfileClassName(profiles) || normalizeText(appearance.className),
     name: names || appearance.performerName?.trim() || '배우앤배움 수강생',
-    profileHref: profile?.slug ? `/${center}/profiles/${encodeURIComponent(profile.slug)}` : null,
+    profileHref: profile?.slug
+      ? centerPublicHref(center, `/profiles/${encodeURIComponent(profile.slug)}`)
+      : null,
     profileImageMedia:
       profile?.profileImageMedia && typeof profile.profileImageMedia === 'object'
         ? profile.profileImageMedia

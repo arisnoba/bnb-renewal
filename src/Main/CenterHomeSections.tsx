@@ -17,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Marquee } from '@/components/ui/marquee'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { curriculumClassOptionsByCenter, type CurriculumCenter } from '@/lib/curriculumOptions'
 import {
   buildCurriculumSearchFields,
@@ -150,56 +151,56 @@ function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
     {
       category: artistCareGroups.actorCare,
       description: '작품과 배우를 연결하는 전담 캐스팅 관리',
-      href: `/${center}/casting`,
+      href: centerPublicHref(center, '/casting'),
       imageUrl: '/assets/artist-care/casting-center.jpg',
       title: '캐스팅 센터',
     },
     {
       category: artistCareGroups.actorCare,
       description: '오디션과 감독 미팅까지 이어지는 캐스팅 루트',
-      href: `/${center}/direct-castings`,
+      href: centerPublicHref(center, '/direct-castings'),
       imageUrl: '/assets/artist-care/direct-casting.jpg',
       title: '다이렉트 캐스팅',
     },
     {
       category: artistCareGroups.actorCare,
       description: '현장 경험을 갖춘 강사진의 실전 트레이닝',
-      href: `/${center}/teachers`,
+      href: centerPublicHref(center, '/teachers'),
       imageUrl: '/assets/artist-care/premium-instructors.jpg',
       title: '급이 다른 강사진',
     },
     {
       category: artistCareGroups.actorCare,
       description: '기획사 신인 배우 교육까지 이어지는 커리큘럼',
-      href: `/${center}/entertainment`,
+      href: centerPublicHref(center, '/entertainment'),
       imageUrl: '/assets/artist-care/agency-training.jpg',
       title: '기획사 위탁교육',
     },
     {
       category: artistCareGroups.membership,
       description: '배우앤배움 수강생을 위한 이용 가이드',
-      href: `/${center}/how-to-use`,
+      href: centerPublicHref(center, '/how-to-use'),
       imageUrl: '/assets/artist-care/academy-guide.jpg',
       title: '학원100%이용법',
     },
     {
       category: artistCareGroups.membership,
       description: '프로필 사진과 영상 제작을 위한 전용 스튜디오',
-      href: `/${center}/profile-production`,
+      href: centerPublicHref(center, '/profile-production'),
       imageUrl: '/assets/artist-care/profile-video-production.jpg',
       title: '프로필·영상제작',
     },
     {
       category: artistCareGroups.membership,
       description: '수업 이후에도 이어지는 연습 공간 지원',
-      href: `/${center}/how-to-use#security`,
+      href: centerPublicHref(center, '/how-to-use#security'),
       imageUrl: '/assets/artist-care/practice-room-24h.jpg',
       title: '24시간 연습실 개방',
     },
     {
       category: artistCareGroups.membership,
       description: '배우가 촬영에 집중할 수 있는 현장 케어',
-      href: `/${center}/casting-system#filming-support`,
+      href: centerPublicHref(center, '/casting-system#filming-support'),
       imageUrl: '/assets/artist-care/filming-care.jpg',
       title: '촬영현장 지원',
     },
@@ -276,7 +277,7 @@ function CourseSearchSection({
           BNB 강의검색
         </h2>
         <CurriculumSearchForm
-          action={`/${center}/curriculum`}
+          action={centerPublicHref(center, '/curriculum')}
           fields={searchFields}
           variant="centerHome"
         />
@@ -348,7 +349,7 @@ function gradeSystemHrefForCenter(center: CenterSlug) {
     return null
   }
 
-  return `/${center}/grade-system`
+  return centerPublicHref(center, '/grade-system')
 }
 
 function isGradeSystemCenter(center: CenterSlug): center is GradeSystemCenter {
@@ -409,7 +410,7 @@ function ScreenAppearancesHomeSection({
           title="이달의 드라마&광고 출연장면"
         />
         <CenterHomeScreenAppearances
-          fallbackHref={`/${center}/screen-appearances`}
+          fallbackHref={centerPublicHref(center, '/screen-appearances')}
           fallbackImageUrl={centerHeroImage[center]}
           items={slides}
         />
@@ -436,7 +437,7 @@ function ExamPassedVideosHomeSection({ videos }: { videos: HomeExamPassedVideo[]
         />
         <CenterHomeScreenAppearances
           contentType="video"
-          fallbackHref="/exam/passed-videos"
+          fallbackHref={centerPublicHref('exam', '/passed-videos')}
           fallbackImageUrl={centerHeroImage.exam}
           items={slides}
           showThumbnails={false}
@@ -476,7 +477,7 @@ function ArtistPressHomeSection({
           ))}
           <Link
             className="section-center-home-artist-press__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
-            href={`/${center}/artist-press`}
+            href={centerPublicHref(center, '/artist-press')}
             prefetch={false}
           >
             <span className="type-title-s font-extrabold leading-normal">BNB ARTIST</span>
@@ -515,7 +516,7 @@ function ExamPassedReviewsHomeSection({ reviews }: { reviews: HomeExamPassedRevi
           ))}
           <Link
             className="section-center-home-exam-reviews__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
-            href="/exam/passed-reviews"
+            href={centerPublicHref('exam', '/passed-reviews')}
             prefetch={false}
           >
             <span className="type-title-s font-extrabold leading-normal">
@@ -546,7 +547,7 @@ function ArtistPressFeaturedCard({
   return (
     <Link
       className="group section-center-home-artist-press-featured col-span-2 row-span-2 overflow-hidden bg-white text-neutral-950 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-      href={artistPress ? getArtistPressUrl(artistPress, center) : `/${center}/artist-press`}
+      href={artistPress ? getArtistPressUrl(artistPress, center) : centerPublicHref(center, '/artist-press')}
       prefetch={false}
     >
       {imageUrl ? (
@@ -630,7 +631,7 @@ function ExamPassedReviewFeaturedCard({ review }: { review?: HomeExamPassedRevie
   const schoolLogoUrl = examPassedReviewSchoolLogoUrl(review)
   const resultText = examPassedReviewResultText(review)
   const studentName = normalizeText(review?.studentName) || '합격생'
-  const href = review ? examPassedReviewHref(review) : '/exam/passed-reviews'
+  const href = review ? examPassedReviewHref(review) : centerPublicHref('exam', '/passed-reviews')
 
   return (
     <Link
@@ -737,7 +738,7 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
             id="center-home-news-title"
             title={'배우앤배움\n이달의 소식'}
           />
-          <ButtonLink className="mt-8" href={`/${center}/news`}>
+          <ButtonLink className="mt-8" href={centerPublicHref(center, '/news')}>
             전체보기
           </ButtonLink>
         </div>
@@ -908,13 +909,13 @@ function HomeCtaSection({ center }: { center: CenterSlug }) {
     >
       <HomeCtaCard
         description={'5개 센터, 1200평의\n배우 훈련에 최적화 설계된 스튜디오'}
-        href={`/${center}/facilities`}
+        href={centerPublicHref(center, '/facilities')}
         image={centerBuildingImage[center]}
         title="Training"
       />
       <HomeCtaCard
         description={'배우엔배움 아티스트만 이용 가능한\n멤버십 서비스'}
-        href={`/${center}/starcard`}
+        href={centerPublicHref(center, '/starcard')}
         media={<StarcardCtaInlineImage />}
         title="Star Card"
       />
@@ -1074,7 +1075,7 @@ function examPassedVideoSlide(video: HomeExamPassedVideo) {
   return {
     broadcastLogoAlt: '',
     broadcastLogoUrl: '',
-    href: youtubeUrl || '/exam/passed-videos',
+    href: youtubeUrl || centerPublicHref('exam', '/passed-videos'),
     id: video.id,
     meta: 'SUCCESS STORIES',
     openInNewTab: Boolean(youtubeUrl),
@@ -1087,7 +1088,7 @@ function examPassedVideoSlide(video: HomeExamPassedVideo) {
 }
 
 function examPassedReviewHref(review: Pick<HomeExamPassedReview, 'slug'>) {
-  return `/exam/passed-reviews/${encodeURIComponent(review.slug)}`
+  return centerPublicHref('exam', `/passed-reviews/${encodeURIComponent(review.slug)}`)
 }
 
 function examPassedReviewImageUrl(review: HomeExamPassedReview | null | undefined) {

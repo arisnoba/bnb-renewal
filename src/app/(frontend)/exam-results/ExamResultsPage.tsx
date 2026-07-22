@@ -1,5 +1,6 @@
 import { getExamResultsHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
@@ -449,7 +450,10 @@ export function getExamResultPageTitle(resultType: ExamResultType) {
 }
 
 export function getExamResultPathname(resultType: ExamResultType) {
-  return resultType === 'arts_high_school' ? '/exam/arts-high-results' : '/exam/university-results'
+  return centerPublicHref(
+    'exam',
+    resultType === 'arts_high_school' ? '/arts-high-results' : '/university-results',
+  )
 }
 
 export function getExamResultDetailHref({

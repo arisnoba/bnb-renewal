@@ -4,21 +4,22 @@ import Link from 'next/link'
 import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 
 export function FooterCenterLinks({ initialCenter = 'art' }: { initialCenter?: CenterSlug }) {
   const center = useCurrentCenter(initialCenter)
-  const consultHref = `/${center}/consult`
+  const consultHref = centerPublicHref(center, '/consult')
   const customerLinks = [
     { href: 'tel:15779929', label: '대표전화', value: '1577-9929' },
     { href: consultHref, label: 'CS센터 운영안내' },
-    { href: `/${center}/map`, label: '오시는 길' },
+    { href: centerPublicHref(center, '/map'), label: '오시는 길' },
   ]
   const consultationLinks = [
-    { href: `/${center}/admission`, label: '입학안내' },
+    { href: centerPublicHref(center, '/admission'), label: '입학안내' },
     { href: consultHref, label: '상담신청' },
-    { href: `/${center}/faq`, label: '자주 묻는 질문' },
+    { href: centerPublicHref(center, '/faq'), label: '자주 묻는 질문' },
   ]
 
   return (
@@ -56,10 +57,10 @@ export function FooterPolicyLinks({ initialCenter = 'art' }: { initialCenter?: C
       aria-label="정책"
       className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal"
     >
-      <Link className="text-[#666] transition-colors hover:text-white" href={`/${center}/terms`} prefetch={false}>
+      <Link className="text-[#666] transition-colors hover:text-white" href={centerPublicHref(center, '/terms')} prefetch={false}>
         이용약관
       </Link>
-      <Link className="font-medium text-[#999] transition-colors hover:text-white" href={`/${center}/privacy`} prefetch={false}>
+      <Link className="font-medium text-[#999] transition-colors hover:text-white" href={centerPublicHref(center, '/privacy')} prefetch={false}>
         개인정보처리방침
       </Link>
     </nav>

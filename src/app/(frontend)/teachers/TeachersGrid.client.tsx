@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 
 import { Media } from '@/components/Media/Renderer'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import Link from 'next/link'
 import React from 'react'
@@ -69,7 +70,7 @@ function TeacherCard({
   return (
     <Link
       className="section-teachers-card group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
-      href={`/${center}/teachers/${encodeURIComponent(teacher.slug)}`}
+      href={centerPublicHref(center, `/teachers/${encodeURIComponent(teacher.slug)}`)}
       prefetch={false}
     >
       <article className="section-teachers-card__inner relative aspect-square overflow-hidden bg-transparent">

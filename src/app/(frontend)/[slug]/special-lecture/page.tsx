@@ -10,6 +10,7 @@ import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_componen
 import { Media } from '@/components/Media/Renderer'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { assertCenter } from '@/lib/centers'
 import { extractYouTubeVideoId, youtubeThumbnailUrl, youtubeWatchUrl } from '@/lib/youtube'
 import type { HighteenSpecialClass, Media as MediaType } from '@/payload-types'
@@ -291,7 +292,7 @@ function getLectureYoutubeHref(value: string) {
 }
 
 function specialLectureHref(page?: number) {
-  return page && page > 1 ? `/highteen/special-lecture?page=${page}` : '/highteen/special-lecture'
+  return centerPublicHref('highteen', `/special-lecture${page && page > 1 ? `?page=${page}` : ''}`)
 }
 
 function paginationItems(currentPage: number, totalPages: number): Array<number | 'ellipsis'> {

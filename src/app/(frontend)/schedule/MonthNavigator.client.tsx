@@ -1,6 +1,7 @@
 'use client'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 import {
   Select,
@@ -114,5 +115,5 @@ export function MonthNavigator({
 }
 
 function createMonthHref(center: CenterSlug, year: number, month: number) {
-  return `/${center}/schedule?year=${year}&month=${month}`
+  return centerPublicHref(center, `/schedule?year=${year}&month=${month}`)
 }

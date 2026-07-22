@@ -1,4 +1,5 @@
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { BroadcastStation, Media, Profile, ScreenAppearance } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -35,7 +36,7 @@ export function screenAppearanceSlide(
   return {
     broadcastLogoAlt: broadcastStation?.stationName ? `${broadcastStation.stationName} 로고` : '',
     broadcastLogoUrl: screenAppearanceBroadcastLogoUrl(broadcastStation),
-    href: `/${center}/screen-appearances/${encodeURIComponent(appearance.slug)}`,
+    href: centerPublicHref(center, `/screen-appearances/${encodeURIComponent(appearance.slug)}`),
     id: appearance.id,
     meta: screenAppearanceMeta(appearance),
     performerName: featuredPerformerName(appearance),

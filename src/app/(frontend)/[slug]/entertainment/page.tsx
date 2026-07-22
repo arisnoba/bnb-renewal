@@ -12,6 +12,7 @@ import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { assertCenter, centers, type CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Agency } from '@/payload-types'
 
 type Args = {
@@ -294,7 +295,7 @@ function educationSystemCards(
       {
         body:
           '위탁연기자의 경력, 영상자료 체크 및 대본리딩 테스트를 통해 Class가 나누어집니다. 자세한 내용은 홈페이지 교육폴더 중 등급제 교육관리시스템에 들어가시면 확인하실 수 있습니다.',
-        cta: { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
+        cta: { href: centerPublicHref(center, '/grade-system'), label: '등급제 교육관리시스템' },
         id: '01',
         steps: [
           { label: '영재교육 Class', level: '초급' },
@@ -325,7 +326,7 @@ function educationSystemCards(
       {
         body:
           '배우가 성장하는 과정을 보여드리기 위한 연기 영상자료를 제공해 드립니다. 특히 미디어 콘텐츠 계열사 ㈜비앤비 미디어를 통해 수준 있는 영상퀄리티로 연기자의 여러 가지 모습들을 담아낼 수 있습니다. 배우앤배움은 다양한 각도에서 엔터사 및 연기자를 보조하는 역할을 수행합니다.',
-        cta: { href: `/${center}/profile-production`, label: '영상제작 서비스' },
+        cta: { href: centerPublicHref(center, '/profile-production'), label: '영상제작 서비스' },
         id: '04',
         title: '영상제작지원',
       },
@@ -336,7 +337,7 @@ function educationSystemCards(
     {
       body:
         '위탁연기자의 전공, 경력 및 대본리딩 테스트를 통해 I/R/U/D/A Class가 나누어집니다. 자세한 내용은 홈페이지 교육폴더 중 등급제 교육관리시스템에 들어가시면 확인하실 수 있습니다.',
-      cta: { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
+      cta: { href: centerPublicHref(center, '/grade-system'), label: '등급제 교육관리시스템' },
       id: '01',
       steps: ['I', 'R', 'U', 'D', 'A'],
       title: '레벨 테스트',
@@ -370,7 +371,7 @@ function educationSystemCards(
     {
       body:
         '배우가 성장하는 과정을 보여드리기 위한 연기 영상자료를 제공해 드립니다. 특히 미디어 콘텐츠 계열사 ㈜비앤비 콘텐츠를 통해 수준 있는 영상퀄리티로 연기자의 여러 가지 모습들을 담아낼 수 있습니다. 배우앤배움은 다양한 각도에서 엔터사 및 연기자를 보조하는 역할을 수행합니다.',
-      cta: { href: `/${center}/profile-production`, label: '영상제작 서비스' },
+      cta: { href: centerPublicHref(center, '/profile-production'), label: '영상제작 서비스' },
       id: '05',
       title: '영상제작지원',
     },

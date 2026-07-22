@@ -15,6 +15,7 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { getProfileFilterOptions } from '@/lib/profileFilters'
 import type { Profile } from '@/payload-types'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -282,7 +283,7 @@ function RookieCard({
   return (
     <Link
       className="section-rookies-card"
-      href={`/${center}/profiles/${encodeURIComponent(profile.slug)}`}
+      href={centerPublicHref(center, `/profiles/${encodeURIComponent(profile.slug)}`)}
       prefetch={false}
     >
       <article className="section-rookies-card__inner">
@@ -434,7 +435,7 @@ function rookiesArchiveHref({
 
   const query = params.toString()
 
-  return `/${center}/rookies${query ? `?${query}` : ''}`
+  return centerPublicHref(center, `/rookies${query ? `?${query}` : ''}`)
 }
 
 function getRookieFilters(center: CenterSlug) {

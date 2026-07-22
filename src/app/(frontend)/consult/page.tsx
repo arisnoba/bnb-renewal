@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
@@ -21,7 +22,7 @@ export default async function LegacyConsultPage({ searchParams }: LegacyConsultP
   const center = resolveLegacyCenter(resolvedSearchParams)
   const queryString = toForwardQueryString(resolvedSearchParams)
 
-  redirect(`/${center}/consult${queryString}`)
+  redirect(centerPublicHref(center, `/consult${queryString}`))
 }
 
 function resolveLegacyCenter(searchParams: ConsultationSearchParams | undefined): CenterSlug {

@@ -7,6 +7,7 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { DirectCasting, Media as PayloadMedia } from '@/payload-types'
 import configPromise from '@payload-config'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -249,7 +250,7 @@ function DirectCastingCard({
   const media = getThumbnailMedia(casting.thumbnailMedia)
   const projectInfo = projectInfoLines(casting.projectInfo)
   const companyLabel = getDirectCastingCompanyLabels(casting.company).join(' · ')
-  const href = `/${center}/direct-castings/${encodeURIComponent(String(casting.id))}`
+  const href = centerPublicHref(center, `/direct-castings/${encodeURIComponent(String(casting.id))}`)
 
   return (
     <Link
@@ -673,7 +674,7 @@ function directCastingsHref({
 
   const query = params.toString()
 
-  return `/${center}/direct-castings${query ? `?${query}` : ''}#${listAnchorId}`
+  return centerPublicHref(center, `/direct-castings${query ? `?${query}` : ''}#${listAnchorId}`)
 }
 
 function paginationWindow(page: number, totalPages: number) {

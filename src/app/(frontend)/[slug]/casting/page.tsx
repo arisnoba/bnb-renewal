@@ -9,6 +9,7 @@ import { getPayload, type Where } from 'payload'
 
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { assertCenter, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { CastingDirector, Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
@@ -365,7 +366,7 @@ function getCastingCompanies(center: CenterSlug) {
 function directCastingHref(center: CenterSlug, companyId: string) {
   const company = companyId === 'im-ground' ? 'imground' : companyId
 
-  return `/${center}/direct-castings?company=${encodeURIComponent(company)}`
+  return centerPublicHref(center, `/direct-castings?company=${encodeURIComponent(company)}`)
 }
 
 function assertCastingCenter(center: CenterSlug) {

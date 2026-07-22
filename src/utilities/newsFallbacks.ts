@@ -1,4 +1,6 @@
 import type { News } from '@/payload-types'
+import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 import { asMedia, metadataImageUrlFromMedia } from './metadataImage'
 
@@ -25,6 +27,6 @@ export function getNewsMetaImageUrl(news: NewsLike) {
   return metadataImageUrlFromMedia(getNewsSeoImageMedia(news))
 }
 
-export function getNewsUrl(news: Pick<News, 'id'>, center: string) {
-  return `/${encodeURIComponent(center)}/news/${encodeURIComponent(String(news.id))}`
+export function getNewsUrl(news: Pick<News, 'id'>, center: CenterSlug) {
+  return centerPublicHref(center, `/news/${encodeURIComponent(String(news.id))}`)
 }

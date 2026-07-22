@@ -1,4 +1,5 @@
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 export type AdmissionContent = {
   leaveTitle: string
@@ -618,13 +619,13 @@ const centerPhoneExtension = {
 
 function procedureFor(center: CenterSlug): ProcedureStep[] {
   const centerName = centerNameFor(center)
-  const courseHref = `/${center}/curriculum`
+  const courseHref = centerPublicHref(center, '/curriculum')
   const teacherHref =
     center === 'exam'
-      ? '/exam/teachers'
+      ? centerPublicHref('exam', '/teachers')
       : center === 'avenue'
-        ? '/avenue/teachers'
-        : `/${center}/teachers`
+        ? centerPublicHref('avenue', '/teachers')
+        : centerPublicHref(center, '/teachers')
 
   if (center === 'exam') {
     return [
@@ -637,7 +638,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
           },
           {
             body: '입시 상담신청 페이지에서 방문 희망 일자와 시간, 신청자 정보를 남깁니다.',
-            cta: { href: '/exam/consult', label: '온라인 상담신청' },
+            cta: { href: centerPublicHref('exam', '/consult'), label: '온라인 상담신청' },
             title: '온라인 상담신청',
           },
           {
@@ -650,7 +651,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
       },
       {
         body: ['예약 일시에 방문해 상담 어플리케이션을 작성하고, 입시 목표와 현재 준비 상태를 바탕으로 과정, 커리큘럼, 수업 방향에 대해 안내받으실 수 있습니다.'],
-        ctas: [{ href: '/exam/map', label: '오시는 길' }],
+        ctas: [{ href: centerPublicHref('exam', '/map'), label: '오시는 길' }],
         title: '학원 방문상담',
       },
       {
@@ -659,7 +660,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
       },
       {
         body: ['수업 시작 전 수강료를 납부하면 등록이 완료됩니다.', '등록 후 담당자 안내와 스타카드 발급을 진행합니다.'],
-        ctas: [{ href: '/exam/starcard', label: '스타카드 멤버쉽서비스' }],
+        ctas: [{ href: centerPublicHref('exam', '/starcard'), label: '스타카드 멤버쉽서비스' }],
         title: '수강등록',
       },
       {
@@ -718,7 +719,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
               : center === 'kids'
                 ? '키즈센터 온라인 상담신청 페이지에서 희망 유선상담 일자, 시간, 신청자 정보를 남깁니다.'
                 : `${centerName} 온라인 상담신청 페이지에서 방문 희망 일자와 시간, 신청자 정보를 남깁니다.`,
-          cta: { href: `/${center}/consult`, label: '온라인 상담신청' },
+          cta: { href: centerPublicHref(center, '/consult'), label: '온라인 상담신청' },
           title: '온라인 상담신청',
         },
         {
@@ -732,7 +733,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
     },
     {
       body: firstVisit,
-      ctas: [{ href: `/${center}/map`, label: '오시는 길' }],
+      ctas: [{ href: centerPublicHref(center, '/map'), label: '오시는 길' }],
       title: '학원 방문상담',
     },
     {
@@ -753,7 +754,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
             ? '등록 후 담당선생님 및 원장님과 간단한 미팅이 진행되고 스타카드가 발급됩니다.'
             : '등록 후 담당선생님과 간단한 미팅이 진행되고 스타카드가 발급됩니다.',
       ],
-      ctas: [{ href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' }],
+      ctas: [{ href: centerPublicHref(center, '/starcard'), label: '스타카드 멤버쉽서비스' }],
       title: '수강등록',
     },
     {

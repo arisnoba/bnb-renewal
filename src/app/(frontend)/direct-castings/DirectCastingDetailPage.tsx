@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { DirectCasting } from '@/payload-types'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
@@ -203,7 +204,7 @@ const queryAdjacentDirectCastings = cache(
         publishedWhere,
       }),
     ])
-    const pathPrefix = `/${center}/direct-castings`
+    const pathPrefix = centerPublicHref(center, '/direct-castings')
 
     return {
       nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,
@@ -273,7 +274,7 @@ function directCastingBackHref({
 
   const query = params.toString()
 
-  return `/${center}/direct-castings${query ? `?${query}` : ''}`
+  return centerPublicHref(center, `/direct-castings${query ? `?${query}` : ''}`)
 }
 
 function hasLexicalContent(value: DirectCasting['body']) {

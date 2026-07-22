@@ -13,6 +13,8 @@ import {
   normalizeNewsCategory,
 } from '@/lib/newsCategories'
 import type { NewsCategory } from '@/lib/newsCategories'
+import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { News } from '@/payload-types'
 import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
@@ -33,7 +35,7 @@ type NewsPageResult = {
 
 type NewsArchiveProps = {
   activeCategory?: string
-  center: string
+  center: CenterSlug
   page?: number
   title?: React.ReactNode
 }
@@ -132,7 +134,7 @@ function getCachedNewsArchivePage({
   page,
 }: {
   categoryKey: string | null
-  center: string
+  center: CenterSlug
   page: number
 }) {
   return unstable_cache(
@@ -151,7 +153,7 @@ async function queryNewsArchivePage({
   page,
 }: {
   categoryKey: string | null
-  center: string
+  center: CenterSlug
   page: number
 }) {
   const payload = await getPayload({ config: configPromise })
@@ -201,7 +203,7 @@ function NewsCard({
   news,
   newsCategories,
 }: {
-  center: string
+  center: CenterSlug
   news: Partial<News> & Pick<News, 'id' | 'slug' | 'title'>
   newsCategories: readonly NewsCategory[]
 }) {
@@ -262,7 +264,7 @@ function NewsPagination({
   totalPages,
 }: {
   activeCategory: string | null
-  center: string
+  center: CenterSlug
   page: number
   totalPages: number
 }) {
@@ -434,7 +436,7 @@ function newsArchiveHref({
   page,
 }: {
   category?: string | null
-  center: string
+  center: CenterSlug
   page?: number
 }) {
   const params = new URLSearchParams()
@@ -449,7 +451,7 @@ function newsArchiveHref({
 
   const query = params.toString()
 
-  return `/${center}/news${query ? `?${query}` : ''}`
+  return centerPublicHref(center, `/news${query ? `?${query}` : ''}`)
 }
 
 function paginationWindow(page: number, totalPages: number) {

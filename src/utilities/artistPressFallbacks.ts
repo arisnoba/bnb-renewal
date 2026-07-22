@@ -5,7 +5,7 @@ import type { ArtistPress } from '@/payload-types'
 
 import { asMedia, metadataImageUrlFromMedia } from './metadataImage'
 import { mergeOpenGraph } from './mergeOpenGraph'
-import { publicCenterPath } from '@/lib/centerDomains'
+import { centerPublicHref, publicCenterPath } from '@/lib/centerDomains'
 
 type ArtistPressLike = Partial<ArtistPress>
 
@@ -33,10 +33,10 @@ export function getArtistPressSeoImageMedia(artistPress: ArtistPressLike) {
   return asMedia(artistPress.meta?.image) || asMedia(artistPress.thumbnailMedia)
 }
 
-export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'id'>, center?: string) {
+export function getArtistPressUrl(artistPress: Pick<ArtistPress, 'id'>, center?: CenterSlug) {
   const path = `/artist-press/${encodeURIComponent(String(artistPress.id))}`
 
-  return center ? `/${center}${path}` : path
+  return center ? centerPublicHref(center, path) : path
 }
 
 export function generateArtistPressMeta(
@@ -49,7 +49,7 @@ export function generateArtistPressMeta(
   const canonicalPath = artistPress?.id
     ? getArtistPressUrl({ id: artistPress.id }, center)
     : center
-      ? `/${center}/artist-press`
+      ? centerPublicHref(center, '/artist-press')
       : '/artist-press'
   const publicCanonicalPath = center ? publicCenterPath(canonicalPath, center) : canonicalPath
 

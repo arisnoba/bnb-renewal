@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 type RookiesSearchFormProps = {
   center: CenterSlug
@@ -17,7 +18,7 @@ export function RookiesSearchForm({ center, filter, search }: RookiesSearchFormP
 
   return (
     <form
-      action={`/${center}/rookies`}
+      action={centerPublicHref(center, '/rookies')}
       className="section-rookies-list__search"
       method="get"
       onSubmit={(event) => {
@@ -37,7 +38,7 @@ export function RookiesSearchForm({ center, filter, search }: RookiesSearchFormP
 
         const query = params.toString()
 
-        router.push(`/${center}/rookies${query ? `?${query}` : ''}`, { scroll: false })
+        router.push(centerPublicHref(center, `/rookies${query ? `?${query}` : ''}`), { scroll: false })
       }}
       role="search"
     >

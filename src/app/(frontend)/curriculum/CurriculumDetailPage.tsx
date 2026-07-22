@@ -16,6 +16,7 @@ import type { ReactNode } from 'react'
 import { getPayload } from 'payload'
 
 import { Media } from '@/components/Media/Renderer'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Classroom, Curriculum, Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { cn } from '@/utilities/ui'
@@ -424,7 +425,7 @@ function toDetailModel(curriculum: Curriculum, center: CurriculumDetailPageProps
     classroomName: classroom?.title ?? '문의',
     classroomPhotos: normalizeClassroomPhotos(classroom),
     classroomTitle: classroom?.title ?? '강의실',
-    consultHref: `/${center}/consult?curriculum=${encodeURIComponent(String(curriculum.id))}`,
+    consultHref: centerPublicHref(center, `/consult?curriculum=${encodeURIComponent(String(curriculum.id))}`),
     dayLabel: days.length > 0 ? days.join('') : '요일 문의',
     educationDate: formatEducationDate(curriculum.educationStartDate),
     lessonCount: lessons.length > 0 ? `${lessons.length}회` : '문의',

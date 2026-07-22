@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { ExamPassedReview, ExamSchoolLogo } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import configPromise from '@payload-config'
@@ -24,7 +25,7 @@ type ExamPassedReviewDetail = ExamPassedReview & {
 }
 
 const center: CenterSlug = 'exam'
-const pathPrefix = '/exam/passed-reviews'
+const pathPrefix = centerPublicHref('exam', '/passed-reviews')
 
 export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
   const review = await queryExamPassedReviewBySlug(slug)

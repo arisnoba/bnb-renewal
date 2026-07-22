@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Media } from '@/components/Media/Renderer'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -65,7 +66,7 @@ export async function TeacherDetailPage({
     displayOrder: teacher.displayOrder,
     id: teacher.id,
   })
-  const backHref = `/${center}/teachers`
+  const backHref = centerPublicHref(center, '/teachers')
   const backLabel = '교육진 소개'
 
   return (
@@ -237,7 +238,7 @@ const queryAdjacentTeachers = cache(
       queryAdjacentTeacher({ center, direction: 'previous', displayOrder, id, payload }),
       queryAdjacentTeacher({ center, direction: 'next', displayOrder, id, payload }),
     ])
-    const pathPrefix = `/${center}/teachers`
+    const pathPrefix = centerPublicHref(center, '/teachers')
 
     return {
       nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,

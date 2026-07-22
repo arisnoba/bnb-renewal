@@ -4,6 +4,7 @@ import type { AuditionSchedule } from '@/payload-types'
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { getCenterLabel } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import configPromise from '@payload-config'
 import { getPayload, type Where } from 'payload'
 
@@ -451,7 +452,7 @@ function createMonthHref(
 ) {
   const [nextYear, nextMonth] = addMonths(year, month, offset)
 
-  return `/${center}/schedule?year=${nextYear}&month=${nextMonth}`
+  return centerPublicHref(center, `/schedule?year=${nextYear}&month=${nextMonth}`)
 }
 
 function getEventTypeMeta(eventType: AuditionSchedule['eventType']) {

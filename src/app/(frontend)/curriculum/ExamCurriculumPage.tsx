@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 type ExamCurriculumPageProps = {
   tab?: string
@@ -282,7 +283,10 @@ export function ExamCurriculumPage({ tab }: ExamCurriculumPageProps) {
                       ? 'border-brand text-brand'
                       : 'border-transparent text-white/35 hover:text-white',
                   ].join(' ')}
-                  href={item.id === 'exam' ? '/exam/curriculum' : `/exam/curriculum?tab=${item.id}`}
+                  href={centerPublicHref(
+                    'exam',
+                    `/curriculum${item.id === 'exam' ? '' : `?tab=${item.id}`}`,
+                  )}
                   key={item.id}
                 >
                   {item.label}

@@ -8,6 +8,7 @@ import React from 'react'
 
 import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Media as MediaType, StarCard } from '@/payload-types'
 
 import { StarcardList, type StarcardListItem } from './StarcardList.client'
@@ -37,14 +38,14 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
               <div className="section-starcard-list__actions mt-10 flex flex-wrap gap-2">
                 <Link
                   className="section-starcard-list__partnership-link inline-flex h-10 items-center justify-center rounded-full bg-foreground px-5 type-label-m font-bold leading-none text-background transition-colors hover:bg-brand hover:text-white"
-                  href={`/${center}/faq?category=starcard`}
+                  href={centerPublicHref(center, '/faq?category=starcard')}
                 >
                   스타카드 FAQ
                   <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
                 </Link>
                 <Link
                   className="section-starcard-list__faq-link inline-flex h-10 items-center justify-center rounded-full border border-foreground/15 px-5 type-label-m font-bold leading-none text-muted-foreground transition-colors hover:border-brand hover:text-brand"
-                  href={`/${center}/consult?inquiryType=partnership#partnership`}
+                  href={centerPublicHref(center, '/consult?inquiryType=partnership#partnership')}
                 >
                   제휴문의
                   <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />

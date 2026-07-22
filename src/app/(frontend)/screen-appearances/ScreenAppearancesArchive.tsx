@@ -8,6 +8,7 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type {
   BroadcastStation,
   Media as PayloadMedia,
@@ -286,7 +287,7 @@ function ScreenAppearanceCard({
   const performer = getPerformer(appearance)
   const registrationDate = formatDate(appearance.publishedAt ?? appearance.createdAt)
   const airDate = formatDate(appearance.airDateLabel)
-  const detailHref = `/${center}/screen-appearances/${encodeURIComponent(String(appearance.id))}`
+  const detailHref = centerPublicHref(center, `/screen-appearances/${encodeURIComponent(String(appearance.id))}`)
 
   return (
     <Link
@@ -662,10 +663,10 @@ function getAppearanceTypeLabel(value: ScreenAppearance['appearanceType']) {
 
 function screenAppearancesHref({ center, page }: { center: CenterSlug; page?: number }) {
   if (!page || page <= 1) {
-    return `/${center}/screen-appearances#${listAnchorId}`
+    return centerPublicHref(center, `/screen-appearances#${listAnchorId}`)
   }
 
-  return `/${center}/screen-appearances?page=${page}#${listAnchorId}`
+  return centerPublicHref(center, `/screen-appearances?page=${page}#${listAnchorId}`)
 }
 
 function paginationWindow(page: number, totalPages: number) {

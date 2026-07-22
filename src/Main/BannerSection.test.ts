@@ -76,7 +76,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/art/profiles/kim-actor',
+      href: 'https://art.baewooenm.com/profiles/kim-actor',
       image: profileImage,
       imageAlt: '김배우',
       label: '김배우 | 아이돌 연습생 역',
@@ -86,7 +86,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/art/profiles/english-name',
+      href: 'https://art.baewooenm.com/profiles/english-name',
       image: '/legacy/profile.jpg',
       imageAlt: 'English Name',
       label: 'English Name | 여주 역',
@@ -98,7 +98,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/avenue/profiles/kim-actor',
+      href: 'https://avenue.baewooenm.com/profiles/kim-actor',
       image: profileImage,
       imageAlt: '김배우',
       label: '김배우 | 아이돌 연습생 역',
@@ -108,7 +108,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
     {
       type: 'card',
       buttonLabel: '프로필 보기',
-      href: '/avenue/profiles/english-name',
+      href: 'https://avenue.baewooenm.com/profiles/english-name',
       image: '/legacy/profile.jpg',
       imageAlt: 'English Name',
       label: 'English Name | 여주 역',
@@ -199,7 +199,7 @@ test('main banner slides expose linked exam reviews for exam center', () => {
     {
       type: 'card',
       buttonLabel: '후기 보기',
-      href: '/exam/passed-reviews/seoul-art-pass',
+      href: 'https://exam.baewooenm.com/passed-reviews/seoul-art-pass',
       image: '/legacy/exam-student-1.jpg',
       imageAlt: '이학생',
       label: '이학생 | 한예종, 세종대',
@@ -209,7 +209,7 @@ test('main banner slides expose linked exam reviews for exam center', () => {
     {
       type: 'card',
       buttonLabel: '후기 보기',
-      href: '/exam/passed-reviews/park-pass',
+      href: 'https://exam.baewooenm.com/passed-reviews/park-pass',
       image: '/legacy/exam-student-2.jpg',
       imageAlt: '박학생',
       label: '박학생 | 한예종, 세종대',
@@ -302,7 +302,7 @@ test('main banner rewrites exam review media paths to R2 URLs in production', ()
   assert.deepEqual(slide.marqueeItems?.[0], {
     type: 'card',
     buttonLabel: '후기 보기',
-    href: '/exam/passed-reviews/r2-pass',
+    href: 'https://exam.baewooenm.com/passed-reviews/r2-pass',
     image: 'https://cdn.example.com/media/exam-passed-reviews/images/1/exam-passed-review-image-1-large.jpg',
     imageAlt: '이학생',
     label: '이학생 | 한예종',

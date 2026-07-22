@@ -1,5 +1,6 @@
 import RichText from '@/components/RichText'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { ArtistPress } from '@/payload-types'
 import {
   generateArtistPressMeta,
@@ -42,7 +43,7 @@ export async function ArtistPressDetailPage({
     id: artistPress.id,
     publishedAt: artistPress.publishedAt,
   })
-  const backHref = center ? `/${center}/artist-press` : '/artist-press'
+  const backHref = center ? centerPublicHref(center, '/artist-press') : '/artist-press'
   const backLabel = 'BNB출신 아티스트'
 
   return (
@@ -173,7 +174,7 @@ async function queryAdjacentArtistPressItems({
       queryAdjacentArtistPressItem({ center, direction: 'previous', id, payload, publishedAt }),
       queryAdjacentArtistPressItem({ center, direction: 'next', id, payload, publishedAt }),
     ])
-    const pathPrefix = center ? `/${center}/artist-press` : '/artist-press'
+    const pathPrefix = center ? centerPublicHref(center, '/artist-press') : '/artist-press'
 
     return {
       nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,

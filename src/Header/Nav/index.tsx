@@ -4,11 +4,11 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
 import { ArrowLeft, ChevronDown, ChevronRight, Menu, Minus, Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 import type { FamilySiteLink } from '@/Footer/familySites'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -30,7 +30,7 @@ const headerCenterOptions: CenterSlug[] = ['art', 'exam', 'highteen', 'kids', 'a
 export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenChange }) => {
   const center = useCurrentCenter()
   const menuGroups = getHeaderMenu(center)
-  const consultHref = `/${center}/consult`
+  const consultHref = centerPublicHref(center, '/consult')
   const navZoneRef = useRef<HTMLDivElement | null>(null)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
@@ -207,8 +207,6 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenCha
 }
 
 function HeaderCenterSelect({ currentCenter }: { currentCenter: CenterSlug }) {
-  const router = useRouter()
-
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
@@ -229,7 +227,7 @@ function HeaderCenterSelect({ currentCenter }: { currentCenter: CenterSlug }) {
               onSelect={() => {
                 if (option === currentCenter) return
 
-                router.push(`/${option}`)
+                window.location.assign(centerPublicHref(option))
               }}
             >
               {centers[option]}

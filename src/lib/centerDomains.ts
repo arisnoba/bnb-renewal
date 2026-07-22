@@ -28,6 +28,18 @@ export function centerOrigin(center: CenterSlug) {
   return `https://${centerHostname(center)}`
 }
 
+export function centerPublicHref(center: CenterSlug, path = '') {
+  if (!path || path === '/') {
+    return centerOrigin(center)
+  }
+
+  const suffix = path.startsWith('/') || path.startsWith('?') || path.startsWith('#')
+    ? path
+    : `/${path}`
+
+  return `${centerOrigin(center)}${suffix}`
+}
+
 export function centerFromHostname(hostname: string): CenterSlug | null {
   const normalizedHostname = hostname.trim().toLowerCase().split(':')[0]
   const suffix = `.${apexHostname}`

@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
+import { centerPublicHref } from '@/lib/centerDomains'
 import {
   Dialog,
   DialogContent,
@@ -62,7 +63,7 @@ export function ConsentModal({
             />
             <span>
               <span className="font-semibold">이용약관 동의</span>
-              <Link className="ml-2 text-primary underline underline-offset-4" href={`/${center}/terms`}>
+              <Link className="ml-2 text-primary underline underline-offset-4" href={centerPublicHref(center, '/terms')}>
                 보기
               </Link>
             </span>
@@ -76,7 +77,7 @@ export function ConsentModal({
             />
             <span>
               <span className="font-semibold">개인정보처리방침 동의</span>
-              <Link className="ml-2 text-primary underline underline-offset-4" href={`/${center}/privacy`}>
+              <Link className="ml-2 text-primary underline underline-offset-4" href={centerPublicHref(center, '/privacy')}>
                 보기
               </Link>
             </span>

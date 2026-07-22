@@ -1,6 +1,7 @@
 import type { CenterSlug } from '@/lib/centers'
 
 import { centers } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 export type HeaderMenuItem = {
   href: string
@@ -59,7 +60,7 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
       { href: companyHref(center), label: '회사 소개' },
       { href: centerAboutHref(center), label: '센터 소개' },
       { href: facilitiesHref(center), label: '시설 안내' },
-      { href: `/${center}/map`, label: '오시는 길' },
+      { href: centerPublicHref(center, '/map'), label: '오시는 길' },
     ]
   }
 
@@ -67,15 +68,15 @@ function aboutItems(center: CenterSlug): HeaderMenuItem[] {
     { href: companyHref(center), label: '회사 소개' },
     { href: centerAboutHref(center), label: '센터 소개' },
     { href: facilitiesHref(center), label: '시설 안내' },
-    { href: `/${center}/map`, label: '오시는 길' },
+    { href: centerPublicHref(center, '/map'), label: '오시는 길' },
   ]
 }
 
 function educationItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
     return [
-      { href: `/${center}/management`, label: '입시 매니지먼트' },
-      { href: `/${center}/special-system`, label: '특별한 시스템' },
+      { href: centerPublicHref(center, '/management'), label: '입시 매니지먼트' },
+      { href: centerPublicHref(center, '/special-system'), label: '특별한 시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
       { href: teachersHref(center), label: '교육진 소개' },
       { href: curriculumHref(center), label: '커리큘럼' },
@@ -84,7 +85,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 
   if (center === 'kids') {
     return [
-      { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
+      { href: centerPublicHref(center, '/grade-system'), label: '등급제 교육관리시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
       { href: curriculumHref(center), label: '커리큘럼' },
       { href: teachersHref(center), label: '교육진 소개' },
@@ -93,7 +94,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 
   if (center === 'art' || center === 'avenue') {
     return [
-      { href: `/${center}/grade-system`, label: '등급제 교육관리시스템' },
+      { href: centerPublicHref(center, '/grade-system'), label: '등급제 교육관리시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
       { href: teachersHref(center), label: '교육진 소개' },
       { href: curriculumHref(center), label: '커리큘럼' },
@@ -102,14 +103,14 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 
   return [
     {
-      href: `/${center}/grade-system`,
+      href: centerPublicHref(center, '/grade-system'),
       label: '등급제 교육관리시스템',
     },
     { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
     { href: teachersHref(center), label: '교육진 소개' },
     { href: curriculumHref(center), label: '커리큘럼' },
     ...(center === 'highteen'
-      ? [{ href: `/${center}/special-lecture`, label: '하이틴센터 특강' }]
+      ? [{ href: centerPublicHref(center, '/special-lecture'), label: '하이틴센터 특강' }]
       : []),
   ]
 }
@@ -165,22 +166,22 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
 
   if (center === 'art' || center === 'avenue') {
     return [
-      { href: `/${center}/artist-press`, label: 'BNB출신 아티스트' },
-      { href: `/${center}/rookies`, label: 'BNB 루키' },
+      { href: centerPublicHref(center, '/artist-press'), label: 'BNB출신 아티스트' },
+      { href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' },
     ]
   }
 
   if (center === 'highteen') {
     return [
-      { href: `/${center}/artist-press`, label: 'BNB 출신 아티스트' },
-      { href: `/${center}/rookies`, label: 'BNB 루키' },
+      { href: centerPublicHref(center, '/artist-press'), label: 'BNB 출신 아티스트' },
+      { href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' },
     ]
   }
 
   if (center === 'kids') {
     return [
-      { href: `/${center}/artist-press`, label: 'BNB 출신 아티스트' },
-      { href: `/${center}/rookies`, label: 'BNB 루키' },
+      { href: centerPublicHref(center, '/artist-press'), label: 'BNB 출신 아티스트' },
+      { href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' },
     ]
   }
 
@@ -189,70 +190,70 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
 
 function supportItems(center: CenterSlug): HeaderMenuItem[] {
   return [
-    { href: `/${center}/news`, label: 'NEWS&NOTICE' },
-    { href: `/${center}/admission`, label: '입학안내' },
-    { href: `/${center}/how-to-use`, label: '학원100%이용법' },
-    { href: `/${center}/starcard`, label: '스타카드 멤버쉽서비스' },
-    { href: `/${center}/faq`, label: '자주하는 질문' },
+    { href: centerPublicHref(center, '/news'), label: 'NEWS&NOTICE' },
+    { href: centerPublicHref(center, '/admission'), label: '입학안내' },
+    { href: centerPublicHref(center, '/how-to-use'), label: '학원100%이용법' },
+    { href: centerPublicHref(center, '/starcard'), label: '스타카드 멤버쉽서비스' },
+    { href: centerPublicHref(center, '/faq'), label: '자주하는 질문' },
   ]
 }
 
 function companyHref(center: CenterSlug) {
-  return `/${center}/company`
+  return centerPublicHref(center, '/company')
 }
 
 function universityResultsHref(center: CenterSlug) {
-  return `/${center}/university-results`
+  return centerPublicHref(center, '/university-results')
 }
 
 function artsHighResultsHref(center: CenterSlug) {
-  return `/${center}/arts-high-results`
+  return centerPublicHref(center, '/arts-high-results')
 }
 
 function examPassedReviewsHref(center: CenterSlug) {
-  return `/${center}/passed-reviews`
+  return centerPublicHref(center, '/passed-reviews')
 }
 
 function examPassedVideosHref(center: CenterSlug) {
-  return `/${center}/passed-videos`
+  return centerPublicHref(center, '/passed-videos')
 }
 
 function entertainmentHref(center: CenterSlug) {
-  return `/${center}/entertainment`
+  return centerPublicHref(center, '/entertainment')
 }
 
 function centerAboutHref(center: CenterSlug) {
-  return `/${center}/about`
+  return centerPublicHref(center, '/about')
 }
 
 function facilitiesHref(center: CenterSlug) {
-  return `/${center}/facilities`
+  return centerPublicHref(center, '/facilities')
 }
 
 function curriculumHref(center: CenterSlug) {
-  return `/${center}/curriculum`
+  return centerPublicHref(center, '/curriculum')
 }
 
 function screenAppearancesHref(center: CenterSlug) {
-  return `/${center}/screen-appearances`
+  return centerPublicHref(center, '/screen-appearances')
 }
 
 function castingStatusHref(center: CenterSlug) {
-  return `/${center}/casting-status`
+  return centerPublicHref(center, '/casting-status')
 }
 
 function castingHref(center: CenterSlug) {
-  return `/${center}/casting`
+  return centerPublicHref(center, '/casting')
 }
 
 function castingSystemHref(center: CenterSlug) {
-  return `/${center}/casting-system`
+  return centerPublicHref(center, '/casting-system')
 }
 
 function scheduleHref(center: CenterSlug) {
-  return `/${center}/schedule`
+  return centerPublicHref(center, '/schedule')
 }
 
 function teachersHref(center: CenterSlug) {
-  return `/${center}/teachers`
+  return centerPublicHref(center, '/teachers')
 }

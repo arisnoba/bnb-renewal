@@ -7,8 +7,8 @@ import React from 'react'
 import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { getCenterLabel } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Faq } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
 
 import { FaqArchiveClient, type FaqCategoryTab } from './FaqArchive.client'
 
@@ -71,7 +71,7 @@ export async function FaqArchive({ center }: FaqArchiveProps) {
                 <>
                 {/* <p className="section-faq-list__description-title">자주묻는 질문과 답변입니다.</p> */}
                 <p className="type-body-m leading-normal">
-                  더 궁금한 점이 있으시면 <Link href={`/${center}/consult`} className="text-brand hover:underline">
+                  더 궁금한 점이 있으시면 <Link href={centerPublicHref(center, '/consult')} className="text-brand hover:underline">
                     CS상담센터에 문의
                   </Link>
                   바랍니다.
@@ -233,7 +233,7 @@ function buildFaqJsonLd({ center, faqs }: { center: CenterSlug; faqs: FaqDisplay
     return null
   }
 
-  const pageUrl = `${getServerSideURL().replace(/\/+$/, '')}/${center}/faq`
+  const pageUrl = centerPublicHref(center, '/faq')
   const centerLabel = getCenterLabel(center)
 
   return {

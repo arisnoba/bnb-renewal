@@ -2,6 +2,7 @@
 
 import type { Media } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
@@ -189,7 +190,7 @@ function statisticGroupHref(title: string, center?: CenterSlug) {
     return undefined
   }
 
-  return `/${center ?? 'art'}/news?category=${category}`
+  return centerPublicHref(center ?? 'art', `/news?category=${category}`)
 }
 
 function useElementVisibility(elementRef: RefObject<HTMLElement | null>) {
@@ -436,7 +437,7 @@ function BannerScheduleStatRow({
   }
 
   return (
-    <Link className={className} href={`/${center}/schedule`}>
+    <Link className={className} href={centerPublicHref(center, '/schedule')}>
       {content}
     </Link>
   )

@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import { PageIntro } from '@/components/PageIntro'
 import { assertCenter, centers, getCenterLabel, type CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 type Args = {
   params: Promise<{
@@ -30,7 +31,7 @@ type ServiceItem = {
 }
 
 function usageFaqHref(center: CenterSlug) {
-  return `/${center}/faq?category=etc`
+  return centerPublicHref(center, '/faq?category=etc')
 }
 
 function createServices(center: CenterSlug, centerName: string): ServiceItem[] {
@@ -40,7 +41,7 @@ function createServices(center: CenterSlug, centerName: string): ServiceItem[] {
     {
       action: {
         ctaLabel: '스타카드 혜택 보기',
-        href: `/${center}/starcard`,
+        href: centerPublicHref(center, '/starcard'),
         kind: 'link',
       },
       description:
@@ -73,7 +74,7 @@ function createServices(center: CenterSlug, centerName: string): ServiceItem[] {
     {
       action: {
         ctaLabel: '프로필 제작 절차 보기',
-        href: `/${center}/profile-production`,
+        href: centerPublicHref(center, '/profile-production'),
         kind: 'link',
       },
       description: '배우앤배움은 매월 제한된 인원으로 수강생 프로필 제작을 하고 있습니다.',
@@ -84,7 +85,7 @@ function createServices(center: CenterSlug, centerName: string): ServiceItem[] {
     {
       action: {
         ctaLabel: '캐스팅 현황 보기',
-        href: `/${center}/casting-status`,
+        href: centerPublicHref(center, '/casting-status'),
         kind: 'link',
       },
       description:

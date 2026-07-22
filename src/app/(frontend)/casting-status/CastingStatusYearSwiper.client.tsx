@@ -4,6 +4,7 @@ import type { Swiper as SwiperInstance } from 'swiper'
 import type { ReactNode } from 'react'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { cn } from '@/utilities/ui'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import Image from 'next/image'
@@ -362,7 +363,7 @@ function CastingStatusPosterCard({
   center: CenterSlug
   item: CastingStatusPosterItem
 }) {
-  const href = `/${center}/casting-status/${encodeURIComponent(String(item.id))}`
+  const href = centerPublicHref(center, `/casting-status/${encodeURIComponent(String(item.id))}`)
 
   return (
     <Link

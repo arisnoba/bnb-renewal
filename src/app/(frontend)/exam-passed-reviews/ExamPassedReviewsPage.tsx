@@ -1,5 +1,6 @@
 import { getExamPassedHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
@@ -384,7 +385,7 @@ function ExamPassedReviewsPaginationLink({
 }
 
 function examPassedReviewsHref({ page }: { page?: number }) {
-  const pathname = '/exam/passed-reviews'
+  const pathname = centerPublicHref('exam', '/passed-reviews')
 
   if (!page || page <= 1) {
     return `${pathname}#${listAnchorId}`
@@ -394,7 +395,7 @@ function examPassedReviewsHref({ page }: { page?: number }) {
 }
 
 function examPassedReviewDetailHref(id: number) {
-  return `/exam/passed-reviews/${encodeURIComponent(String(id))}`
+  return centerPublicHref('exam', `/passed-reviews/${encodeURIComponent(String(id))}`)
 }
 
 function paginationWindow(page: number, totalPages: number) {

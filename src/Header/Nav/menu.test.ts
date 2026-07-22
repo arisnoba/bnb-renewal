@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import { centers } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 import { getHeaderMenu, headerCenterFromPathname } from './menu'
 
@@ -50,61 +51,61 @@ test('art mega menu exposes Figma baseline menu labels', () => {
     getHeaderMenu('art')
       .find((group) => group.key === 'education')
       ?.items.find((item) => item.label === '교육진 소개')?.href,
-    '/art/teachers',
+    'https://art.baewooenm.com/teachers',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'education')
       ?.items.find((item) => item.label === '커리큘럼')?.href,
-    '/art/curriculum',
+    'https://art.baewooenm.com/curriculum',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === 'BNB 출연장면')?.href,
-    '/art/screen-appearances',
+    'https://art.baewooenm.com/screen-appearances',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === '캐스팅 출연현황')?.href,
-    '/art/casting-status',
+    'https://art.baewooenm.com/casting-status',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === '캐스팅 센터')?.href,
-    '/art/casting',
+    'https://art.baewooenm.com/casting',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === '배우 케어 시스템')?.href,
-    '/art/casting-system',
+    'https://art.baewooenm.com/casting-system',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === '촬영ㆍ오디션 스케줄')?.href,
-    '/art/schedule',
+    'https://art.baewooenm.com/schedule',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB출신 아티스트')?.href,
-    '/art/artist-press',
+    'https://art.baewooenm.com/artist-press',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'artist')
       ?.items.find((item) => item.label === 'BNB 루키')?.href,
-    '/art/rookies',
+    'https://art.baewooenm.com/rookies',
   )
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'support')
       ?.items.find((item) => item.label === '입학안내')?.href,
-    '/art/admission',
+    'https://art.baewooenm.com/admission',
   )
 })
 
@@ -114,10 +115,10 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   const labels = labelsFor('exam')
 
   assert.deepEqual(itemsForGroup('exam', 'about'), [
-    { href: '/exam/company', label: '회사 소개' },
-    { href: '/exam/about', label: '센터 소개' },
-    { href: '/exam/facilities', label: '시설 안내' },
-    { href: '/exam/map', label: '오시는 길' },
+    { href: 'https://exam.baewooenm.com/company', label: '회사 소개' },
+    { href: 'https://exam.baewooenm.com/about', label: '센터 소개' },
+    { href: 'https://exam.baewooenm.com/facilities', label: '시설 안내' },
+    { href: 'https://exam.baewooenm.com/map', label: '오시는 길' },
   ])
   assert.deepEqual(groupLabels, ['배우앤배움', '교육', '합격현황', '합격자소개', '지원센터'])
   assert.deepEqual(menu.map((group) => [group.key, 'href' in group]), [
@@ -128,19 +129,19 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     ['support', false],
   ])
   assert.deepEqual(itemsForGroup('exam', 'education'), [
-    { href: '/exam/management', label: '입시 매니지먼트' },
-    { href: '/exam/special-system', label: '특별한 시스템' },
-    { href: '/exam/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: '/exam/teachers', label: '교육진 소개' },
-    { href: '/exam/curriculum', label: '커리큘럼' },
+    { href: 'https://exam.baewooenm.com/management', label: '입시 매니지먼트' },
+    { href: 'https://exam.baewooenm.com/special-system', label: '특별한 시스템' },
+    { href: 'https://exam.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: 'https://exam.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://exam.baewooenm.com/curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'casting'), [
-    { href: '/exam/university-results', label: '대학교' },
-    { href: '/exam/arts-high-results', label: '예술고등학교' },
+    { href: 'https://exam.baewooenm.com/university-results', label: '대학교' },
+    { href: 'https://exam.baewooenm.com/arts-high-results', label: '예술고등학교' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'artist'), [
-    { href: '/exam/passed-reviews', label: '합격 후기' },
-    { href: '/exam/passed-videos', label: '합격 영상' },
+    { href: 'https://exam.baewooenm.com/passed-reviews', label: '합격 후기' },
+    { href: 'https://exam.baewooenm.com/passed-videos', label: '합격 영상' },
   ])
   assert.ok(labels.includes('특별한 시스템'))
   assert.ok(!labels.includes('대표인사말'))
@@ -161,28 +162,28 @@ test('highteen mega menu matches the approved highteen structure', () => {
     ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
   )
   assert.deepEqual(itemsForGroup('highteen', 'about'), [
-    { href: '/highteen/company', label: '회사 소개' },
-    { href: '/highteen/about', label: '센터 소개' },
-    { href: '/highteen/facilities', label: '시설 안내' },
-    { href: '/highteen/map', label: '오시는 길' },
+    { href: 'https://highteen.baewooenm.com/company', label: '회사 소개' },
+    { href: 'https://highteen.baewooenm.com/about', label: '센터 소개' },
+    { href: 'https://highteen.baewooenm.com/facilities', label: '시설 안내' },
+    { href: 'https://highteen.baewooenm.com/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'education'), [
-    { href: '/highteen/grade-system', label: '등급제 교육관리시스템' },
-    { href: '/highteen/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: '/highteen/teachers', label: '교육진 소개' },
-    { href: '/highteen/curriculum', label: '커리큘럼' },
-    { href: '/highteen/special-lecture', label: '하이틴센터 특강' },
+    { href: 'https://highteen.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
+    { href: 'https://highteen.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: 'https://highteen.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://highteen.baewooenm.com/curriculum', label: '커리큘럼' },
+    { href: 'https://highteen.baewooenm.com/special-lecture', label: '하이틴센터 특강' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'casting'), [
-    { href: '/highteen/screen-appearances', label: 'BNB 출연장면' },
-    { href: '/highteen/casting-status', label: '캐스팅 출연현황' },
-    { href: '/highteen/casting', label: '캐스팅 센터' },
-    { href: '/highteen/casting-system', label: '배우 케어 시스템' },
-    { href: '/highteen/schedule', label: '촬영ㆍ오디션 스케줄' },
+    { href: 'https://highteen.baewooenm.com/screen-appearances', label: 'BNB 출연장면' },
+    { href: 'https://highteen.baewooenm.com/casting-status', label: '캐스팅 출연현황' },
+    { href: 'https://highteen.baewooenm.com/casting', label: '캐스팅 센터' },
+    { href: 'https://highteen.baewooenm.com/casting-system', label: '배우 케어 시스템' },
+    { href: 'https://highteen.baewooenm.com/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'artist'), [
-    { href: '/highteen/artist-press', label: 'BNB 출신 아티스트' },
-    { href: '/highteen/rookies', label: 'BNB 루키' },
+    { href: 'https://highteen.baewooenm.com/artist-press', label: 'BNB 출신 아티스트' },
+    { href: 'https://highteen.baewooenm.com/rookies', label: 'BNB 루키' },
   ])
   assert.ok(!labelsFor('highteen').includes('대표인사말'))
   assert.ok(!labelsFor('highteen').includes('BNB 캐스팅'))
@@ -201,27 +202,27 @@ test('kids mega menu matches the approved kids structure', () => {
     ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
   )
   assert.deepEqual(itemsForGroup('kids', 'about'), [
-    { href: '/kids/company', label: '회사 소개' },
-    { href: '/kids/about', label: '센터 소개' },
-    { href: '/kids/facilities', label: '시설 안내' },
-    { href: '/kids/map', label: '오시는 길' },
+    { href: 'https://kids.baewooenm.com/company', label: '회사 소개' },
+    { href: 'https://kids.baewooenm.com/about', label: '센터 소개' },
+    { href: 'https://kids.baewooenm.com/facilities', label: '시설 안내' },
+    { href: 'https://kids.baewooenm.com/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'education'), [
-    { href: '/kids/grade-system', label: '등급제 교육관리시스템' },
-    { href: '/kids/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: '/kids/curriculum', label: '커리큘럼' },
-    { href: '/kids/teachers', label: '교육진 소개' },
+    { href: 'https://kids.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
+    { href: 'https://kids.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: 'https://kids.baewooenm.com/curriculum', label: '커리큘럼' },
+    { href: 'https://kids.baewooenm.com/teachers', label: '교육진 소개' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'casting'), [
-    { href: '/kids/screen-appearances', label: 'BNB 출연장면' },
-    { href: '/kids/casting-status', label: '캐스팅 출연현황' },
-    { href: '/kids/casting', label: '캐스팅 센터' },
-    { href: '/kids/casting-system', label: '배우 케어 시스템' },
-    { href: '/kids/schedule', label: '촬영ㆍ오디션 스케줄' },
+    { href: 'https://kids.baewooenm.com/screen-appearances', label: 'BNB 출연장면' },
+    { href: 'https://kids.baewooenm.com/casting-status', label: '캐스팅 출연현황' },
+    { href: 'https://kids.baewooenm.com/casting', label: '캐스팅 센터' },
+    { href: 'https://kids.baewooenm.com/casting-system', label: '배우 케어 시스템' },
+    { href: 'https://kids.baewooenm.com/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'artist'), [
-    { href: '/kids/artist-press', label: 'BNB 출신 아티스트' },
-    { href: '/kids/rookies', label: 'BNB 루키' },
+    { href: 'https://kids.baewooenm.com/artist-press', label: 'BNB 출신 아티스트' },
+    { href: 'https://kids.baewooenm.com/rookies', label: 'BNB 루키' },
   ])
   assert.ok(!labelsFor('kids').includes('대표인사말'))
   assert.ok(!labelsFor('kids').includes('영재 교육과정'))
@@ -248,7 +249,7 @@ test('all center support menus link to the how-to-use page', () => {
       getHeaderMenu(center)
         .find((group) => group.key === 'support')
         ?.items.find((item) => item.label === '학원100%이용법')?.href,
-      `/${center}/how-to-use`,
+      centerPublicHref(center, '/how-to-use'),
     )
   }
 })
@@ -261,31 +262,31 @@ test('avenue mega menu matches the art baseline structure for preparation', () =
     ['배우앤배움', '교육', '캐스팅', '아티스트', '지원센터'],
   )
   assert.deepEqual(itemsForGroup('avenue', 'about'), [
-    { href: '/avenue/company', label: '회사 소개' },
-    { href: '/avenue/about', label: '센터 소개' },
-    { href: '/avenue/facilities', label: '시설 안내' },
-    { href: '/avenue/map', label: '오시는 길' },
+    { href: 'https://avenue.baewooenm.com/company', label: '회사 소개' },
+    { href: 'https://avenue.baewooenm.com/about', label: '센터 소개' },
+    { href: 'https://avenue.baewooenm.com/facilities', label: '시설 안내' },
+    { href: 'https://avenue.baewooenm.com/map', label: '오시는 길' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'education'), [
-    { href: '/avenue/grade-system', label: '등급제 교육관리시스템' },
-    { href: '/avenue/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: '/avenue/teachers', label: '교육진 소개' },
-    { href: '/avenue/curriculum', label: '커리큘럼' },
+    { href: 'https://avenue.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
+    { href: 'https://avenue.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
+    { href: 'https://avenue.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://avenue.baewooenm.com/curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'casting'), [
-    { href: '/avenue/screen-appearances', label: 'BNB 출연장면' },
-    { href: '/avenue/casting-status', label: '캐스팅 출연현황' },
-    { href: '/avenue/casting', label: '캐스팅 센터' },
-    { href: '/avenue/casting-system', label: '배우 케어 시스템' },
-    { href: '/avenue/schedule', label: '촬영ㆍ오디션 스케줄' },
+    { href: 'https://avenue.baewooenm.com/screen-appearances', label: 'BNB 출연장면' },
+    { href: 'https://avenue.baewooenm.com/casting-status', label: '캐스팅 출연현황' },
+    { href: 'https://avenue.baewooenm.com/casting', label: '캐스팅 센터' },
+    { href: 'https://avenue.baewooenm.com/casting-system', label: '배우 케어 시스템' },
+    { href: 'https://avenue.baewooenm.com/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'artist'), [
-    { href: '/avenue/artist-press', label: 'BNB출신 아티스트' },
-    { href: '/avenue/rookies', label: 'BNB 루키' },
+    { href: 'https://avenue.baewooenm.com/artist-press', label: 'BNB출신 아티스트' },
+    { href: 'https://avenue.baewooenm.com/rookies', label: 'BNB 루키' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'support'), itemsForGroup('art', 'support').map((item) => ({
     ...item,
-    href: item.href.replace('/art/', '/avenue/'),
+    href: item.href.replace('https://art.baewooenm.com/', 'https://avenue.baewooenm.com/'),
   })))
   assert.ok(!labelsFor('avenue').includes('애비뉴센터 소개'))
   assert.ok(!labelsFor('avenue').includes('제휴업체'))
@@ -297,8 +298,8 @@ test('center casting status menu items link to the casting status page', () => {
     assert.equal(
       getHeaderMenu(center)
         .find((group) => group.key === 'casting')
-        ?.items.find((item) => item.href === `/${center}/casting-status`)?.href,
-      `/${center}/casting-status`,
+        ?.items.find((item) => item.href === centerPublicHref(center, '/casting-status'))?.href,
+      centerPublicHref(center, '/casting-status'),
     )
   }
 })

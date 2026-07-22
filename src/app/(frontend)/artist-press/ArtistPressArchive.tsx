@@ -13,6 +13,7 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { ArtistPress } from '@/payload-types'
 import {
   getArtistPressAgencyLogoMedia,
@@ -342,7 +343,7 @@ function artistPressArchiveHref({
 
   const query = params.toString()
 
-  return `/${center}/artist-press${query ? `?${query}` : ''}`
+  return centerPublicHref(center, `/artist-press${query ? `?${query}` : ''}`)
 }
 
 function paginationItems(currentPage: number, totalPages: number): Array<number | 'ellipsis'> {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
-import { assertCenter } from '@/lib/centers'
+import { assertCenter, type CenterSlug } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import {
   getNewsDescription,
@@ -10,7 +10,7 @@ import {
   hasLexicalContent,
 } from '@/utilities/newsFallbacks'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { publicCenterPath } from '@/lib/centerDomains'
+import { centerPublicHref, publicCenterPath } from '@/lib/centerDomains'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -53,7 +53,7 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
     id: news.id,
     publishedAt: news.publishedAt,
   })
-  const backHref = `/${center}/news`
+  const backHref = centerPublicHref(center, '/news')
   const backLabel = 'NEWS&NOTICE'
 
   return (
@@ -96,7 +96,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const imageUrl = news ? getNewsMetaImageUrl(news) : undefined
   const title = news?.meta?.title || news?.title || '뉴스'
   const canonicalPath = publicCenterPath(
-    news ? getNewsUrl({ id: news.id }, center) : `/${center}/news`,
+    news ? getNewsUrl({ id: news.id }, center) : centerPublicHref(center, '/news'),
     center,
   )
 
@@ -115,7 +115,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   }
 }
 
-const queryNewsBySlug = cache(async ({ center, slug }: { center: string; slug: string }) => {
+const queryNewsBySlug = cache(async ({ center, slug }: { center: CenterSlug; slug: string }) => {
   const { isEnabled: draft } = await draftMode()
   const payload = await getPayload({ config: configPromise })
   const result = await payload.find({
@@ -167,7 +167,7 @@ const queryAdjacentNews = cache(
     id,
     publishedAt,
   }: {
-    center: string
+    center: CenterSlug
     id: number
     publishedAt?: string | null
   }) => {
@@ -199,8 +199,12 @@ const queryAdjacentNews = cache(
     ])
 
     return {
-      nextHref: next?.id ? `/${center}/news/${encodeURIComponent(String(next.id))}` : null,
-      previousHref: previous?.id ? `/${center}/news/${encodeURIComponent(String(previous.id))}` : null,
+      nextHref: next?.id
+        ? centerPublicHref(center, `/news/${encodeURIComponent(String(next.id))}`)
+        : null,
+      previousHref: previous?.id
+        ? centerPublicHref(center, `/news/${encodeURIComponent(String(previous.id))}`)
+        : null,
     }
   },
 )
@@ -212,7 +216,7 @@ async function queryAdjacentNewsItem({
   payload,
   publishedAt,
 }: {
-  center: string
+  center: CenterSlug
   direction: 'next' | 'previous'
   id: number
   payload: Awaited<ReturnType<typeof getPayload>>
@@ -261,7 +265,7 @@ async function queryAdjacentNewsItem({
   return result.docs[0] as Pick<News, 'id'> | undefined
 }
 
-function publishedNewsWhere(center: string): Where {
+function publishedNewsWhere(center: CenterSlug): Where {
   return {
     and: [
       {

@@ -8,6 +8,7 @@ import { CurriculumSearchForm } from '@/components/CurriculumSearchForm.client'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { curriculumClassOptionsByCenter, type CurriculumCenter } from '@/lib/curriculumOptions'
 import {
   buildCurriculumSearchFields,
@@ -110,7 +111,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
           </div>
 
           <CurriculumSearchForm
-            action={`/${center}/curriculum`}
+            action={centerPublicHref(center, '/curriculum')}
             fields={searchFields}
             variant="curriculumArchive"
           />
@@ -137,7 +138,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
               {hasActiveFilters ? (
                 <Link
                   className="mt-5 inline-flex h-[43px] items-center justify-center rounded-full bg-neutral-900 px-5 type-label-m font-bold text-white transition-colors hover:bg-brand"
-                  href={`/${center}/curriculum`}
+                  href={centerPublicHref(center, '/curriculum')}
                 >
                   전체 커리큘럼 보기
                   <ChevronRight aria-hidden="true" className="ml-2 size-4" strokeWidth={2.2} />
@@ -160,7 +161,7 @@ function CurriculumCard({
   center: CurriculumPageCenter
   item: CurriculumCardItem
 }) {
-  const detailHref = `/${center}/curriculum/${encodeURIComponent(String(item.id))}`
+  const detailHref = centerPublicHref(center, `/curriculum/${encodeURIComponent(String(item.id))}`)
   const markBackground = classMarkBackground(item.className)
 
   return (

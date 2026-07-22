@@ -47,6 +47,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { useCurrentCenter } from '../CenterDomainContext.client'
 import { INQUIRY_ATTACHMENT_MAX_MEGABYTES } from '@/lib/inquiryAttachment'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { cn } from '@/utilities/ui'
 import { inquiryTypeValues, type InquiryType } from './inquiryTypeParams'
 
@@ -306,7 +307,7 @@ const ValidationFeedbackContext = createContext<{
 
 export function ConsultationForm({ initialInquiryType }: { initialInquiryType: InquiryType }) {
   const center = useCurrentCenter()
-  const privacyHref = `/${center}/privacy`
+  const privacyHref = centerPublicHref(center, '/privacy')
   const earliestPreferredDate = useMemo(() => getEarliestPreferredDateValue(), [])
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)

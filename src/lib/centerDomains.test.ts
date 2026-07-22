@@ -7,8 +7,16 @@ import {
   centerDomainRoute,
   centerFromHostname,
   centerOrigin,
+  centerPublicHref,
   publicCenterPath,
 } from './centerDomains'
+
+test('centerPublicHref builds canonical center subdomain links', () => {
+  assert.equal(centerPublicHref('art'), 'https://art.baewooenm.com')
+  assert.equal(centerPublicHref('kids', '/news/123'), 'https://kids.baewooenm.com/news/123')
+  assert.equal(centerPublicHref('exam', 'passed-reviews?page=2'), 'https://exam.baewooenm.com/passed-reviews?page=2')
+  assert.equal(centerPublicHref('avenue', '#profiles'), 'https://avenue.baewooenm.com#profiles')
+})
 
 const centerSlugs: CenterSlug[] = ['art', 'avenue', 'exam', 'highteen', 'kids']
 

@@ -7,7 +7,7 @@ import type {
   Profile,
 } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
-import { centerOrigin } from '@/lib/centerDomains'
+import { centerOrigin, centerPublicHref } from '@/lib/centerDomains'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
@@ -184,13 +184,17 @@ export function mainBannerAnchorHref(center: CenterSlug) {
 function mainBannerProfileHref(profile: Profile, center: CenterSlug) {
   const slug = textValue(profile.slug)
 
-  return slug ? `/${center}/profiles/${encodeURIComponent(slug)}` : mainBannerAnchorHref(center)
+  return slug
+    ? centerPublicHref(center, `/profiles/${encodeURIComponent(slug)}`)
+    : mainBannerAnchorHref(center)
 }
 
 function mainBannerExamReviewHref(review: ExamPassedReview) {
   const slug = textValue(review.slug)
 
-  return slug ? `/exam/passed-reviews/${encodeURIComponent(slug)}` : mainBannerAnchorHref('exam')
+  return slug
+    ? centerPublicHref('exam', `/passed-reviews/${encodeURIComponent(slug)}`)
+    : mainBannerAnchorHref('exam')
 }
 
 function mainBannerProfileImage(profile: Profile) {

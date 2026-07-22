@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import type { CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { CastingAppearance } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -45,7 +46,7 @@ export async function CastingStatusDetailPage({
     id: casting.id,
     publishedAt: casting.publishedAt,
   })
-  const backHref = `/${center}/casting-status`
+  const backHref = centerPublicHref(center, '/casting-status')
   const backLabel = '진행중인 캐스팅 출연현황'
 
   return (
@@ -228,7 +229,7 @@ const queryAdjacentCastingStatus = cache(
       queryAdjacentCastingStatusItem({ center, direction: 'previous', id, payload, publishedAt }),
       queryAdjacentCastingStatusItem({ center, direction: 'next', id, payload, publishedAt }),
     ])
-    const pathPrefix = `/${center}/casting-status`
+    const pathPrefix = centerPublicHref(center, '/casting-status')
 
     return {
       nextHref: next?.id ? `${pathPrefix}/${encodeURIComponent(String(next.id))}` : null,

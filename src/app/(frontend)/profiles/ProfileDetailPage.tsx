@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { centers, type CenterSlug } from '@/lib/centers'
+import { centerPublicHref } from '@/lib/centerDomains'
 import type { Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -56,7 +57,7 @@ export async function ProfileDetailPage({
       .filter((src): src is string => Boolean(src))
       .map((src) => ({ src, type: 'legacy' as const })),
   ].filter((item): item is ProfileImageItem => Boolean(item))
-  const backHref = center ? `/${center}/rookies` : '/profiles'
+  const backHref = center ? centerPublicHref(center, '/rookies') : '/profiles'
   const backLabel = center ? 'BNB 루키' : '프로필'
   const adjacent = await queryAdjacentProfiles({
     center,
@@ -171,7 +172,7 @@ export async function profileCanonicalPath(slug: string) {
     return null
   }
 
-  return `/${center}/profiles/${encodeURIComponent(profile.slug || slug)}`
+  return centerPublicHref(center, `/profiles/${encodeURIComponent(profile.slug || slug)}`)
 }
 
 const queryProfileBySlug = cache(async ({ center, slug }: { center?: CenterSlug; slug: string }) => {
@@ -265,7 +266,7 @@ async function queryAdjacentProfileItems({
       queryAdjacentProfileItem({ center, direction: 'previous', id, payload, publishedAt }),
       queryAdjacentProfileItem({ center, direction: 'next', id, payload, publishedAt }),
     ])
-    const pathPrefix = center ? `/${center}/profiles` : '/profiles'
+    const pathPrefix = center ? centerPublicHref(center, '/profiles') : '/profiles'
 
     return {
       nextHref: next?.slug ? `${pathPrefix}/${encodeURIComponent(next.slug)}` : null,

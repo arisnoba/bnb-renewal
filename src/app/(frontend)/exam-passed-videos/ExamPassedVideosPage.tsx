@@ -1,5 +1,6 @@
 import { getExamPassedHeroImage, PageHeroImage } from '@/app/(frontend)/_components/PageHeroImage'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
@@ -327,7 +328,7 @@ function ExamPassedVideosPaginationLink({
 }
 
 function examPassedVideosHref({ page }: { page?: number }) {
-  const pathname = '/exam/passed-videos'
+  const pathname = centerPublicHref('exam', '/passed-videos')
 
   if (!page || page <= 1) {
     return `${pathname}#${listAnchorId}`
