@@ -69,6 +69,15 @@ test('highteen sitemap excludes the inactive curriculum page', () => {
   )
 })
 
+test('highteen and kids sitemaps exclude the inactive artist press page', () => {
+  for (const center of ['highteen', 'kids']) {
+    const urls = sitemapURLs(`https://${center}.baewooenm.com`)
+
+    assert.ok(!urls.includes(`https://${center}.baewooenm.com/artist-press`))
+    assert.ok(urls.includes(`https://${center}.baewooenm.com/rookies`))
+  }
+})
+
 test('primary gate sitemap only exposes the gate root', () => {
   assert.deepEqual(sitemapURLs('https://www.baewooenm.com'), ['https://www.baewooenm.com/'])
 })

@@ -175,7 +175,6 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: 'https://highteen.baewooenm.com/casting-system', label: '배우 케어 시스템' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'artist'), [
-    { href: 'https://highteen.baewooenm.com/artist-press', label: 'BNB 출신 아티스트' },
     { href: 'https://highteen.baewooenm.com/rookies', label: 'BNB 루키' },
   ])
   assert.ok(!labelsFor('highteen').includes('대표인사말'))
@@ -214,7 +213,6 @@ test('kids mega menu matches the approved kids structure', () => {
     { href: 'https://kids.baewooenm.com/casting-system', label: '배우 케어 시스템' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'artist'), [
-    { href: 'https://kids.baewooenm.com/artist-press', label: 'BNB 출신 아티스트' },
     { href: 'https://kids.baewooenm.com/rookies', label: 'BNB 루키' },
   ])
   assert.ok(!labelsFor('kids').includes('대표인사말'))

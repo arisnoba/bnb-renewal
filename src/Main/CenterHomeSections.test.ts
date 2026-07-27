@@ -4,6 +4,7 @@ import test from 'node:test'
 
 import type { Media, Profile, ScreenAppearance } from '@/payload-types'
 
+import { usesRookiesHomeSection } from './CenterHomeSections'
 import { hasSearchableHomeCurriculum } from './centerHomeCourseSearch'
 import { screenAppearanceSlide } from './screenAppearanceSlides'
 
@@ -108,6 +109,14 @@ test('center home course search is only exposed for searchable curriculum center
   assert.equal(hasSearchableHomeCurriculum('avenue'), false)
 })
 
+test('center home replaces artist press with BNB rookies for highteen and kids', () => {
+  assert.equal(usesRookiesHomeSection('art'), false)
+  assert.equal(usesRookiesHomeSection('avenue'), false)
+  assert.equal(usesRookiesHomeSection('exam'), false)
+  assert.equal(usesRookiesHomeSection('highteen'), true)
+  assert.equal(usesRookiesHomeSection('kids'), true)
+})
+
 test('center home non-news data queries do not silently convert Payload failures to empty sections', () => {
   const source = readFileSync(new URL('./CenterHomeSections.tsx', import.meta.url), 'utf8')
   const querySource = source.slice(source.indexOf('const queryCenterHomeData'))
@@ -125,5 +134,5 @@ test('center home news renders one category-based list for every viewport', () =
 
   assert.match(newsSectionSource, /<NewsHomeList center=\{center\} news=\{news\} \/>/)
   assert.doesNotMatch(newsSectionSource, /desktopNews|mobileNews|className="(?:hidden|lg:hidden)/)
-  assert.match(source, /\['frontend-center-home', 'news-by-category-v1', center\]/)
+  assert.match(source, /\['frontend-center-home', 'news-by-category-v1', 'rookies-v1', center\]/)
 })

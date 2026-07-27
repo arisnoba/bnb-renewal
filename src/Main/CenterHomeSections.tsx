@@ -34,12 +34,14 @@ import type {
   ExamSchoolLogo,
   Footer,
   Media,
+  Profile,
   SocialLink,
 } from '@/payload-types'
 import { getArtistPressThumbnailMedia, getArtistPressUrl } from '@/utilities/artistPressFallbacks'
 import { publishedArtistPressWhere } from '@/utilities/artistPressVisibility'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getNewsUrl } from '@/utilities/newsFallbacks'
+import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import { CenterHomeScreenAppearances } from './CenterHomeScreenAppearances.client'
 import { CenterHomeArtistCare, type CenterHomeArtistCareItem } from './CenterHomeArtistCare.client'
 import {
@@ -56,6 +58,11 @@ type CenterHomeSectionsProps = {
 type HomeArtistPress = Pick<
   ArtistPress,
   'actorName' | 'generation' | 'id' | 'publishedAt' | 'slug' | 'thumbnailMedia' | 'title'
+>
+
+type HomeRookie = Pick<
+  Profile,
+  'englishName' | 'id' | 'name' | 'profileImageMedia' | 'profileImagePath' | 'publishedAt' | 'slug'
 >
 
 type HomeExamPassedVideo = Pick<
@@ -103,6 +110,7 @@ type CenterHomeData = {
   examPassedReviews: HomeExamPassedReview[]
   examPassedVideos: HomeExamPassedVideo[]
   news: CenterHomeNews[]
+  rookies: HomeRookie[]
   screenAppearances: HomeScreenAppearance[]
   socialAccounts: HomeSocialAccount[]
   socialLinks: HomeSocialLink[]
@@ -110,6 +118,7 @@ type CenterHomeData = {
 
 const screenAppearanceLimit = 10
 const artistPressLimit = 5
+const rookieLimit = 4
 const examPassedReviewLimit = 5
 const examPassedVideoLimit = 6
 const socialLimit = 10
@@ -239,6 +248,8 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
       )}
       {center === 'exam' ? (
         <ExamPassedReviewsHomeSection reviews={data.examPassedReviews} />
+      ) : usesRookiesHomeSection(center) ? (
+        <RookiesHomeSection center={center} rookies={data.rookies} />
       ) : (
         <ArtistPressHomeSection artistPress={data.artistPress} center={center} />
       )}
@@ -251,6 +262,12 @@ export async function CenterHomeSections({ center }: CenterHomeSectionsProps) {
       <HomeCtaSection center={center} />
     </>
   )
+}
+
+export function usesRookiesHomeSection(
+  center: CenterSlug,
+): center is Extract<CenterSlug, 'highteen' | 'kids'> {
+  return center === 'highteen' || center === 'kids'
 }
 
 function CourseSearchSection({
@@ -497,6 +514,51 @@ function ArtistPressHomeSection({
   )
 }
 
+function RookiesHomeSection({
+  center,
+  rookies,
+}: {
+  center: Extract<CenterSlug, 'highteen' | 'kids'>
+  rookies: HomeRookie[]
+}) {
+  const [featured, ...rest] = rookies
+
+  return (
+    <section
+      aria-labelledby="center-home-rookies-title"
+      className="section-center-home-rookies bg-neutral-950 section-p-block-base text-white"
+      data-center={center}
+    >
+      <div className="container grid gap-12 lg:grid-cols-12 lg:items-start">
+        <div className="lg:col-span-4">
+          <SectionIntro
+            eyebrow="BNB ROOKIE"
+            id="center-home-rookies-title"
+            title={'BNB\n루키'}
+          />
+        </div>
+        <div className="section-center-home-rookies__grid grid grid-cols-2 gap-3 md:grid-cols-4 lg:col-span-8">
+          <RookieFeaturedCard center={center} rookie={featured} />
+          {rest.slice(0, 3).map((rookie) => (
+            <RookieMiniCard center={center} key={rookie.id} rookie={rookie} />
+          ))}
+          <Link
+            className="section-center-home-rookies__more flex aspect-square flex-col justify-between bg-brand p-5 text-brand-foreground transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
+            href={centerPublicHref(center, '/rookies')}
+            prefetch={false}
+          >
+            <span className="type-title-s font-extrabold leading-normal">BNB ROOKIE</span>
+            <span className="inline-flex items-center gap-2 type-label-s font-bold leading-[1.2]">
+              전체보기
+              <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
+            </span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function ExamPassedReviewsHomeSection({ reviews }: { reviews: HomeExamPassedReview[] }) {
   const [featured, ...rest] = reviews
 
@@ -626,6 +688,81 @@ function ArtistPressMiniCard({
             {artistPress.title}
           </span>
         </span>
+      </span>
+    </Link>
+  )
+}
+
+function RookieFeaturedCard({
+  center,
+  rookie,
+}: {
+  center: Extract<CenterSlug, 'highteen' | 'kids'>
+  rookie?: HomeRookie
+}) {
+  const imageUrl = rookieImageUrl(rookie)
+  const href = rookie
+    ? centerPublicHref(center, `/profiles/${encodeURIComponent(rookie.slug)}`)
+    : centerPublicHref(center, '/rookies')
+
+  return (
+    <Link
+      className="group section-center-home-rookie-featured relative col-span-2 row-span-2 aspect-square overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:h-full md:aspect-auto"
+      href={href}
+      prefetch={false}
+    >
+      {imageUrl ? (
+        <img
+          alt=""
+          className="absolute inset-0 size-full object-cover object-center grayscale transition duration-300 ease-out group-hover:scale-[1.03]"
+          loading="lazy"
+          src={imageUrl}
+        />
+      ) : null}
+      <span className="absolute inset-0 bg-linear-to-t from-black/75 via-black/10 to-black/5" />
+      <span className="absolute bottom-5 left-5 right-5">
+        <h3 className="type-title-l font-extrabold leading-[1.4] text-white">
+          {rookie?.name || `${centers[center]} BNB 루키`}
+        </h3>
+        <p className="mt-1 type-title-m font-medium leading-[1.35] text-neutral-300">
+          {rookie?.englishName || '새로운 가능성을 준비하는 배우'}
+        </p>
+      </span>
+    </Link>
+  )
+}
+
+function RookieMiniCard({
+  center,
+  rookie,
+}: {
+  center: Extract<CenterSlug, 'highteen' | 'kids'>
+  rookie: HomeRookie
+}) {
+  const imageUrl = rookieImageUrl(rookie)
+
+  return (
+    <Link
+      className="group section-center-home-rookie-mini relative aspect-square overflow-hidden bg-neutral-800 outline-none ring-white/20 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:aspect-auto md:min-h-[184px]"
+      href={centerPublicHref(center, `/profiles/${encodeURIComponent(rookie.slug)}`)}
+      prefetch={false}
+    >
+      {imageUrl ? (
+        <img
+          alt=""
+          className="absolute inset-0 size-full object-cover object-center grayscale opacity-75 transition duration-300 ease-out group-hover:scale-105"
+          loading="lazy"
+          src={imageUrl}
+        />
+      ) : null}
+      <span className="absolute inset-0 bg-linear-to-t from-black/70 to-black/10" />
+      <span className="absolute bottom-4 left-4 right-4">
+        <span className="block type-title-s font-bold leading-normal text-white">{rookie.name}</span>
+        {rookie.englishName ? (
+          <span className="mt-1 block text-sm font-medium leading-[1.35] text-neutral-300">
+            {rookie.englishName}
+          </span>
+        ) : null}
       </span>
     </Link>
   )
@@ -1090,6 +1227,14 @@ function artistPressImageUrl(artistPress: HomeArtistPress | null | undefined) {
   return mediaUrl(getArtistPressThumbnailMedia(artistPress))
 }
 
+function rookieImageUrl(rookie: HomeRookie | null | undefined) {
+  if (!rookie) {
+    return ''
+  }
+
+  return mediaUrl(rookie.profileImageMedia) || publishedImageSrc(rookie.profileImagePath)
+}
+
 function examPassedVideoSlide(video: HomeExamPassedVideo) {
   const youtubeUrl = normalizeText(video.youtubeUrl)
   const thumbnailUrl = youtubeThumbnailUrl(video.youtubeCode || youtubeUrl)
@@ -1270,13 +1415,14 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache((center: CenterSlug): Promise<CenterHomeData> => {
   return unstable_cache(
     () => queryCenterHomeDataUncached(center),
-    ['frontend-center-home', 'news-by-category-v1', center],
+    ['frontend-center-home', 'news-by-category-v1', 'rookies-v1', center],
     {
       revalidate: 600,
       tags: [
         `frontend_artist_press_${center}`,
         `frontend_curriculums_${center}`,
         `frontend_news_${center}`,
+        `frontend_profiles_${center}`,
         `frontend_screen_appearances_${center}`,
         `frontend_social_links_${center}`,
         'frontend_exam_passed_reviews',
@@ -1293,6 +1439,7 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
   const [
     screenAppearances,
     artistPress,
+    rookies,
     examPassedReviews,
     examPassedVideos,
     homeNews,
@@ -1340,23 +1487,66 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
         ],
       } satisfies Where,
     }),
-    payload.find({
-      collection: 'artist-press',
-      depth: 1,
-      limit: artistPressLimit,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        actorName: true,
-        generation: true,
-        publishedAt: true,
-        slug: true,
-        thumbnailMedia: true,
-        title: true,
-      },
-      sort: '-publishedAt',
-      where: publishedArtistPressWhere(center),
-    }),
+    center !== 'exam' && !usesRookiesHomeSection(center)
+      ? payload.find({
+          collection: 'artist-press',
+          depth: 1,
+          limit: artistPressLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            actorName: true,
+            generation: true,
+            publishedAt: true,
+            slug: true,
+            thumbnailMedia: true,
+            title: true,
+          },
+          sort: '-publishedAt',
+          where: publishedArtistPressWhere(center),
+        })
+      : Promise.resolve({ docs: [] }),
+    usesRookiesHomeSection(center)
+      ? payload.find({
+          collection: 'profiles',
+          depth: 1,
+          limit: rookieLimit,
+          overrideAccess: false,
+          pagination: false,
+          select: {
+            englishName: true,
+            name: true,
+            profileImageMedia: true,
+            profileImagePath: true,
+            publishedAt: true,
+            slug: true,
+          },
+          sort: '-publishedAt',
+          where: {
+            and: [
+              {
+                displayStatus: {
+                  equals: 'published',
+                },
+              },
+              {
+                or: [
+                  {
+                    centers: {
+                      contains: center,
+                    },
+                  },
+                  {
+                    centers: {
+                      contains: 'all',
+                    },
+                  },
+                ],
+              },
+            ],
+          } satisfies Where,
+        })
+      : Promise.resolve({ docs: [] }),
     center === 'exam'
       ? payload.find({
           collection: 'exam-passed-reviews',
@@ -1468,6 +1658,7 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
     examPassedReviews: examPassedReviews.docs as HomeExamPassedReview[],
     examPassedVideos: examPassedVideos.docs as HomeExamPassedVideo[],
     news: homeNews,
+    rookies: rookies.docs as HomeRookie[],
     screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
     socialAccounts: centerSocialAccounts(footer as Footer, center),
     socialLinks: socialLinks.docs as HomeSocialLink[],

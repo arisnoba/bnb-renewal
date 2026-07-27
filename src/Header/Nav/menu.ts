@@ -168,17 +168,11 @@ function artistItems(center: CenterSlug): HeaderMenuItem[] {
   }
 
   if (center === 'highteen') {
-    return [
-      { href: centerPublicHref(center, '/artist-press'), label: 'BNB 출신 아티스트' },
-      { href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' },
-    ]
+    return [{ href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' }]
   }
 
   if (center === 'kids') {
-    return [
-      { href: centerPublicHref(center, '/artist-press'), label: 'BNB 출신 아티스트' },
-      { href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' },
-    ]
+    return [{ href: centerPublicHref(center, '/rookies'), label: 'BNB 루키' }]
   }
 
   return []
