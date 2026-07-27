@@ -211,8 +211,8 @@ test('kids mega menu matches the approved kids structure', () => {
   assert.deepEqual(itemsForGroup('kids', 'education'), [
     { href: 'https://kids.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
     { href: 'https://kids.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: 'https://kids.baewooenm.com/curriculum', label: '커리큘럼' },
     { href: 'https://kids.baewooenm.com/teachers', label: '교육진 현황' },
+    { href: 'https://kids.baewooenm.com/curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'casting'), [
     { href: 'https://kids.baewooenm.com/screen-appearances', label: 'BNB 출연장면' },
