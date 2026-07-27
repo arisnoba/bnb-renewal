@@ -26,3 +26,4 @@ data/legacy_dumps/*
 data/baewoo-split/_global.sql
 data/baewoo-split/tables/*.sql
 .vercel
+.gstack/
