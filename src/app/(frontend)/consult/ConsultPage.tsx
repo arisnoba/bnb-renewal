@@ -154,7 +154,7 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
 
   return (
     <article
-      className={`section-consult-card flex flex-col gap-6 py-8 md:py-0 ${isFirst ? 'md:pr-15' : 'border-t border-white/15 md:border-l md:border-t-0 md:pl-15'}`}
+      className={`section-consult-card flex flex-col gap-6 justify-between py-8 md:py-0 ${isFirst ? 'md:pr-15' : 'border-t border-white/15 md:border-l md:border-t-0 md:pl-15'}`}
     >
       <div className="section-consult-card__body grid gap-4">
         <div className="section-consult-card__title flex items-center gap-3">
