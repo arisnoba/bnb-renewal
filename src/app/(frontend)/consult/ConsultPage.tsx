@@ -1,11 +1,12 @@
 import type { CSSProperties } from 'react'
 
 import Image from 'next/image'
-import { ExternalLink, Headphones } from 'lucide-react'
+import { ChevronRight, ExternalLink, Headphones } from 'lucide-react'
 
 import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { SmoothAnchorLink } from '../_components/SmoothAnchorLink.client'
 import { ConsultationForm } from './ConsultationForm'
 import {
   type ConsultationSearchParams,
@@ -68,33 +69,48 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
       style={consultLightThemeVars}
     >
       <section
-        aria-labelledby="consult-form-title"
-        className="section-consult-form section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
-        id="partnership"
+        aria-labelledby="consult-hero-title"
+        className="section-consult-hero section-p-t-sm section-p-b-xs bg-background"
       >
         <div className="container-sm">
           <PageIntro
-            className="section-consult-form__heading"
+            className="section-consult-hero__heading"
             eyebrow="온라인 상담"
-            id="consult-form-title"
+            id="consult-hero-title"
             title={`${centerName}와 함께할\n당신의 이야기를 기다립니다.`}
           />
-
-          <div className="section-consult-form__panel mt-12 bg-background">
-            <ConsultationForm initialInquiryType={initialInquiryType} />
-          </div>
         </div>
       </section>
 
       <section className="section-consult-info bg-muted py-10" aria-label="상담 안내">
         <div className="container-sm grid gap-8 md:grid-cols-2 md:gap-15">
           {infoItems.map((item, index) => (
-            <InfoItem isPrimary={index === 0} item={item} key={item.title} />
+            <InfoItem
+              hasContactLink={index === 1}
+              isPrimary={index === 0}
+              item={item}
+              key={item.title}
+            />
           ))}
         </div>
       </section>
 
-      <section className="section-consult-contact section-p-block-sm bg-background">
+      <section
+        aria-label="상담 예약 신청서"
+        className="section-consult-form section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
+        id="partnership"
+      >
+        <div className="container-sm">
+          <div className="section-consult-form__panel bg-background">
+            <ConsultationForm initialInquiryType={initialInquiryType} />
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="section-consult-contact section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
+        id="consult-contact"
+      >
         <div className="container-sm">
           <div className="section-consult-contact__cards grid border border-border md:grid-cols-2">
             {contactCards.map((item, index) => (
@@ -200,17 +216,38 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
 }
 
 function InfoItem({
+  hasContactLink,
   isPrimary,
   item,
 }: {
+  hasContactLink: boolean
   isPrimary: boolean
   item: (typeof infoItems)[number]
 }) {
+  const headingClassName = `type-title-s font-bold ${
+    isPrimary ? 'text-brand' : 'text-foreground'
+  }`
+
   return (
     <div className="section-consult-info__item grid gap-3">
-      <h2 className={`type-title-s font-bold ${isPrimary ? 'text-brand' : 'text-foreground'}`}>
-        {item.title}
-      </h2>
+      {hasContactLink ? (
+        <h2 className={headingClassName}>
+          <SmoothAnchorLink
+            aria-label={`${item.title} 전화 및 카카오톡 안내로 이동`}
+            className="group inline-flex items-center gap-1 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            href="#consult-contact"
+          >
+            <span>{item.title}</span>
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 transition-transform group-hover:translate-x-0.5"
+              strokeWidth={2.4}
+            />
+          </SmoothAnchorLink>
+        </h2>
+      ) : (
+        <h2 className={headingClassName}>{item.title}</h2>
+      )}
       <p className="type-body-s leading-normal text-muted-foreground">{item.value}</p>
     </div>
   )
