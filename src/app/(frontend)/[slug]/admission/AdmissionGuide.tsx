@@ -184,7 +184,7 @@ function ProcedureCard({ index, step }: { index: number; step: ProcedureStep }) 
         {step.ctas ? (
           <div className="flex flex-wrap gap-3">
             {step.ctas.map((cta) => (
-              <TextLink href={cta.href} key={cta.href}>
+              <TextLink href={cta.href} key={cta.href} openInNewTab={cta.openInNewTab}>
                 {cta.label}
               </TextLink>
             ))}
@@ -195,16 +195,30 @@ function ProcedureCard({ index, step }: { index: number; step: ProcedureStep }) 
   )
 }
 
-function TextLink({ children, href }: { children: string; href: string }) {
+function TextLink({
+  children,
+  href,
+  openInNewTab = false,
+}: {
+  children: string
+  href: string
+  openInNewTab?: boolean
+}) {
   const isInternal = href.startsWith('/')
 
   const className =
     'inline-flex w-fit items-center gap-2 rounded-full border border-neutral-900/35 px-5 py-3 type-label-m font-semibold leading-none text-neutral-950 transition-colors hover:border-brand hover:text-brand'
   const icon = <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
+  const newTabProps = openInNewTab
+    ? {
+        rel: 'noopener noreferrer',
+        target: '_blank',
+      }
+    : {}
 
   if (isInternal) {
     return (
-      <Link className={className} href={href}>
+      <Link className={className} href={href} {...newTabProps}>
         {children}
         {icon}
       </Link>
@@ -212,7 +226,7 @@ function TextLink({ children, href }: { children: string; href: string }) {
   }
 
   return (
-    <a className={className} href={href}>
+    <a className={className} href={href} {...newTabProps}>
       {children}
       {icon}
     </a>

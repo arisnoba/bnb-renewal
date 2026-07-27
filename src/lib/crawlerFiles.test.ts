@@ -61,6 +61,14 @@ test('center sitemap excludes the inactive schedule page', () => {
   }
 })
 
+test('highteen sitemap excludes the inactive curriculum page', () => {
+  assert.ok(
+    !sitemapURLs('https://highteen.baewooenm.com').includes(
+      'https://highteen.baewooenm.com/curriculum',
+    ),
+  )
+})
+
 test('primary gate sitemap only exposes the gate root', () => {
   assert.deepEqual(sitemapURLs('https://www.baewooenm.com'), ['https://www.baewooenm.com/'])
 })

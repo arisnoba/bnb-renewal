@@ -94,6 +94,18 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     ]
   }
 
+  if (center === 'highteen') {
+    return [
+      {
+        href: centerPublicHref(center, '/grade-system'),
+        label: '등급제 교육관리시스템',
+      },
+      { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
+      { href: teachersHref(center), label: '교육진 현황' },
+      { href: centerPublicHref(center, '/special-lecture'), label: '하이틴센터 특강' },
+    ]
+  }
+
   return [
     {
       href: centerPublicHref(center, '/grade-system'),
@@ -102,9 +114,6 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
     { href: teachersHref(center), label: '교육진 현황' },
     { href: curriculumHref(center), label: '커리큘럼' },
-    ...(center === 'highteen'
-      ? [{ href: centerPublicHref(center, '/special-lecture'), label: '하이틴센터 특강' }]
-      : []),
   ]
 }
 

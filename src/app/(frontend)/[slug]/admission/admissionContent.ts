@@ -26,19 +26,19 @@ export type ContentTable = {
 
 export type ProcedureStep = {
   body?: string[]
-  ctas?: Array<{
-    href: string
-    label: string
-  }>
+  ctas?: ProcedureCta[]
   items?: Array<{
     body: string
-    cta?: {
-      href: string
-      label: string
-    }
+    cta?: ProcedureCta
     title: string
   }>
   title: string
+}
+
+export type ProcedureCta = {
+  href: string
+  label: string
+  openInNewTab?: boolean
 }
 
 export type TableColumn = {
@@ -682,7 +682,7 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
     center === 'highteen'
       ? [
           '예약된 일시에 아트센터 1층 안내데스크로 방문해 상담 어플리케이션을 작성합니다.',
-          '작성 후 하이틴센터로 안내받아 시스템, 커리큘럼, 수업 방향에 대해 안내받으실 수 있습니다.',
+          '작성 후 시스템, 커리큘럼, 수업 방향에 대해 안내받으실 수 있습니다.',
         ]
       : center === 'kids'
         ? [
@@ -709,16 +709,20 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
   return [
     {
       items: [
-        {
-          body:
-            center === 'art'
-              ? '희망 Class, 교육시작일, 교육횟수, 교육시간대를 확인한 뒤 수강상담을 신청합니다.'
-              : center === 'kids'
-                ? '키즈센터 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.'
-                : `${centerName} 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.`,
-          cta: { href: courseHref, label: '커리큘럼 확인' },
-          title: '커리큘럼 확인',
-        },
+        ...(center === 'highteen'
+          ? []
+          : [
+              {
+                body:
+                  center === 'art'
+                    ? '희망 Class, 교육시작일, 교육횟수, 교육시간대를 확인한 뒤 수강상담을 신청합니다.'
+                    : center === 'kids'
+                      ? '키즈센터 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.'
+                      : `${centerName} 과정, 교육시작일, 교육횟수, 시간대를 확인한 뒤 상담을 신청합니다.`,
+                cta: { href: courseHref, label: '커리큘럼 확인' },
+                title: '커리큘럼 확인',
+              },
+            ]),
         {
           body:
             center === 'art'
@@ -740,7 +744,13 @@ function procedureFor(center: CenterSlug): ProcedureStep[] {
     },
     {
       body: firstVisit,
-      ctas: [{ href: centerPublicHref(center, '/map'), label: '오시는 길' }],
+      ctas: [
+        {
+          href: centerPublicHref(center === 'highteen' ? 'art' : center, '/map'),
+          label: '오시는 길',
+          openInNewTab: center === 'highteen',
+        },
+      ],
       title: '학원 방문상담',
     },
     {

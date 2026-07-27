@@ -84,6 +84,17 @@ export const CurriculumCenterField: SelectFieldClientComponent = props => {
           관리자 분류와 보관용으로 사용되며 공개 페이지에 자동 노출되지 않습니다.
         </p>
       ) : null}
+      {value === 'highteen' ? (
+        <p
+          style={{
+            color: 'var(--theme-elevation-600)',
+            fontSize: 12,
+            margin: '4px 0 0',
+          }}>
+          하이틴센터 커리큘럼은 관리자에서 계속 등록·수정할 수 있지만, 현재 공개 메뉴와
+          사이트맵에는 노출되지 않습니다. 공개 페이지는 직접 주소로만 접근할 수 있습니다.
+        </p>
+      ) : null}
       {value === 'avenue' ? (
         <p
           style={{

@@ -166,7 +166,6 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: 'https://highteen.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
     { href: 'https://highteen.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: 'https://highteen.baewooenm.com/teachers', label: '교육진 현황' },
-    { href: 'https://highteen.baewooenm.com/curriculum', label: '커리큘럼' },
     { href: 'https://highteen.baewooenm.com/special-lecture', label: '하이틴센터 특강' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'casting'), [
@@ -188,6 +187,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
   assert.ok(!labelsFor('highteen').includes('매니지먼트 시스템'))
   assert.ok(!labelsFor('highteen').includes('프로필 촬영ㆍ제작'))
   assert.ok(!labelsFor('highteen').includes('오디션 지원하기'))
+  assert.ok(!labelsFor('highteen').includes('커리큘럼'))
 })
 
 test('kids mega menu matches the approved kids structure', () => {
