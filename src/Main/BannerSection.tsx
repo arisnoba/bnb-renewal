@@ -9,6 +9,7 @@ import type {
 import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { firstProfileGalleryImageSource } from '@/utilities/profileGalleryImages'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
 import { MAIN_BANNER_ORDER_LIMIT } from './constants'
@@ -198,7 +199,12 @@ function mainBannerExamReviewHref(review: ExamPassedReview) {
 }
 
 function mainBannerProfileImage(profile: Profile) {
-  return profile.profileImageMedia || mainBannerPathImage(profile.profileImagePath) || null
+  return (
+    getMediaUrl(firstProfileGalleryImageSource(profile)) ||
+    profile.profileImageMedia ||
+    mainBannerPathImage(profile.profileImagePath) ||
+    null
+  )
 }
 
 function mainBannerExamReviewImage(review: ExamPassedReview) {

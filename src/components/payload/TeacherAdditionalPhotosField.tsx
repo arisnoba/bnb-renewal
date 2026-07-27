@@ -456,7 +456,7 @@ export const TeacherAdditionalPhotosField = () => (
 export const ProfileAdditionalPhotosField = () => (
 	<AdditionalPhotosField
 		emptyMessage="등록된 갤러리 이미지가 없습니다."
-		helpText="상세 페이지에는 이 갤러리 이미지만 노출되며, 목록 대표 이미지는 포함되지 않습니다."
+		helpText="상세 페이지에는 이 갤러리 이미지만 노출됩니다. 메인 롤링 배너에는 첫 번째 갤러리 이미지를 사용하며, 갤러리가 비어 있으면 목록 대표 이미지가 대신 노출됩니다."
 	/>
 );
 

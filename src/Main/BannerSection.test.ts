@@ -51,6 +51,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
           id: 1,
           name: '김배우',
           englishName: 'Kim Actor',
+          photoImage1: '/media/profiles/gallery-images/1/color-1.jpg',
           profileImageMedia: profileImage,
           slug: 'kim-actor',
         }),
@@ -61,6 +62,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
           id: 2,
           name: '',
           englishName: 'English Name',
+          photoImage2: '/legacy/profiles/color-2.jpg',
           profileImagePath: '/legacy/profile.jpg',
           slug: 'english-name',
         }),
@@ -77,7 +79,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
       type: 'card',
       buttonLabel: '프로필 보기',
       href: 'https://art.baewooenm.com/profiles/kim-actor',
-      image: profileImage,
+      image: '/media/profiles/gallery-images/1/color-1.jpg',
       imageAlt: '김배우',
       label: '김배우 | 아이돌 연습생 역',
       name: '김배우',
@@ -87,7 +89,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
       type: 'card',
       buttonLabel: '프로필 보기',
       href: 'https://art.baewooenm.com/profiles/english-name',
-      image: '/legacy/profile.jpg',
+      image: '/legacy/profiles/color-2.jpg',
       imageAlt: 'English Name',
       label: 'English Name | 여주 역',
       name: 'English Name',
@@ -99,7 +101,7 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
       type: 'card',
       buttonLabel: '프로필 보기',
       href: 'https://avenue.baewooenm.com/profiles/kim-actor',
-      image: profileImage,
+      image: '/media/profiles/gallery-images/1/color-1.jpg',
       imageAlt: '김배우',
       label: '김배우 | 아이돌 연습생 역',
       name: '김배우',
@@ -109,13 +111,41 @@ test('main banner slides expose linked profiles for non-exam centers', () => {
       type: 'card',
       buttonLabel: '프로필 보기',
       href: 'https://avenue.baewooenm.com/profiles/english-name',
-      image: '/legacy/profile.jpg',
+      image: '/legacy/profiles/color-2.jpg',
       imageAlt: 'English Name',
       label: 'English Name | 여주 역',
       name: 'English Name',
       roleLabel: '여주 역',
     },
   ])
+})
+
+test('main banner profile images fall back to the list thumbnail when the gallery is empty', () => {
+  const banner = {
+    linkedProfileItems: [
+      {
+        profile: profile({
+          id: 1,
+          name: '김배우',
+          profileImageMedia: profileImage,
+          profileImagePath: '/legacy/profile.jpg',
+        }),
+      },
+      {
+        profile: profile({
+          id: 2,
+          name: '이배우',
+          profileImagePath: '/legacy/profile-2.jpg',
+        }),
+      },
+    ],
+  } as MainBanner
+
+  const images = mainBannerMarqueeItems(banner, 'art').map((item) =>
+    item.type === 'card' ? item.image : undefined,
+  )
+
+  assert.deepEqual(images, [profileImage, '/legacy/profile-2.jpg'])
 })
 
 test('main banner profile links fall back to center anchor when slug is missing', () => {
