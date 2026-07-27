@@ -51,6 +51,7 @@ const gateCenters: ImageGalleryItem[] = [
     cta: '키즈센터 바로가기',
     desktopImage: '/assets/gate/kids-desktop.png',
     mobileImage: '/assets/gate/kids-mobile.png',
+    mobileImagePosition: 'center',
     decoIcon: 'icon-u.svg',
   },
   {

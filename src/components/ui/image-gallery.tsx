@@ -24,6 +24,7 @@ export type ImageGalleryItem = {
   cta: string
   desktopImage: string
   mobileImage: string
+  mobileImagePosition?: 'center' | 'top'
   decoIcon: DecoIcon
   textTone?: 'dark' | 'light'
 }
@@ -189,7 +190,7 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
 
   return (
     <Link
-      className="section-gate-card section-gate-card-stack group relative mx-auto block aspect-375/460 max-h-200 min-h-115 w-full max-w-480 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:aspect-auto lg:aspect-video xl:aspect-auto xl:min-h-160"
+      className="section-gate-card section-gate-card-stack group relative mx-auto block aspect-square max-h-200 w-full max-w-480 overflow-hidden rounded-lg bg-[#111] text-left shadow-2xl outline-none md:aspect-auto md:min-h-115 lg:aspect-video xl:aspect-auto xl:min-h-160"
       data-center={item.center}
       href={item.href}
       ref={cardRef}
@@ -197,7 +198,10 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
       <Image
         alt=""
         aria-hidden="true"
-        className="pointer-events-none object-cover lg:hidden"
+        className={cn(
+          'pointer-events-none object-cover lg:hidden',
+          item.mobileImagePosition === 'center' ? 'object-center' : 'object-top',
+        )}
         fill
         loading={index === 0 ? 'eager' : 'lazy'}
         sizes={gateCardMobileSizes}
