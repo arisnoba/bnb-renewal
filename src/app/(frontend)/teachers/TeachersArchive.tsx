@@ -2,6 +2,7 @@ import { getEducationHeroImage, PageHeroImage } from '@/app/(frontend)/_componen
 import { PageIntro } from '@/components/PageIntro'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
+import { teacherOrderFieldName } from '@/lib/teacherOrder'
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload, type Payload, type Where } from 'payload'
@@ -16,9 +17,11 @@ type TeachersArchiveProps = {
 }
 
 export async function findTeachers({
+  center,
   payload,
   where,
 }: {
+  center: CenterSlug
   payload: Payload
   where: Where
 }) {
@@ -34,7 +37,7 @@ export async function findTeachers({
       role: true,
       slug: true,
     },
-    sort: 'displayOrder',
+    sort: [teacherOrderFieldName(center), 'id'],
     where,
   })
 }
@@ -69,13 +72,13 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
     async () => {
       const payload = await getPayload({ config: configPromise })
 
-      return findTeachers({ payload, where })
+      return findTeachers({ center, payload, where })
     },
     ['frontend-teachers', center],
     {
       revalidate: 600,
       tags: [`frontend_teachers_${center}`],
-    },
+    }
   )()
 
   return (
@@ -86,19 +89,10 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
       >
         <PageHeroImage image={getEducationHeroImage(center)} />
         <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
-        <PageDeco
-          className="-left-20 top-[22%] md:-left-28"
-          icon={decoIcons[0]}
-        />
-        <PageDeco
-          className="-right-16 bottom-[18%] md:-right-24"
-          icon={decoIcons[1]}
-        />
+        <PageDeco className="-left-20 top-[22%] md:-left-28" icon={decoIcons[0]} />
+        <PageDeco className="-right-16 bottom-[18%] md:-right-24" icon={decoIcons[1]} />
         <div className="container relative flex min-h-140 items-end pb-20 pt-32 md:min-h-200 md:pb-[142px]">
-          <div
-            id="teachers-hero-title"
-            className="page-hero-label"
-          >
+          <div id="teachers-hero-title" className="page-hero-label">
             <span className="block text-brand">교육</span>
             <span className="block">교육진 소개</span>
           </div>
@@ -117,7 +111,9 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
         <div className="container relative z-10">
           <PageIntro
             className="section-teachers-list__head page-heading--dark mb-16 md:mb-[100px]"
-            description={'배우앤배움의 모든 교육진은 현재 드라마, 영화 등\n메이저채널에서 작품활동을 하시는 배우분들로 구성되어 있습니다.'}
+            description={
+              '배우앤배움의 모든 교육진은 현재 드라마, 영화 등\n메이저채널에서 작품활동을 하시는 배우분들로 구성되어 있습니다.'
+            }
             descriptionClassName="section-teachers-list__description"
             eyebrow="교육진 소개"
             eyebrowClassName="section-teachers-list__eyebrow"
@@ -131,10 +127,7 @@ export async function TeachersArchive({ center }: TeachersArchiveProps) {
               등록된 교육진이 없습니다.
             </p>
           ) : (
-            <TeachersGrid
-              center={center}
-              teachers={teachers.docs}
-            />
+            <TeachersGrid center={center} teachers={teachers.docs} />
           )}
         </div>
       </section>

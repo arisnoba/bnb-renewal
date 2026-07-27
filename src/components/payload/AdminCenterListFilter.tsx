@@ -1,9 +1,11 @@
 'use client'
 
 import type { BeforeListTableClientProps } from 'payload'
+import type { ReactNode } from 'react'
 
 import { Button, useAuth, useConfig, useListQuery } from '@payloadcms/ui'
 
+import { TeacherOrderListAction } from './TeacherOrderListAction'
 import {
   buildCompanyListWhere,
   buildExamResultTypeListWhere,
@@ -59,11 +61,13 @@ function QuickFilterBar<Value extends string>({
   label,
   onSelect,
   options,
+  trailingAction,
 }: {
   activeValue: Value
   label: string
   onSelect: (value: Value) => void
   options: Array<QuickFilterOption<Value>>
+  trailingAction?: ReactNode
 }) {
   return (
     <div
@@ -103,6 +107,9 @@ function QuickFilterBar<Value extends string>({
           </Button>
         )
       })}
+      {trailingAction ? (
+        <div className="bnb-quick-filter-bar__trailing-action">{trailingAction}</div>
+      ) : null}
     </div>
   )
 }
@@ -111,6 +118,8 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
   const { user } = useAuth()
   const { getEntityConfig } = useConfig()
   const { query, refineListData } = useListQuery()
+  const teacherOrderAction =
+    collectionSlug === 'teachers' ? <TeacherOrderListAction /> : undefined
 
   if (collectionSlug === 'exam-results') {
     const activeResultType =
@@ -136,7 +145,11 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
   }
 
   if (!isGlobalAdmin(user)) {
-    return null
+    return teacherOrderAction ? (
+      <div className="bnb-quick-filter-bar bnb-quick-filter-bar--action-only">
+        {teacherOrderAction}
+      </div>
+    ) : null
   }
 
   const collectionConfig = getEntityConfig({ collectionSlug })
@@ -195,6 +208,7 @@ export const AdminCenterListFilter = ({ collectionSlug }: BeforeListTableClientP
         })
       }}
       options={centerOptions}
+      trailingAction={teacherOrderAction}
     />
   )
 }

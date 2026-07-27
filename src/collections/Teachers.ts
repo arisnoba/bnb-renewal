@@ -2,7 +2,12 @@ import type {
   CollectionBeforeChangeHook,
   CollectionBeforeValidateHook,
   CollectionConfig,
+  Field,
+  NumberFieldSingleValidation,
 } from "payload";
+
+import type { CenterSlug } from "@/lib/centers";
+import { teacherBelongsToOrderCenter, teacherOrderFieldName } from "@/lib/teacherOrder";
 
 import { allowAll, centerScopedCollectionAccess } from "./access";
 import { koreanSlugify } from "../utilities/koreanSlugify";
@@ -13,14 +18,19 @@ import {
 } from "./revalidateFrontend";
 import {
   adminRow,
+  adminCollapsible,
   adminTabs,
   authorNameField,
+  centerOptions,
   centerScopedBeforeValidate,
   centersField,
+  isGlobalAdminUser,
   publishingStatusSelectAdmin,
   sidebarFields,
   slugField,
+  userCenterValue,
 } from "./shared";
+import { teacherOrderEndpoints } from "./teacherOrderEndpoint";
 
 type TeacherSlugDoc = {
   id?: unknown;
@@ -67,7 +77,7 @@ async function nextUniqueTeacherSlug({
     result.docs
       .filter((doc) => !sameId(doc.id, currentId))
       .map((doc) => String(doc.slug ?? "").trim())
-      .filter(Boolean),
+      .filter(Boolean)
   );
 
   if (!usedSlugs.has(baseSlug)) {
@@ -136,6 +146,52 @@ const revalidateTeacherAfterDelete = createCenterRevalidationAfterDelete({
   suffixes: ["", "teachers"],
 });
 
+function canUpdateTeacherOrder(center: CenterSlug, user: unknown) {
+  return isGlobalAdminUser(user) || userCenterValue(user) === center;
+}
+
+function validateTeacherOrder(
+  center: CenterSlug,
+  centerLabel: string
+): NumberFieldSingleValidation {
+  return (value, { siblingData }) => {
+    const centers = (siblingData as { centers?: unknown } | undefined)?.centers;
+
+    if (!teacherBelongsToOrderCenter(centers, center)) {
+      return true;
+    }
+
+    return typeof value === "number" && Number.isSafeInteger(value) && value >= 1
+      ? true
+      : `${centerLabel} 정렬 순서를 1 이상의 정수로 입력해 주세요.`;
+  };
+}
+
+function teacherOrderFields(): Field[] {
+  return centerOptions.map((option) => {
+    const center = option.value as CenterSlug;
+    const fieldName = teacherOrderFieldName(center);
+
+    return {
+      name: fieldName,
+      type: "number",
+      access: {
+        update: ({ req }) => canUpdateTeacherOrder(center, req.user),
+      },
+      admin: {
+        condition: (data, _siblingData, { user }) =>
+          canUpdateTeacherOrder(center, user) && teacherBelongsToOrderCenter(data?.centers, center),
+        description: `${option.label} 교육진 소개에 표시되는 순서입니다.`,
+        step: 1,
+      },
+      index: true,
+      label: `${option.label} 정렬 순서`,
+      min: 1,
+      validate: validateTeacherOrder(center, option.label),
+    };
+  });
+}
+
 export const Teachers: CollectionConfig = {
   slug: "teachers",
   labels: {
@@ -147,11 +203,25 @@ export const Teachers: CollectionConfig = {
     read: allowAll,
   },
   admin: {
-    defaultColumns: ["name", "centers", "authorName", "displayOrder", "updatedAt"],
+    components: {
+      views: {
+        order: {
+          Component: "@/components/payload/TeacherOrderView#TeacherOrderView",
+          exact: true,
+          meta: {
+            description: "센터별 강사진 노출 순서를 드래그해서 설정합니다.",
+            title: "강사진 순서 설정",
+          },
+          path: "/order",
+        },
+      },
+    },
+    defaultColumns: ["name", "centers", "status", "updatedAt"],
     group: "교육",
     useAsTitle: "name",
   },
-  defaultSort: "displayOrder",
+  defaultSort: "name",
+  endpoints: teacherOrderEndpoints,
   hooks: {
     afterChange: [
       revalidateTeacherAfterChange,
@@ -206,7 +276,8 @@ export const Teachers: CollectionConfig = {
             label: "갤러리 이미지 업로드",
             admin: {
               components: {
-                Field: "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotosField",
+                Field:
+                  "@/components/payload/TeacherAdditionalPhotosField#TeacherAdditionalPhotosField",
               },
               disableListColumn: true,
             },
@@ -223,7 +294,7 @@ export const Teachers: CollectionConfig = {
                 },
                 disableListColumn: true,
               },
-            }),
+            })
           ),
         ],
       },
@@ -240,7 +311,8 @@ export const Teachers: CollectionConfig = {
             },
             admin: {
               components: {
-                RowLabel: "@/components/payload/TeacherFilmographyRowLabel#TeacherFilmographyRowLabel",
+                RowLabel:
+                  "@/components/payload/TeacherFilmographyRowLabel#TeacherFilmographyRowLabel",
               },
             },
             fields: [
@@ -297,7 +369,8 @@ export const Teachers: CollectionConfig = {
                   components: {
                     Field: "@/components/payload/ImagePathField#ImagePathField",
                   },
-                  description: "기존 레거시 경로입니다. 새 포스터는 위 업로드 필드를 사용해 주세요.",
+                  description:
+                    "기존 레거시 경로입니다. 새 포스터는 위 업로드 필드를 사용해 주세요.",
                 },
               },
               {
@@ -313,11 +386,17 @@ export const Teachers: CollectionConfig = {
     ...sidebarFields([
       centersField,
       authorNameField,
+      adminCollapsible("센터별 정렬 순서", teacherOrderFields(), false),
       {
         name: "displayOrder",
         type: "number",
-        label: "정렬순서",
+        label: "기존 정렬 순서",
         defaultValue: 0,
+        admin: {
+          disableListColumn: true,
+          disableListFilter: true,
+          hidden: true,
+        },
       },
       {
         name: "status",

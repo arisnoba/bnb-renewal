@@ -40,6 +40,7 @@ import { ImagePathField as ImagePathField_fcd3c3bfc986007a95eb590661ef5689 } fro
 import { TeacherRepresentativeWorkRowLabel as TeacherRepresentativeWorkRowLabel_d628a446f2ef335398d7c73186843abd } from '@/components/payload/TeacherRepresentativeWorkRowLabel'
 import { CentersField as CentersField_32f6973a336e54b2fbe5bbbe92a20938 } from '@/components/payload/CentersField'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { TeacherOrderView as TeacherOrderView_b8d54f8e18b27d0291ed0bcf1be6b730 } from '@/components/payload/TeacherOrderView'
 import { CurriculumCenterField as CurriculumCenterField_2bd0ef7ff7f41d018e3e87f60f1b5bf8 } from '@/components/payload/CurriculumCenterField'
 import { CurriculumClassField as CurriculumClassField_14c4103696986801411d85352ade804e } from '@/components/payload/CurriculumClassField'
 import { CurriculumTeacherField as CurriculumTeacherField_b9918fd7823fb29344209a6a1bbdfc64 } from '@/components/payload/CurriculumTeacherField'
@@ -129,6 +130,7 @@ export const importMap = {
   "@/components/payload/TeacherRepresentativeWorkRowLabel#TeacherRepresentativeWorkRowLabel": TeacherRepresentativeWorkRowLabel_d628a446f2ef335398d7c73186843abd,
   "@/components/payload/CentersField#CentersField": CentersField_32f6973a336e54b2fbe5bbbe92a20938,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
+  "@/components/payload/TeacherOrderView#TeacherOrderView": TeacherOrderView_b8d54f8e18b27d0291ed0bcf1be6b730,
   "@/components/payload/CurriculumCenterField#CurriculumCenterField": CurriculumCenterField_2bd0ef7ff7f41d018e3e87f60f1b5bf8,
   "@/components/payload/CurriculumClassField#CurriculumClassField": CurriculumClassField_14c4103696986801411d85352ade804e,
   "@/components/payload/CurriculumTeacherField#CurriculumTeacherField": CurriculumTeacherField_b9918fd7823fb29344209a6a1bbdfc64,

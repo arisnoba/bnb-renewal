@@ -4,6 +4,7 @@ import { Media } from '@/components/Media/Renderer'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
+import { teacherOrderFieldName, teacherOrderValue } from '@/lib/teacherOrder'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
@@ -27,13 +28,7 @@ type TeacherRepresentativeWork = NonNullable<Teacher['representativeWorks']>[num
   posterMedia?: number | PayloadMedia | null
 }
 
-export async function TeacherDetailPage({
-  center,
-  slug,
-}: {
-  center: CenterSlug
-  slug: string
-}) {
+export async function TeacherDetailPage({ center, slug }: { center: CenterSlug; slug: string }) {
   const teacher = await queryTeacherBySlug({ center, slug })
 
   if (!teacher) {
@@ -63,8 +58,8 @@ export async function TeacherDetailPage({
     .slice(0, 8)
   const adjacent = await queryAdjacentTeachers({
     center,
-    displayOrder: teacher.displayOrder,
     id: teacher.id,
+    order: teacherOrderValue(teacher, center),
   })
   const backHref = centerPublicHref(center, '/teachers')
   const backLabel = '교육진 소개'
@@ -77,14 +72,8 @@ export async function TeacherDetailPage({
       tone="dark"
     >
       <TeacherDetailScrollReset />
-      <PageDeco
-        className="right-[8%] top-[34rem] hidden lg:block"
-        icon={decoIcons[0]}
-      />
-      <PageDeco
-        className="-left-24 top-[62rem] hidden lg:block"
-        icon={decoIcons[1]}
-      />
+      <PageDeco className="right-[8%] top-[34rem] hidden lg:block" icon={decoIcons[0]} />
+      <PageDeco className="-left-24 top-[62rem] hidden lg:block" icon={decoIcons[1]} />
 
       <DetailBackLink href={backHref} label={backLabel} width="wide" />
 
@@ -99,9 +88,7 @@ export async function TeacherDetailPage({
                   {teacher.name}
                 </h1>
                 {teacher.summary && (
-                  <p className="mt-2 type-body-m leading-normal text-white/60">
-                    {teacher.summary}
-                  </p>
+                  <p className="mt-2 type-body-m leading-normal text-white/60">{teacher.summary}</p>
                 )}
               </div>
             </header>
@@ -215,16 +202,8 @@ const queryTeacherBySlug = cache(async ({ center, slug }: { center: CenterSlug; 
 })
 
 const queryAdjacentTeachers = cache(
-  async ({
-    center,
-    displayOrder,
-    id,
-  }: {
-    center: CenterSlug
-    displayOrder?: number | null
-    id: number
-  }) => {
-    if (displayOrder == null) {
+  async ({ center, id, order }: { center: CenterSlug; id: number; order?: number | null }) => {
+    if (order == null) {
       return {
         nextHref: null,
         nextLabel: '다음 강사',
@@ -235,8 +214,8 @@ const queryAdjacentTeachers = cache(
 
     const payload = await getPayload({ config: configPromise })
     const [previous, next] = await Promise.all([
-      queryAdjacentTeacher({ center, direction: 'previous', displayOrder, id, payload }),
-      queryAdjacentTeacher({ center, direction: 'next', displayOrder, id, payload }),
+      queryAdjacentTeacher({ center, direction: 'previous', id, order, payload }),
+      queryAdjacentTeacher({ center, direction: 'next', id, order, payload }),
     ])
     const pathPrefix = centerPublicHref(center, '/teachers')
 
@@ -246,24 +225,25 @@ const queryAdjacentTeachers = cache(
       previousHref: previous?.slug ? `${pathPrefix}/${encodeURIComponent(previous.slug)}` : null,
       previousLabel: previous?.name ? `배우 ${previous.name}` : '이전 강사',
     }
-  },
+  }
 )
 
 async function queryAdjacentTeacher({
   center,
   direction,
-  displayOrder,
   id,
+  order,
   payload,
 }: {
   center: CenterSlug
   direction: 'next' | 'previous'
-  displayOrder: number
   id: number
+  order: number
   payload: Awaited<ReturnType<typeof getPayload>>
 }) {
   const isNext = direction === 'next'
   const operator = isNext ? 'greater_than' : 'less_than'
+  const orderField = teacherOrderFieldName(center)
   const where: Where = {
     and: [
       { status: { equals: 'published' } },
@@ -272,12 +252,9 @@ async function queryAdjacentTeacher({
       },
       {
         or: [
-          { displayOrder: { [operator]: displayOrder } },
+          { [orderField]: { [operator]: order } },
           {
-            and: [
-              { displayOrder: { equals: displayOrder } },
-              { id: { [operator]: id } },
-            ],
+            and: [{ [orderField]: { equals: order } }, { id: { [operator]: id } }],
           },
         ],
       },
@@ -290,7 +267,7 @@ async function queryAdjacentTeacher({
     overrideAccess: false,
     pagination: false,
     select: { name: true, slug: true },
-    sort: isNext ? ['displayOrder', 'id'] : ['-displayOrder', '-id'],
+    sort: isNext ? [orderField, 'id'] : [`-${orderField}`, '-id'],
     where,
   })
 
