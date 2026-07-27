@@ -18,6 +18,13 @@ test('centerPublicHref builds canonical center subdomain links', () => {
   assert.equal(centerPublicHref('avenue', '#profiles'), 'https://avenue.baewooenm.com#profiles')
 })
 
+test('centerPublicHref keeps development links on local center routes', () => {
+  assert.equal(centerPublicHref('art', '', true), '/art')
+  assert.equal(centerPublicHref('kids', '/news/123', true), '/kids/news/123')
+  assert.equal(centerPublicHref('exam', 'passed-reviews?page=2', true), '/exam/passed-reviews?page=2')
+  assert.equal(centerPublicHref('avenue', '#profiles', true), '/avenue#profiles')
+})
+
 const centerSlugs: CenterSlug[] = ['art', 'avenue', 'exam', 'highteen', 'kids']
 
 test('each center subdomain rewrites clean public paths to the existing center route', () => {

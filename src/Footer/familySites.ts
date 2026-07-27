@@ -4,7 +4,7 @@ import type { CenterSlug } from '@/lib/centers'
 import {
   apexHostname,
   centerHostname,
-  centerOrigin,
+  centerPublicHref,
   primaryHostname,
 } from '@/lib/centerDomains'
 
@@ -18,24 +18,24 @@ export type FamilySiteLink = {
 type FooterFamilySiteSource = Pick<FooterData, 'centerInfos'>
 
 const fallbackFamilySites: Array<FamilySiteLink & { center: CenterSlug }> = [
-  { center: 'art', href: centerOrigin('art'), label: 'ART CENTER', name: '아트센터' },
-  { center: 'exam', href: centerOrigin('exam'), label: 'EXAM CENTER', name: '입시센터' },
+  { center: 'art', href: centerPublicHref('art'), label: 'ART CENTER', name: '아트센터' },
+  { center: 'exam', href: centerPublicHref('exam'), label: 'EXAM CENTER', name: '입시센터' },
   {
     center: 'highteen',
-    href: centerOrigin('highteen'),
+    href: centerPublicHref('highteen'),
     label: 'HIGH TEEN CENTER',
     name: '하이틴센터',
   },
   {
     center: 'kids',
-    href: centerOrigin('kids'),
+    href: centerPublicHref('kids'),
     label: 'KIDS CENTER',
     mobileLabel: 'KID CENTER',
     name: '키즈센터',
   },
   {
     center: 'avenue',
-    href: centerOrigin('avenue'),
+    href: centerPublicHref('avenue'),
     label: 'AVENUE CENTER',
     name: '애비뉴센터',
   },
@@ -57,7 +57,7 @@ export function familySitesFromFooter(footer: FooterFamilySiteSource | null): Fa
 }
 
 function resolveFamilySiteHref(configuredHref: string | null | undefined, center: CenterSlug) {
-  const fallbackHref = centerOrigin(center)
+  const fallbackHref = centerPublicHref(center)
   const href = configuredHref?.trim()
 
   if (!href) {

@@ -7,7 +7,7 @@ import type {
   Profile,
 } from '@/payload-types'
 import type { CenterSlug } from '@/lib/centers'
-import { centerOrigin, centerPublicHref } from '@/lib/centerDomains'
+import { centerPublicHref } from '@/lib/centerDomains'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 
@@ -178,7 +178,7 @@ function mainBannerProfileRoleLabel(value: unknown) {
 export function mainBannerAnchorHref(center: CenterSlug) {
   const anchor = center === 'exam' ? 'exam-passed-reviews' : 'profiles'
 
-  return `${centerOrigin(center)}#${anchor}`
+  return centerPublicHref(center, `#${anchor}`)
 }
 
 function mainBannerProfileHref(profile: Profile, center: CenterSlug) {

@@ -28,14 +28,20 @@ export function centerOrigin(center: CenterSlug) {
   return `https://${centerHostname(center)}`
 }
 
-export function centerPublicHref(center: CenterSlug, path = '') {
-  if (!path || path === '/') {
-    return centerOrigin(center)
-  }
+export function centerPublicHref(
+  center: CenterSlug,
+  path = '',
+  isLocalDevelopment = process.env.NODE_ENV === 'development',
+) {
+  const suffix = !path || path === '/'
+    ? ''
+    : path.startsWith('/') || path.startsWith('?') || path.startsWith('#')
+      ? path
+      : `/${path}`
 
-  const suffix = path.startsWith('/') || path.startsWith('?') || path.startsWith('#')
-    ? path
-    : `/${path}`
+  if (isLocalDevelopment) {
+    return `/${center}${suffix}`
+  }
 
   return `${centerOrigin(center)}${suffix}`
 }

@@ -1,5 +1,5 @@
 import { centers, type CenterSlug } from '@/lib/centers'
-import { centerOrigin } from '@/lib/centerDomains'
+import { centerPublicHref } from '@/lib/centerDomains'
 
 export const adminBarCenterLinks = [
   { label: '아트', slug: 'art' },
@@ -50,7 +50,7 @@ const detailRouteCenters: Partial<Record<string, readonly CenterSlug[]>> = {
 }
 
 export function adminBarCenterHref(pathname: string | null, targetCenter: CenterSlug) {
-  const fallbackHref = centerOrigin(targetCenter)
+  const fallbackHref = centerPublicHref(targetCenter)
 
   if (!pathname) {
     return fallbackHref
@@ -77,7 +77,7 @@ export function adminBarCenterHref(pathname: string | null, targetCenter: Center
     return fallbackHref
   }
 
-  return `${centerOrigin(targetCenter)}/${routeSegments.join('/')}`
+  return centerPublicHref(targetCenter, `/${routeSegments.join('/')}`)
 }
 
 function isCenterSlug(value: string | undefined): value is CenterSlug {
