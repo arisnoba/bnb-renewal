@@ -143,7 +143,8 @@ export function FloatingDock({
             : tone === 'dark'
               ? 'text-white/25'
               : 'text-muted-foreground/35',
-          isActive && (tone === 'dark' ? 'bg-brand text-white' : 'bg-neutral-100 text-brand'),
+          isActive &&
+            (tone === 'dark' ? 'bg-brand text-brand-foreground' : 'bg-neutral-100 text-brand'),
         )
 
         if (!href) {

@@ -23,7 +23,7 @@ const variantClasses = {
     label: 'type-body-s font-medium leading-normal text-neutral-400',
     submitIcon: 'size-5',
     submit:
-      'section-center-home-course__submit flex min-h-[72px] items-center justify-between bg-brand px-6 py-5 type-title-m font-bold leading-[1.4] text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+      'section-center-home-course__submit flex min-h-[72px] items-center justify-between bg-brand px-6 py-5 type-title-m font-bold leading-[1.4] text-brand-foreground transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
     value: 'mt-1 type-body-m font-medium leading-normal text-white',
   },
   curriculumArchive: {
@@ -36,7 +36,7 @@ const variantClasses = {
     label: 'type-caption-m font-medium leading-[1.45] text-white/45',
     submitIcon: 'size-4',
     submit:
-      'section-curriculum-search__submit min-h-16 inline-flex cursor-pointer items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+      'section-curriculum-search__submit min-h-16 inline-flex cursor-pointer items-center justify-center gap-2 bg-brand px-6 type-label-l font-extrabold text-brand-foreground transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
     value: 'mt-2 type-label-l font-semibold text-white',
   },
 } as const

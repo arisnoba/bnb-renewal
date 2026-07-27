@@ -25,7 +25,7 @@ export function CurriculumStickyCta({
           </p>
         </div>
         <Link
-          className="inline-flex min-h-[58px] shrink-0 items-center justify-center rounded-lg bg-brand px-5 type-label-m font-extrabold text-white transition-opacity hover:opacity-90"
+          className="inline-flex min-h-[58px] shrink-0 items-center justify-center rounded-lg bg-brand px-5 type-label-m font-extrabold text-brand-foreground transition-opacity hover:opacity-90"
           href={consultHref}
         >
           상담 신청

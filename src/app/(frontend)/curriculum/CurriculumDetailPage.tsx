@@ -102,7 +102,7 @@ export async function CurriculumDetailPage({
             <aside className="section-curriculum-detail__side order-3 lg:sticky lg:top-[calc(var(--page-top-offset)+32px)] lg:order-2 lg:col-start-2 lg:row-span-4 lg:row-start-1">
               <CurriculumOverview model={model} />
               <Link
-                className="mt-4 hidden min-h-[58px] w-full items-center justify-center bg-brand px-7 type-label-l font-extrabold text-white transition-opacity hover:opacity-90 lg:inline-flex"
+                className="mt-4 hidden min-h-[58px] w-full items-center justify-center bg-brand px-7 type-label-l font-extrabold text-brand-foreground transition-opacity hover:opacity-90 lg:inline-flex"
                 href={model.consultHref}
               >
                 수강상담신청

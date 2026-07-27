@@ -95,7 +95,7 @@ export async function ExamPassedReviewDetailPage({ slug }: { slug: string }) {
                     key={item.id ?? `${item.question}-${index}`}
                   >
                     <h3 className="flex items-start gap-2 type-title-s font-bold leading-normal text-foreground">
-                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand type-caption-l font-semibold leading-none text-white">
+                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand type-caption-l font-semibold leading-none text-brand-foreground">
                         Q
                       </span>
                       <span>{item.question}</span>

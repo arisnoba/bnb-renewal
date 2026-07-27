@@ -330,7 +330,7 @@ function CurriculumPeriodTooltip({
         </TooltipTrigger>
         <TooltipContent
           side="top"
-          className="bg-brand text-sm leading-normal"
+          className="bg-brand text-brand-foreground text-sm leading-normal"
           arrowClassName="fill-brand"
           data-center={center}
         >
@@ -473,7 +473,7 @@ function ArtistPressHomeSection({
             <ArtistPressMiniCard artistPress={item} center={center} key={item.id} />
           ))}
           <Link
-            className="section-center-home-artist-press__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
+            className="section-center-home-artist-press__more flex aspect-square flex-col justify-between bg-brand p-5 text-brand-foreground transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
             href={centerPublicHref(center, '/artist-press')}
             prefetch={false}
           >
@@ -512,7 +512,7 @@ function ExamPassedReviewsHomeSection({ reviews }: { reviews: HomeExamPassedRevi
             <ExamPassedReviewMiniCard key={item.id} review={item} />
           ))}
           <Link
-            className="section-center-home-exam-reviews__more flex aspect-square flex-col justify-between bg-brand p-5 text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
+            className="section-center-home-exam-reviews__more flex aspect-square flex-col justify-between bg-brand p-5 text-brand-foreground transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand md:aspect-auto md:min-h-[184px]"
             href={centerPublicHref('exam', '/passed-reviews')}
             prefetch={false}
           >
@@ -567,7 +567,7 @@ function ArtistPressFeaturedCard({
         <h3 className="mt-2 flex items-center gap-1.5 type-title-l font-extrabold leading-[1.4]">
           <span>{artistPress?.actorName || centers[center]}</span>
           {artistPress?.generation ? (
-            <span className="shrink-0 rounded-full bg-brand px-3 py-1 type-label-s font-bold leading-none text-white">
+            <span className="shrink-0 rounded-full bg-brand px-3 py-1 type-label-s font-bold leading-none text-brand-foreground">
               {artistPress.generation}
             </span>
           ) : null}

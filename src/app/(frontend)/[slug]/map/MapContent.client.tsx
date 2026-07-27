@@ -110,7 +110,7 @@ export function MapContent({ initialCenter, locations, scriptUrl }: MapContentPr
                   className={cn(
                     'inline-flex items-center justify-center rounded-full border px-4 md:px-5 py-2.5 md:py-3 text-sm md:text-base font-semibold leading-normal transition-[border-color,background-color,color,opacity]',
                     isSelected
-                      ? 'border-brand bg-brand text-white'
+                      ? 'border-brand bg-brand text-brand-foreground'
                       : 'border-white bg-transparent text-white opacity-40 hover:opacity-80',
                   )}
                   key={location.slug}

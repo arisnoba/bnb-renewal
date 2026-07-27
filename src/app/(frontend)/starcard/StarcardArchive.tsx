@@ -37,7 +37,7 @@ export async function StarcardArchive({ center }: StarcardArchiveProps) {
               />
               <div className="section-starcard-list__actions mt-10 flex flex-wrap gap-2">
                 <Link
-                  className="section-starcard-list__partnership-link inline-flex h-10 items-center justify-center rounded-full bg-foreground px-5 type-label-m font-bold leading-none text-background transition-colors hover:bg-brand hover:text-white"
+                  className="section-starcard-list__partnership-link inline-flex h-10 items-center justify-center rounded-full bg-foreground px-5 type-label-m font-bold leading-none text-background transition-colors hover:bg-brand hover:text-brand-foreground"
                   href={centerPublicHref(center, '/faq?category=starcard')}
                 >
                   스타카드 FAQ

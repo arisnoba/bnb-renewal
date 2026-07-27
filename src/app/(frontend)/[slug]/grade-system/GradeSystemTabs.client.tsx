@@ -1135,7 +1135,7 @@ function ClassSection({
     <section className="border-t border-white/10 pt-16">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="flex items-start gap-3 lg:col-span-1">
-          <span className="grid h-9 min-w-9 shrink-0 place-items-center rounded-full bg-brand px-2 type-label-m font-black text-white">
+          <span className="grid h-9 min-w-9 shrink-0 place-items-center rounded-full bg-brand px-2 type-label-m font-black text-brand-foreground">
             {item.letter}
           </span>
           <h3 className="pt-1 type-headline-s font-semibold leading-[1.3]">{item.label}</h3>

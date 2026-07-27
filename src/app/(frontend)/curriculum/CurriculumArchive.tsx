@@ -137,7 +137,7 @@ export async function CurriculumArchive({ center, filters }: CurriculumArchivePr
               </p>
               {hasActiveFilters ? (
                 <Link
-                  className="mt-5 inline-flex h-[43px] items-center justify-center rounded-full bg-neutral-900 px-5 type-label-m font-bold text-white transition-colors hover:bg-brand"
+                  className="mt-5 inline-flex h-[43px] items-center justify-center rounded-full bg-neutral-900 px-5 type-label-m font-bold text-white transition-colors hover:bg-brand hover:text-brand-foreground"
                   href={centerPublicHref(center, '/curriculum')}
                 >
                   전체 커리큘럼 보기
@@ -191,7 +191,7 @@ function CurriculumCard({
 
         <div className="section-curriculum-card__meta mt-8 flex min-w-0 flex-wrap items-center justify-start gap-3 sm:justify-between">
           <Link
-            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-neutral-300 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand group-hover/card:bg-brand"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-full bg-neutral-300 px-5 type-label-m font-extrabold text-white transition-colors hover:bg-brand hover:text-brand-foreground group-hover/card:bg-brand group-hover/card:text-brand-foreground"
             href={detailHref}
           >
             수강 신청
@@ -415,7 +415,7 @@ function CurriculumPeriodTooltip({
         </TooltipTrigger>
         <TooltipContent
           side="top"
-          className="bg-brand text-sm leading-normal"
+          className="bg-brand text-brand-foreground text-sm leading-normal"
           arrowClassName="fill-brand"
           data-center={center}
         >

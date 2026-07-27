@@ -169,7 +169,7 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
               width={32}
             />
           ) : (
-            <span className="inline-flex size-8 items-center justify-center rounded-full bg-brand text-white">
+            <span className="inline-flex size-8 items-center justify-center rounded-full bg-brand text-brand-foreground">
               {Icon ? <Icon aria-hidden="true" className="size-4" strokeWidth={2.4} /> : null}
             </span>
           )}

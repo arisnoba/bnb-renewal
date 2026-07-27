@@ -88,7 +88,7 @@ export function MonthNavigator({
                     className={[
                       'flex min-h-10 justify-center rounded-none border px-2 pr-2 type-label-l font-extrabold leading-[1.2] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand [&>span:first-child]:hidden',
                       isCurrentMonth
-                        ? 'border-brand bg-brand text-white focus:bg-brand focus:text-white data-[highlighted]:bg-brand data-[highlighted]:text-white'
+                        ? 'border-brand bg-brand text-brand-foreground focus:bg-brand focus:text-brand-foreground data-[highlighted]:bg-brand data-[highlighted]:text-brand-foreground'
                         : 'border-neutral-200 bg-white text-neutral-900 focus:border-brand focus:bg-white focus:text-brand data-[highlighted]:border-brand data-[highlighted]:bg-white data-[highlighted]:text-brand',
                     ].join(' ')}
                     key={month}

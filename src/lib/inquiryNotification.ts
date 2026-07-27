@@ -25,11 +25,16 @@ const inquiryTypeLabels: Record<InquiryType, string> = {
 
 const inquiryTypeThemes: Record<
   InquiryType,
-  { accent: string; buttonText: string; soft: string }
+  { accent: string; accentText?: string; buttonText: string; soft: string }
 > = {
   admission: { accent: '#B8835A', buttonText: '#FFFFFF', soft: '#F8F2ED' },
   art: { accent: '#C80000', buttonText: '#FFFFFF', soft: '#FFF1F2' },
-  avenue: { accent: '#369982', buttonText: '#FFFFFF', soft: '#ECFDF5' },
+  avenue: {
+    accent: '#DC7037',
+    accentText: '#B45224',
+    buttonText: '#111111',
+    soft: '#FFF7ED',
+  },
   highteen: { accent: '#8A4FFF', buttonText: '#FFFFFF', soft: '#F5F0FF' },
   kids: { accent: '#26C6DD', buttonText: '#102A30', soft: '#ECFEFF' },
   partnership: { accent: '#1F2937', buttonText: '#FFFFFF', soft: '#F3F4F6' },
@@ -142,6 +147,7 @@ function buildInquiryNotificationHTML({
   preferredSchedule: string
   theme: (typeof inquiryTypeThemes)[InquiryType]
 }) {
+  const accentText = theme.accentText || theme.accent
   const rows = [
     ['문의 구분', inquiryLabel],
     ['신청자', inquiry.displayName || '-'],
@@ -185,7 +191,7 @@ function buildInquiryNotificationHTML({
                   <tr>
                     <td style="color:#111827;font-size:21px;font-weight:800;letter-spacing:-0.5px">배우앤배움</td>
                     <td align="right">
-                      <span style="background:${theme.soft};border-radius:999px;color:${theme.accent};display:inline-block;font-size:12px;font-weight:700;line-height:28px;padding:0 12px">${escapeHTML(inquiryLabel)}</span>
+                      <span style="background:${theme.soft};border-radius:999px;color:${accentText};display:inline-block;font-size:12px;font-weight:700;line-height:28px;padding:0 12px">${escapeHTML(inquiryLabel)}</span>
                     </td>
                   </tr>
                 </table>
@@ -193,7 +199,7 @@ function buildInquiryNotificationHTML({
             </tr>
             <tr>
               <td style="padding:8px 36px 38px">
-                <p style="color:${theme.accent};font-size:13px;font-weight:700;letter-spacing:0.04em;margin:0 0 10px">NEW INQUIRY</p>
+                <p style="color:${accentText};font-size:13px;font-weight:700;letter-spacing:0.04em;margin:0 0 10px">NEW INQUIRY</p>
                 <h1 style="color:#111827;font-size:28px;font-weight:800;letter-spacing:-0.8px;line-height:1.35;margin:0">새 상담 문의가<br>등록되었습니다.</h1>
                 <p style="color:#6B7280;font-size:15px;line-height:1.7;margin:14px 0 0">아래 내용을 확인하고 신청자에게 상담 안내를 진행해 주세요.</p>
 

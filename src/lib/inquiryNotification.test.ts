@@ -73,6 +73,24 @@ test('알림 메일에 문의 요약과 관리자 상세 링크를 포함한다'
   )
 })
 
+test('애비뉴센터 알림 메일에 확정 브랜드 컬러와 대비 전경색을 적용한다', () => {
+  const message = buildInquiryNotificationEmail(
+    {
+      ...inquiry,
+      center: 'avenue',
+      inquiryType: 'avenue',
+    },
+    {
+      NEXT_PUBLIC_SITE_URL: 'https://www.baewooenm.com',
+    },
+  )
+
+  assert.match(message.html, /background:#DC7037/)
+  assert.match(message.html, /color:#111111/)
+  assert.match(message.html, /background:#FFF7ED/)
+  assert.match(message.html, /color:#B45224/)
+})
+
 test('문의자 입력값을 HTML에 안전하게 표시한다', () => {
   const message = buildInquiryNotificationEmail({
     ...inquiry,

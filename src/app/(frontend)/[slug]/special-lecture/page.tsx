@@ -260,7 +260,9 @@ function PaginationLink({
     <a
       aria-current={active ? 'page' : undefined}
       className={`${className} ${
-        active ? 'bg-brand text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
+        active
+          ? 'bg-brand text-brand-foreground'
+          : 'text-white/70 hover:bg-white/10 hover:text-white'
       }`}
       href={href}
     >

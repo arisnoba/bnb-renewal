@@ -211,7 +211,7 @@ function CastingCompanySection({
         ) : null}
 
         <Link
-          className="section-casting-company__direct mt-12 inline-flex min-h-12 items-center gap-2 bg-neutral-900 px-6 type-label-l font-bold text-white transition hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand"
+          className="section-casting-company__direct mt-12 inline-flex min-h-12 items-center gap-2 bg-neutral-900 px-6 type-label-l font-bold text-white transition hover:bg-brand hover:text-brand-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand"
           href={directCastingHref(center, company.id)}
         >
           DIRECT CASTING

@@ -49,11 +49,12 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-sans: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
   --color-brand-art: #c80000;
   --color-brand-exam: #B8835A;
   --color-brand-highteen: #8A4FFF;
   --color-brand-kids: #26C6DD;
-  --color-brand-avenue: #369982;
+  --color-brand-avenue: #DC7037;
   --color-bg-footer: #0c0c0c;
   --container-main: 1160px;
   --container-sm: 840px;
@@ -89,6 +90,7 @@
   );
   --page-top-offset-padding: var(--page-top-offset);
   --brand: var(--color-brand-art);
+  --brand-foreground: #fff;
   --background: oklch(100% 0 0deg);
   --foreground: oklch(14.5% 0 0deg);
   --card: oklch(96.5% 0.005 265deg);
@@ -187,26 +189,31 @@ body:has(.page-not-found[data-not-found-scope='gate']) footer {
 
 [data-center='art'] {
   --brand: var(--color-brand-art);
+  --brand-foreground: #fff;
   --color-brand: var(--color-brand-art);
 }
 
 [data-center='exam'] {
   --brand: var(--color-brand-exam);
+  --brand-foreground: #fff;
   --color-brand: var(--color-brand-exam);
 }
 
 [data-center='highteen'] {
   --brand: var(--color-brand-highteen);
+  --brand-foreground: #fff;
   --color-brand: var(--color-brand-highteen);
 }
 
 [data-center='kids'] {
   --brand: var(--color-brand-kids);
+  --brand-foreground: #fff;
   --color-brand: var(--color-brand-kids);
 }
 
 [data-center='avenue'] {
   --brand: var(--color-brand-avenue);
+  --brand-foreground: #111;
   --color-brand: var(--color-brand-avenue);
 }
 

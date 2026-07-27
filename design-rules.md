@@ -103,7 +103,7 @@ GNB 메뉴처럼 컴포넌트 고유 style이 별도로 잡힌 경우에는 해�
 
 ### 센터 브랜드 컬러 ⚠️ HEX 임시값 — 피그마 확정 후 교체 필요
 
-각 센터는 고유 브랜드 컬러를 가진다. 마크업에선 `data-center` 속성으로 활성화하고, 클래스는 항상 `text-brand` / `bg-brand` / `border-brand`만 사용한다. 센터별 클래스 직접 지정 금지.
+각 센터는 고유 브랜드 컬러를 가진다. 마크업에선 `data-center` 속성으로 활성화하고, 클래스는 항상 `text-brand` / `bg-brand` / `border-brand`만 사용한다. 브랜드 배경 위 텍스트·아이콘은 `text-brand-foreground`를 사용한다. 센터별 클래스 직접 지정 금지.
 
 | 센터 | 토큰 | Hex | 비고 |
 |------|------|-----|------|
@@ -111,26 +111,46 @@ GNB 메뉴처럼 컴포넌트 고유 style이 별도로 잡힌 경우에는 해�
 | 입시 | `brand-exam` | `#1E5FCC` | ⚠️ 임시 |
 | 하이틴 | `brand-highteen` | `#E0529B` | ⚠️ 임시 |
 | 키즈 | `brand-kids` | `#F5A623` | ⚠️ 임시 |
-| 애브뉴 | `brand-avenue` | `#2BB673` | ⚠️ 임시 |
+| 애비뉴 | `brand-avenue` | `#DC7037` | 확정 |
 
 **적용 방식 — CSS**:
 ```css
 /* globals.css @theme에 등록 */
 @theme {
   --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
   --color-brand-art: #C80000;
   --color-brand-exam: #1E5FCC;
   --color-brand-highteen: #8A4FFF;
   --color-brand-kids: #F5A623;
-  --color-brand-avenue: #2BB673;
+  --color-brand-avenue: #DC7037;
 }
 
 /* data-center에 따라 --brand 변수 스위치 */
-[data-center='art']      { --brand: var(--color-brand-art); }
-[data-center='exam'] { --brand: var(--color-brand-exam); }
-[data-center='highteen'] { --brand: var(--color-brand-highteen); }
-[data-center='kids']     { --brand: var(--color-brand-kids); }
-[data-center='avenue']   { --brand: var(--color-brand-avenue); }
+:root {
+  --brand-foreground: #FFFFFF;
+}
+
+[data-center='art']      {
+  --brand: var(--color-brand-art);
+  --brand-foreground: #FFFFFF;
+}
+[data-center='exam'] {
+  --brand: var(--color-brand-exam);
+  --brand-foreground: #FFFFFF;
+}
+[data-center='highteen'] {
+  --brand: var(--color-brand-highteen);
+  --brand-foreground: #FFFFFF;
+}
+[data-center='kids']     {
+  --brand: var(--color-brand-kids);
+  --brand-foreground: #FFFFFF;
+}
+[data-center='avenue']   {
+  --brand: var(--color-brand-avenue);
+  --brand-foreground: #111111;
+}
 ```
 
 **적용 방식 — 마크업**:
@@ -139,7 +159,7 @@ GNB 메뉴처럼 컴포넌트 고유 style이 별도로 잡힌 경우에는 해�
   <section className="section-hero" data-center="art">
     <div className="container">
       <h1 className="text-brand">아트센터</h1>
-      <button className="bg-brand text-white">문의하기</button>
+      <button className="bg-brand text-brand-foreground">문의하기</button>
     </div>
   </section>
 </main>
@@ -571,11 +591,12 @@ body:has(.page-dark, [data-page-tone='dark']) {
 
   /* 센터 브랜드 컬러 */
   --color-brand: var(--brand); /* data-center 스위치용 */
+  --color-brand-foreground: var(--brand-foreground);
   --color-brand-art: #C80000;
   --color-brand-exam: #1E5FCC; /* ⚠️ 임시 */
   --color-brand-highteen: #E0529B;  /* ⚠️ 임시 */
   --color-brand-kids: #F5A623;      /* ⚠️ 임시 */
-  --color-brand-avenue: #2BB673;    /* ⚠️ 임시 */
+  --color-brand-avenue: #DC7037;
 
   /* Footer 배경 (shadcn 토큰에 없는 값만 추가) */
   --color-bg-footer: #0C0C0C;

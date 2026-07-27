@@ -221,7 +221,7 @@ export function CenterHomeArtistCare({ items }: CenterHomeArtistCareProps) {
                   className="absolute inset-x-5 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center text-center opacity-0 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] data-[expanded=true]:opacity-100 md:inset-x-6"
                   data-expanded={isExpanded}
                 >
-                  <span className="inline-flex rounded-full bg-brand px-4 py-2 type-label-m font-bold leading-[1.2] text-white">
+                  <span className="inline-flex rounded-full bg-brand px-4 py-2 type-label-m font-bold leading-[1.2] text-brand-foreground">
                     {item.category}
                   </span>
                   <span className="mt-8 block type-headline-s font-extrabold leading-normal text-neutral-900">

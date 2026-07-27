@@ -575,7 +575,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                           radioButtonClassName,
                           'gap-2 px-3',
                           isSelected &&
-                            'border-brand bg-brand font-semibold text-white shadow-sm hover:bg-brand hover:text-white',
+                            'border-brand bg-brand font-semibold text-brand-foreground shadow-sm hover:bg-brand hover:text-brand-foreground',
                         )}
                         htmlFor={id}
                       >
@@ -929,7 +929,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 function SectionHeading({ index, title }: { index: string; title: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="font-mono type-label-m bg-brand px-3 py-2 rounded-full text-white">{index}</span>
+      <span className="font-mono type-label-m bg-brand px-3 py-2 rounded-full text-brand-foreground">{index}</span>
       <h2 className="type-title-l font-semibold tracking-normal">{title}</h2>
     </div>
   )
