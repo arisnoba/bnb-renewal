@@ -64,7 +64,7 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
 
   return (
     <main
-      className="page page-light page-consult page-top-offset section-p-block-base"
+      className="page page-light page-consult page-top-offset section-p-t-base"
       data-center={center}
       style={consultLightThemeVars}
     >
@@ -108,11 +108,11 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
       </section>
 
       <section
-        className="section-consult-contact scroll-mt-(--page-top-offset) bg-background"
+        className="section-consult-contact section-p-block-xs scroll-mt-(--page-top-offset) bg-neutral-900 text-white"
         id="consult-contact"
       >
-        <div className="container-sm">
-          <div className="section-consult-contact__cards grid border border-border md:grid-cols-2">
+        <div className="container">
+          <div className="section-consult-contact__cards grid md:grid-cols-2">
             {contactCards.map((item, index) => (
               <ContactCard isFirst={index === 0} item={item} key={item.title} />
             ))}
@@ -154,7 +154,7 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
 
   return (
     <article
-      className={`section-consult-card flex flex-col gap-6 p-4 min-[360px]:p-6 md:p-10 ${isFirst ? '' : 'border-t border-border md:border-l md:border-t-0'}`}
+      className={`section-consult-card flex flex-col gap-6 py-8 md:py-0 ${isFirst ? 'md:pr-15' : 'border-t border-white/15 md:border-l md:border-t-0 md:pl-15'}`}
     >
       <div className="section-consult-card__body grid gap-4">
         <div className="section-consult-card__title flex items-center gap-3">
@@ -173,14 +173,14 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
               {Icon ? <Icon aria-hidden="true" className="size-4" strokeWidth={2.4} /> : null}
             </span>
           )}
-          <h2 className="type-title-l font-bold text-foreground">{item.title}</h2>
+          <h2 className="type-title-l font-bold text-white">{item.title}</h2>
         </div>
-        <p className="type-body-s leading-normal text-muted-foreground">{item.body}</p>
+        <p className="type-body-s leading-normal text-white/45">{item.body}</p>
       </div>
       <div className="section-consult-card__meta grid gap-3">
         {item.href ? (
           <a
-            className="inline-flex w-fit items-center gap-1.5 type-title-m font-bold text-foreground transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="inline-flex w-fit items-center gap-1.5 type-title-m font-bold text-white transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
             href={item.href}
             rel={isExternalLink ? 'noopener noreferrer' : undefined}
             target={isExternalLink ? '_blank' : undefined}
@@ -189,22 +189,22 @@ function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardIte
             {isExternalLink ? (
               <ExternalLink
                 aria-hidden="true"
-                className="size-3.5 text-muted-foreground/55"
+                className="size-3.5 text-white/40"
                 strokeWidth={2}
               />
             ) : null}
           </a>
         ) : (
-          <p className="type-title-m font-bold text-foreground">{item.value}</p>
+          <p className="type-title-m font-bold text-white">{item.value}</p>
         )}
-        <dl className="grid gap-1 type-body-s leading-normal text-muted-foreground">
+        <dl className="grid gap-1 type-body-s leading-normal text-white/45">
           {item.details.map((detail) => (
             <div
               className="grid grid-cols-[32px_minmax(0,1fr)] items-baseline gap-x-1.5 min-[360px]:grid-cols-[44px_minmax(0,1fr)] min-[360px]:gap-x-2"
               key={detail.label}
             >
-              <dt className="whitespace-nowrap font-bold text-foreground">{detail.label}</dt>
-              <dd className="min-w-0 whitespace-nowrap type-caption-s min-[430px]:type-body-s">
+              <dt className="whitespace-nowrap font-bold text-white/60">{detail.label}</dt>
+              <dd className="min-w-0 whitespace-nowrap type-caption-m min-[430px]:type-body-s">
                 {detail.value}
               </dd>
             </div>
