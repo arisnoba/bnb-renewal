@@ -68,21 +68,20 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
       style={consultLightThemeVars}
     >
       <section
-        aria-labelledby="consult-hero-title"
-        className="section-consult-hero section-p-block-sm bg-background"
+        aria-labelledby="consult-form-title"
+        className="section-consult-form section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
+        id="partnership"
       >
         <div className="container-sm">
           <PageIntro
-            className="section-consult-hero__heading"
+            className="section-consult-form__heading"
             eyebrow="온라인 상담"
-            id="consult-hero-title"
+            id="consult-form-title"
             title={`${centerName}와 함께할\n당신의 이야기를 기다립니다.`}
           />
 
-          <div className="section-consult-hero__cards mt-12 grid border border-border md:grid-cols-2">
-            {contactCards.map((item, index) => (
-              <ContactCard isFirst={index === 0} item={item} key={item.title} />
-            ))}
+          <div className="section-consult-form__panel mt-12 bg-background">
+            <ConsultationForm initialInquiryType={initialInquiryType} />
           </div>
         </div>
       </section>
@@ -95,16 +94,12 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
         </div>
       </section>
 
-      <section
-        aria-labelledby="consult-form-title"
-        className="section-consult-form section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
-        id="partnership"
-      >
+      <section className="section-consult-contact section-p-block-sm bg-background">
         <div className="container-sm">
-          <div className="section-consult-form__stack grid gap-10">
-            <div className="section-consult-form__panel bg-background">
-              <ConsultationForm initialInquiryType={initialInquiryType} />
-            </div>
+          <div className="section-consult-contact__cards grid border border-border md:grid-cols-2">
+            {contactCards.map((item, index) => (
+              <ContactCard isFirst={index === 0} item={item} key={item.title} />
+            ))}
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Script from 'next/script'
+import { CircleCheck } from 'lucide-react'
 import {
   createContext,
   useCallback,
@@ -48,17 +49,18 @@ import { Textarea } from '@/components/ui/textarea'
 import { useCurrentCenter } from '../CenterDomainContext.client'
 import { INQUIRY_ATTACHMENT_MAX_MEGABYTES } from '@/lib/inquiryAttachment'
 import { centerPublicHref } from '@/lib/centerDomains'
+import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 import { inquiryTypeValues, type InquiryType } from './inquiryTypeParams'
 
 const inquiryTypes = [
-  { label: '아트센터', value: 'art' },
-  { label: '입시센터', value: 'admission' },
-  { label: '하이틴센터', value: 'highteen' },
-  { label: '키즈센터', value: 'kids' },
-  { label: '애비뉴센터', value: 'avenue' },
+  { center: 'art', label: '아트센터', value: 'art' },
+  { center: 'exam', label: '입시센터', value: 'admission' },
+  { center: 'highteen', label: '하이틴센터', value: 'highteen' },
+  { center: 'kids', label: '키즈센터', value: 'kids' },
+  { center: 'avenue', label: '애비뉴센터', value: 'avenue' },
   { label: '제휴문의', value: 'partnership' },
-] satisfies Array<{ label: string; value: InquiryType }>
+] satisfies Array<{ center?: CenterSlug; label: string; value: InquiryType }>
 
 const regions = [
   '서울',
@@ -326,6 +328,8 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
     shouldUnregister: true,
   })
   const inquiryType = form.watch('inquiryType') ?? initialInquiryType
+  const selectedInquiryCenter =
+    inquiryTypes.find((type) => type.value === inquiryType)?.center ?? center
   const inflowSource = form.watch('inflowSource')
   const isPartnership = inquiryType === 'partnership'
   const needsActingMajor = requiresActingMajor(inquiryType)
@@ -502,7 +506,7 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
           render={({ field }) => (
             <FormItem>
               <FormLabel className="sr-only">센터 및 문의 선택</FormLabel>
-              <div className="lg:hidden">
+              <div className="lg:hidden" data-center={selectedInquiryCenter}>
                 <Select
                   name={field.name}
                   onValueChange={(value: InquiryType) => {
@@ -512,14 +516,31 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                   value={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className={controlClassName}>
-                      <SelectValue placeholder="센터 및 문의 선택" />
+                    <SelectTrigger
+                      className={cn(
+                        controlClassName,
+                        'border-2 border-brand focus-visible:outline-brand/50 focus-visible:ring-brand/15',
+                      )}
+                    >
+                      <span className="flex min-w-0 items-center gap-2">
+                        <CircleCheck
+                          aria-hidden="true"
+                          className="size-4 text-brand"
+                          strokeWidth={2.4}
+                        />
+                        <SelectValue placeholder="센터 및 문의 선택" />
+                      </span>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     <SelectGroup>
                       {inquiryTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
+                        <SelectItem
+                          className="data-[state=checked]:font-semibold data-[state=checked]:text-brand"
+                          data-center={type.center ?? center}
+                          key={type.value}
+                          value={type.value}
+                        >
                           {type.label}
                         </SelectItem>
                       ))}
@@ -530,11 +551,12 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
               <div className="hidden grid-cols-6 gap-2 lg:grid" role="radiogroup">
                 {inquiryTypes.map((type) => {
                   const id = `inquiryType-${type.value}`
+                  const isSelected = field.value === type.value
 
                   return (
-                    <div className="grid" key={type.value}>
+                    <div className="grid" data-center={type.center ?? center} key={type.value}>
                       <input
-                        checked={field.value === type.value}
+                        checked={isSelected}
                         className="peer sr-only"
                         id={id}
                         name={field.name}
@@ -551,10 +573,15 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
                         className={cn(
                           controlClassName,
                           radioButtonClassName,
-                          'px-3',
+                          'gap-2 px-3',
+                          isSelected &&
+                            'border-brand bg-brand font-semibold text-white shadow-sm hover:bg-brand hover:text-white',
                         )}
                         htmlFor={id}
                       >
+                        {isSelected ? (
+                          <CircleCheck aria-hidden="true" className="size-4" strokeWidth={2.4} />
+                        ) : null}
                         {type.label}
                       </Label>
                     </div>
@@ -1208,6 +1235,7 @@ function RadioButtonGroup({
                       controlClassName,
                       radioButtonClassName,
                       'w-full px-4',
+                      'peer-checked:border-foreground/60 peer-checked:bg-muted peer-checked:text-foreground',
                       (getFieldMessage(errors, name) || fieldState.invalid) &&
                         'border-destructive/60 text-destructive',
                     )}
@@ -1231,7 +1259,7 @@ const dateInputClassName =
   'appearance-none [-webkit-appearance:none] py-0 leading-[1.2] text-left [font:inherit] [&::-webkit-date-and-time-value]:m-0 [&::-webkit-date-and-time-value]:min-h-0 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:[font:inherit] [&::-webkit-date-and-time-value]:leading-[1.2]'
 const invalidControlClassName = 'border-destructive/60 outline-destructive/60 ring-destructive/20'
 const radioButtonClassName =
-  'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background type-label-m font-medium text-foreground shadow-xs outline-ring/50 ring-ring/10 transition-[background-color,border-color,color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-checked:border-foreground/60 peer-checked:bg-muted peer-checked:text-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1 peer-focus-visible:ring-ring/10 peer-focus-visible:outline-ring/50'
+  'flex cursor-pointer items-center justify-center rounded-md border border-input bg-background type-label-m font-medium text-foreground shadow-xs outline-ring/50 ring-ring/10 transition-[background-color,border-color,color,box-shadow] hover:bg-accent hover:text-accent-foreground peer-focus-visible:ring-4 peer-focus-visible:outline-1 peer-focus-visible:ring-ring/10 peer-focus-visible:outline-ring/50'
 
 function useValidationFeedback() {
   return useContext(ValidationFeedbackContext)
