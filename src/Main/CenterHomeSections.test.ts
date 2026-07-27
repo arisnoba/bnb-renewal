@@ -108,10 +108,22 @@ test('center home course search is only exposed for searchable curriculum center
   assert.equal(hasSearchableHomeCurriculum('avenue'), false)
 })
 
-test('center home data query does not convert Payload failures to empty sections', () => {
+test('center home non-news data queries do not silently convert Payload failures to empty sections', () => {
   const source = readFileSync(new URL('./CenterHomeSections.tsx', import.meta.url), 'utf8')
   const querySource = source.slice(source.indexOf('const queryCenterHomeData'))
 
   assert.doesNotMatch(querySource, /catch\s*\{/)
   assert.doesNotMatch(querySource, /\.catch\(\(\) => \(\{ docs: \[\] \}\)\)/)
+})
+
+test('center home news renders one category-based list for every viewport', () => {
+  const source = readFileSync(new URL('./CenterHomeSections.tsx', import.meta.url), 'utf8')
+  const newsSectionSource = source.slice(
+    source.indexOf('function NewsHomeSection'),
+    source.indexOf('function SocialHomeSection'),
+  )
+
+  assert.match(newsSectionSource, /<NewsHomeList center=\{center\} news=\{news\} \/>/)
+  assert.doesNotMatch(newsSectionSource, /desktopNews|mobileNews|className="(?:hidden|lg:hidden)/)
+  assert.match(source, /\['frontend-center-home', 'news-by-category-v1', center\]/)
 })

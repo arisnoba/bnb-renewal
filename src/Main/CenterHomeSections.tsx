@@ -34,7 +34,6 @@ import type {
   ExamSchoolLogo,
   Footer,
   Media,
-  News,
   SocialLink,
 } from '@/payload-types'
 import { getArtistPressThumbnailMedia, getArtistPressUrl } from '@/utilities/artistPressFallbacks'
@@ -47,13 +46,12 @@ import {
   hasSearchableHomeCurriculum,
   type SearchableHomeCurriculumCenter,
 } from './centerHomeCourseSearch'
+import { loadCenterHomeNews, type CenterHomeNews } from './centerHomeNews'
 import { screenAppearanceSlide, type HomeScreenAppearance } from './screenAppearanceSlides'
 
 type CenterHomeSectionsProps = {
   center: CenterSlug
 }
-
-type HomeNews = Pick<News, 'id' | 'category' | 'publishedAt' | 'slug' | 'title'>
 
 type HomeArtistPress = Pick<
   ArtistPress,
@@ -104,7 +102,7 @@ type CenterHomeData = {
   curriculums: HomeCurriculum[]
   examPassedReviews: HomeExamPassedReview[]
   examPassedVideos: HomeExamPassedVideo[]
-  news: HomeNews[]
+  news: CenterHomeNews[]
   screenAppearances: HomeScreenAppearance[]
   socialAccounts: HomeSocialAccount[]
   socialLinks: HomeSocialLink[]
@@ -114,7 +112,6 @@ const screenAppearanceLimit = 10
 const artistPressLimit = 5
 const examPassedReviewLimit = 5
 const examPassedVideoLimit = 6
-const newsLimit = 5
 const socialLimit = 10
 
 const centerHeroImage: Record<CenterSlug, string> = {
@@ -724,7 +721,13 @@ function ExamPassedSchoolMark({
   )
 }
 
-function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[] }) {
+function NewsHomeSection({
+  center,
+  news,
+}: {
+  center: CenterSlug
+  news: CenterHomeNews[]
+}) {
   return (
     <section
       aria-labelledby="center-home-news-title"
@@ -742,39 +745,51 @@ function NewsHomeSection({ center, news }: { center: CenterSlug; news: HomeNews[
             전체보기
           </ButtonLink>
         </div>
-        <div className="section-center-home-news__list lg:col-span-8">
-          {news.length === 0 ? (
-            <p className="border-y border-white/15 py-10 type-title-s font-semibold text-neutral-400">
-              등록된 소식이 없습니다.
-            </p>
-          ) : (
-            news.map((item) => (
-              <Link
-                className="section-center-home-news-item grid gap-6 border-b border-white/15 py-7 text-white transition hover:text-brand md:grid-cols-[180px_1fr_96px] md:items-center"
-                href={getNewsUrl(item, center)}
-                key={item.id}
-                prefetch={false}
-              >
-                <span>
-                  <span className="block type-title-s font-bold leading-[1.2] text-brand">
-                    {newsTypeLabel(item.category)}
-                  </span>
-                  <span className="mt-2 block type-title-s font-bold leading-[1.35] text-neutral-300">
-                    {item.category || '교육ㆍ운영ㆍ소식'}
-                  </span>
-                </span>
-                <span className="line-clamp-2 type-headline-s font-semibold leading-normal md:line-clamp-1 md:type-headline-s">
-                  {item.title}
-                </span>
-                <time className="type-label-l font-medium leading-[1.35] text-white/30 md:text-right">
-                  {formatDate(item.publishedAt)}
-                </time>
-              </Link>
-            ))
-          )}
-        </div>
+        <NewsHomeList center={center} news={news} />
       </div>
     </section>
+  )
+}
+
+function NewsHomeList({
+  center,
+  news,
+}: {
+  center: CenterSlug
+  news: CenterHomeNews[]
+}) {
+  return (
+    <div className="section-center-home-news__list lg:col-span-8">
+      {news.length === 0 ? (
+        <p className="border-y border-white/15 py-10 type-title-s font-semibold text-neutral-400">
+          등록된 소식이 없습니다.
+        </p>
+      ) : (
+        news.map((item) => (
+          <Link
+            className="section-center-home-news-item grid gap-6 border-b border-white/15 py-7 text-white transition hover:text-brand md:grid-cols-[180px_1fr_96px] md:items-center"
+            href={getNewsUrl(item, center)}
+            key={item.id}
+            prefetch={false}
+          >
+            <span>
+              <span className="block type-title-s font-bold leading-[1.2] text-brand">
+                {newsTypeLabel(item.category)}
+              </span>
+              <span className="mt-2 block type-title-s font-bold leading-[1.35] text-neutral-300">
+                {item.category || '교육ㆍ운영ㆍ소식'}
+              </span>
+            </span>
+            <span className="line-clamp-2 type-headline-s font-semibold leading-normal md:line-clamp-1 md:type-headline-s">
+              {item.title}
+            </span>
+            <time className="type-label-l font-medium leading-[1.35] text-white/30 md:text-right">
+              {formatDate(item.publishedAt)}
+            </time>
+          </Link>
+        ))
+      )}
+    </div>
   )
 }
 
@@ -1247,7 +1262,7 @@ function formatDate(value: string | null | undefined) {
 const queryCenterHomeData = cache((center: CenterSlug): Promise<CenterHomeData> => {
   return unstable_cache(
     () => queryCenterHomeDataUncached(center),
-    ['frontend-center-home', center],
+    ['frontend-center-home', 'news-by-category-v1', center],
     {
       revalidate: 600,
       tags: [
@@ -1272,7 +1287,7 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
     artistPress,
     examPassedReviews,
     examPassedVideos,
-    news,
+    homeNews,
     socialLinks,
     footer,
     curriculums,
@@ -1372,20 +1387,26 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
           where: centerArrayWhere('exam'),
         })
       : Promise.resolve({ docs: [] }),
-    payload.find({
-      collection: 'news',
-      depth: 0,
-      limit: newsLimit,
-      overrideAccess: false,
-      pagination: false,
-      select: {
-        category: true,
-        publishedAt: true,
-        slug: true,
-        title: true,
-      },
-      sort: '-publishedAt',
-      where: centerArrayWhere(center),
+    loadCenterHomeNews(center, async ({ limit, sort, where }) => {
+      const result = await payload.find({
+        collection: 'news',
+        depth: 0,
+        limit,
+        overrideAccess: false,
+        pagination: false,
+        select: {
+          category: true,
+          publishedAt: true,
+          slug: true,
+          title: true,
+        },
+        sort,
+        where,
+      })
+
+      return {
+        docs: result.docs as CenterHomeNews[],
+      }
     }),
     payload.find({
       collection: 'social-links',
@@ -1438,7 +1459,7 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
     curriculums: curriculums.docs as HomeCurriculum[],
     examPassedReviews: examPassedReviews.docs as HomeExamPassedReview[],
     examPassedVideos: examPassedVideos.docs as HomeExamPassedVideo[],
-    news: news.docs as HomeNews[],
+    news: homeNews,
     screenAppearances: screenAppearances.docs as HomeScreenAppearance[],
     socialAccounts: centerSocialAccounts(footer as Footer, center),
     socialLinks: socialLinks.docs as HomeSocialLink[],
