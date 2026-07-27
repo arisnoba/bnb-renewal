@@ -218,6 +218,7 @@ function normalizeTitle(value: string) {
   return value
     .normalize('NFC')
     .replace(/^영화\s*/u, '')
+    .replace(/^ocn\s*/iu, '')
     .toLocaleLowerCase('ko-KR')
     .replace(/[^0-9a-z가-힣]/giu, '')
 }
