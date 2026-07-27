@@ -31,7 +31,7 @@ const gradeSystemMetadata = {
     title: '등급제 교육관리시스템',
   },
   kids: {
-    description: '배우앤배움 키즈센터 등급제 교육관리시스템 안내',
+    description: '배우앤배움 키즈센터 IRUDA 연기트레이닝 등급제 교육관리시스템 안내',
     title: '등급제 교육관리시스템',
   },
 } satisfies Record<GradeSystemCenter, Metadata>

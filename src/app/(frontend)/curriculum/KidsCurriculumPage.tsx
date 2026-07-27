@@ -1,14 +1,15 @@
 import {
+  Brain,
   BookOpenText,
   Camera,
   Clapperboard,
-  Drama,
+  ClipboardCheck,
+  Heart,
   Monitor,
   PersonStanding,
-  ScanSearch,
-  Smile,
   Speech,
   Theater,
+  Users,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -19,11 +20,13 @@ type KidsCurriculumSection = {
   cards: KidsCurriculumCard[]
   description: string
   heading: string
+  id: string
   level: string
   summary: string[]
 }
 
 type KidsCurriculumCard = {
+  description: string
   icon: LucideIcon
   items: string[]
   title: string
@@ -33,121 +36,143 @@ const kidsCurriculumSections: KidsCurriculumSection[] = [
   {
     cards: [
       {
-        icon: Smile,
+        description:
+          '단순히 감정을 크게 표현하는 것이 아니라 ‘왜 그런 감정을 느끼는지’를 이해하며 표현(행동)하는 힘을 기릅니다.',
+        icon: Heart,
         items: [
-          '역할놀이를 통한 흥미 유발',
-          '상황극을 통한 창의력, 상상력, 관찰력 훈련',
+          '기초 감정(기쁨, 슬픔, 화남, 놀람 등) 표현하기',
+          '감정 변화 이해하기',
+          '즉흥 상황극',
+          '행동동사 기초',
         ],
-        title: '놀이 훈련',
+        title: '감정 표현 훈련',
       },
       {
+        description:
+          '연기의 기본이 되는 목소리와 전달력을 익히며 발표력과 자신감까지 함께 성장시킵니다.',
         icon: Speech,
         items: [
-          '개인별 화술의 습관 분석 및 교정',
-          '화술 훈련 (소리, 발음교정)',
+          '발성·발음 기초',
+          '호흡 훈련',
+          '리듬/템포',
+          '쉼 (Pause)',
+          '또렷한 전달력 만들기',
         ],
         title: '화술 훈련',
       },
       {
+        description:
+          '몸을 자유롭게 사용하는 방법을 배우며 감정을 신체로 표현하는 기초를 다집니다.',
         icon: PersonStanding,
-        items: [
-          '신체적으로 몸을 활용하는 방법 및 훈련',
-          '기초 신체훈련을 통해 적극성을 올리는 훈련',
-        ],
-        title: '신체 훈련',
+        items: ['긴장 풀기', '신체 균형', '공간 인식', '다양한 움직임 표현'],
+        title: '신체 표현 훈련',
       },
     ],
     description:
-      '연기 교육과정의 첫 걸음은 놀이로 시작하여 이를 통해 재능과 공감능력을 향상시키는 것입니다. 자신의 소리와 움직임을 활용하는 아이들의 흥미와 재미를 유발시켜, 단순히 생활에 접목할 수 있는 자연스러운 카메라 동작에 맞는 연기 장면의 피드백과 능동적으로 접근할 수 있도록 적극성과 사회성을 개발시키기 위한 프로그램입니다. 또한 연기의 틀을 받아들이는 기초 과정으로 표현의 가장 기본이 되는 화술 훈련을 중심으로 구성되어 있으며, 자기 소개와 대본 읽기를 통해 아이의 성향과 좋은 습관을 형성할 수 있도록 창의력과 표현력을 함께 키워나갑니다.',
-    heading: '영재',
-    level: '초급 Class',
+      '연기를 처음 접하는 아이들이 연기의 즐거움을 경험하며 자신의 감정과 생각을 자연스럽게 표현할 수 있도록 지도합니다. 다양한 신체활동과 즉흥연기를 통해 상상력과 표현력을 확장하고, 발성·발음·호흡의 기초를 함께 익혀 건강한 표현 습관을 만들어갑니다.',
+    heading: 'I Class',
+    id: 'i',
+    level: '표현의 기초 (Intro)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주1회 2-3시간',
-      '과정 : 이해하기 / 말하기 / 움직이기 / 표현하기',
+      '수업시간 : 주 1회 2~3시간',
+      '교육목표 : 표현하기 / 상상하기 / 전달하기',
     ],
   },
   {
     cards: [
       {
-        icon: Drama,
-        items: [
-          '다양한 상황극을 통해 경험하지 못한 새로운 감정과 표현 도출',
-          '반복적인 상황극 훈련을 통해 정형화되지 않은 유연한 연기 유도',
-          "2인극을 통해 주고 받는 '액션'과 '리액션' 훈련",
-        ],
-        title: '심화 연기훈련',
+        description: '감정을 표현하기보다 감정을 품는 힘을 배우는 단계입니다.',
+        icon: Brain,
+        items: ['생각 만들기', '감정의 밀도 높이기', '감정 절제', '침묵의 연기'],
+        title: '내면 연기 훈련',
       },
       {
-        icon: Camera,
-        items: [
-          '카메라를 이용한 연기수업',
-          '모니터링을 통해 연기의 디테일을 잡는 방법과 표현구체화',
-        ],
-        title: '카메라연기',
-      },
-      {
+        description: '대사를 외우는 것이 아니라 인물을 이해하는 배우의 사고방식을 훈련합니다.',
         icon: BookOpenText,
-        items: [
-          '대본 전체 파악하는 방법 배우기',
-          '대본의 상황과 인물 분석 방법 알아보기',
-        ],
-        title: '대본 이해와 분석',
+        items: ['전 상황', '인물의 목표', '행동동사 심화', '관계 분석'],
+        title: '장면 분석 훈련',
       },
       {
-        icon: ScanSearch,
-        items: [
-          '자신에게 맞는 상황별 독백을 통해 오디션 준비',
-          '오디션에서 이루어지는 과정 시뮬레이션 훈련',
-        ],
-        title: '오디션 독백 준비',
+        description: '카메라 앞에서 자연스럽게 표현하는 기초를 익힙니다.',
+        icon: Camera,
+        items: ['시선 처리', '카메라 거리 이해', '롱샷 / 미디엄샷 / 클로즈업', '자연스러운 리액션'],
+        title: '매체 기초 훈련',
       },
     ],
     description:
-      "아역배우 과정에서는 연기자로서 현장에 나갈 수 있는 기초 컨디션을 다지는 훈련이 진행됩니다. 대사를 직접적으로 읽는 것이 아닌, 상황과 대사에 대해 충분한 이해를 통해 본질적이고 깊이 있는 연기로 섬세하게 표현하는 것을 지향합니다. 또한 감정훈련과 대본 이해, 상황 분석을 통해 '왜' 배우가 아닌 '아이'로 출발해 자연스럽게 역할에 이입하고 그 경험 안에 자신을 담을 수 있도록 다양한 교육 프로그램을 구성하였습니다.",
-    heading: '아역배우',
-    level: '중급 Class',
+      '표현된 감정을 조금 더 깊이 있게 만들어가는 단계입니다. 감정을 크게 드러내기보다 생각과 호흡을 통해 자연스럽게 전달하는 방법을 익히며, 인물의 심리를 이해하고 장면 속에서 살아가는 배우의 기본기를 훈련합니다.',
+    heading: 'R Class',
+    id: 'r',
+    level: '감정을 담아내는 배우 (Refine)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주1회 2-3시간',
-      '과정 : 인물창조 / 디테일작업 / 심화 카메라연기 / 현장 피드백',
+      '수업시간 : 주 1회 2~3시간',
+      '교육목표 : 담아내기 / 절제하기 / 이해하기',
     ],
   },
   {
     cards: [
       {
+        description: '복합적인 감정을 자연스럽게 연결하는 훈련을 진행합니다.',
         icon: Theater,
-        items: [
-          '완성된 연기에 캐릭터의 색깔과 매력 입히기',
-          '1차원적인 표현이 아닌 복합적인 감정을 통해 표현하기',
-        ],
-        title: '심화 연기 디테일 교정',
+        items: ['웃지만 슬픈 감정', '화나지만 참는 감정', '기쁘지만 불안한 감정'],
+        title: '복합감정 훈련',
       },
       {
+        description: '연기는 혼자 하는 것이 아니라 상대와 함께 만들어가는 과정임을 익힙니다.',
+        icon: Users,
+        items: ['상대 배우 듣기', '반응 연기', '거리감', '감정의 흐름'],
+        title: '관계 연기',
+      },
+      {
+        description: '실제 촬영을 위한 장면을 반복 연습하며 완성도를 높입니다.',
         icon: Clapperboard,
-        items: [
-          '오디션을 통한 개인별 연기 스타일, 특징 분석',
-          '오디션 장르별 맞춤 전략',
-        ],
-        title: '오디션 훈련',
-      },
-      {
-        icon: Monitor,
-        items: [
-          '모니터링을 통해 연기의 디테일을 잡는 방법과 액팅 리뷰',
-          '시선, 제스처, 비즈니스, 디테일 표정 분석 및 교정',
-        ],
-        title: '카메라 훈련/모니터링 훈련',
+        items: ['에쭈드', '매체 장면', '감정 연결', '카메라 리허설'],
+        title: '장면 완성',
       },
     ],
     description:
-      '아티스트 과정은 그동안 영재교육과 아역배우 과정을 통해 배우로서 현장에 투입된 아역배우들을 위한 전문교육 과정입니다. 본 과정은 아이들이 오디션이나 촬영 현장에서 필요한 커리큘럼으로만 구성되어 있습니다. 단순히 자연스러운 연기를 넘어 디테일한 상황분석과 인물 창조를 통해 연기의 본질을 이해하고 표현할 수 있도록 하는 실전 훈련반입니다.',
-    heading: '아티스트',
-    level: '고급 Class',
+      '하나의 감정을 표현하는 것을 넘어 서로 다른 감정을 자연스럽게 연결하고, 상대 배우와의 관계 속에서 살아있는 연기를 만들어갑니다.',
+    heading: 'U Class',
+    id: 'u',
+    level: '감정을 연결하는 배우 (Upgrade)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주1회 2-3시간',
-      '과정 : 인물창조 / 디테일작업 / 심화 카메라연기 / 현장 피드백',
+      '수업시간 : 주 1회 2~3시간',
+      '교육목표 : 연결하기 / 반응하기 / 몰입하기',
+    ],
+  },
+  {
+    cards: [
+      {
+        description: '현장에서 요구되는 배우의 대응력을 훈련합니다.',
+        icon: ClipboardCheck,
+        items: ['감독 디렉팅 이해', '다양한 버전 연기', '즉각적인 수정 능력', '애드리브 대응'],
+        title: '디렉팅 훈련',
+      },
+      {
+        description: '매체연기에서 가장 중요한 ‘절제된 표현’을 완성합니다.',
+        icon: Monitor,
+        items: ['시선 안에 정서 담기', '호흡으로 감정 전달', '최소한의 움직임', '클로즈업 연기'],
+        title: '매체 심화',
+      },
+      {
+        description: '실제 촬영 환경을 재현하여 실전 감각을 익힙니다.',
+        icon: Clapperboard,
+        items: ['오디션 연습', '촬영 리허설', '원테이크', '현장 동선'],
+        title: '현장 시뮬레이션',
+      },
+    ],
+    description:
+      '실제 촬영 현장을 기준으로 진행되는 실전 과정입니다. 감독의 디렉팅을 빠르게 이해하고 다양한 버전의 연기를 즉시 구현하는 능력을 기르며, 눈빛과 호흡만으로도 인물의 정서를 전달하는 매체연기를 심화합니다.',
+    heading: 'DA Class',
+    id: 'da',
+    level: '현장을 준비하는 배우 (Directing Actor)',
+    summary: [
+      '인원 : 정원 6명',
+      '수업시간 : 주 1회 2~3시간',
+      '교육목표 : 구현하기 / 대응하기 / 완성하기',
     ],
   },
 ]
@@ -190,7 +215,7 @@ export function KidsCurriculumPage() {
             {kidsCurriculumSections.map((section, index) => (
               <KidsCurriculumSection
                 isFirst={index === 0}
-                key={section.heading}
+                key={section.id}
                 section={section}
               />
             ))}
@@ -210,13 +235,13 @@ function KidsCurriculumSection({
 }) {
   return (
     <article
-      aria-labelledby={`kids-curriculum-${section.heading}`}
+      aria-labelledby={`kids-curriculum-${section.id}`}
       className={`section-kids-curriculum-course ${isFirst ? '' : 'border-t border-white/10 pt-16 md:pt-20'} ${isFirst ? '' : 'mt-16 md:mt-20'}`}
     >
       <header className="section-kids-curriculum-course__header grid gap-8 md:grid-cols-[minmax(180px,1fr)_minmax(0,2fr)] md:gap-12">
         <h2
           className="type-display-m font-extrabold leading-[1.3] text-white"
-          id={`kids-curriculum-${section.heading}`}
+          id={`kids-curriculum-${section.id}`}
         >
           <span className="block text-brand">{section.heading}</span>
           <span className="block">교육 과정</span>
@@ -261,6 +286,9 @@ function KidsCurriculumCard({ card }: { card: KidsCurriculumCard }) {
             </li>
           ))}
         </ul>
+        <p className="mt-5 type-body-s leading-[1.7] text-white/45">
+          {card.description}
+        </p>
       </div>
     </div>
   )

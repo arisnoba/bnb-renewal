@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   if (center === 'kids') {
     return {
-      description: '배우앤배움 키즈센터의 영재, 아역배우, 아티스트 과정별 정적 커리큘럼 안내',
+      description: '배우앤배움 키즈센터의 I, R, U, DA Class별 IRUDA 연기 커리큘럼 안내',
       title: '커리큘럼',
     }
   }
