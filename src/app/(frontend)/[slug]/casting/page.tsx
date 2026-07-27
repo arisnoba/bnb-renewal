@@ -53,7 +53,10 @@ const castingCompanies = [
   },
   {
     directorCompanyNames: ['CNA Agency', 'CNA', '씨앤에이'],
-    description: commonDescription,
+    description: [
+      'CNA 에이전시는 작품의 기획 단계부터 참여하는 캐스팅 에이전시입니다.',
+      '드라마·영화·광고 분야의 캐스팅 경험과 폭넓은 아티스트 네트워크를 기반으로, 콘텐츠의 방향성과 캐릭터에 맞는 배우 및 모델을 제안합니다.',
+    ],
     headline: '국내 드라마 점유율 상위의 드라마 캐스팅 에이전시로 구성되어 있으며,',
     id: 'cna-agency',
     label: 'CNA Agency',
@@ -61,7 +64,10 @@ const castingCompanies = [
   },
   {
     directorCompanyNames: ['ARKO LAB', 'ARKO', '아르코랩', '유캐스팅', 'U CASTING'],
-    description: commonDescription,
+    description: [
+      '연간 10개 이상의 드라마 작품에서 주·조연 및 주요 배역 캐스팅을 진행하는 드라마 전문 캐스팅 에이전시입니다.',
+      '제작사와의 직접 협업과 현장 중심의 캐스팅 네트워크를 바탕으로 작품에 필요한 배우를 정확하게 연결합니다.',
+    ],
     headline: '아르코 랩은 국내 드라마 점유율 상위의 드라마 캐스팅 에이전시로 구성되어 있으며,',
     id: 'arko-lab',
     label: 'ARKO LAB',

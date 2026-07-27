@@ -23,6 +23,11 @@ const HERO_POSTER_CENTER_INDEX = Math.floor(HERO_POSTER_COUNT / 2)
 const HERO_POSTER_COLUMNS = 7
 const HERO_POSTER_SLOT_ORDER = getHeroPosterSlotOrder()
 const HERO_POSTER_PRIORITY_COUNT = 7
+const CASTING_STATUS_DESCRIPTION_BY_CENTER: Partial<Record<CenterSlug, string>> = {
+  art: 'CNA Agency, ARKO Lab과 함께합니다.',
+  highteen: 'CNA Agency, ARKO Lab. IMGround와 함께합니다.',
+  kids: 'CNA Agency, ARKO Lab. IMGround와 함께합니다.',
+}
 const heroPosterPlaceholder =
   'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 2 3%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23111111%22/%3E%3Cstop offset=%221%22 stop-color=%22%23333333%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%222%22 height=%223%22 fill=%22url(%23g)%22/%3E%3C/svg%3E'
 
@@ -76,12 +81,17 @@ export async function CastingStatusPage({ center }: CastingStatusPageProps) {
         <div className="container">
           <PageIntro
             className="section-casting-status-list__head mb-16 md:mb-20"
-            description="ARKO Lab 에이전시와 사전협의 없는 무단 도용 및 복제, 배포를 금합니다."
+            description={
+              CASTING_STATUS_DESCRIPTION_BY_CENTER[center] ??
+              'ARKO Lab 에이전시와 사전협의 없는 무단 도용 및 복제, 배포를 금합니다.'
+            }
             descriptionClassName="section-casting-status-list__description"
             eyebrow="캐스팅 출연현황"
             eyebrowClassName="section-casting-status-list__eyebrow"
             id="casting-status-list-title"
-            title={'배우앤배움 수강생들의 출연 작품은\nARKO Lab의 단독 캐스팅으로 이어지고 있습니다.'}
+            title={
+              '배우앤배움 수강생들의 출연 작품은\nBNB Casting을 통해 이어집니다.'
+            }
             titleClassName="section-casting-status-list__title"
           />
 
