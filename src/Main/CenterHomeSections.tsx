@@ -143,6 +143,14 @@ const artistCareGroups = {
   membership: '멤버십 서비스',
 } as const
 
+const premiumInstructorsImageByCenter: Record<CenterSlug, string> = {
+  art: '/assets/artist-care/premium-instructors_art.jpg',
+  avenue: '/assets/artist-care/premium-instructors_art.jpg',
+  exam: '/assets/artist-care/premium-instructors_exam.jpg',
+  highteen: '/assets/artist-care/premium-instructors_highteen.jpg',
+  kids: '/assets/artist-care/premium-instructors_kids.jpg',
+}
+
 function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
   const items: CenterHomeArtistCareItem[] = [
     {
@@ -163,7 +171,7 @@ function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
       category: artistCareGroups.actorCare,
       description: '현장 경험을 갖춘 강사진의 실전 트레이닝',
       href: centerPublicHref(center, '/teachers'),
-      imageUrl: '/assets/artist-care/premium-instructors.jpg',
+      imageUrl: premiumInstructorsImageByCenter[center],
       title: '급이 다른 강사진',
     },
     {
