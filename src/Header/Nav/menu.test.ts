@@ -109,7 +109,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   )
 })
 
-test('exam mega menu swaps casting and artist columns for exam-specific content', () => {
+test('exam mega menu links exam results directly and keeps exam-specific artist content', () => {
   const menu = getHeaderMenu('exam')
   const groupLabels = menu.map((group) => group.label)
   const labels = labelsFor('exam')
@@ -124,7 +124,7 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
   assert.deepEqual(menu.map((group) => [group.key, 'href' in group]), [
     ['about', false],
     ['education', false],
-    ['casting', false],
+    ['casting', true],
     ['artist', false],
     ['support', false],
   ])
@@ -135,10 +135,11 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: 'https://exam.baewooenm.com/teachers', label: '교육진 현황' },
     { href: 'https://exam.baewooenm.com/curriculum', label: '커리큘럼' },
   ])
-  assert.deepEqual(itemsForGroup('exam', 'casting'), [
-    { href: 'https://exam.baewooenm.com/university-results', label: '대학교' },
-    { href: 'https://exam.baewooenm.com/arts-high-results', label: '예술고등학교' },
-  ])
+  assert.equal(
+    menu.find((group) => group.key === 'casting')?.href,
+    'https://exam.baewooenm.com/university-results',
+  )
+  assert.deepEqual(itemsForGroup('exam', 'casting'), [])
   assert.deepEqual(itemsForGroup('exam', 'artist'), [
     { href: 'https://exam.baewooenm.com/passed-reviews', label: '합격 후기' },
     { href: 'https://exam.baewooenm.com/passed-videos', label: '합격 영상' },

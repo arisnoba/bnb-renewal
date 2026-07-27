@@ -72,11 +72,21 @@ export function sitemapURLs(origin: string) {
     return [`${normalizedOrigin}/`]
   }
 
-  const menuURLs = getHeaderMenu(center).flatMap((group) =>
-    group.items.map((item) => item.href),
-  )
+  const menuURLs = getHeaderMenu(center).flatMap((group) => [
+    ...(group.href ? [group.href] : []),
+    ...group.items.map((item) => item.href),
+  ])
+  const relatedPageURLs =
+    center === 'exam' ? [`${normalizedOrigin}/arts-high-results`] : []
 
-  return [...new Set([`${normalizedOrigin}/`, ...menuURLs, `${normalizedOrigin}/consult`])]
+  return [
+    ...new Set([
+      `${normalizedOrigin}/`,
+      ...menuURLs,
+      ...relatedPageURLs,
+      `${normalizedOrigin}/consult`,
+    ]),
+  ]
 }
 
 function escapeXml(value: string) {

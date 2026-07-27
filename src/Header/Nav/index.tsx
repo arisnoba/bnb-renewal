@@ -114,37 +114,51 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({ familySites, onMegaOpenCha
         <nav aria-label="주요 메뉴" className="site-header__nav">
           {menuGroups.map((group) => (
             <div className="site-header__desktop-item" key={group.key}>
-              <button
-                aria-expanded={isMegaOpen}
-                aria-haspopup="true"
-                className="site-header__nav-link text-base"
-                onClick={() => setIsMegaOpen(true)}
-                onFocus={() => setIsMegaOpen(true)}
-                onPointerDown={(event) => {
-                  if (event.pointerType !== 'mouse') {
-                    setIsMegaOpen(true)
-                  }
-                }}
-                type="button"
-              >
-                {group.label}
-              </button>
-              <div className="site-header__desktop-submenu-frame">
-                <ul className="site-header__desktop-submenu">
-                  {group.items.map((item) => (
-                    <li key={`${group.key}-${item.href}-${item.label}`}>
-                      <Link
-                        className="site-header__submenu-link"
-                        href={item.href}
-                        onClick={() => setIsMegaOpen(false)}
-                        prefetch={false}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {group.href ? (
+                <Link
+                  className="site-header__nav-link text-base"
+                  href={group.href}
+                  onClick={() => setIsMegaOpen(false)}
+                  onFocus={() => setIsMegaOpen(true)}
+                  prefetch={false}
+                >
+                  {group.label}
+                </Link>
+              ) : (
+                <button
+                  aria-expanded={isMegaOpen}
+                  aria-haspopup="true"
+                  className="site-header__nav-link text-base"
+                  onClick={() => setIsMegaOpen(true)}
+                  onFocus={() => setIsMegaOpen(true)}
+                  onPointerDown={(event) => {
+                    if (event.pointerType !== 'mouse') {
+                      setIsMegaOpen(true)
+                    }
+                  }}
+                  type="button"
+                >
+                  {group.label}
+                </button>
+              )}
+              {group.items.length > 0 ? (
+                <div className="site-header__desktop-submenu-frame">
+                  <ul className="site-header__desktop-submenu">
+                    {group.items.map((item) => (
+                      <li key={`${group.key}-${item.href}-${item.label}`}>
+                        <Link
+                          className="site-header__submenu-link"
+                          href={item.href}
+                          onClick={() => setIsMegaOpen(false)}
+                          prefetch={false}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
           ))}
         </nav>
@@ -310,43 +324,57 @@ function MobileMenu({
                 data-open={isActive ? 'true' : 'false'}
                 key={group.key}
               >
-                <button
-                  aria-controls={submenuId}
-                  aria-expanded={isActive}
-                  className="site-header__mobile-accordion-trigger"
-                  onClick={() => onGroupToggle(isActive ? null : group.key)}
-                  type="button"
-                >
-                  <span>{group.label}</span>
-                  {isActive ? (
-                    <Minus aria-hidden="true" size={20} strokeWidth={2.4} />
-                  ) : (
-                    <Plus aria-hidden="true" size={20} strokeWidth={2.4} />
-                  )}
-                </button>
-                <div
-                  aria-hidden={!isActive}
-                  className="site-header__mobile-submenu"
-                  id={submenuId}
-                >
-                  <div className="site-header__mobile-submenu-inner">
-                    <ul className="site-header__mobile-submenu-list">
-                      {group.items.map((item) => (
-                        <li key={`${group.key}-${item.href}-${item.label}`}>
-                          <Link
-                            className="site-header__mobile-submenu-link"
-                            href={item.href}
-                            onClick={onLinkClick}
-                            prefetch={false}
-                            tabIndex={isActive ? undefined : -1}
-                          >
-                            {item.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                {group.href ? (
+                  <Link
+                    className="site-header__mobile-accordion-trigger"
+                    href={group.href}
+                    onClick={onLinkClick}
+                    prefetch={false}
+                  >
+                    <span>{group.label}</span>
+                    <ChevronRight aria-hidden="true" size={20} strokeWidth={2.4} />
+                  </Link>
+                ) : (
+                  <>
+                    <button
+                      aria-controls={submenuId}
+                      aria-expanded={isActive}
+                      className="site-header__mobile-accordion-trigger"
+                      onClick={() => onGroupToggle(isActive ? null : group.key)}
+                      type="button"
+                    >
+                      <span>{group.label}</span>
+                      {isActive ? (
+                        <Minus aria-hidden="true" size={20} strokeWidth={2.4} />
+                      ) : (
+                        <Plus aria-hidden="true" size={20} strokeWidth={2.4} />
+                      )}
+                    </button>
+                    <div
+                      aria-hidden={!isActive}
+                      className="site-header__mobile-submenu"
+                      id={submenuId}
+                    >
+                      <div className="site-header__mobile-submenu-inner">
+                        <ul className="site-header__mobile-submenu-list">
+                          {group.items.map((item) => (
+                            <li key={`${group.key}-${item.href}-${item.label}`}>
+                              <Link
+                                className="site-header__mobile-submenu-link"
+                                href={item.href}
+                                onClick={onLinkClick}
+                                prefetch={false}
+                                tabIndex={isActive ? undefined : -1}
+                              >
+                                {item.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )
           })}

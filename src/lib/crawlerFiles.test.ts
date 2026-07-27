@@ -44,6 +44,8 @@ test('center sitemap uses the center menu without leaking URLs from sibling host
 
   assert.equal(urls[0], 'https://exam.baewooenm.com/')
   assert.ok(urls.includes('https://exam.baewooenm.com/management'))
+  assert.ok(urls.includes('https://exam.baewooenm.com/university-results'))
+  assert.ok(urls.includes('https://exam.baewooenm.com/arts-high-results'))
   assert.ok(urls.includes('https://exam.baewooenm.com/passed-reviews'))
   assert.ok(urls.includes('https://exam.baewooenm.com/consult'))
   assert.equal(urls.length, new Set(urls).size)

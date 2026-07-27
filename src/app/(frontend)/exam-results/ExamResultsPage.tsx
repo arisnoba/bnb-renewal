@@ -126,7 +126,38 @@ export async function ExamResultsPage({ page = 1, resultType }: ExamResultPagePr
               <p key={line}>{line}</p>
             ))}
             descriptionClassName="section-exam-results-list__description"
-            eyebrow={config.eyebrow}
+            eyebrow={
+              <span
+                aria-label="합격현황 페이지 전환"
+                className="inline-flex flex-wrap items-center gap-x-5 gap-y-2 md:gap-x-10"
+                role="group"
+              >
+                <Link
+                  aria-current={resultType === 'university' ? 'page' : undefined}
+                  className={
+                    resultType === 'university'
+                      ? 'text-brand'
+                      : 'text-neutral-400 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand'
+                  }
+                  href={getExamResultPathname('university')}
+                  prefetch={false}
+                >
+                  대학교 합격현황
+                </Link>
+                <Link
+                  aria-current={resultType === 'arts_high_school' ? 'page' : undefined}
+                  className={
+                    resultType === 'arts_high_school'
+                      ? 'text-brand'
+                      : 'text-neutral-400 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand'
+                  }
+                  href={getExamResultPathname('arts_high_school')}
+                  prefetch={false}
+                >
+                  예술고등학교 합격현황
+                </Link>
+              </span>
+            }
             eyebrowClassName="section-exam-results-list__eyebrow"
             id="exam-results-list-title"
             title={config.title}

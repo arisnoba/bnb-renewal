@@ -9,6 +9,7 @@ export type HeaderMenuItem = {
 }
 
 export type HeaderMenuGroup = {
+  href?: string
   items: HeaderMenuItem[]
   key: string
   label: string
@@ -37,6 +38,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       label: '교육',
     },
     {
+      ...(center === 'exam' ? { href: universityResultsHref(center) } : {}),
       items: castingItems(center),
       key: 'casting',
       label: center === 'exam' ? '합격현황' : '캐스팅',
@@ -51,7 +53,7 @@ export function getHeaderMenu(center: CenterSlug): HeaderMenuGroup[] {
       key: 'support',
       label: '지원센터',
     },
-  ].filter((group) => group.items.length > 0)
+  ].filter((group) => group.href || group.items.length > 0)
 }
 
 function aboutItems(center: CenterSlug): HeaderMenuItem[] {
@@ -117,10 +119,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
 
 function castingItems(center: CenterSlug): HeaderMenuItem[] {
   if (center === 'exam') {
-    return [
-      { href: universityResultsHref(center), label: '대학교' },
-      { href: artsHighResultsHref(center), label: '예술고등학교' },
-    ]
+    return []
   }
 
   if (center === 'art' || center === 'avenue') {
@@ -204,10 +203,6 @@ function companyHref(center: CenterSlug) {
 
 function universityResultsHref(center: CenterSlug) {
   return centerPublicHref(center, '/university-results')
-}
-
-function artsHighResultsHref(center: CenterSlug) {
-  return centerPublicHref(center, '/arts-high-results')
 }
 
 function examPassedReviewsHref(center: CenterSlug) {
