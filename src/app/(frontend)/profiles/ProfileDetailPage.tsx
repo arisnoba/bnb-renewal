@@ -4,7 +4,6 @@ import { centers, type CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
 import type { Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
-import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
@@ -18,7 +17,8 @@ import {
   DetailPage,
   DetailPager,
 } from '../_components/DetailLayout'
-import { ProfileDetailGallery, type ProfileImageItem } from './ProfileDetailGallery.client'
+import { ProfileDetailGallery } from './ProfileDetailGallery.client'
+import { profileDetailImages } from './profileDetailImages'
 
 export type ProfileDetailParams = {
   center?: string
@@ -38,25 +38,8 @@ export async function ProfileDetailPage({
     notFound()
   }
 
-  const image = profile.profileImageMedia
-  const legacyImagePath = publishedImageSrc(profile.profileImagePath) || undefined
-  const hasMediaImage = image && typeof image === 'object'
   const careerItems = profile.careerItems ?? []
-  const profileImages = [
-    hasMediaImage ? { resource: image, type: 'media' as const } : null,
-    !hasMediaImage && legacyImagePath ? { src: legacyImagePath, type: 'legacy' as const } : null,
-    ...[
-      profile.photoImage1,
-      profile.photoImage2,
-      profile.photoImage3,
-      profile.photoImage4,
-      profile.photoImage5,
-      profile.photoImage6,
-    ]
-      .map(publishedImageSrc)
-      .filter((src): src is string => Boolean(src))
-      .map((src) => ({ src, type: 'legacy' as const })),
-  ].filter((item): item is ProfileImageItem => Boolean(item))
+  const profileImages = profileDetailImages(profile)
   const backHref = center ? centerPublicHref(center, '/rookies') : '/profiles'
   const backLabel = center ? 'BNB 루키' : '프로필'
   const adjacent = await queryAdjacentProfiles({

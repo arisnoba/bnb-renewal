@@ -456,7 +456,7 @@ export const TeacherAdditionalPhotosField = () => (
 export const ProfileAdditionalPhotosField = () => (
 	<AdditionalPhotosField
 		emptyMessage="등록된 갤러리 이미지가 없습니다."
-		helpText="대표 이미지를 제외한 프로필 갤러리 이미지를 등록합니다."
+		helpText="상세 페이지에는 이 갤러리 이미지만 노출되며, 목록 대표 이미지는 포함되지 않습니다."
 	/>
 );
 
