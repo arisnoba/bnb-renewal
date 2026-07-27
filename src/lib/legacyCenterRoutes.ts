@@ -158,6 +158,10 @@ function contentTarget(coId: string | null, center: CenterSlug) {
     return '/management'
   }
 
+  if (coId === 'enter03' && center === 'exam') {
+    return '/admission'
+  }
+
   return contentTargets[coId] ?? null
 }
 

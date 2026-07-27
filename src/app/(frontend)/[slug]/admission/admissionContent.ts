@@ -2,8 +2,10 @@ import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
 
 export type AdmissionContent = {
-  leaveTitle: string
-  leaveTables: ContentTable[]
+  leaveGuide?: {
+    tables: ContentTable[]
+    title: string
+  }
   procedure: ProcedureStep[]
   refundIntro: string
   refundTables: ContentTable[]
@@ -390,19 +392,6 @@ const examTuitionTables: ContentTable[] = [
   },
 ]
 
-const examLeaveTables: ContentTable[] = [
-  {
-    columns: confirmationColumns,
-    rows: [
-      { category: '휴학 신청 가능 여부 및 신청 기한', detail: '타 센터와 동일하게 단기/장기휴학을 둘지 확인 필요' },
-      { category: '복학 시 기존 반 유지 기준', detail: 'T.O와 입시 일정 기준 반영 필요' },
-      { category: '수료 기준 및 수료 후 혜택', detail: '입시 과정 특성상 별도 수료 서비스를 운영하는지 확인 필요' },
-      { category: '결석 또는 보강 기준', detail: '모의고사, 평가회, 실기 수업 결석 처리 기준 확인 필요' },
-    ],
-    title: '운영 정책 확인 필요 항목',
-  },
-]
-
 const highteenTuitionTables: ContentTable[] = [
   {
     columns: simpleClassColumns,
@@ -431,8 +420,9 @@ const highteenTuitionTables: ContentTable[] = [
     columns: teenTuitionColumns,
     minWidth: 720,
     rows: [
-      { course: '청소년반', day: '주중 2회 (월목 / 화금)', duration: '420분', fee: '450,000원', time: '오후 18:00~21:30' },
-      { course: '청소년반', day: '주말 1회 (토 / 일)', duration: '330분', fee: '350,000원', time: '오전 10:00~오후 16:30' },
+      { course: '청소년반', day: '주중 2회 (월목 / 화금)', duration: '960분', fee: '450,000원', time: '19:00 ~ 21:00' },
+      { course: '청소년반', day: '주말 1회 (토)', duration: '720분', fee: '350,000원', time: '11:00 ~ 14:00\n14:00 ~ 17:00' },
+      { course: '청소년반', day: '주말 1회 (일)', duration: '720분', fee: '350,000원', time: '12:00 ~ 15:00\n15:00 ~ 18:00' },
     ],
     title: '수업 시간대 및 수강료',
   },
@@ -775,31 +765,37 @@ function centerNameFor(center: CenterSlug) {
 
 const contentTablesByCenter = {
   art: {
-    leaveTables: artLeaveTables,
-    leaveTitle: '휴학/복학/수료 안내',
+    leaveGuide: {
+      tables: artLeaveTables,
+      title: '휴학/복학/수료 안내',
+    },
     tuitionTables: artTuitionTables,
   },
   avenue: {
-    leaveTables: avenueLeaveTables,
-    leaveTitle: '휴학/복학/수료 안내',
+    leaveGuide: {
+      tables: avenueLeaveTables,
+      title: '휴학/복학/수료 안내',
+    },
     tuitionTables: avenueTuitionTables,
   },
   exam: {
-    leaveTables: examLeaveTables,
-    leaveTitle: '휴학/복학/수료 안내',
     tuitionTables: examTuitionTables,
   },
   highteen: {
-    leaveTables: highteenLeaveTables,
-    leaveTitle: '휴학/복학/수료 안내',
+    leaveGuide: {
+      tables: highteenLeaveTables,
+      title: '휴학/복학/수료 안내',
+    },
     tuitionTables: highteenTuitionTables,
   },
   kids: {
-    leaveTables: kidsLeaveTables,
-    leaveTitle: '휴학/복학/보강 안내',
+    leaveGuide: {
+      tables: kidsLeaveTables,
+      title: '휴학/복학/보강 안내',
+    },
     tuitionTables: kidsTuitionTables,
   },
-} satisfies Record<CenterSlug, Pick<AdmissionContent, 'leaveTables' | 'leaveTitle' | 'tuitionTables'>>
+} satisfies Record<CenterSlug, Pick<AdmissionContent, 'leaveGuide' | 'tuitionTables'>>
 
 export const admissionContentByCenter = Object.fromEntries(
   (Object.keys(contentTablesByCenter) as CenterSlug[]).map((center) => [

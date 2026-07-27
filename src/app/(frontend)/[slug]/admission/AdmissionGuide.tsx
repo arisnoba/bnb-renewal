@@ -19,20 +19,22 @@ import { getAdmissionContent } from './admissionContent'
 import type { ContentTable, ProcedureStep, TableRow } from './admissionContent'
 import { SmoothAnchorLink } from './SmoothAnchorLink.client'
 
-const navItems = [
+const admissionNavItems = [
   { href: '#procedure', label: '입학절차', shortLabel: '입학' },
   { href: '#tuition', label: '수강료/장학제도', shortLabel: '수강료' },
   { href: '#leave-completion', label: '휴학/복학/수료', shortLabel: '휴복학' },
   { href: '#refund', label: '환불정책', shortLabel: '환불' },
 ] as const
 
-const navSectionIds = navItems.map((item) => item.href.slice(1))
-
 const procedureIcons = [Phone, School, ClipboardList, CreditCard, UserCheck]
 
 export function AdmissionGuide({ center }: { center: CenterSlug }) {
   const content = getAdmissionContent(center)
   const centerLabel = getCenterLabel(center)
+  const navItems = content.leaveGuide
+    ? admissionNavItems
+    : admissionNavItems.filter((item) => item.href !== '#leave-completion')
+  const navSectionIds = navItems.map((item) => item.href.slice(1))
 
   return (
     <main className="page page-light page-admission page-top-offset" data-center={center}>
@@ -97,17 +99,19 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
         </div>
       </section>
 
-      <section
-        className="section-admission-leave section-p-block-sm scroll-mt-(--page-top-offset) bg-white"
-        id="leave-completion"
-      >
-        <div className="container">
-          <SectionTitle title={content.leaveTitle} />
-          <div className="mt-8 grid gap-9">
-            <TableGroup tables={content.leaveTables} />
+      {content.leaveGuide ? (
+        <section
+          className="section-admission-leave section-p-block-sm scroll-mt-(--page-top-offset) bg-white"
+          id="leave-completion"
+        >
+          <div className="container">
+            <SectionTitle title={content.leaveGuide.title} />
+            <div className="mt-8 grid gap-9">
+              <TableGroup tables={content.leaveGuide.tables} />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section
         className="section-admission-refund section-p-t-sm section-p-b-lg scroll-mt-(--page-top-offset) bg-neutral-50"

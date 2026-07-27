@@ -19,7 +19,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const center = assertCenter(slug)
 
   return {
-    description: `${getCenterLabel(center)} 입학 절차, 수강료, 장학제도, 휴학/복학/수료, 환불정책 안내`,
+    description:
+      center === 'exam'
+        ? `${getCenterLabel(center)} 입학 절차, 수강료, 장학제도, 환불정책 안내`
+        : `${getCenterLabel(center)} 입학 절차, 수강료, 장학제도, 휴학/복학/수료, 환불정책 안내`,
     title: '입학안내',
   }
 }

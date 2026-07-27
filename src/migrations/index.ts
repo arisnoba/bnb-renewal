@@ -143,6 +143,7 @@ import * as migration_20260713_165000_drop_site_settings_lock_relation from './2
 import * as migration_20260714_163000_casting_director_company_select from './20260714_163000_casting_director_company_select'
 import * as migration_20260714_174500_direct_casting_cna_agency from './20260714_174500_direct_casting_cna_agency'
 import * as migration_20260714_180000_direct_casting_avenue_center from './20260714_180000_direct_casting_avenue_center'
+import * as migration_20260727_160000_news_unused_categories_cleanup from './20260727_160000_news_unused_categories_cleanup'
 
 export const migrations = [
   {
@@ -869,5 +870,10 @@ export const migrations = [
     up: migration_20260714_180000_direct_casting_avenue_center.up,
     down: migration_20260714_180000_direct_casting_avenue_center.down,
     name: '20260714_180000_direct_casting_avenue_center',
+  },
+  {
+    up: migration_20260727_160000_news_unused_categories_cleanup.up,
+    down: migration_20260727_160000_news_unused_categories_cleanup.down,
+    name: '20260727_160000_news_unused_categories_cleanup',
   },
 ]

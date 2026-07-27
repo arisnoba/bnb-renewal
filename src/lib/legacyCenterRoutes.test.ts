@@ -84,6 +84,7 @@ test('exam-only legacy content maps to current exam pages', () => {
     ['new_sys04', '/special-system#special-admission'],
     ['new_sys06', '/how-to-use'],
     ['new_sys07', '/how-to-use'],
+    ['enter03', '/admission'],
     ['refund', '/admission#refund'],
   ] as const
 

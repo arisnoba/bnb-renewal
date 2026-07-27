@@ -276,7 +276,6 @@ test('news category uses center-specific required select options', async () => {
       '캐스팅OnAir',
       '교육ㆍ운영ㆍ소식',
       '합격현황',
-      '수시·정시 일정',
       '교육·운영·소식',
     ],
   )
@@ -302,6 +301,20 @@ test('news category uses center-specific required select options', async () => {
     ),
     true,
   )
+  assert.equal(
+    await category.validate?.(
+      '캐스팅OnAir',
+      validationOptions({ siblingData: { centers: ['highteen'] } }),
+    ),
+    '선택한 센터에서 사용할 수 없는 분류입니다.',
+  )
+  assert.equal(
+    await category.validate?.(
+      '캐스팅OnAir',
+      validationOptions({ siblingData: { centers: ['art'] } }),
+    ),
+    true,
+  )
   assert.equal(category.admin?.className, 'bnb-admin-required-field')
   assert.equal(category.admin?.isClearable, false)
   assert.deepEqual(
@@ -311,7 +324,16 @@ test('news category uses center-specific required select options', async () => {
       req: {},
       siblingData: { centers: ['exam'] },
     }).map((option) => option.value),
-    ['합격현황', '수시·정시 일정', '교육·운영·소식'],
+    ['합격현황', '교육·운영·소식'],
+  )
+  assert.deepEqual(
+    filterOptions?.({
+      data: {},
+      options: categoryOptions,
+      req: {},
+      siblingData: { centers: ['highteen'] },
+    }).map((option) => option.value),
+    ['오디션ㆍ캐스팅공지', '캐스팅확정', '교육ㆍ운영ㆍ소식'],
   )
 })
 

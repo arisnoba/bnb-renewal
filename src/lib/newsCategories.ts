@@ -36,6 +36,10 @@ export const defaultNewsCategories = [
   },
 ] as const satisfies readonly NewsCategory[]
 
+export const highteenNewsCategories = defaultNewsCategories.filter(
+  (category) => category.key !== 'casting-onair',
+)
+
 export const examNewsCategories = [
   {
     key: 'pass-results',
@@ -44,13 +48,6 @@ export const examNewsCategories = [
     matchMode: 'exact',
     legacyKeys: ['university-results', 'arts-high-results'],
     value: '합격현황',
-  },
-  {
-    key: 'admission-schedule',
-    label: '수시·정시 일정',
-    match: ['수시·정시 일정', '수시ㆍ정시일정공지', '수시전형일정', '정시전형일정'],
-    matchMode: 'exact',
-    value: '수시·정시 일정',
   },
   {
     key: 'education-news',
@@ -63,6 +60,7 @@ export const examNewsCategories = [
 
 const newsCategoriesByCenter: Partial<Record<CenterSlug, readonly NewsCategory[]>> = {
   exam: examNewsCategories,
+  highteen: highteenNewsCategories,
 }
 
 export function getNewsCategoriesForCenter(center: string): readonly NewsCategory[] {
