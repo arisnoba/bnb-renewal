@@ -1,15 +1,24 @@
 import Image from 'next/image'
 import { Phone } from 'lucide-react'
 
+import type { CenterSlug } from '@/lib/centers'
+import { customerServiceHoursSummary } from '@/lib/customerServiceHours'
 import {
   maintenanceMessage,
   maintenanceTitle,
   type MaintenanceSettings,
 } from '@/SiteSettings/maintenance'
 
-export function MaintenancePage({ settings }: { settings: MaintenanceSettings | null }) {
+export function MaintenancePage({
+  center,
+  settings,
+}: {
+  center: CenterSlug | null
+  settings: MaintenanceSettings | null
+}) {
   const title = maintenanceTitle(settings)
   const message = maintenanceMessage(settings)
+  const customerServiceHours = customerServiceHoursSummary(center)
 
   return (
     <main className="page page-dark page-maintenance min-h-[calc(100svh-var(--admin-bar-height,0))] text-white">
@@ -48,7 +57,7 @@ export function MaintenancePage({ settings }: { settings: MaintenanceSettings | 
             <p className="mt-3 type-body-s leading-normal text-muted-foreground">
               점검 중 문의가 필요하시면 대표전화로 연락해 주세요.
               <br className="hidden sm:block" />
-              평일 09:30 ~ 19:30 · 주말 09:30 ~ 16:00
+              {customerServiceHours}
             </p>
           </div>
         </div>

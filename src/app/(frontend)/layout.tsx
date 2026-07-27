@@ -26,7 +26,7 @@ import { CenterDomainProvider } from './CenterDomainContext.client'
 import './globals.css'
 import '@/styles/style.scss'
 import { getServerSideURL } from '@/utilities/getURL'
-import { centerFromHostname } from '@/lib/centerDomains'
+import { centerFromHostname, centerFromPathname } from '@/lib/centerDomains'
 
 async function getSiteSettings() {
   try {
@@ -61,6 +61,8 @@ export default async function RootLayout({
 }) {
   const requestHeaders = await headers()
   const domainCenter = centerFromHostname(requestHeaders.get('host') ?? '')
+  const currentCenter =
+    domainCenter ?? centerFromPathname(requestHeaders.get('x-pathname') ?? '')
   const siteSettings = await getSiteSettings()
   const bypassUser = await getFrontendMaintenanceBypassUser()
   const showMaintenancePage = isMaintenanceModeEnabled(siteSettings) && !bypassUser
@@ -73,7 +75,7 @@ export default async function RootLayout({
           <AdminBar />
 
           {showMaintenancePage ? (
-            <MaintenancePage settings={siteSettings} />
+            <MaintenancePage center={currentCenter} settings={siteSettings} />
           ) : (
             <>
               <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={false}>

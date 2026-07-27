@@ -6,6 +6,7 @@ import { ChevronRight, ExternalLink, Headphones } from 'lucide-react'
 import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { customerServiceHourDetails } from '@/lib/customerServiceHours'
 import { SmoothAnchorLink } from '../_components/SmoothAnchorLink.client'
 import { ConsultationForm } from './ConsultationForm'
 import {
@@ -19,30 +20,28 @@ type ConsultPageContentProps = {
   searchParams?: Promise<ConsultationSearchParams>
 }
 
-const contactCards = [
-  {
-    body: '등록상담 및 휴학, 복학, 환불 등의 문의사항은 상담센터로 연락주시면 정성껏 답변드리겠습니다.',
-    details: [
-      { label: '평일', value: '09:30 ~ 19:30 / 점심시간 12:00 ~ 13:00' },
-      { label: '주말', value: '09:30 ~ 16:00' },
-    ],
-    href: 'tel:15779929',
-    icon: Headphones,
-    title: 'CS전화 상담',
-    value: '1577-9929',
-  },
-  {
-    body: '배우앤배움과 카카오톡 친구를 맺으면 다양한 정보를 받아보실 수 있습니다.',
-    details: [
-      { label: '평일', value: '09:30 ~ 19:30 / 점심시간 12:00 ~ 13:00' },
-      { label: '주말', value: '09:30 ~ 16:00' },
-    ],
-    href: 'http://pf.kakao.com/_pxixhIxd',
-    iconSrc: '/assets/icons/kakaotalk.svg',
-    title: '카카오톡 상담',
-    value: 'ID : 배우앤배움',
-  },
-]
+function contactCardsForCenter(center: CenterSlug) {
+  const details = customerServiceHourDetails(center)
+
+  return [
+    {
+      body: '등록상담 및 휴학, 복학, 환불 등의 문의사항은 상담센터로 연락주시면 정성껏 답변드리겠습니다.',
+      details,
+      href: 'tel:15779929',
+      icon: Headphones,
+      title: 'CS전화 상담',
+      value: '1577-9929',
+    },
+    {
+      body: '배우앤배움과 카카오톡 친구를 맺으면 다양한 정보를 받아보실 수 있습니다.',
+      details,
+      href: 'http://pf.kakao.com/_pxixhIxd',
+      iconSrc: '/assets/icons/kakaotalk.svg',
+      title: '카카오톡 상담',
+      value: 'ID : 배우앤배움',
+    },
+  ]
+}
 
 const infoItems = [
   {
@@ -61,6 +60,7 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
     inquiryTypeFromCenter(center),
   )
   const centerName = centers[center]
+  const contactCards = contactCardsForCenter(center)
 
   return (
     <main
@@ -145,7 +145,7 @@ const consultLightThemeVars = {
   '--success': 'oklch(78% 0.08 200deg)',
 } as CSSProperties
 
-type ContactCardItem = (typeof contactCards)[number]
+type ContactCardItem = ReturnType<typeof contactCardsForCenter>[number]
 
 function ContactCard({ isFirst, item }: { isFirst: boolean; item: ContactCardItem }) {
   const Icon = 'icon' in item ? item.icon : null
