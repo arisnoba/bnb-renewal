@@ -11,9 +11,11 @@ import { useCurrentCenter } from '@/app/(frontend)/CenterDomainContext.client'
 export function FooterCenterLinks({ initialCenter = 'art' }: { initialCenter?: CenterSlug }) {
   const center = useCurrentCenter(initialCenter)
   const consultHref = centerPublicHref(center, '/consult')
+  const csCenterHref = centerPublicHref(center, '/consult#consult-contact')
+
   const customerLinks = [
     { href: 'tel:15779929', label: '대표전화', value: '1577-9929' },
-    { href: consultHref, label: 'CS센터 운영안내' },
+    { href: csCenterHref, label: 'CS센터 운영안내' },
     { href: centerPublicHref(center, '/map'), label: '오시는 길' },
   ]
   const consultationLinks = [
