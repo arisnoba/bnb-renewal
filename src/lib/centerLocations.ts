@@ -93,6 +93,7 @@ export const centerLocations: Record<CenterSlug, CenterLocation> = {
     },
     imageSrc: '/assets/map/avenue.png',
     label: '애비뉴센터',
+    logoSrc: '/assets/common/logo/logo-avenue.svg',
     name: '배우앤배움 애비뉴센터',
     phone: '1577-9929',
     slug: 'avenue',

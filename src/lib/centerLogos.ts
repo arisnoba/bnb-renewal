@@ -16,9 +16,9 @@ const centerLogos: Record<CenterSlug, Omit<CenterLogo, 'alt'>> = {
     width: 115,
   },
   avenue: {
-    height: 36,
-    src: '/assets/common/logo/logo-art.svg',
-    width: 115,
+    height: 42,
+    src: '/assets/common/logo/logo-avenue.svg',
+    width: 138,
   },
   exam: {
     height: 36,
