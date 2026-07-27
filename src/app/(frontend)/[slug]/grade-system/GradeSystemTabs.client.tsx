@@ -806,11 +806,11 @@ const gradeSystemContent = {
       '아트센터의 모든 교육은 ‘나’로부터 시작됩니다.',
     ],
     wordmarkLetters: [
-      { className: 'I Class', fileNames: ['iruda-i.svg'] },
-      { className: 'R Class', fileNames: ['iruda-r.svg'] },
-      { className: 'U Class', fileNames: ['iruda-u.svg'] },
-      { className: 'D Class', fileNames: ['iruda-d.svg'] },
-      { className: 'A Class', fileNames: ['iruda-a.svg'] },
+      { className: 'I Class', fileNames: ['iruda-i_new.svg'] },
+      { className: 'R Class', fileNames: ['iruda-r_new.svg'] },
+      { className: 'U Class', fileNames: ['iruda-u_new.svg'] },
+      { className: 'D Class', fileNames: ['iruda-d_new.svg'] },
+      { className: 'A Class', fileNames: ['iruda-a_new.svg'] },
     ],
   },
   highteen: {
@@ -843,10 +843,10 @@ const gradeSystemContent = {
       '하이틴센터의 모든 교육은 ‘나’로부터 시작됩니다.',
     ],
     wordmarkLetters: [
-      { className: 'I Class', fileNames: ['iruda-i.svg'] },
-      { className: 'R Class', fileNames: ['iruda-r.svg'] },
-      { className: 'U Class', fileNames: ['iruda-u.svg'] },
-      { className: 'DA Class', fileNames: ['iruda-d.svg', 'iruda-a.svg'] },
+      { className: 'I Class', fileNames: ['iruda-i_new.svg'] },
+      { className: 'R Class', fileNames: ['iruda-r_new.svg'] },
+      { className: 'U Class', fileNames: ['iruda-u_new.svg'] },
+      { className: 'DA Class', fileNames: ['iruda-d_new.svg', 'iruda-a_new.svg'] },
     ],
   },
   kids: {
@@ -870,10 +870,10 @@ const gradeSystemContent = {
       '키즈센터의 모든 교육은 ‘나’로부터 시작됩니다.',
     ],
     wordmarkLetters: [
-      { className: 'I Class', fileNames: ['iruda-i.svg'] },
-      { className: 'R Class', fileNames: ['iruda-r.svg'] },
-      { className: 'U Class', fileNames: ['iruda-u.svg'] },
-      { className: 'DA Class', fileNames: ['iruda-d.svg', 'iruda-a.svg'] },
+      { className: 'I Class', fileNames: ['iruda-i_new.svg'] },
+      { className: 'R Class', fileNames: ['iruda-r_new.svg'] },
+      { className: 'U Class', fileNames: ['iruda-u_new.svg'] },
+      { className: 'DA Class', fileNames: ['iruda-d_new.svg', 'iruda-a_new.svg'] },
     ],
   },
 } satisfies Record<GradeSystemCenter, GradeSystemContent>
