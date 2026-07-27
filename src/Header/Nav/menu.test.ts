@@ -40,7 +40,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.ok(labels.includes('등급제 교육관리시스템'))
   assert.ok(labels.includes('BNB 출연장면'))
   assert.ok(labels.includes('배우 케어 시스템'))
-  assert.ok(labels.includes('촬영ㆍ오디션 스케줄'))
+  assert.ok(!labels.includes('촬영ㆍ오디션 스케줄'))
   assert.ok(labels.includes('BNB출신 아티스트'))
   assert.ok(labels.includes('NEWS&NOTICE'))
   assert.ok(!labels.includes('매니지먼트 시스템'))
@@ -82,12 +82,6 @@ test('art mega menu exposes Figma baseline menu labels', () => {
       .find((group) => group.key === 'casting')
       ?.items.find((item) => item.label === '배우 케어 시스템')?.href,
     'https://art.baewooenm.com/casting-system',
-  )
-  assert.equal(
-    getHeaderMenu('art')
-      .find((group) => group.key === 'casting')
-      ?.items.find((item) => item.label === '촬영ㆍ오디션 스케줄')?.href,
-    'https://art.baewooenm.com/schedule',
   )
   assert.equal(
     getHeaderMenu('art')
@@ -180,7 +174,6 @@ test('highteen mega menu matches the approved highteen structure', () => {
     { href: 'https://highteen.baewooenm.com/casting-status', label: '캐스팅 출연현황' },
     { href: 'https://highteen.baewooenm.com/casting', label: '캐스팅 센터' },
     { href: 'https://highteen.baewooenm.com/casting-system', label: '배우 케어 시스템' },
-    { href: 'https://highteen.baewooenm.com/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('highteen', 'artist'), [
     { href: 'https://highteen.baewooenm.com/artist-press', label: 'BNB 출신 아티스트' },
@@ -219,7 +212,6 @@ test('kids mega menu matches the approved kids structure', () => {
     { href: 'https://kids.baewooenm.com/casting-status', label: '캐스팅 출연현황' },
     { href: 'https://kids.baewooenm.com/casting', label: '캐스팅 센터' },
     { href: 'https://kids.baewooenm.com/casting-system', label: '배우 케어 시스템' },
-    { href: 'https://kids.baewooenm.com/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'artist'), [
     { href: 'https://kids.baewooenm.com/artist-press', label: 'BNB 출신 아티스트' },
@@ -252,6 +244,13 @@ test('all center support menus link to the how-to-use page', () => {
         ?.items.find((item) => item.label === '학원100%이용법')?.href,
       centerPublicHref(center, '/how-to-use'),
     )
+  }
+})
+
+test('all center menus exclude the inactive schedule page', () => {
+  for (const center of Object.keys(centers) as Parameters<typeof getHeaderMenu>[0][]) {
+    assert.ok(!labelsFor(center).includes('촬영ㆍ오디션 스케줄'))
+    assert.ok(!itemsForGroup(center, 'casting').some((item) => item.href.endsWith('/schedule')))
   }
 })
 
@@ -294,7 +293,6 @@ test('avenue mega menu matches the art baseline structure for preparation', () =
     { href: 'https://avenue.baewooenm.com/casting-status', label: '캐스팅 출연현황' },
     { href: 'https://avenue.baewooenm.com/casting', label: '캐스팅 센터' },
     { href: 'https://avenue.baewooenm.com/casting-system', label: '배우 케어 시스템' },
-    { href: 'https://avenue.baewooenm.com/schedule', label: '촬영ㆍ오디션 스케줄' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'artist'), [
     { href: 'https://avenue.baewooenm.com/artist-press', label: 'BNB출신 아티스트' },

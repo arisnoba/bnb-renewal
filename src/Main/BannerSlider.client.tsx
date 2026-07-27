@@ -83,7 +83,6 @@ type MainBannerSliderProps = {
 }
 
 export const DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY = 5000
-const scheduleLinkCenters = new Set<CenterSlug>(['art', 'avenue', 'highteen', 'kids'])
 const statisticGroupLinks: Record<string, string> = {
   이달의주조연: 'audition-casting',
   이달의조단역: 'casting-confirmed',
@@ -295,7 +294,6 @@ function BannerStatisticsPanel({
       )}
     >
       <BannerTotalStatCell value={statistics.totalWorkCount} variant="desktop" />
-      <BannerScheduleStatRow center={center} variant="desktop" />
       {statistics.groups.map((group) => (
         <div
           className="section-main-banner__stat-group border-b border-white/10 last:border-b-0"
@@ -401,48 +399,6 @@ function BannerStatisticGroupHead({
   )
 }
 
-function BannerScheduleStatRow({
-  center,
-  variant = 'desktop',
-}: {
-  center?: CenterSlug
-  variant?: 'desktop' | 'mobile'
-}) {
-  const isMobile = variant === 'mobile'
-  const content = (
-    <>
-      <span
-        className={cn(
-          isMobile
-            ? 'text-sm font-bold leading-normal'
-            : 'text-base font-black leading-[1.2]',
-        )}
-      >
-        이달의 스케줄
-      </span>
-      <ChevronRight
-        aria-hidden="true"
-        className={cn('shrink-0', isMobile ? 'size-3.5' : 'size-[18px]')}
-        strokeWidth={2.4}
-      />
-    </>
-  )
-  const className = cn(
-    'section-main-banner__schedule-link flex items-center justify-between border-b border-white/10 text-white transition-colors hover:text-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white/70',
-    isMobile ? 'min-w-0 flex-1 border-l px-5 py-4' : 'h-[74px] px-6 py-6',
-  )
-
-  if (!center || !scheduleLinkCenters.has(center)) {
-    return <div className={className}>{content}</div>
-  }
-
-  return (
-    <Link className={className} href={centerPublicHref(center, '/schedule')}>
-      {content}
-    </Link>
-  )
-}
-
 function BannerStatisticsLayer({
   center,
   statistics,
@@ -482,7 +438,6 @@ function BannerMobileStatisticsPanel({
     >
       <div className="section-main-banner__mobile-stat-row flex w-full items-stretch">
         <BannerTotalStatCell value={statistics.totalWorkCount} variant="mobile" />
-        <BannerScheduleStatRow center={center} variant="mobile" />
       </div>
       <div className="section-main-banner__mobile-stat-groups flex w-full items-stretch">
         {statistics.groups.map((group, index) => (

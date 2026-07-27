@@ -53,6 +53,14 @@ test('center sitemap uses the center menu without leaking URLs from sibling host
   assert.ok(!urls.includes('https://exam.baewooenm.com/casting-status'))
 })
 
+test('center sitemap excludes the inactive schedule page', () => {
+  for (const center of ['art', 'avenue', 'highteen', 'kids']) {
+    assert.ok(!sitemapURLs(`https://${center}.baewooenm.com`).includes(
+      `https://${center}.baewooenm.com/schedule`,
+    ))
+  }
+})
+
 test('primary gate sitemap only exposes the gate root', () => {
   assert.deepEqual(sitemapURLs('https://www.baewooenm.com'), ['https://www.baewooenm.com/'])
 })

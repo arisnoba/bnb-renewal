@@ -360,6 +360,20 @@ test('main banner video uses viewport-specific image posters', () => {
   assert.match(html, /poster="\/media\/banner-mobile\.jpg\?2026-01-01T00%3A00%3A00\.000Z"/)
 })
 
+test('main banner statistics exclude the inactive schedule shortcut', () => {
+  const html = renderToStaticMarkup(
+    <MainBannerSlider
+      banners={[{ desktopImage: image, title: '메인 배너' }]}
+      center="art"
+      statistics={{ groups: [], totalWorkCount: 123 }}
+    />,
+  )
+
+  assert.match(html, /누적 작품수/)
+  assert.doesNotMatch(html, /이달의 스케줄/)
+  assert.doesNotMatch(html, /href="https:\/\/art\.baewooenm\.com\/schedule"/)
+})
+
 test('main banner does not render statistics panels without statistics data', () => {
   const html = renderToStaticMarkup(
     <MainBannerSlider
