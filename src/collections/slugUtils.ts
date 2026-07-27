@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import type {
   CollectionAfterChangeHook,
   CollectionBeforeValidateHook,
-  Field,
+  TextField,
   TypeWithID,
 } from 'payload'
 
@@ -46,7 +46,7 @@ type IdSlugDoc = TypeWithID & {
   slug?: unknown
 }
 
-export const idSlugField: Field = {
+export const idSlugField: TextField = {
   name: 'slug',
   type: 'text',
   label: '슬러그',
@@ -54,6 +54,7 @@ export const idSlugField: Field = {
   unique: true,
   index: true,
   admin: {
+    hidden: true,
     readOnly: true,
   },
 }

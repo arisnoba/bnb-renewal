@@ -422,6 +422,7 @@ test("shared slug field uses Korean admin label", () => {
 
   assert.ok(slugTextField, "공통 slugField에 slug 텍스트 필드가 있어야 합니다.");
   assert.equal(slugTextField.label, "슬러그");
+  assert.notEqual(slugTextField.admin?.hidden, true);
 });
 
 test("shared slug field normalizes manual slug input", () => {
@@ -463,6 +464,7 @@ test("legacy direct slug fields use Korean labels", () => {
 
     assert.equal(slug.type, "text", `${collection.slug}.slug 타입`);
     assert.equal(slug.label, "슬러그", `${collection.slug}.slug 라벨`);
+    assert.notEqual(slug.admin?.hidden, true, `${collection.slug}.slug 노출 여부`);
   }
 });
 

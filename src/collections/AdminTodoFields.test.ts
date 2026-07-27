@@ -7,9 +7,14 @@ import { ArtistPress } from './ArtistPress'
 import { ArtistPressAgencies } from './ArtistPressAgencies'
 import { AuditionSchedules } from './AuditionSchedules'
 import { BroadcastStations } from './BroadcastStations'
+import { CastingAppearances } from './CastingAppearances'
+import { Curriculums } from './Curriculums'
 import { DirectCastings } from './DirectCastings'
+import { ExamPassedReviews } from './ExamPassedReviews'
+import { ExamPassedVideos } from './ExamPassedVideos'
 import { ExamResults } from './ExamResults'
 import { Faqs } from './Faqs'
+import { HighteenSpecialClasses } from './HighteenSpecialClasses'
 import { News } from './News'
 import { Profiles } from './Profiles'
 import { ScreenAppearances } from './ScreenAppearances'
@@ -23,6 +28,7 @@ type FieldWithName = Field & {
     }
     condition?: (data: Record<string, unknown>, siblingData: Record<string, unknown>) => boolean
     description?: string
+    hidden?: boolean
     isClearable?: boolean
     placeholder?: string
   }
@@ -163,6 +169,32 @@ test('admin validation todo fields use field-level validation', async () => {
   assert.equal(agencyLogo.admin?.className, 'bnb-admin-required-field')
   assert.equal(await broadcastStationLogo.validate?.(null, validationOptions()), '방송사 로고 이미지를 선택해야 합니다.')
   assert.equal(broadcastStationLogo.admin?.className, 'bnb-admin-required-field')
+})
+
+test('automatically generated slugs stay hidden from admin forms', () => {
+  const collections = [
+    ArtistPress,
+    ArtistPressAgencies,
+    BroadcastStations,
+    CastingAppearances,
+    Curriculums,
+    DirectCastings,
+    ExamPassedReviews,
+    ExamPassedVideos,
+    ExamResults,
+    Faqs,
+    HighteenSpecialClasses,
+    News,
+    Profiles,
+    ScreenAppearances,
+    StarCards,
+  ]
+
+  for (const collection of collections) {
+    const slug = getField(collection, 'slug')
+
+    assert.equal(slug.admin?.hidden, true, `${collection.slug}.slug 숨김 여부`)
+  }
 })
 
 test('exam results use representative image label', () => {

@@ -372,6 +372,7 @@ export const Profiles: CollectionConfig = {
 					components: {
 						Field: '@/components/payload/ProfileSlugField#ProfileSlugField',
 					},
+					hidden: true,
 					placeholder: '영문명 입력 시 자동 입력됩니다.',
 					readOnly: true,
 				},
