@@ -64,3 +64,45 @@ test('inquiry public form options stay aligned with storage select values', () =
     '기타',
   ])
 })
+
+test('in-progress inquiries use the reservation-complete label without changing stored values', () => {
+  const status = getField(Inquiries, 'status')
+  const inProgressOption = status.options?.find(
+    (option) =>
+      option &&
+      typeof option === 'object' &&
+      'value' in option &&
+      option.value === 'inProgress',
+  )
+
+  assert.deepEqual(inProgressOption, {
+    label: '예약 완료',
+    value: 'inProgress',
+  })
+})
+
+test('inquiry access remains global for masters and center-scoped for other admins', async () => {
+  const read = Inquiries.access?.read
+  const update = Inquiries.access?.update
+
+  assert.equal(await read?.({ req: { user: undefined } } as never), false)
+  assert.equal(await update?.({ req: { user: { role: 'master' } } } as never), true)
+
+  for (const access of [read, update]) {
+    assert.deepEqual(
+      await access?.({ req: { user: { center: 'kids', role: 'manager' } } } as never),
+      {
+        center: {
+          equals: 'kids',
+        },
+      },
+    )
+  }
+})
+
+test('inquiry edits use the list-redirecting save button', () => {
+  assert.equal(
+    Inquiries.admin?.components?.edit?.SaveButton,
+    '@/components/payload/InquirySaveButton#InquirySaveButton',
+  )
+})

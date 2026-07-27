@@ -94,7 +94,7 @@ const inflowSourceOptions = [
 
 const statusOptions = [
   { label: '신규', value: 'new' },
-  { label: '상담중', value: 'inProgress' },
+  { label: '예약 완료', value: 'inProgress' },
   { label: '완료', value: 'completed' },
   { label: '스팸', value: 'spam' },
 ]
@@ -224,6 +224,11 @@ export const Inquiries: CollectionConfig = {
     update: inquiryAccess,
   },
   admin: {
+    components: {
+      edit: {
+        SaveButton: '@/components/payload/InquirySaveButton#InquirySaveButton',
+      },
+    },
     defaultColumns: [
       'displayName',
       'inquiryType',
