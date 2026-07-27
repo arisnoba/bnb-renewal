@@ -7,7 +7,7 @@ import type {
   Validate,
   Where,
 } from 'payload'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 import type { MainBanner } from '@/payload-types'
 import { MAIN_BANNER_ORDER_LIMIT } from '@/Main/constants'
@@ -36,6 +36,7 @@ type MainBannerData = {
 
 type MainBannerOrderField = `${CenterValue}Banners`
 type RevalidatePath = (originalPath: string, type?: 'layout' | 'page') => void
+type RevalidateTag = (tag: string, profile: 'max') => void
 type MainBannerOrderRow = {
   banner?: ({ id?: unknown } & Record<string, unknown>) | number | string | null
   id?: string | null
@@ -423,21 +424,26 @@ export function mainBannerCenterPaths(
   )
 }
 
-function revalidateMainBannerCenterPaths({
+export function revalidateMainBannerCenterPaths({
   center,
   previousCenter,
   revalidate = revalidatePath,
+  revalidateCacheTag = revalidateTag,
   req,
 }: {
   center: CenterValue
   previousCenter?: CenterValue
   revalidate?: RevalidatePath
+  revalidateCacheTag?: RevalidateTag
   req: Parameters<CollectionAfterChangeHook<MainBanner>>[0]['req']
     | Parameters<CollectionAfterDeleteHook<MainBanner>>[0]['req']
 }) {
   if (req.context.disableRevalidate) {
     return
   }
+
+  req.payload.logger.info('Revalidating main banner cache tag global_main')
+  revalidateCacheTag('global_main', 'max')
 
   for (const path of mainBannerCenterPaths(center, previousCenter)) {
     req.payload.logger.info(`Revalidating main banner path ${path}`)

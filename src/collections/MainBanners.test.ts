@@ -11,6 +11,7 @@ import {
   mainBannerOrderField,
   mainBannerOrderIncludes,
   mainBannerOrderWithout,
+  revalidateMainBannerCenterPaths,
 } from './MainBanners'
 
 type NamedField = Field & {
@@ -222,6 +223,33 @@ test('main banner center paths include current and previous centers once', () =>
   assert.deepEqual(mainBannerCenterPaths('highteen'), ['/highteen'])
   assert.deepEqual(mainBannerCenterPaths('highteen', 'kids'), ['/highteen', '/kids'])
   assert.deepEqual(mainBannerCenterPaths('highteen', 'highteen'), ['/highteen'])
+})
+
+test('main banner changes revalidate the populated main global cache and center paths', () => {
+  const revalidatedPaths: string[] = []
+  const revalidatedTags: string[] = []
+
+  revalidateMainBannerCenterPaths({
+    center: 'art',
+    previousCenter: 'kids',
+    req: {
+      context: {},
+      payload: {
+        logger: {
+          info: () => undefined,
+        },
+      },
+    } as never,
+    revalidate: (path) => {
+      revalidatedPaths.push(path)
+    },
+    revalidateCacheTag: (tag) => {
+      revalidatedTags.push(tag)
+    },
+  })
+
+  assert.deepEqual(revalidatedTags, ['global_main'])
+  assert.deepEqual(revalidatedPaths, ['/art', '/kids'])
 })
 
 test('main banner save prepends new banner to its center order', async () => {
