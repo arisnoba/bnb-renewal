@@ -13,6 +13,8 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 
+import { BodyTextStateFeature } from "../fields/bodyTextState/feature.server";
+import { bodyTextStateConfig } from "../fields/bodyTextStateConfig";
 import { centerScopedPublishedCollectionAccess } from "./access";
 import {
   createCenterRevalidationAfterChange,
@@ -54,6 +56,7 @@ const examPassedReviewBodyEditor = lexicalEditor({
     HeadingFeature({ enabledHeadingSizes: ["h2", "h3", "h4"] }),
     BlockquoteFeature(),
     HorizontalRuleFeature(),
+    BodyTextStateFeature({ state: bodyTextStateConfig }),
     FixedToolbarFeature(),
     InlineToolbarFeature(),
   ],

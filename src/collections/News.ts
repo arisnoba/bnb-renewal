@@ -23,6 +23,8 @@ import {
   lexicalEditor,
 } from "@payloadcms/richtext-lexical";
 import { revalidateTag } from "next/cache";
+import { BodyTextStateFeature } from "../fields/bodyTextState/feature.server";
+import { bodyTextStateConfig } from "../fields/bodyTextStateConfig";
 import {
   getNewsCategoriesForCenters,
   getNewsCategoryOptions,
@@ -196,6 +198,7 @@ export const newsBodyEditor = lexicalEditor({
     HeadingFeature({ enabledHeadingSizes: ["h2", "h3", "h4"] }),
     BlockquoteFeature(),
     HorizontalRuleFeature(),
+    BodyTextStateFeature({ state: bodyTextStateConfig }),
     FixedToolbarFeature(),
     InlineToolbarFeature(),
   ],
