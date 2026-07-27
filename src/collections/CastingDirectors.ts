@@ -98,6 +98,8 @@ export const CastingDirectors: CollectionConfig = {
         singular: "경력",
       },
       admin: {
+        description:
+          "경력 항목은 드래그 앤 드롭으로 순서를 변경할 수 있습니다. 프론트에서는 관리자 순서와 관계없이 연도 기준 최신순(내림차순)으로 자동 노출됩니다.",
         components: {
           RowLabel:
             "@/components/payload/CastingDirectorCareerRowLabel#CastingDirectorCareerRowLabel",

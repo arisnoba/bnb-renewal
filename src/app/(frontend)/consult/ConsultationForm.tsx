@@ -928,8 +928,8 @@ export function ConsultationForm({ initialInquiryType }: { initialInquiryType: I
 
 function SectionHeading({ index, title }: { index: string; title: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="font-mono type-label-m bg-brand px-3 py-2 rounded-full text-brand-foreground">{index}</span>
+    <div className="flex items-center gap-2">
+      <span className="type-label-m bg-gray-100 font-bold flex h-8 w-8 items-center justify-center rounded-full text-gray-800">{index}</span>
       <h2 className="type-title-l font-semibold tracking-normal">{title}</h2>
     </div>
   )
