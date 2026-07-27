@@ -78,7 +78,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: centerPublicHref(center, '/management'), label: '입시 매니지먼트' },
       { href: centerPublicHref(center, '/special-system'), label: '특별한 시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
-      { href: teachersHref(center), label: '교육진 소개' },
+      { href: teachersHref(center), label: '교육진 현황' },
       { href: curriculumHref(center), label: '커리큘럼' },
     ]
   }
@@ -88,7 +88,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       { href: centerPublicHref(center, '/grade-system'), label: '등급제 교육관리시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
       { href: curriculumHref(center), label: '커리큘럼' },
-      { href: teachersHref(center), label: '교육진 소개' },
+      { href: teachersHref(center), label: '교육진 현황' },
     ]
   }
 
@@ -96,7 +96,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
     return [
       { href: centerPublicHref(center, '/grade-system'), label: '등급제 교육관리시스템' },
       { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
-      { href: teachersHref(center), label: '교육진 소개' },
+      { href: teachersHref(center), label: '교육진 현황' },
       { href: curriculumHref(center), label: '커리큘럼' },
     ]
   }
@@ -107,7 +107,7 @@ function educationItems(center: CenterSlug): HeaderMenuItem[] {
       label: '등급제 교육관리시스템',
     },
     { href: entertainmentHref(center), label: '엔터테인먼트 위탁교육' },
-    { href: teachersHref(center), label: '교육진 소개' },
+    { href: teachersHref(center), label: '교육진 현황' },
     { href: curriculumHref(center), label: '커리큘럼' },
     ...(center === 'highteen'
       ? [{ href: centerPublicHref(center, '/special-lecture'), label: '하이틴센터 특강' }]

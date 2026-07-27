@@ -50,7 +50,7 @@ test('art mega menu exposes Figma baseline menu labels', () => {
   assert.equal(
     getHeaderMenu('art')
       .find((group) => group.key === 'education')
-      ?.items.find((item) => item.label === '교육진 소개')?.href,
+      ?.items.find((item) => item.label === '교육진 현황')?.href,
     'https://art.baewooenm.com/teachers',
   )
   assert.equal(
@@ -132,7 +132,7 @@ test('exam mega menu swaps casting and artist columns for exam-specific content'
     { href: 'https://exam.baewooenm.com/management', label: '입시 매니지먼트' },
     { href: 'https://exam.baewooenm.com/special-system', label: '특별한 시스템' },
     { href: 'https://exam.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: 'https://exam.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://exam.baewooenm.com/teachers', label: '교육진 현황' },
     { href: 'https://exam.baewooenm.com/curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('exam', 'casting'), [
@@ -170,7 +170,7 @@ test('highteen mega menu matches the approved highteen structure', () => {
   assert.deepEqual(itemsForGroup('highteen', 'education'), [
     { href: 'https://highteen.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
     { href: 'https://highteen.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: 'https://highteen.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://highteen.baewooenm.com/teachers', label: '교육진 현황' },
     { href: 'https://highteen.baewooenm.com/curriculum', label: '커리큘럼' },
     { href: 'https://highteen.baewooenm.com/special-lecture', label: '하이틴센터 특강' },
   ])
@@ -211,7 +211,7 @@ test('kids mega menu matches the approved kids structure', () => {
     { href: 'https://kids.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
     { href: 'https://kids.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
     { href: 'https://kids.baewooenm.com/curriculum', label: '커리큘럼' },
-    { href: 'https://kids.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://kids.baewooenm.com/teachers', label: '교육진 현황' },
   ])
   assert.deepEqual(itemsForGroup('kids', 'casting'), [
     { href: 'https://kids.baewooenm.com/screen-appearances', label: 'BNB 출연장면' },
@@ -254,6 +254,21 @@ test('all center support menus link to the how-to-use page', () => {
   }
 })
 
+test('all center education menus use the new teachers label without changing the route', () => {
+  for (const center of Object.keys(centers) as Parameters<typeof getHeaderMenu>[0][]) {
+    const educationItems = itemsForGroup(center, 'education')
+
+    assert.ok(!educationItems.some((item) => item.label === '교육진 소개'))
+    assert.deepEqual(
+      educationItems.find((item) => item.href === centerPublicHref(center, '/teachers')),
+      {
+        href: centerPublicHref(center, '/teachers'),
+        label: '교육진 현황',
+      },
+    )
+  }
+})
+
 test('avenue mega menu matches the art baseline structure for preparation', () => {
   const avenueMenu = getHeaderMenu('avenue')
 
@@ -270,7 +285,7 @@ test('avenue mega menu matches the art baseline structure for preparation', () =
   assert.deepEqual(itemsForGroup('avenue', 'education'), [
     { href: 'https://avenue.baewooenm.com/grade-system', label: '등급제 교육관리시스템' },
     { href: 'https://avenue.baewooenm.com/entertainment', label: '엔터테인먼트 위탁교육' },
-    { href: 'https://avenue.baewooenm.com/teachers', label: '교육진 소개' },
+    { href: 'https://avenue.baewooenm.com/teachers', label: '교육진 현황' },
     { href: 'https://avenue.baewooenm.com/curriculum', label: '커리큘럼' },
   ])
   assert.deepEqual(itemsForGroup('avenue', 'casting'), [
