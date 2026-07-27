@@ -64,7 +64,7 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
 
   return (
     <main
-      className="page page-light page-consult page-top-offset pb-24"
+      className="page page-light page-consult page-top-offset section-p-block-base"
       data-center={center}
       style={consultLightThemeVars}
     >
@@ -108,7 +108,7 @@ export async function ConsultPageContent({ center, searchParams }: ConsultPageCo
       </section>
 
       <section
-        className="section-consult-contact section-p-block-sm scroll-mt-(--page-top-offset) bg-background"
+        className="section-consult-contact scroll-mt-(--page-top-offset) bg-background"
         id="consult-contact"
       >
         <div className="container-sm">
