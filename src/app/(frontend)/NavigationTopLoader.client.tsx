@@ -1,7 +1,8 @@
 'use client'
 
 import NextTopLoader from 'nextjs-toploader'
-import { usePathname } from 'next/navigation'
+
+import { useCurrentCenter } from './CenterDomainContext.client'
 
 const centerTopLoaderColors = {
   art: 'var(--color-brand-art)',
@@ -11,19 +12,9 @@ const centerTopLoaderColors = {
   kids: 'var(--color-brand-kids)',
 } as const
 
-function topLoaderColorForPathname(pathname: string) {
-  const center = pathname.split('/').filter(Boolean)[0]
-
-  if (center && center in centerTopLoaderColors) {
-    return centerTopLoaderColors[center as keyof typeof centerTopLoaderColors]
-  }
-
-  return centerTopLoaderColors.art
-}
-
 export function NavigationTopLoader() {
-  const pathname = usePathname()
-  const color = topLoaderColorForPathname(pathname)
+  const center = useCurrentCenter()
+  const color = centerTopLoaderColors[center]
 
   return (
     <NextTopLoader
