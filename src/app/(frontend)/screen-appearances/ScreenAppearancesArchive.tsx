@@ -241,7 +241,7 @@ function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
   return (
     <div
       aria-hidden="true"
-      className="absolute -inset-x-8 -top-12 grid grid-cols-3 gap-2 opacity-70 md:-inset-x-12 md:-top-24 md:grid-cols-6 md:rotate-[-5.5deg] md:scale-110 md:gap-4"
+      className="absolute -inset-x-8 -top-12 grid grid-cols-3 gap-2 opacity-70 pointer-events-none md:-inset-x-12 md:-top-24 md:grid-cols-6 md:rotate-[-5.5deg] md:scale-110 md:gap-4"
     >
       {images.map((image, index) => (
         <HeroImageTile image={image} index={index} key={`${image.id}-${index}`} />
