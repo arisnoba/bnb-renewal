@@ -86,6 +86,8 @@
     "payload:legacy:link-highteen-special-class-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-highteen-special-class-images-to-media.ts",
     "payload:legacy:link-star-card-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-star-card-images-to-media.ts",
     "payload:legacy:sync-star-card-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/sync-star-card-images-from-local-folders.ts",
+    "payload:migrate-legacy-r2-paths:plan": "node --env-file=.env.local --import tsx scripts/payload-migration/migrate-legacy-r2-paths.ts --dry-run",
+    "payload:migrate-legacy-r2-paths:write": "node --env-file=.env.local --import tsx scripts/payload-migration/migrate-legacy-r2-paths.ts --write",
     "payload:legacy:replace-artist-press-body-images": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/replace-artist-press-body-image-paths.ts",
     "payload:legacy:link-exam-school-logo-media": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/link-exam-school-logo-media.ts",
     "payload:legacy:plan-media-variant-cleanup": "node --env-file=config/env/local-postgres.env --import tsx scripts/payload-migration/plan-media-variant-cleanup.ts",
