@@ -70,7 +70,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-procedure section-p-b-sm scroll-mt-(--page-top-offset) bg-white"
+        className="section-admission-procedure section-p-b-sm scroll-mt-(--page-top-offset) odd:bg-neutral-50"
         id="procedure"
       >
         <div className="container">
@@ -88,7 +88,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       </section>
 
       <section
-        className="section-admission-tuition section-p-block-sm scroll-mt-(--page-top-offset) bg-neutral-50"
+        className="section-admission-tuition section-p-block-sm scroll-mt-(--page-top-offset) odd:bg-neutral-50"
         id="tuition"
       >
         <div className="container">
@@ -101,7 +101,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
 
       {content.leaveGuide ? (
         <section
-          className="section-admission-leave section-p-block-sm scroll-mt-(--page-top-offset) bg-white"
+          className="section-admission-leave section-p-block-sm scroll-mt-(--page-top-offset) odd:bg-neutral-50"
           id="leave-completion"
         >
           <div className="container">
@@ -114,7 +114,7 @@ export function AdmissionGuide({ center }: { center: CenterSlug }) {
       ) : null}
 
       <section
-        className="section-admission-refund section-p-t-sm section-p-b-lg scroll-mt-(--page-top-offset)"
+        className="section-admission-refund section-p-t-sm section-p-b-lg scroll-mt-(--page-top-offset) odd:bg-neutral-50"
         id="refund"
       >
         <div className="container">
