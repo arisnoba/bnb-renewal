@@ -57,7 +57,7 @@ export function FooterPolicyLinks({ initialCenter = 'art' }: { initialCenter?: C
   return (
     <nav
       aria-label="정책"
-      className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] leading-[1.2] tracking-normal"
+      className="flex flex-wrap gap-x-6 gap-y-2 text-sm leading-[1.2] tracking-normal"
     >
       <Link className="text-[#666] transition-colors hover:text-white" href={centerPublicHref(center, '/terms')} prefetch={false}>
         이용약관

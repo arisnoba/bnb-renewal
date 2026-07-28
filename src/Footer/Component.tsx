@@ -19,7 +19,7 @@ export async function Footer() {
     <footer className="mt-auto bg-bg-footer text-white">
       <div className="mx-auto flex w-full container flex-col gap-14 px-5 py-20 md:px-8 lg:gap-10 lg:py-20">
         <div className="grid gap-20 lg:grid-cols-2 lg:gap-5">
-          <p className="text-[32px] font-semibold leading-normal tracking-normal lg:leading-[1.2]">
+          <p className="text-3xl font-semibold leading-normal tracking-normal lg:leading-[1.2]">
             배우의 서사가
             <br />
             시작되는 곳
