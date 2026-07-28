@@ -128,7 +128,7 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
       aria-hidden="true"
       className="section-casting-status-hero__visual absolute inset-0 overflow-hidden"
     >
-      <div className="section-casting-status-hero__poster-grid absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
+      <div className="section-casting-status-hero__poster-grid pointer-events-none select-none absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
         {items.map((item, index) => (
           <div
             className="section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
