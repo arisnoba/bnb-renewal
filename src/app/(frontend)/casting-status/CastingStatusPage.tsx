@@ -23,6 +23,9 @@ const HERO_POSTER_CENTER_INDEX = Math.floor(HERO_POSTER_COUNT / 2)
 const HERO_POSTER_COLUMNS = 7
 const HERO_POSTER_SLOT_ORDER = getHeroPosterSlotOrder()
 const HERO_POSTER_PRIORITY_COUNT = 7
+const HERO_POSTER_PRIORITY_SLOTS = new Set(
+  HERO_POSTER_SLOT_ORDER.slice(0, HERO_POSTER_PRIORITY_COUNT),
+)
 const CASTING_STATUS_DESCRIPTION_BY_CENTER: Partial<Record<CenterSlug, string>> = {
   art: 'CNA Agency, ARKO Lab과 함께합니다.',
   highteen: 'CNA Agency, ARKO Lab. IMGround와 함께합니다.',
@@ -129,32 +132,36 @@ function CastingStatusHeroVisual({ items }: { items: CastingStatusPosterItem[] }
       className="section-casting-status-hero__visual absolute inset-0 overflow-hidden"
     >
       <div className="section-casting-status-hero__poster-grid pointer-events-none select-none absolute left-1/2 top-1/2 grid w-[250vw] -translate-x-1/2 -translate-y-1/2 grid-cols-7 gap-2 opacity-55 md:w-[104vw] md:rotate-[-4deg] md:scale-100 md:gap-4">
-        {items.map((item, index) => (
-          <div
-            className="section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
-            key={`${item.id}-${index}`}
-          >
-            <Image
-              alt=""
-              className="size-full object-cover"
-              blurDataURL={heroPosterPlaceholder}
-              fill
-              loading="eager"
-              placeholder="blur"
-              priority={isPriorityHeroPoster(index)}
-              sizes="(max-width: 767px) 34vw, 13vw"
-              src={item.imageUrl}
-              unoptimized
-            />
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const isPriority = isPriorityHeroPoster(index)
+
+          return (
+            <div
+              className="section-casting-status-hero__poster relative aspect-2/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800"
+              key={`${item.id}-${index}`}
+            >
+              <Image
+                alt=""
+                className="size-full object-cover"
+                blurDataURL={heroPosterPlaceholder}
+                fill
+                loading={isPriority ? undefined : 'lazy'}
+                placeholder="blur"
+                priority={isPriority}
+                sizes="(max-width: 767px) 34vw, 13vw"
+                src={item.imageUrl}
+                unoptimized
+              />
+            </div>
+          )
+        })}
       </div>
     </div>
   )
 }
 
 function isPriorityHeroPoster(index: number) {
-  return index === HERO_POSTER_CENTER_INDEX || index < HERO_POSTER_PRIORITY_COUNT
+  return HERO_POSTER_PRIORITY_SLOTS.has(index)
 }
 
 function getCastingStatusHeroItems(items: CastingStatusPosterItem[]) {

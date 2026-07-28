@@ -73,6 +73,9 @@ const heroImageColumns = {
   md: 5,
   xl: 6,
 } as const
+const heroImageSizes = '(max-width: 767px) 34vw, 18vw'
+const listImageSizes =
+  '(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 280px'
 const listAnchorId = 'screen-appearances-list'
 const heroImagePlaceholder =
   'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 3%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23111111%22/%3E%3Cstop offset=%221%22 stop-color=%22%23333333%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%224%22 height=%223%22 fill=%22url(%23g)%22/%3E%3C/svg%3E'
@@ -89,6 +92,7 @@ export async function ScreenAppearancesArchive({
   ])
   const totalPages = Math.max(appearances.totalPages || 1, 1)
   const safePage = Math.min(appearances.page || currentPage, totalPages)
+  const visibleAppearanceIds = new Set(appearances.docs.map((appearance) => appearance.id))
 
   return (
     <main className="page page-light page-screen-appearances" data-center={center}>
@@ -97,7 +101,7 @@ export async function ScreenAppearancesArchive({
         aria-labelledby="screen-appearances-hero-title"
         data-page-tone="dark"
       >
-        <HeroImageWall images={heroImages} />
+        <HeroImageWall images={heroImages} sharedImageIds={visibleAppearanceIds} />
         <HeroMosaicDim />
         <PageDeco
           className="-left-20 top-[36%] md:-left-28"
@@ -238,7 +242,13 @@ type ScreenAppearanceHeroImage = {
   src: string
 }
 
-function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
+function HeroImageWall({
+  images,
+  sharedImageIds,
+}: {
+  images: ScreenAppearanceHeroImage[]
+  sharedImageIds: ReadonlySet<ScreenAppearance['id']>
+}) {
   if (images.length === 0) {
     return <div className="absolute inset-0 bg-neutral-950" aria-hidden="true" />
   }
@@ -259,6 +269,7 @@ function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
           image={image}
           index={index}
           key={`${image.id}-${index}`}
+          sizes={sharedImageIds.has(image.id) ? listImageSizes : heroImageSizes}
           style={{
             '--hero-order-base': slotOrders.base[index],
             '--hero-order-md': slotOrders.md[index],
@@ -279,10 +290,12 @@ type HeroImageOrderStyle = React.CSSProperties & {
 function HeroImageTile({
   image,
   index,
+  sizes,
   style,
 }: {
   image: ScreenAppearanceHeroImage
   index: number
+  sizes: string
   style: HeroImageOrderStyle
 }) {
   const isPriority = index < heroImagePriorityCount
@@ -300,7 +313,7 @@ function HeroImageTile({
         loading={isPriority ? undefined : 'lazy'}
         placeholder="blur"
         priority={isPriority}
-        sizes="(max-width: 767px) 34vw, 18vw"
+        sizes={sizes}
         src={image.src}
       />
     </div>
@@ -382,9 +395,8 @@ function ScreenAppearanceCard({
             className="size-full object-cover transition duration-300 group-hover:scale-[1.035]"
             fill
             loading="lazy"
-            sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 280px"
+            sizes={listImageSizes}
             src={thumbnailUrl}
-            unoptimized
           />
         ) : screenImage ? (
           <Media
@@ -393,7 +405,7 @@ function ScreenAppearanceCard({
             imgClassName="size-full object-cover transition duration-300 group-hover:scale-[1.035]"
             pictureClassName="block size-full"
             resource={screenImage}
-            size="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 50vw, 280px"
+            size={listImageSizes}
           />
         ) : (
           <div className="flex size-full items-center justify-center type-label-m font-semibold text-neutral-400">
