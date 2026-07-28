@@ -7,6 +7,10 @@ import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 
 import { PageDeco, type DecoIcon } from '@/components/PageDeco'
+import {
+  centerPreparationBadge,
+  isCenterPubliclyAvailable,
+} from '@/lib/centerAvailability'
 import type { CenterSlug } from '@/lib/centers'
 import { cn } from '@/utilities/ui'
 
@@ -180,6 +184,7 @@ type GateCenterCardProps = {
 function GateCenterCard({ index, item }: GateCenterCardProps) {
   const cardRef = useRef<HTMLAnchorElement>(null)
   const isDarkText = item.textTone === 'dark'
+  const isPubliclyAvailable = isCenterPubliclyAvailable(item.center)
   const prefersReducedMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
     offset: ['start end', 'end start'],
@@ -227,11 +232,16 @@ function GateCenterCard({ index, item }: GateCenterCardProps) {
       />
       <div className="pointer-events-none absolute inset-0 z-3 flex flex-col justify-between p-6 md:p-12 lg:p-14 xl:p-20">
         <div className="section-gate-card__headline">
+          {!isPubliclyAvailable ? (
+            <span className="mb-5 inline-flex rounded-full border border-brand/70 bg-black/35 px-3 py-1.5 type-label-s font-bold tracking-[0.14em] text-brand backdrop-blur-sm">
+              {centerPreparationBadge}
+            </span>
+          ) : null}
           <h2 className="whitespace-pre-line text-4xl font-extrabold leading-tight tracking-normal text-brand md:text-5xl lg:text-6xl xl:text-7xl">
             {title.replace(' ', '\n')}
           </h2>
           <span className="mt-8 inline-flex items-center gap-1.5 text-xl font-bold text-brand lg:mt-10">
-            {item.cta}
+            {isPubliclyAvailable ? item.cta : '오픈 준비중'}
             <ArrowRight aria-hidden="true" className="size-5" strokeWidth={2.4} />
           </span>
         </div>

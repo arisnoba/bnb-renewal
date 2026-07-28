@@ -8,6 +8,7 @@ import {
   centerFromHostname,
   centerOrigin,
   centerPublicHref,
+  primaryPublicHref,
   publicCenterPath,
 } from './centerDomains'
 
@@ -23,6 +24,15 @@ test('centerPublicHref keeps development links on local center routes', () => {
   assert.equal(centerPublicHref('kids', '/news/123', true), '/kids/news/123')
   assert.equal(centerPublicHref('exam', 'passed-reviews?page=2', true), '/exam/passed-reviews?page=2')
   assert.equal(centerPublicHref('avenue', '#profiles', true), '/avenue#profiles')
+})
+
+test('primaryPublicHref returns the gate URL for production and local development', () => {
+  assert.equal(primaryPublicHref('', false), 'https://www.baewooenm.com')
+  assert.equal(
+    primaryPublicHref('/?from=avenue', false),
+    'https://www.baewooenm.com/?from=avenue',
+  )
+  assert.equal(primaryPublicHref('', true), '/')
 })
 
 const centerSlugs: CenterSlug[] = ['art', 'avenue', 'exam', 'highteen', 'kids']

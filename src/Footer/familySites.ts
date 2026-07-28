@@ -7,12 +7,14 @@ import {
   centerPublicHref,
   primaryHostname,
 } from '@/lib/centerDomains'
+import { isCenterPubliclyAvailable } from '@/lib/centerAvailability'
 
 export type FamilySiteLink = {
   href: string
   label: string
   mobileLabel?: string
   name: string
+  statusLabel?: string
 }
 
 type FooterFamilySiteSource = Pick<FooterData, 'centerInfos'>
@@ -52,6 +54,7 @@ export function familySitesFromFooter(footer: FooterFamilySiteSource | null): Fa
       label: site.label,
       mobileLabel: site.mobileLabel,
       name: site.name,
+      statusLabel: isCenterPubliclyAvailable(site.center) ? undefined : '준비중',
     }
   })
 }

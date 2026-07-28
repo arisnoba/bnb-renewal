@@ -6,10 +6,13 @@ import {
   apexHostname,
   centerDomainRoute,
   centerFromHostname,
+  centerFromPathname,
   primaryHostname,
 } from '@/lib/centerDomains'
+import { isCenterPubliclyAvailable } from '@/lib/centerAvailability'
 import { legacyCenterRoute } from '@/lib/legacyCenterRoutes'
 
+const centerPreparationRoutePrefix = '/opening-soon/'
 const validCenterFilterValues = new Set(['all', 'art', 'avenue', 'exam', 'highteen', 'kids'])
 const singleCentersAdminListPaths = new Set([
   '/admin/collections/curriculums',
@@ -124,6 +127,26 @@ export function proxy(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-pathname', domainRoute?.url.pathname ?? request.nextUrl.pathname)
+  const requestedCenter =
+    domainRoute?.center ?? centerFromPathname(requestURL.pathname)
+  const hasPayloadSession = request.cookies.has('payload-token')
+
+  if (
+    requestedCenter &&
+    !isCenterPubliclyAvailable(requestedCenter) &&
+    !hasPayloadSession &&
+    !requestURL.pathname.startsWith(centerPreparationRoutePrefix)
+  ) {
+    const rewriteURL = new URL(request.url)
+    rewriteURL.pathname = `${centerPreparationRoutePrefix}${requestedCenter}`
+    requestHeaders.set('x-center-preparation-rewrite', '1')
+
+    return NextResponse.rewrite(rewriteURL, {
+      request: {
+        headers: requestHeaders,
+      },
+    })
+  }
 
   if (domainRoute?.type === 'rewrite') {
     const rewriteURL = new URL(request.url)

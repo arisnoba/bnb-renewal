@@ -1,6 +1,7 @@
 import { getHeaderMenu } from '@/Header/Nav/menu'
 
 import { apexHostname, centerFromHostname, centerOrigin, primaryHostname } from './centerDomains'
+import { isCenterPubliclyAvailable } from './centerAvailability'
 
 type RequestLike = Pick<Request, 'headers' | 'url'>
 
@@ -70,6 +71,10 @@ export function sitemapURLs(origin: string) {
 
   if (!center) {
     return [`${normalizedOrigin}/`]
+  }
+
+  if (!isCenterPubliclyAvailable(center)) {
+    return []
   }
 
   const menuURLs = getHeaderMenu(center).flatMap((group) => [

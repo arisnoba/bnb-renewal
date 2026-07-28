@@ -2,6 +2,11 @@ import type { Metadata } from 'next'
 
 import React from 'react'
 
+import {
+  centerPreparationMessage,
+  centerPreparationTitle,
+  isCenterPubliclyAvailable,
+} from '@/lib/centerAvailability'
 import { centers, type CenterSlug } from '@/lib/centers'
 import { centerOrigin } from '@/lib/centerDomains'
 import { centerOpenGraphImage } from '@/utilities/mergeOpenGraph'
@@ -32,8 +37,11 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   const siteTitle = `배우앤배움 ${centers[center]}`
   const openGraphImage = centerOpenGraphImage(center)
+  const isPubliclyAvailable = isCenterPubliclyAvailable(center)
+  const title = isPubliclyAvailable ? siteTitle : centerPreparationTitle(center)
 
   return {
+    description: isPubliclyAvailable ? undefined : centerPreparationMessage,
     metadataBase: new URL(centerOrigin(center)),
     icons: {
       icon: [
@@ -51,15 +59,25 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     },
     manifest: centerFaviconPath(center, 'site.webmanifest'),
     openGraph: {
+      description: isPubliclyAvailable ? undefined : centerPreparationMessage,
       images: [openGraphImage],
+      title: isPubliclyAvailable ? undefined : title,
     },
+    robots: isPubliclyAvailable
+      ? undefined
+      : {
+          follow: false,
+          index: false,
+        },
     title: {
-      default: siteTitle,
-      template: `%s - ${siteTitle}`,
+      default: title,
+      template: `%s - ${title}`,
     },
     twitter: {
       card: 'summary_large_image',
+      description: isPubliclyAvailable ? undefined : centerPreparationMessage,
       images: [openGraphImage.url],
+      title: isPubliclyAvailable ? undefined : title,
     },
   }
 }

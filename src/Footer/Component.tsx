@@ -79,7 +79,7 @@ function FooterTextLinks({
   links,
   size = 'small',
 }: {
-  links: { href: string; label: string }[]
+  links: { href: string; label: string; statusLabel?: string }[]
   size?: 'large' | 'small'
 }) {
   const className =
@@ -96,7 +96,14 @@ function FooterTextLinks({
             href={link.href}
             prefetch={false}
           >
-            {link.label}
+            <span className="inline-flex items-center gap-2">
+              <span>{link.label}</span>
+              {link.statusLabel ? (
+                <span className="type-caption-s font-bold text-white/35">
+                  {link.statusLabel}
+                </span>
+              ) : null}
+            </span>
           </Link>
         </li>
       ))}

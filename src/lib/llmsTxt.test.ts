@@ -24,6 +24,8 @@ test('generateLlmsTxt creates a markdown llms.txt with absolute links', () => {
   }
 
   assert.match(content, /https:\/\/art\.baewooenm\.com\/grade-system/)
+  assert.match(content, /- 오픈 준비중: 애비뉴센터/)
+  assert.doesNotMatch(content, /\]\(https:\/\/avenue\.baewooenm\.com\//)
   assert.doesNotMatch(content, /https:\/\/www\.baewooenm\.com\/(?:art|avenue|exam|highteen|kids)(?:\/|\))/)
 })
 

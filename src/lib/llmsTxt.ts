@@ -1,6 +1,7 @@
 import { getHeaderMenu } from '@/Header/Nav/menu'
 
 import type { CenterSlug } from './centers'
+import { isCenterPubliclyAvailable } from './centerAvailability'
 import { centerFromPathname, centerOrigin, publicCenterPath } from './centerDomains'
 import { centerLocationList, centerLocations } from './centerLocations'
 
@@ -167,15 +168,17 @@ export function generateLlmsTxt({ baseUrl }: { baseUrl: string }) {
       entries: [
         {
           description:
-            '배우앤배움 다섯 개 센터의 성격과 주요 교육 영역을 비교하고 각 센터 홈으로 이동하는 대표 게이트입니다.',
+            '배우앤배움 운영 센터의 성격과 주요 교육 영역을 비교하고, 오픈 준비중인 애비뉴센터의 상태를 확인하는 대표 게이트입니다.',
           path: '/',
           title: '배우앤배움 센터 선택',
         },
-        ...centerLocationList.map((location) => ({
-          description: centerDescription(location.slug),
-          path: `/${location.slug}`,
-          title: location.name,
-        })),
+        ...centerLocationList
+          .filter((location) => isCenterPubliclyAvailable(location.slug))
+          .map((location) => ({
+            description: centerDescription(location.slug),
+            path: `/${location.slug}`,
+            title: location.name,
+          })),
       ],
       title: 'Primary Pages',
     },
@@ -208,7 +211,8 @@ export function generateLlmsTxt({ baseUrl }: { baseUrl: string }) {
     '## Key Facts',
     '',
     '- 공식 브랜드: 배우앤배움(BNB)',
-    '- 운영 센터: 아트센터, 입시센터, 키즈센터, 하이틴센터, 애비뉴센터',
+    '- 운영 센터: 아트센터, 입시센터, 키즈센터, 하이틴센터',
+    '- 오픈 준비중: 애비뉴센터',
     '- 주요 영역: 매체 연기 교육, 연극영화과 입시, 아역·청소년 연기 교육, 캐스팅 및 배우 케어',
     '- 공개 URL 구조: 센터별 주요 페이지는 `{center}.baewooenm.com/...` 서브도메인을 사용합니다.',
     '- 대표 문의 전화: 1577-9929',

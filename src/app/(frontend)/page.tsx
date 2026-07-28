@@ -58,9 +58,9 @@ const gateCenters: ImageGalleryItem[] = [
     center: 'avenue',
     title: '애비뉴센터',
     description:
-      '오디션과 작품 활동을 위한 실전 교육으로 현장에서 요구하는 역량을 체계적으로 익히고 다양한 캐스팅 기회와 경험을 통해 배우의 가능성을 현실로 연결합니다.',
+      '오디션과 작품 활동을 위한 실전 교육, 캐스팅 연계 프로그램을 준비하고 있습니다. 곧 새로운 애비뉴센터의 소식을 안내해 드리겠습니다.',
     href: centerPublicHref('avenue'),
-    cta: '애비뉴센터 바로가기',
+    cta: '오픈 준비중',
     desktopImage: '/assets/gate/avenue-desktop.png',
     mobileImage: '/assets/gate/avenue-mobile.png',
     decoIcon: 'icon-m.svg',
@@ -68,7 +68,7 @@ const gateCenters: ImageGalleryItem[] = [
 ]
 
 const gateDescription =
-  '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터, 애비뉴센터의 교육과 캐스팅, 매니지먼트 과정을 선택해 확인하세요.'
+  '배우앤배움 아트센터, 입시센터, 하이틴센터, 키즈센터의 교육 과정을 확인하고 오픈 준비중인 애비뉴센터 소식을 만나보세요.'
 
 function gateFaviconPath(fileName: string) {
   return `/assets/favicons/art/${fileName}`

@@ -17,7 +17,13 @@ import {
 } from '@/SiteSettings/maintenance'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import {
+  centerPreparationMessage,
+  centerPreparationTitle,
+  isCenterPubliclyAvailable,
+} from '@/lib/centerAvailability'
 import { getPayloadClient } from '@/lib/payload'
+import { CenterComingSoonPage } from './CenterComingSoonPage'
 import { FrontendChrome } from './FrontendChrome.client'
 import { MaintenancePage } from './MaintenancePage'
 import { NavigationTopLoader } from './NavigationTopLoader.client'
@@ -63,9 +69,13 @@ export default async function RootLayout({
   const domainCenter = centerFromHostname(requestHeaders.get('host') ?? '')
   const currentCenter =
     domainCenter ?? centerFromPathname(requestHeaders.get('x-pathname') ?? '')
+  const isCenterPreparationRewrite =
+    requestHeaders.get('x-center-preparation-rewrite') === '1'
   const siteSettings = await getSiteSettings()
   const bypassUser = await getFrontendMaintenanceBypassUser()
   const showMaintenancePage = isMaintenanceModeEnabled(siteSettings) && !bypassUser
+  const showCenterComingSoonPage =
+    Boolean(currentCenter) && !isCenterPubliclyAvailable(currentCenter) && !bypassUser
 
   return (
     <html lang="ko" suppressHydrationWarning>
@@ -76,9 +86,18 @@ export default async function RootLayout({
 
           {showMaintenancePage ? (
             <MaintenancePage center={currentCenter} settings={siteSettings} />
+          ) : isCenterPreparationRewrite ? (
+            children
+          ) : showCenterComingSoonPage && currentCenter ? (
+            <CenterComingSoonPage center={currentCenter} />
           ) : (
             <>
-              <FrontendChrome footer={<Footer />} header={<Header />} initialIsGatePage={false}>
+              <FrontendChrome
+                footer={<Footer />}
+                header={<Header />}
+                hideChromeForPreparingCenters={!bypassUser}
+                initialIsGatePage={false}
+              >
                 {children}
               </FrontendChrome>
               <CookieBanner />
@@ -120,31 +139,61 @@ const defaultMetadata: Metadata = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteSettings()
+  const bypassUser = await getFrontendMaintenanceBypassUser()
 
-  if (!isMaintenanceModeEnabled(siteSettings) || (await getFrontendMaintenanceBypassUser())) {
-    return defaultMetadata
+  if (isMaintenanceModeEnabled(siteSettings) && !bypassUser) {
+    const title = maintenanceTitle(siteSettings)
+    const description = maintenanceMessage(siteSettings)
+
+    return {
+      ...defaultMetadata,
+      description,
+      openGraph: mergeOpenGraph({
+        description,
+        title,
+      }),
+      robots: {
+        follow: false,
+        index: false,
+      },
+      title,
+      twitter: {
+        ...defaultMetadata.twitter,
+        card: 'summary_large_image',
+        description,
+        title,
+      },
+    }
   }
 
-  const title = maintenanceTitle(siteSettings)
-  const description = maintenanceMessage(siteSettings)
+  const requestHeaders = await headers()
+  const domainCenter = centerFromHostname(requestHeaders.get('host') ?? '')
+  const currentCenter =
+    domainCenter ?? centerFromPathname(requestHeaders.get('x-pathname') ?? '')
 
-  return {
-    ...defaultMetadata,
-    description,
-    openGraph: mergeOpenGraph({
-      description,
+  if (currentCenter && !isCenterPubliclyAvailable(currentCenter) && !bypassUser) {
+    const title = centerPreparationTitle(currentCenter)
+
+    return {
+      ...defaultMetadata,
+      description: centerPreparationMessage,
+      openGraph: mergeOpenGraph({
+        description: centerPreparationMessage,
+        title,
+      }),
+      robots: {
+        follow: false,
+        index: false,
+      },
       title,
-    }),
-    robots: {
-      follow: false,
-      index: false,
-    },
-    title,
-    twitter: {
-      ...defaultMetadata.twitter,
-      card: 'summary_large_image',
-      description,
-      title,
-    },
+      twitter: {
+        ...defaultMetadata.twitter,
+        card: 'summary_large_image',
+        description: centerPreparationMessage,
+        title,
+      },
+    }
   }
+
+  return defaultMetadata
 }

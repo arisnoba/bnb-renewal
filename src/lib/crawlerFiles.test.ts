@@ -54,11 +54,20 @@ test('center sitemap uses the center menu without leaking URLs from sibling host
 })
 
 test('center sitemap excludes the inactive schedule page', () => {
-  for (const center of ['art', 'avenue', 'highteen', 'kids']) {
+  for (const center of ['art', 'highteen', 'kids']) {
     assert.ok(!sitemapURLs(`https://${center}.baewooenm.com`).includes(
       `https://${center}.baewooenm.com/schedule`,
     ))
   }
+})
+
+test('preparing avenue center exposes no public sitemap URLs', () => {
+  assert.deepEqual(sitemapURLs('https://avenue.baewooenm.com'), [])
+
+  const xml = generateSitemapXml('https://avenue.baewooenm.com')
+
+  assert.match(xml, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/)
+  assert.doesNotMatch(xml, /<url>/)
 })
 
 test('highteen sitemap excludes the inactive curriculum page', () => {

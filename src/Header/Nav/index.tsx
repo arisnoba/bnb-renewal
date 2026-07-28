@@ -8,6 +8,7 @@ import { ArrowLeft, ChevronDown, ChevronRight, Menu, Minus, Plus } from 'lucide-
 import type { FamilySiteLink } from '@/Footer/familySites'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
+import { isCenterPubliclyAvailable } from '@/lib/centerAvailability'
 import { centerPublicHref } from '@/lib/centerDomains'
 import {
   DropdownMenu,
@@ -244,7 +245,14 @@ function HeaderCenterSelect({ currentCenter }: { currentCenter: CenterSlug }) {
                 window.location.assign(centerPublicHref(option))
               }}
             >
-              {centers[option]}
+              <span className="flex w-full items-center justify-between gap-3">
+                <span>{centers[option]}</span>
+                {!isCenterPubliclyAvailable(option) ? (
+                  <span className="type-caption-s font-bold text-muted-foreground">
+                    준비중
+                  </span>
+                ) : null}
+              </span>
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuGroup>
@@ -390,7 +398,14 @@ function MobileMenu({
                   onClick={onLinkClick}
                   prefetch={false}
                 >
-                  <span>{site.mobileLabel ?? site.label}</span>
+                  <span className="flex items-center gap-3">
+                    <span>{site.mobileLabel ?? site.label}</span>
+                    {site.statusLabel ? (
+                      <span className="type-caption-s font-bold text-white/45">
+                        {site.statusLabel}
+                      </span>
+                    ) : null}
+                  </span>
                   <ChevronRight aria-hidden="true" size={18} strokeWidth={2.4} />
                 </Link>
               </li>

@@ -28,22 +28,35 @@ export function centerOrigin(center: CenterSlug) {
   return `https://${centerHostname(center)}`
 }
 
+function publicPathSuffix(path: string) {
+  return !path || path === '/'
+    ? ''
+    : path.startsWith('/') || path.startsWith('?') || path.startsWith('#')
+      ? path
+      : `/${path}`
+}
+
 export function centerPublicHref(
   center: CenterSlug,
   path = '',
   isLocalDevelopment = process.env.NODE_ENV === 'development',
 ) {
-  const suffix = !path || path === '/'
-    ? ''
-    : path.startsWith('/') || path.startsWith('?') || path.startsWith('#')
-      ? path
-      : `/${path}`
+  const suffix = publicPathSuffix(path)
 
   if (isLocalDevelopment) {
     return `/${center}${suffix}`
   }
 
   return `${centerOrigin(center)}${suffix}`
+}
+
+export function primaryPublicHref(
+  path = '',
+  isLocalDevelopment = process.env.NODE_ENV === 'development',
+) {
+  const suffix = publicPathSuffix(path)
+
+  return isLocalDevelopment ? suffix || '/' : `https://${primaryHostname}${suffix}`
 }
 
 export function centerFromHostname(hostname: string): CenterSlug | null {

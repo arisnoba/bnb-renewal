@@ -78,6 +78,28 @@ test('single-center admin lists rewrite stale contains center filters', () => {
   assert.equal(normalizedCurriculumURL.searchParams.get('where[centers][equals]'), 'exam')
 })
 
+test('anonymous avenue requests rewrite to the preparation page before rendering center content', () => {
+  const request = new NextRequest('http://localhost:3000/avenue/news')
+  const response = proxy(request)
+
+  assert.match(
+    response.headers.get('x-middleware-rewrite') ?? '',
+    /\/opening-soon\/avenue$/,
+  )
+})
+
+test('payload sessions can preview avenue center content', () => {
+  const request = new NextRequest('http://localhost:3000/avenue/news', {
+    headers: {
+      cookie: 'payload-token=preview-session',
+    },
+  })
+  const response = proxy(request)
+
+  assert.equal(response.headers.get('x-middleware-rewrite'), null)
+  assert.equal(response.headers.get('x-middleware-next'), '1')
+})
+
 test('single-center admin lists drop stale all-center contains filters', () => {
   const url = new URL(
     'http://localhost:3000/admin/collections/screen-appearances?where[centers][contains]=all&sort=-publishedAt',

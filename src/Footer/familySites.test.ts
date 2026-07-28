@@ -11,24 +11,38 @@ test('family sites use center subdomains with mobile-specific kid label', () => 
       href: site.href,
       label: site.label,
       mobileLabel: site.mobileLabel,
+      statusLabel: site.statusLabel,
     })),
     [
-      { href: 'https://art.baewooenm.com', label: 'ART CENTER', mobileLabel: undefined },
-      { href: 'https://exam.baewooenm.com', label: 'EXAM CENTER', mobileLabel: undefined },
+      {
+        href: 'https://art.baewooenm.com',
+        label: 'ART CENTER',
+        mobileLabel: undefined,
+        statusLabel: undefined,
+      },
+      {
+        href: 'https://exam.baewooenm.com',
+        label: 'EXAM CENTER',
+        mobileLabel: undefined,
+        statusLabel: undefined,
+      },
       {
         href: 'https://highteen.baewooenm.com',
         label: 'HIGH TEEN CENTER',
         mobileLabel: undefined,
+        statusLabel: undefined,
       },
       {
         href: 'https://kids.baewooenm.com',
         label: 'KIDS CENTER',
         mobileLabel: 'KID CENTER',
+        statusLabel: undefined,
       },
       {
         href: 'https://avenue.baewooenm.com',
         label: 'AVENUE CENTER',
         mobileLabel: undefined,
+        statusLabel: '준비중',
       },
     ],
   )

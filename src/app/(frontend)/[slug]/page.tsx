@@ -5,6 +5,7 @@ import React from 'react'
 
 import { MainBannerSection } from '@/Main/BannerSection'
 import { CenterHomeSections } from '@/Main/CenterHomeSections'
+import { isCenterPubliclyAvailable } from '@/lib/centerAvailability'
 import { centers, type CenterSlug } from '@/lib/centers'
 import type { Main, MainStatistic } from '@/payload-types'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -29,6 +30,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   if (!center) {
     return fallbackMetadata()
+  }
+
+  if (!isCenterPubliclyAvailable(center)) {
+    return {}
   }
 
   const title = centers[center]
