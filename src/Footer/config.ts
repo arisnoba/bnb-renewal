@@ -1,6 +1,11 @@
 import type { Access, GlobalBeforeChangeHook, GlobalConfig, Validate } from 'payload'
 
-import { isGlobalAdminUser, userCenterValue, type CenterValue } from '@/collections/shared'
+import {
+  isGlobalAdminUser,
+  sharedAdminContentWarning,
+  userCenterValue,
+  type CenterValue,
+} from '@/collections/shared'
 import { centers, type CenterSlug } from '@/lib/centers'
 
 import { revalidateFooter } from './hooks/revalidateFooter'
@@ -122,6 +127,7 @@ export const Footer: GlobalConfig = {
     update: updateFooterAccess,
   },
   admin: {
+    description: sharedAdminContentWarning,
     group: '회사정보',
   },
   fields: [

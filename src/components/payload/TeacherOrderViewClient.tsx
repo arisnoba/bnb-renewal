@@ -21,8 +21,8 @@ import { moveTeacherOrderItem, type TeacherOrderDocument } from '@/lib/teacherOr
 const centerOptions: Array<{ label: string; value: CenterSlug }> = [
   { label: '아트센터', value: 'art' },
   { label: '입시센터', value: 'exam' },
-  { label: '키즈센터', value: 'kids' },
   { label: '하이틴센터', value: 'highteen' },
+  { label: '키즈센터', value: 'kids' },
   { label: '애비뉴센터', value: 'avenue' },
 ]
 

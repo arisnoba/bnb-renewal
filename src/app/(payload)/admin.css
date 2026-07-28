@@ -64,6 +64,32 @@
 	--bnb-admin-upload-text: #123d5f;
 }
 
+:is(
+	.collection-list--histories,
+	.collection-list--terms,
+	.collection-list--classrooms,
+	.collection-list--broadcast-stations,
+	.collection-list--media
+) .custom-view-description,
+.template-default__wrap:has(
+	:is(
+		.collection-edit--histories,
+		.collection-edit--terms,
+		.collection-edit--classrooms,
+		.collection-edit--broadcast-stations,
+		.collection-edit--media,
+		.global-edit--footer
+	)
+) .doc-header__after-header .custom-view-description {
+	background: var(--theme-error-50);
+	border: 1px solid var(--theme-error-300);
+	border-radius: var(--style-radius-s);
+	color: var(--theme-error-700);
+	font-weight: 700;
+	line-height: 1.55;
+	padding: 12px 14px;
+}
+
 .bnb-publishing-status-select--archived {
 	--bnb-status-bg: #f4f5f7;
 	--bnb-status-border: #c9ced6;
