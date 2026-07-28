@@ -9,7 +9,7 @@ import type { FamilySiteLink } from '@/Footer/familySites'
 import type { CenterSlug } from '@/lib/centers'
 import { centers } from '@/lib/centers'
 import { isCenterPubliclyAvailable } from '@/lib/centerAvailability'
-import { centerPublicHref } from '@/lib/centerDomains'
+import { centerPublicHref, centerPublicHrefForHostname } from '@/lib/centerDomains'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -242,7 +242,9 @@ function HeaderCenterSelect({ currentCenter }: { currentCenter: CenterSlug }) {
               onSelect={() => {
                 if (option === currentCenter) return
 
-                window.location.assign(centerPublicHref(option))
+                window.location.assign(
+                  centerPublicHrefForHostname(option, window.location.hostname),
+                )
               }}
             >
               <span className="flex w-full items-center justify-between gap-3">

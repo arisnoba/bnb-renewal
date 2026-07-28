@@ -51,6 +51,17 @@ export function centerPublicHref(
   return `${centerOrigin(center)}${suffix}`
 }
 
+export function centerPublicHrefForHostname(
+  center: CenterSlug,
+  hostname: string,
+  path = '',
+) {
+  const useInternalRoute =
+    !isPrimaryHostname(hostname) && centerFromHostname(hostname) === null
+
+  return centerPublicHref(center, path, useInternalRoute)
+}
+
 export function primaryPublicHref(
   path = '',
   useInternalRoute =

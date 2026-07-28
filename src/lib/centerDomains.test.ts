@@ -8,6 +8,7 @@ import {
   centerFromHostname,
   centerOrigin,
   centerPublicHref,
+  centerPublicHrefForHostname,
   primaryPublicHref,
   publicCenterPath,
 } from './centerDomains'
@@ -50,6 +51,28 @@ test('centerPublicHref uses internal center routes in Vercel Preview', () => {
       process.env.VERCEL_ENV = previousVercelEnvironment
     }
   }
+})
+
+test('centerPublicHrefForHostname keeps browser navigation on non-production hosts', () => {
+  assert.equal(
+    centerPublicHrefForHostname('exam', 'baewoo.vercel.app'),
+    '/exam',
+  )
+  assert.equal(
+    centerPublicHrefForHostname('kids', 'localhost:3000', '/news'),
+    '/kids/news',
+  )
+})
+
+test('centerPublicHrefForHostname uses canonical links on official production hosts', () => {
+  assert.equal(
+    centerPublicHrefForHostname('exam', 'art.baewooenm.com'),
+    'https://exam.baewooenm.com',
+  )
+  assert.equal(
+    centerPublicHrefForHostname('kids', 'www.baewooenm.com', '/news'),
+    'https://kids.baewooenm.com/news',
+  )
 })
 
 const centerSlugs: CenterSlug[] = ['art', 'avenue', 'exam', 'highteen', 'kids']
