@@ -31,7 +31,8 @@ export function centerOrigin(center: CenterSlug) {
 export function centerPublicHref(
   center: CenterSlug,
   path = '',
-  isLocalDevelopment = process.env.NODE_ENV === 'development',
+  useInternalRoute =
+    process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview',
 ) {
   const suffix = !path || path === '/'
     ? ''
@@ -39,7 +40,7 @@ export function centerPublicHref(
       ? path
       : `/${path}`
 
-  if (isLocalDevelopment) {
+  if (useInternalRoute) {
     return `/${center}${suffix}`
   }
 
