@@ -68,6 +68,11 @@ type ScreenAppearancesPageResult = {
 const pageSize = 12
 const heroImageLimit = 24
 const heroImagePriorityCount = 6
+const heroImageColumns = {
+  base: 3,
+  md: 5,
+  xl: 6,
+} as const
 const listAnchorId = 'screen-appearances-list'
 const heroImagePlaceholder =
   'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 3%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%23111111%22/%3E%3Cstop offset=%221%22 stop-color=%22%23333333%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%224%22 height=%223%22 fill=%22url(%23g)%22/%3E%3C/svg%3E'
@@ -238,23 +243,55 @@ function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
     return <div className="absolute inset-0 bg-neutral-950" aria-hidden="true" />
   }
 
+  const slotOrders = {
+    base: getHeroImageSlotOrder(images.length, heroImageColumns.base),
+    md: getHeroImageSlotOrder(images.length, heroImageColumns.md),
+    xl: getHeroImageSlotOrder(images.length, heroImageColumns.xl),
+  }
+
   return (
     <div
       aria-hidden="true"
-      className="absolute -inset-x-8 -top-12 grid grid-cols-3 gap-2 opacity-70 pointer-events-none md:-inset-x-12 md:-top-24 md:grid-cols-6 md:rotate-[-5.5deg] md:scale-110 md:gap-4"
+      className="section-screen-appearances-hero__wall pointer-events-none absolute -inset-x-8 top-1/2 grid -translate-y-1/2 grid-cols-3 gap-2 opacity-70 md:-inset-x-12 md:grid-cols-5 md:rotate-[-5.5deg] md:scale-110 md:gap-4 xl:grid-cols-6"
     >
       {images.map((image, index) => (
-        <HeroImageTile image={image} index={index} key={`${image.id}-${index}`} />
+        <HeroImageTile
+          image={image}
+          index={index}
+          key={`${image.id}-${index}`}
+          style={{
+            '--hero-order-base': slotOrders.base[index],
+            '--hero-order-md': slotOrders.md[index],
+            '--hero-order-xl': slotOrders.xl[index],
+          }}
+        />
       ))}
     </div>
   )
 }
 
-function HeroImageTile({ image, index }: { image: ScreenAppearanceHeroImage; index: number }) {
+type HeroImageOrderStyle = React.CSSProperties & {
+  '--hero-order-base': number
+  '--hero-order-md': number
+  '--hero-order-xl': number
+}
+
+function HeroImageTile({
+  image,
+  index,
+  style,
+}: {
+  image: ScreenAppearanceHeroImage
+  index: number
+  style: HeroImageOrderStyle
+}) {
   const isPriority = index < heroImagePriorityCount
 
   return (
-    <div className="relative aspect-4/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800">
+    <div
+      className="relative order-(--hero-order-base) aspect-4/3 overflow-hidden rounded-xl bg-linear-to-br from-neutral-950 to-neutral-800 md:order-(--hero-order-md) xl:order-(--hero-order-xl)"
+      style={style}
+    >
       <Image
         alt=""
         className="size-full object-cover grayscale"
@@ -268,6 +305,36 @@ function HeroImageTile({ image, index }: { image: ScreenAppearanceHeroImage; ind
       />
     </div>
   )
+}
+
+export function getHeroImageSlotOrder(itemCount: number, columnCount: number) {
+  if (itemCount <= 0 || columnCount <= 0) {
+    return []
+  }
+
+  const rowCount = Math.ceil(itemCount / columnCount)
+  const centerRow = (rowCount - 1) / 2
+  const centerColumn = (columnCount - 1) / 2
+
+  return Array.from({ length: itemCount }, (_, index) => index).sort((left, right) => {
+    const distanceDiff =
+      heroImageSlotDistance(left, columnCount, centerRow, centerColumn) -
+      heroImageSlotDistance(right, columnCount, centerRow, centerColumn)
+
+    return distanceDiff || left - right
+  })
+}
+
+function heroImageSlotDistance(
+  index: number,
+  columnCount: number,
+  centerRow: number,
+  centerColumn: number,
+) {
+  const row = Math.floor(index / columnCount)
+  const column = index % columnCount
+
+  return (row - centerRow) ** 2 + (column - centerColumn) ** 2
 }
 
 function ScreenAppearanceCard({
