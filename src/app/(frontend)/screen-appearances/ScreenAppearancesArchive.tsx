@@ -252,7 +252,7 @@ function HeroImageWall({ images }: { images: ScreenAppearanceHeroImage[] }) {
   return (
     <div
       aria-hidden="true"
-      className="section-screen-appearances-hero__wall pointer-events-none absolute -inset-x-8 top-1/2 grid -translate-y-1/2 grid-cols-3 gap-2 opacity-70 md:-inset-x-12 md:grid-cols-5 md:rotate-[-5.5deg] md:scale-110 md:gap-4 xl:grid-cols-6"
+      className="section-screen-appearances-hero__wall pointer-events-none select-none absolute -inset-x-8 top-1/2 grid -translate-y-1/2 grid-cols-3 gap-2 opacity-70 md:-inset-x-12 md:grid-cols-5 md:rotate-[-5.5deg] md:scale-110 md:gap-4 xl:grid-cols-6"
     >
       {images.map((image, index) => (
         <HeroImageTile
@@ -294,7 +294,7 @@ function HeroImageTile({
     >
       <Image
         alt=""
-        className="size-full object-cover grayscale"
+        className="size-full object-cover"
         fill
         blurDataURL={heroImagePlaceholder}
         loading={isPriority ? undefined : 'lazy'}
