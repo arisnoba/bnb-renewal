@@ -39,11 +39,12 @@ function publicPathSuffix(path: string) {
 export function centerPublicHref(
   center: CenterSlug,
   path = '',
-  isLocalDevelopment = process.env.NODE_ENV === 'development',
+  useInternalRoute =
+    process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview',
 ) {
   const suffix = publicPathSuffix(path)
 
-  if (isLocalDevelopment) {
+  if (useInternalRoute) {
     return `/${center}${suffix}`
   }
 
@@ -52,11 +53,12 @@ export function centerPublicHref(
 
 export function primaryPublicHref(
   path = '',
-  isLocalDevelopment = process.env.NODE_ENV === 'development',
+  useInternalRoute =
+    process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview',
 ) {
   const suffix = publicPathSuffix(path)
 
-  return isLocalDevelopment ? suffix || '/' : `https://${primaryHostname}${suffix}`
+  return useInternalRoute ? suffix || '/' : `https://${primaryHostname}${suffix}`
 }
 
 export function centerFromHostname(hostname: string): CenterSlug | null {

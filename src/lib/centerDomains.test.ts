@@ -19,7 +19,7 @@ test('centerPublicHref builds canonical center subdomain links', () => {
   assert.equal(centerPublicHref('avenue', '#profiles'), 'https://avenue.baewooenm.com#profiles')
 })
 
-test('centerPublicHref keeps development links on local center routes', () => {
+test('centerPublicHref keeps development and preview links on internal center routes', () => {
   assert.equal(centerPublicHref('art', '', true), '/art')
   assert.equal(centerPublicHref('kids', '/news/123', true), '/kids/news/123')
   assert.equal(centerPublicHref('exam', 'passed-reviews?page=2', true), '/exam/passed-reviews?page=2')
@@ -33,6 +33,23 @@ test('primaryPublicHref returns the gate URL for production and local developmen
     'https://www.baewooenm.com/?from=avenue',
   )
   assert.equal(primaryPublicHref('', true), '/')
+})
+
+test('centerPublicHref uses internal center routes in Vercel Preview', () => {
+  const previousVercelEnvironment = process.env.VERCEL_ENV
+  process.env.VERCEL_ENV = 'preview'
+
+  try {
+    assert.equal(centerPublicHref('art'), '/art')
+    assert.equal(centerPublicHref('kids', '/news/123'), '/kids/news/123')
+    assert.equal(primaryPublicHref(), '/')
+  } finally {
+    if (previousVercelEnvironment === undefined) {
+      delete process.env.VERCEL_ENV
+    } else {
+      process.env.VERCEL_ENV = previousVercelEnvironment
+    }
+  }
 })
 
 const centerSlugs: CenterSlug[] = ['art', 'avenue', 'exam', 'highteen', 'kids']
