@@ -1,4 +1,5 @@
 import { Media } from '@/components/Media/Renderer'
+import { Logo } from '@/components/Logo/Logo'
 import { PageIntro } from '@/components/PageIntro'
 import {
   Pagination,
@@ -15,6 +16,7 @@ import {
 import type { NewsCategory } from '@/lib/newsCategories'
 import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
+import { centerLogoFor } from '@/lib/centerLogos'
 import type { News } from '@/payload-types'
 import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
@@ -211,6 +213,7 @@ function NewsCard({
   const categoryLabel = getNewsCategoryLabel(news.category, newsCategories) ?? news.category
   const description = getNewsArchiveDescription(news)
   const publishedAt = formatDate(news.publishedAt)
+  const centerLogo = centerLogoFor(center)
 
   return (
     <Link className="section-news-card group" href={getNewsUrl(news, center)} prefetch={false}>
@@ -223,7 +226,18 @@ function NewsCard({
               resource={media}
               size="146px"
             />
-          ) : null}
+          ) : (
+            <div className="section-news-card__placeholder flex h-full items-center justify-center px-[15%]">
+              <Logo
+                alt=""
+                className="section-news-card__placeholder-logo max-h-8 w-full opacity-30 brightness-0"
+                height={centerLogo.height}
+                loading="lazy"
+                src={centerLogo.src}
+                width={centerLogo.width}
+              />
+            </div>
+          )}
         </div>
         <div className="section-news-card__content">
           <div className="section-news-card__main">
