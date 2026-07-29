@@ -18,8 +18,12 @@ async function runAccess(
   } as never)
 }
 
-test('screen appearances keep public read access for frontend rendering', async () => {
-  assert.equal(await runAccess('read', undefined), true)
+test('screen appearances expose only published entries to public frontend reads', async () => {
+  assert.deepEqual(await runAccess('read', undefined), {
+    displayStatus: {
+      equals: 'published',
+    },
+  })
 })
 
 test('screen appearances use single-center equality access for art managers', async () => {

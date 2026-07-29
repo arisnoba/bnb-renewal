@@ -5,16 +5,28 @@ import type { CollectionConfig } from 'payload'
 
 import { Agencies } from './Agencies'
 import { ArtistPress } from './ArtistPress'
+import { AuditionSchedules } from './AuditionSchedules'
+import { CastingAppearances } from './CastingAppearances'
 import { CastingDirectors } from './CastingDirectors'
 import { DirectCastings } from './DirectCastings'
+import { ExamPassedVideos } from './ExamPassedVideos'
 import { ExamPassedReviews } from './ExamPassedReviews'
 import { ExamResults } from './ExamResults'
 import { Faqs } from './Faqs'
 import { HighteenSpecialClasses } from './HighteenSpecialClasses'
 import { MainBanners } from './MainBanners'
 import { News } from './News'
+import { Profiles } from './Profiles'
+import { ScreenAppearances } from './ScreenAppearances'
 import { SocialLinks } from './SocialLinks'
 import { StarCards } from './StarCards'
+
+const remediatedCenterScopedCollections = [
+  AuditionSchedules,
+  CastingAppearances,
+  ExamPassedVideos,
+  Profiles,
+]
 
 const displayStatusCollections = [
   Agencies,
@@ -25,6 +37,8 @@ const displayStatusCollections = [
   Faqs,
   HighteenSpecialClasses,
   News,
+  ...remediatedCenterScopedCollections,
+  ScreenAppearances,
   SocialLinks,
   StarCards,
 ]
@@ -67,6 +81,18 @@ test('로그인 관리자와 센터 관리자의 기존 읽기 범위를 유지�
     },
   })
   assert.equal(await readAccess(MainBanners, { center: 'kids', role: 'manager' }), true)
+})
+
+test('공개 필터를 적용한 컬렉션은 기존 관리자 읽기 범위를 유지한다', async () => {
+  for (const config of remediatedCenterScopedCollections) {
+    assert.equal(await readAccess(config, { role: 'master' }), true)
+    assert.deepEqual(await readAccess(config, { center: 'art', role: 'manager' }), {
+      or: [
+        { centers: { contains: 'art' } },
+        { centers: { contains: 'all' } },
+      ],
+    })
+  }
 })
 
 test('기존 비공개 다이렉트캐스팅 API는 비로그인 요청을 계속 거부한다', async () => {

@@ -1,6 +1,6 @@
 import type { CollectionBeforeValidateHook, CollectionConfig, Field } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import { extractYouTubeVideoId, youtubeWatchUrl } from "@/lib/youtube";
 import {
   createCenterRevalidationAfterChange,
@@ -122,7 +122,7 @@ export const ExamPassedVideos: CollectionConfig = {
     plural: "합격영상",
     singular: "합격영상",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: ["title", "slug", "centers", "authorName", "youtubeUrl", "publishedAt", "updatedAt"],
     group: "입시센터 후기/합격",

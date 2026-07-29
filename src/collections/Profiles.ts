@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload';
 
 import { getDefaultProfileFilterValue, isKnownProfileFilterValue, isProfileFilterValueAllowed } from '../lib/profileFilters';
-import { centerScopedCollectionAccess } from './access';
+import { centerScopedPublishedCollectionAccess } from './access';
 import { normalizeUploadedMediaPrefixes } from './mediaPrefixNormalization';
 import {
 	createCenterRevalidationAfterChange,
@@ -137,7 +137,7 @@ export const Profiles: CollectionConfig = {
 		plural: '프로필',
 		singular: '프로필',
 	},
-	access: centerScopedCollectionAccess,
+	access: centerScopedPublishedCollectionAccess,
 	admin: {
 		defaultColumns: ['name', 'className', 'cohort', 'centers', 'authorName', 'filter', 'publishedAt', 'updatedAt'],
 		group: '아티스트',

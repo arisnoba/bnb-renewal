@@ -63,7 +63,11 @@ const screenAppearanceCreateAccess: Access = ({ req }) => {
 
 export const screenAppearanceReadAccess: Access = ({ req }) => {
   if (!req.user) {
-    return true;
+    return {
+      displayStatus: {
+        equals: "published",
+      },
+    };
   }
 
   return screenAppearanceCenterAccess({ req });

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import {
   adminRow,
   adminTabs,
@@ -41,7 +41,7 @@ export const CastingAppearances: CollectionConfig = {
     plural: "캐스팅 출연현황",
     singular: "캐스팅 출연현황",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",

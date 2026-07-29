@@ -5,7 +5,7 @@ import type {
   Validate,
 } from "payload";
 
-import { centerScopedCollectionAccess } from "./access";
+import { centerScopedPublishedCollectionAccess } from "./access";
 import {
   adminDateConfig,
   adminRow,
@@ -96,7 +96,7 @@ export const AuditionSchedules: CollectionConfig = {
     plural: "오디션 일정",
     singular: "오디션 일정",
   },
-  access: centerScopedCollectionAccess,
+  access: centerScopedPublishedCollectionAccess,
   admin: {
     defaultColumns: [
       "title",
