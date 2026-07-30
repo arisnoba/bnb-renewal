@@ -209,7 +209,7 @@ function artistCareItems(center: CenterSlug): CenterHomeArtistCareItem[] {
       description: '수업 이후에도 이어지는 연습 공간 지원',
       href: centerPublicHref(center, '/how-to-use#security'),
       imageUrl: '/assets/artist-care/practice-room-24h.jpg',
-      title: '24시간 연습실 개방',
+      title: center === 'highteen' ? '연습실 제공' : '24시간 연습실 개방',
     },
     {
       category: artistCareGroups.membership,

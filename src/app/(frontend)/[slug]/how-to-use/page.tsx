@@ -122,15 +122,23 @@ function createServices(center: CenterSlug, centerName: string): ServiceItem[] {
       title: '광고 에이전시 리스트정보 서비스',
     },
     {
-      action: {
-        ctaLabel: '운영 기준 보기',
-        href: faqHref,
-        kind: 'link',
-      },
-      description: `배우앤배움 ${centerName}는 운영시간이 지난 후에도 지문 인식을 통해 출입할 수 있도록 운영되고 있습니다.`,
+      action:
+        center === 'highteen'
+          ? {
+              kind: 'none',
+            }
+          : {
+              ctaLabel: '운영 기준 보기',
+              href: faqHref,
+              kind: 'link',
+            },
+      description:
+        center === 'highteen'
+          ? '배우앤배움 하이틴센터는 수강생이 이용할 수 있는 연습 공간을 제공하고 있습니다.'
+          : `배우앤배움 ${centerName}는 운영시간이 지난 후에도 지문 인식을 통해 출입할 수 있도록 운영되고 있습니다.`,
       icon: 'fingerprint',
       id: 'security',
-      title: '24시간 연습실 이용, 지문 등록 보안서비스',
+      title: center === 'highteen' ? '연습실 제공' : '24시간 연습실 이용, 지문 등록 보안서비스',
     },
     {
       action: {
