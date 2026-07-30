@@ -125,12 +125,16 @@ export function getR2ObjectKey(value: string, config = getR2Config()) {
   }
 }
 
+export function toR2UploadBuffer(body: Buffer | Uint8Array) {
+  return Buffer.from(body);
+}
+
 export async function uploadR2Object(input: UploadR2ObjectInput) {
   const config = getR2Config();
 
   await getR2Client().send(
     new PutObjectCommand({
-      Body: input.body,
+      Body: toR2UploadBuffer(input.body),
       Bucket: config.bucket,
       CacheControl: input.cacheControl,
       ContentDisposition: input.contentDisposition,
