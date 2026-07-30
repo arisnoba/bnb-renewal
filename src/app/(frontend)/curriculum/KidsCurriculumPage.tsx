@@ -75,7 +75,6 @@ const kidsCurriculumSections: KidsCurriculumSection[] = [
     level: '표현의 기초 (Intro)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주 1회 2~3시간',
       '교육목표 : 표현하기 / 상상하기 / 전달하기',
     ],
   },
@@ -107,7 +106,6 @@ const kidsCurriculumSections: KidsCurriculumSection[] = [
     level: '감정을 담아내는 배우 (Refine)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주 1회 2~3시간',
       '교육목표 : 담아내기 / 절제하기 / 이해하기',
     ],
   },
@@ -139,7 +137,6 @@ const kidsCurriculumSections: KidsCurriculumSection[] = [
     level: '감정을 연결하는 배우 (Upgrade)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주 1회 2~3시간',
       '교육목표 : 연결하기 / 반응하기 / 몰입하기',
     ],
   },
@@ -171,7 +168,6 @@ const kidsCurriculumSections: KidsCurriculumSection[] = [
     level: '현장을 준비하는 배우 (Directing Actor)',
     summary: [
       '인원 : 정원 6명',
-      '수업시간 : 주 1회 2~3시간',
       '교육목표 : 구현하기 / 대응하기 / 완성하기',
     ],
   },
