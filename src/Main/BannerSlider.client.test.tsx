@@ -374,6 +374,28 @@ test('main banner statistics exclude the inactive schedule shortcut', () => {
   assert.doesNotMatch(html, /href="https:\/\/art\.baewooenm\.com\/schedule"/)
 })
 
+test('main banner statistics do not link to the removed audition casting news category', () => {
+  const html = renderToStaticMarkup(
+    <MainBannerSlider
+      banners={[{ desktopImage: image, title: '메인 배너' }]}
+      center="art"
+      statistics={{
+        groups: [
+          { items: [{ label: '드라마', value: 1 }], title: '이달의 주조연' },
+          { items: [{ label: '영화', value: 2 }], title: '이달의 조단역' },
+        ],
+        totalWorkCount: 123,
+      }}
+    />,
+  )
+
+  assert.doesNotMatch(html, /category=audition-casting/)
+  assert.match(
+    html,
+    /href="https:\/\/art\.baewooenm\.com\/news\?category=casting-confirmed"/,
+  )
+})
+
 test('main banner does not render statistics panels without statistics data', () => {
   const html = renderToStaticMarkup(
     <MainBannerSlider

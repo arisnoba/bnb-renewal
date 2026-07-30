@@ -303,7 +303,6 @@ test('news category uses center-specific required select options', async () => {
   assert.deepEqual(
     categoryOptions.map((option) => option.value),
     [
-      '오디션ㆍ캐스팅공지',
       '캐스팅확정',
       '캐스팅OnAir',
       '교육ㆍ운영ㆍ소식',
@@ -365,7 +364,7 @@ test('news category uses center-specific required select options', async () => {
       req: {},
       siblingData: { centers: ['highteen'] },
     }).map((option) => option.value),
-    ['오디션ㆍ캐스팅공지', '캐스팅확정', '캐스팅OnAir', '교육ㆍ운영ㆍ소식'],
+    ['캐스팅확정', '캐스팅OnAir', '교육ㆍ운영ㆍ소식'],
   )
 })
 

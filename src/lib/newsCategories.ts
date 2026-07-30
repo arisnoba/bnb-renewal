@@ -11,12 +11,6 @@ export type NewsCategory = {
 
 export const defaultNewsCategories = [
   {
-    key: 'audition-casting',
-    label: '오디션 · 캐스팅공지',
-    match: ['오디션', '캐스팅공지', '캐스팅진행'],
-    value: '오디션ㆍ캐스팅공지',
-  },
-  {
     key: 'casting-confirmed',
     label: '캐스팅 확정',
     match: ['캐스팅확정'],

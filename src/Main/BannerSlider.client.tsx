@@ -84,7 +84,6 @@ type MainBannerSliderProps = {
 
 export const DEFAULT_MAIN_BANNER_AUTOPLAY_DELAY = 5000
 const statisticGroupLinks: Record<string, string> = {
-  이달의주조연: 'audition-casting',
   이달의조단역: 'casting-confirmed',
 }
 

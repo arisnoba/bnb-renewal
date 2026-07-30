@@ -10,15 +10,12 @@ import {
 import { buildCategoryWhere } from './NewsArchive'
 
 test('news archive category filters use enum-safe equals conditions', () => {
-  const auditionCategory = defaultNewsCategories[0]
-  const onAirCategory = defaultNewsCategories[2]
+  const onAirCategory = defaultNewsCategories.find(
+    (category) => category.key === 'casting-onair',
+  )
   const examResultsCategory = examNewsCategories[0]
 
-  assert.deepEqual(buildCategoryWhere(auditionCategory.key, defaultNewsCategories), {
-    category: {
-      equals: auditionCategory.value,
-    },
-  })
+  assert.ok(onAirCategory)
 
   assert.deepEqual(buildCategoryWhere(onAirCategory.key, defaultNewsCategories), {
     category: {
@@ -40,6 +37,18 @@ test('news archive category filters ignore unknown category keys', () => {
 test('center-specific news categories use their allowed options', () => {
   assert.equal(
     buildCategoryWhere('admission-schedule', getNewsCategoriesForCenter('exam')),
+    null,
+  )
+  assert.equal(
+    buildCategoryWhere('audition-casting', getNewsCategoriesForCenter('art')),
+    null,
+  )
+  assert.equal(
+    buildCategoryWhere('audition-casting', getNewsCategoriesForCenter('highteen')),
+    null,
+  )
+  assert.equal(
+    buildCategoryWhere('audition-casting', getNewsCategoriesForCenter('kids')),
     null,
   )
   assert.deepEqual(
