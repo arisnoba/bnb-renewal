@@ -98,7 +98,6 @@ const examScholarshipColumns = [
 const teenTuitionColumns = [
   { key: 'course', label: '과정' },
   { key: 'day', label: '요일' },
-  { key: 'time', label: '시간' },
   { key: 'duration', label: '수업시간' },
   { key: 'fee', label: '정상 수강료' },
 ]
@@ -426,9 +425,9 @@ const highteenTuitionTables: ContentTable[] = [
     columns: teenTuitionColumns,
     minWidth: 720,
     rows: [
-      { course: '청소년반', day: '주중 2회 (월목 / 화금)', duration: '960분', fee: '450,000원', time: '19:00 ~ 21:00' },
-      { course: '청소년반', day: '주말 1회 (토)', duration: '720분', fee: '350,000원', time: '12:00 ~ 15:00\n15:00 ~ 18:00' },
-      { course: '청소년반', day: '주말 1회 (일)', duration: '720분', fee: '350,000원', time: '11:00 ~ 14:00\n14:00 ~ 17:00' },
+      { course: '청소년반', day: '주중 2회 (월목 / 화금)', duration: '420분', fee: '450,000원' },
+      { course: '청소년반', day: '주말 1회 (토)', duration: '330분', fee: '350,000원' },
+      { course: '청소년반', day: '주말 1회 (일)', duration: '330분', fee: '350,000원' },
     ],
     title: '수업 시간대 및 수강료',
   },
