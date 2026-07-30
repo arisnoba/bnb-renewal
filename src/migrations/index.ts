@@ -145,6 +145,7 @@ import * as migration_20260714_174500_direct_casting_cna_agency from './20260714
 import * as migration_20260714_180000_direct_casting_avenue_center from './20260714_180000_direct_casting_avenue_center'
 import * as migration_20260727_160000_news_unused_categories_cleanup from './20260727_160000_news_unused_categories_cleanup'
 import * as migration_20260727_203000_teacher_center_display_orders from './20260727_203000_teacher_center_display_orders'
+import * as migration_20260730_131000_restore_highteen_casting_onair from './20260730_131000_restore_highteen_casting_onair'
 
 export const migrations = [
   {
@@ -881,5 +882,10 @@ export const migrations = [
     up: migration_20260727_203000_teacher_center_display_orders.up,
     down: migration_20260727_203000_teacher_center_display_orders.down,
     name: '20260727_203000_teacher_center_display_orders',
+  },
+  {
+    up: migration_20260730_131000_restore_highteen_casting_onair.up,
+    down: migration_20260730_131000_restore_highteen_casting_onair.down,
+    name: '20260730_131000_restore_highteen_casting_onair',
   },
 ]

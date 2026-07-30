@@ -338,7 +338,7 @@ test('news category uses center-specific required select options', async () => {
       '캐스팅OnAir',
       validationOptions({ siblingData: { centers: ['highteen'] } }),
     ),
-    '선택한 센터에서 사용할 수 없는 분류입니다.',
+    true,
   )
   assert.equal(
     await category.validate?.(
@@ -365,7 +365,7 @@ test('news category uses center-specific required select options', async () => {
       req: {},
       siblingData: { centers: ['highteen'] },
     }).map((option) => option.value),
-    ['오디션ㆍ캐스팅공지', '캐스팅확정', '교육ㆍ운영ㆍ소식'],
+    ['오디션ㆍ캐스팅공지', '캐스팅확정', '캐스팅OnAir', '교육ㆍ운영ㆍ소식'],
   )
 })
 

@@ -37,14 +37,18 @@ test('news archive category filters ignore unknown category keys', () => {
   assert.equal(buildCategoryWhere('unknown-category', defaultNewsCategories), null)
 })
 
-test('center-specific unused news categories are excluded', () => {
+test('center-specific news categories use their allowed options', () => {
   assert.equal(
     buildCategoryWhere('admission-schedule', getNewsCategoriesForCenter('exam')),
     null,
   )
-  assert.equal(
+  assert.deepEqual(
     buildCategoryWhere('casting-onair', getNewsCategoriesForCenter('highteen')),
-    null,
+    {
+      category: {
+        equals: '캐스팅OnAir',
+      },
+    },
   )
   assert.deepEqual(
     buildCategoryWhere('casting-onair', getNewsCategoriesForCenter('art')),

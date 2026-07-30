@@ -36,10 +36,6 @@ export const defaultNewsCategories = [
   },
 ] as const satisfies readonly NewsCategory[]
 
-export const highteenNewsCategories = defaultNewsCategories.filter(
-  (category) => category.key !== 'casting-onair',
-)
-
 export const examNewsCategories = [
   {
     key: 'pass-results',
@@ -60,7 +56,6 @@ export const examNewsCategories = [
 
 const newsCategoriesByCenter: Partial<Record<CenterSlug, readonly NewsCategory[]>> = {
   exam: examNewsCategories,
-  highteen: highteenNewsCategories,
 }
 
 export function getNewsCategoriesForCenter(center: string): readonly NewsCategory[] {
