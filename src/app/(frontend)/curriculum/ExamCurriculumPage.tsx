@@ -126,7 +126,7 @@ const examCurriculumTabs: ExamCurriculumTab[] = [
       {
         badge: '주말 입시반',
         bullets: [
-          '주 4회 · 월 12시간',
+          '주 4회 · 월 48시간',
           '매월 모의고사',
           '오후 12시 이후 진행',
           '평일 내신관리 병행 학생 대상',
@@ -167,11 +167,12 @@ const examCurriculumTabs: ExamCurriculumTab[] = [
       {
         badge: '예비 입시반',
         bullets: [
-          '주 4회 · 월 32시간',
+          '주 4회 · 월 48시간',
           // '매월 모의고사',
           '주말반 운영',
           '오후 12시 ~ 저녁 7시 진행',
           '1~2월: 고3 입시반 로테이션 진행',
+          '고2 연영과 진학 희망자',
         ],
         capacity: '정원 8명',
         lessons: [
@@ -212,7 +213,7 @@ const examCurriculumTabs: ExamCurriculumTab[] = [
       {
         badge: '예고 입시반',
         bullets: [
-          '주 4회 · 월 32시간',
+          '주 4회 · 월 48시간',
           '모의평가 및 특강',
           '오후12~7시 진행',
           '중등부 3학년 대상',
@@ -226,7 +227,7 @@ const examCurriculumTabs: ExamCurriculumTab[] = [
           { duration: '2시간', name: '뮤지컬, 보컬 연기' },
           { duration: '2시간', name: '무용, 움직임 연기' },
         ],
-        price: '700,000원',
+        price: '750,000원',
         title: 'Preparatory',
       },
     ],
