@@ -19,6 +19,10 @@ export function getNewsThumbnailMedia(news: NewsLike) {
   return asMedia(news.thumbnailMedia)
 }
 
+export function getNewsDetailThumbnailMedia(news: NewsLike) {
+  return news.showThumbnailOnDetail ? getNewsThumbnailMedia(news) : undefined
+}
+
 export function getNewsSeoImageMedia(news: NewsLike) {
   return asMedia(news.meta?.image) || asMedia(news.thumbnailMedia)
 }

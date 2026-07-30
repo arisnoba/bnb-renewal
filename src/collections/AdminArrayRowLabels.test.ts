@@ -365,10 +365,25 @@ test("artist press uses content and SEO tabs with thumbnail above body", () => {
 test("news uses content and SEO tabs with thumbnail above body", () => {
   const tabs = getTabs(News);
   const contentTab = getTab(News, "콘텐츠");
-  const fieldNames = contentTab.fields
-    .filter((field): field is FieldWithName => "name" in field)
-    .map((field) => field.name);
-  const thumbnailMedia = getTabField(News, "콘텐츠", "thumbnailMedia");
+  const fieldNames = contentTab.fields.flatMap((field) => {
+    const fields = "fields" in field && Array.isArray(field.fields) ? field.fields : [field];
+
+    return fields
+      .filter((item): item is FieldWithName => "name" in item)
+      .map((item) => item.name);
+  });
+  const thumbnailMedia = findNamedFieldDeep(contentTab.fields, "thumbnailMedia");
+  const showThumbnailOnDetail = findNamedFieldDeep(
+    contentTab.fields,
+    "showThumbnailOnDetail",
+  );
+  const thumbnailRow = contentTab.fields.find(
+    (field): field is Extract<Field, { type: "row" }> =>
+      field.type === "row" &&
+      field.fields.some(
+        (item) => "name" in item && item.name === "showThumbnailOnDetail",
+      ),
+  );
   const body = getTabField(News, "콘텐츠", "body");
   const publishedAt = getTopLevelField(News, "publishedAt") as FieldWithName & {
     index?: boolean;
@@ -379,13 +394,26 @@ test("news uses content and SEO tabs with thumbnail above body", () => {
     ["콘텐츠", "SEO"],
   );
   assert.equal(News.admin?.enableListViewSelectAPI, true);
-  assert.deepEqual(fieldNames, ["category", "thumbnailMedia", "body", "excerpt"]);
+  assert.deepEqual(fieldNames, [
+    "category",
+    "thumbnailMedia",
+    "showThumbnailOnDetail",
+    "body",
+    "excerpt",
+  ]);
+  assert.ok(thumbnailMedia);
   assert.equal(thumbnailMedia.type, "upload");
   assert.equal(thumbnailMedia.label, "대표 이미지");
   assert.equal(thumbnailMedia.relationTo, "media");
   assert.equal(thumbnailMedia.admin?.disableGroupBy, true);
   assert.equal(thumbnailMedia.admin?.disableListColumn, true);
   assert.equal(thumbnailMedia.admin?.disableListFilter, true);
+  assert.ok(showThumbnailOnDetail);
+  assert.equal(showThumbnailOnDetail.type, "checkbox");
+  assert.equal(showThumbnailOnDetail.label, "대표이미지 본문 삽입");
+  assert.equal(showThumbnailOnDetail.defaultValue, true);
+  assert.ok(thumbnailRow);
+  assert.equal(thumbnailRow.admin?.className, "bnb-news-thumbnail-row");
   assert.equal(body.admin?.disableGroupBy, true);
   assert.equal(body.admin?.disableListColumn, true);
   assert.equal(body.admin?.disableListFilter, true);

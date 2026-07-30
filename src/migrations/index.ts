@@ -147,6 +147,7 @@ import * as migration_20260727_160000_news_unused_categories_cleanup from './202
 import * as migration_20260727_203000_teacher_center_display_orders from './20260727_203000_teacher_center_display_orders'
 import * as migration_20260730_131000_restore_highteen_casting_onair from './20260730_131000_restore_highteen_casting_onair'
 import * as migration_20260730_133000_remove_audition_casting_news from './20260730_133000_remove_audition_casting_news'
+import * as migration_20260730_144500_news_detail_thumbnail_toggle from './20260730_144500_news_detail_thumbnail_toggle'
 
 export const migrations = [
   {
@@ -893,5 +894,10 @@ export const migrations = [
     up: migration_20260730_133000_remove_audition_casting_news.up,
     down: migration_20260730_133000_remove_audition_casting_news.down,
     name: '20260730_133000_remove_audition_casting_news',
+  },
+  {
+    up: migration_20260730_144500_news_detail_thumbnail_toggle.up,
+    down: migration_20260730_144500_news_detail_thumbnail_toggle.down,
+    name: '20260730_144500_news_detail_thumbnail_toggle',
   },
 ]

@@ -5,6 +5,7 @@ import { assertCenter, type CenterSlug } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import {
   getNewsDescription,
+  getNewsDetailThumbnailMedia,
   getNewsMetaImageUrl,
   getNewsUrl,
   hasLexicalContent,
@@ -21,6 +22,7 @@ import {
   DetailBackLink,
   DetailContainer,
   DetailHeader,
+  DetailMedia,
   DetailPage,
   DetailPager,
 } from '../../../_components/DetailLayout'
@@ -47,6 +49,7 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
   }
 
   const description = getNewsDescription(news)
+  const media = getNewsDetailThumbnailMedia(news)
   const body = hasLexicalContent(news.body) ? news.body : undefined
   const adjacent = await queryAdjacentNews({
     center,
@@ -67,6 +70,16 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
           eyebrow={news.category}
           title={news.title}
         />
+
+        {media ? (
+          <DetailMedia
+            alt={news.title}
+            className="mb-10 md:mb-16"
+            priority
+            resource={media}
+            size="(max-width: 767px) 100vw, 800px"
+          />
+        ) : null}
 
         {body ? (
           <RichText

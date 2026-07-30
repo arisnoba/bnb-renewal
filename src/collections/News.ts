@@ -386,15 +386,29 @@ export const News: CollectionConfig = {
             },
           },
           {
-            name: "thumbnailMedia",
-            type: "upload",
-            label: "대표 이미지",
-            relationTo: "media",
+            type: "row",
             admin: {
-              disableGroupBy: true,
-              disableListColumn: true,
-              disableListFilter: true,
+              className: "bnb-news-thumbnail-row",
             },
+            fields: [
+              {
+                name: "thumbnailMedia",
+                type: "upload",
+                label: "대표 이미지",
+                relationTo: "media",
+                admin: {
+                  disableGroupBy: true,
+                  disableListColumn: true,
+                  disableListFilter: true,
+                },
+              },
+              {
+                name: "showThumbnailOnDetail",
+                type: "checkbox",
+                label: "대표이미지 본문 삽입",
+                defaultValue: true,
+              },
+            ],
           },
           {
             name: "body",
