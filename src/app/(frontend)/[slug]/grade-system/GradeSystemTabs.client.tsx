@@ -283,7 +283,7 @@ const highteenStepClasses = [
     description: '관찰력, 상상력, 집중력, 표현력의 기초를 다지며 배우로 성장하기 위한 출발점을 만듭니다.',
     details: [
       { label: '인원', value: '정원 8명' },
-      { label: '수업시간', value: '주 1회 3시간, 주 2회 총 4시간' },
+      // { label: '수업시간', value: '주 1회 3시간, 주 2회 총 4시간' },
       { label: '과정', value: '관찰력/상상력/집중력/표현력 훈련' },
     ],
     headline: '배우를 꿈꾸다 Dream Of Actor',
@@ -312,7 +312,7 @@ const highteenStepClasses = [
     description: '장면을 이해하고 에쭈드와 이미지 트레이닝을 통해 자기 표현의 폭을 넓히는 중급 과정입니다.',
     details: [
       { label: '인원', value: '정원 8명' },
-      { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
+      // { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
       { label: '과정', value: '장면 이해/에쭈드/이미지 트레이닝' },
     ],
     headline: '배우를 그리다 Sketch The Actor',
@@ -341,7 +341,7 @@ const highteenStepClasses = [
     description: '카메라와 현장을 이해하고, 이미지 메이킹을 통해 캐릭터 표현의 완성도를 높이는 심화 과정입니다.',
     details: [
       { label: '인원', value: '정원 8명' },
-      { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
+      // { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
       { label: '과정', value: '카메라 이해/현장 이해/이미지 메이킹' },
     ],
     headline: '배우를 만들다 Make An Actor',
@@ -370,7 +370,7 @@ const highteenStepClasses = [
     description: '오디션 테크닉, 다양한 감정 표현, 카메라 심화 훈련을 통해 배우의 이미지를 디자인하는 전문 과정입니다.',
     details: [
       { label: '인원', value: '정원 8명' },
-      { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
+      // { label: '수업시간', value: '주 1회 3시간, 주 2회 4시간' },
       { label: '과정', value: '오디션 테크닉/다양한 감정 표현/카메라 심화 훈련' },
     ],
     headline: '배우를 디자인하다 Design An Actor',
