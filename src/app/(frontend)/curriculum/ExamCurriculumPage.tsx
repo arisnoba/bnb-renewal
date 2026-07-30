@@ -174,7 +174,7 @@ const examCurriculumTabs: ExamCurriculumTab[] = [
           '1~2월: 고3 입시반 로테이션 진행',
           '고2 연영과 진학 희망자',
         ],
-        capacity: '정원 8명',
+        capacity: '최대 정원 8명',
         lessons: [
           { duration: '2시간', name: '연기 I' },
           { duration: '2시간', name: '뮤지컬 연기' },
@@ -220,7 +220,7 @@ const examCurriculumTabs: ExamCurriculumTab[] = [
           '예술고등학교 진학 희망자',
           '주말집중 수업 구성',
         ],
-        capacity: '정원 4~6명',
+        capacity: '정원 4명',
         lessons: [
           { duration: '2시간', name: '연기 I, 기초 트레이닝' },
           { duration: '2시간', name: '연기 II, 즉흥 및 독백훈련' },

@@ -413,7 +413,12 @@ function DirectCastingsPagination({
         <PaginationItem>
           <DirectCastingsPaginationLink
             disabled={page <= 1}
-            href={directCastingsHref({ center, company, page: page - 1 })}
+            href={directCastingsHref({
+              center,
+              company,
+              page: page - 1,
+              scrollToList: true,
+            })}
           >
             <ChevronLeft aria-hidden="true" className="size-4" strokeWidth={2.2} />
             이전
@@ -426,7 +431,12 @@ function DirectCastingsPagination({
             ) : (
               <DirectCastingsPaginationLink
                 active={page === item}
-                href={directCastingsHref({ center, company, page: item })}
+                href={directCastingsHref({
+                  center,
+                  company,
+                  page: item,
+                  scrollToList: true,
+                })}
               >
                 {item}
               </DirectCastingsPaginationLink>
@@ -436,7 +446,12 @@ function DirectCastingsPagination({
         <PaginationItem>
           <DirectCastingsPaginationLink
             disabled={page >= totalPages}
-            href={directCastingsHref({ center, company, page: page + 1 })}
+            href={directCastingsHref({
+              center,
+              company,
+              page: page + 1,
+              scrollToList: true,
+            })}
           >
             다음
             <ChevronRight aria-hidden="true" className="size-4" strokeWidth={2.2} />
@@ -653,14 +668,16 @@ export function directCastingCompanyValues(
   )
 }
 
-function directCastingsHref({
+export function directCastingsHref({
   center,
   company,
   page,
+  scrollToList = false,
 }: {
   center: CenterSlug
   company?: 'all' | DirectCastingCompany
   page?: number
+  scrollToList?: boolean
 }) {
   const params = new URLSearchParams()
 
@@ -673,8 +690,9 @@ function directCastingsHref({
   }
 
   const query = params.toString()
+  const hash = scrollToList ? `#${listAnchorId}` : ''
 
-  return centerPublicHref(center, `/direct-castings${query ? `?${query}` : ''}#${listAnchorId}`)
+  return centerPublicHref(center, `/direct-castings${query ? `?${query}` : ''}${hash}`)
 }
 
 function paginationWindow(page: number, totalPages: number) {

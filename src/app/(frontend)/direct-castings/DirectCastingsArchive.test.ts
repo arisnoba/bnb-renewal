@@ -3,9 +3,36 @@ import test from 'node:test'
 
 import type { Payload, Where } from 'payload'
 
-import { findDirectCastingsPage, findHeroImages } from './DirectCastingsArchive'
+import {
+  directCastingsHref,
+  findDirectCastingsPage,
+  findHeroImages,
+} from './DirectCastingsArchive'
 
 const where = {} satisfies Where
+
+test('다이렉트 캐스팅 탭 링크에는 목록 앵커를 붙이지 않는다', () => {
+  assert.equal(
+    directCastingsHref({ center: 'art', company: 'cna-agency' }),
+    'https://art.baewooenm.com/direct-castings?company=cna-agency',
+  )
+  assert.equal(
+    directCastingsHref({ center: 'art', company: 'all' }),
+    'https://art.baewooenm.com/direct-castings',
+  )
+})
+
+test('다이렉트 캐스팅 페이지네이션 링크는 목록 앵커를 유지한다', () => {
+  assert.equal(
+    directCastingsHref({
+      center: 'art',
+      company: 'cna-agency',
+      page: 2,
+      scrollToList: true,
+    }),
+    'https://art.baewooenm.com/direct-castings?company=cna-agency&page=2#direct-castings-list',
+  )
+})
 
 test('다이렉트 캐스팅 목록 조회는 정상적인 빈 페이지를 그대로 반환한다', async () => {
   const payload = {
