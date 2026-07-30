@@ -103,7 +103,7 @@ test('center home screen appearance labels fall back to linked profile names', (
 
 test('center home course search is only exposed for searchable curriculum centers', () => {
   assert.equal(hasSearchableHomeCurriculum('art'), true)
-  assert.equal(hasSearchableHomeCurriculum('highteen'), true)
+  assert.equal(hasSearchableHomeCurriculum('highteen'), false)
   assert.equal(hasSearchableHomeCurriculum('exam'), false)
   assert.equal(hasSearchableHomeCurriculum('kids'), false)
   assert.equal(hasSearchableHomeCurriculum('avenue'), false)
