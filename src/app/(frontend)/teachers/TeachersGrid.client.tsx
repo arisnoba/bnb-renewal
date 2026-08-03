@@ -1,5 +1,3 @@
-import type { CSSProperties } from 'react'
-
 import { Media } from '@/components/Media/Renderer'
 import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
@@ -7,29 +5,8 @@ import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import Link from 'next/link'
 import React from 'react'
 
-const teacherMaskIcons = [
-  'iruda-d.svg',
-  'iruda-u.svg',
-  'iruda-a.svg',
-  'iruda-i.svg',
-  'iruda-r.svg',
-] as const
-
-type TeacherMaskIcon = (typeof teacherMaskIcons)[number]
-
 type TeacherListItem = Pick<Teacher, 'id' | 'name' | 'role' | 'slug'> & {
   profileImageMedia?: number | PayloadMedia | null
-}
-
-type TeacherMaskStyle = CSSProperties & {
-  WebkitMaskImage: string
-  WebkitMaskPosition: string
-  WebkitMaskRepeat: string
-  WebkitMaskSize: string
-  maskImage: string
-  maskPosition: string
-  maskRepeat: string
-  maskSize: string
 }
 
 type TeachersGridProps = {
@@ -40,13 +17,8 @@ type TeachersGridProps = {
 export function TeachersGrid({ center, teachers }: TeachersGridProps) {
   return (
     <div className="section-teachers-list__grid grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {teachers.map((teacher, index) => (
-        <TeacherCard
-          center={center}
-          index={index}
-          key={teacher.id}
-          teacher={teacher}
-        />
+      {teachers.map((teacher) => (
+        <TeacherCard center={center} key={teacher.id} teacher={teacher} />
       ))}
     </div>
   )
@@ -54,17 +26,13 @@ export function TeachersGrid({ center, teachers }: TeachersGridProps) {
 
 function TeacherCard({
   center,
-  index,
   teacher,
 }: {
   center: CenterSlug
-  index: number
   teacher: TeacherListItem
 }) {
   const media = teacher.profileImageMedia
   const hasMediaImage = media && typeof media === 'object'
-  const maskIcon = getTeacherMaskIcon(index)
-  const maskStyle = teacherMaskStyle(maskIcon)
   const label = [teacher.name, teacher.role || '배우'].filter(Boolean).join(' ')
 
   return (
@@ -74,16 +42,13 @@ function TeacherCard({
       prefetch={false}
     >
       <article className="section-teachers-card__inner relative aspect-square overflow-hidden bg-transparent">
-        <div
-          className="section-teachers-card__media relative size-full overflow-hidden bg-neutral-800"
-          style={maskStyle}
-        >
+        <div className="section-teachers-card__media relative size-full overflow-hidden bg-neutral-800">
           {hasMediaImage ? (
             <Media
               fadeIn={true}
               fill
               htmlElement={null}
-              imgClassName="size-full object-cover object-center grayscale transition duration-300 group-hover:scale-105"
+              imgClassName="size-full object-cover object-center transition duration-300 group-hover:scale-105"
               loading="lazy"
               placeholder="empty"
               pictureClassName="block size-full opacity-55 transition duration-300 group-hover:opacity-85"
@@ -103,23 +68,4 @@ function TeacherCard({
       </article>
     </Link>
   )
-}
-
-function getTeacherMaskIcon(index: number): TeacherMaskIcon {
-  return teacherMaskIcons[index % teacherMaskIcons.length]
-}
-
-function teacherMaskStyle(icon: TeacherMaskIcon): TeacherMaskStyle {
-  const image = `url('/assets/icons/grade-system/${icon}')`
-
-  return {
-    WebkitMaskImage: image,
-    WebkitMaskPosition: 'center',
-    WebkitMaskRepeat: 'no-repeat',
-    WebkitMaskSize: '100% 100%',
-    maskImage: image,
-    maskPosition: 'center',
-    maskRepeat: 'no-repeat',
-    maskSize: '100% 100%',
-  }
 }
