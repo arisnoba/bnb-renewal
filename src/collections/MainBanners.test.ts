@@ -5,6 +5,7 @@ import type { CollectionConfig, Field, Tab } from 'payload'
 
 import {
   MainBanners,
+  backfillMainBannerOrder,
   duplicatedMainBannerStatus,
   duplicatedMainBannerTitle,
   mainBannerCenterPaths,
@@ -217,6 +218,25 @@ test('main banners can sync into center-specific order arrays without duplicates
   assert.equal(mainBannerOrderIncludes([...rows], 7), true)
   assert.equal(mainBannerOrderIncludes([...rows], 11), false)
   assert.deepEqual(mainBannerOrderWithout([...rows], 7), [{ banner: 3 }, { banner: 9 }])
+  assert.deepEqual(
+    backfillMainBannerOrder(
+      [{ banner: 9 }, { banner: null }, { banner: 7 }],
+      [{ id: 9 }, { id: 6 }, { id: 5 }, { id: 4 }, { id: 3 }],
+      8,
+    ),
+    [{ banner: 9 }, { banner: 7 }, { banner: 6 }, { banner: 5 }, { banner: 4 }],
+  )
+})
+
+test('main banner backfill keeps fewer rows when fewer than five banners remain', () => {
+  assert.deepEqual(
+    backfillMainBannerOrder(
+      [{ banner: null }, { banner: 3 }],
+      [{ id: 3 }, { id: 2 }],
+      4,
+    ),
+    [{ banner: 3 }, { banner: 2 }],
+  )
 })
 
 test('main banner center paths include current and previous centers once', () => {
@@ -308,6 +328,134 @@ test('main banner save prepends new banner to its center order', async () => {
   )
   assert.equal(
     (updateGlobalReq as { transactionID?: unknown })?.transactionID,
+    req.transactionID,
+  )
+})
+
+test('main banner center change backfills the previous center order', async () => {
+  const syncOrder = MainBanners.hooks?.afterChange?.[0] as (
+    args: Record<string, unknown>,
+  ) => unknown
+  let updatedData: unknown
+
+  assert.equal(typeof syncOrder, 'function')
+
+  await syncOrder({
+    doc: { center: 'exam', id: 7 },
+    operation: 'update',
+    previousDoc: { center: 'kids', id: 7 },
+    req: {
+      context: {
+        disableRevalidate: true,
+      },
+      payload: {
+        find: async () => ({
+          docs: [{ id: 6 }, { id: 4 }, { id: 3 }, { id: 2 }, { id: 1 }],
+        }),
+        findGlobal: async () => ({
+          examBanners: [{ banner: 5 }],
+          kidsBanners: [{ banner: 7 }, { banner: 6 }],
+        }),
+        updateGlobal: async ({ data }: { data: unknown }) => {
+          updatedData = data
+        },
+      },
+    },
+  })
+
+  assert.deepEqual(updatedData, {
+    examBanners: [{ banner: 7 }, { banner: 5 }],
+    kidsBanners: [
+      { banner: 6 },
+      { banner: 4 },
+      { banner: 3 },
+      { banner: 2 },
+      { banner: 1 },
+    ],
+  })
+})
+
+test('main banner delete removes the deleted row and backfills recent center banners', async () => {
+  const syncAfterDelete = MainBanners.hooks?.afterDelete?.[0] as (
+    args: Record<string, unknown>,
+  ) => unknown
+  const req = {
+    transactionID: 'delete-transaction',
+  }
+  let findArgs: Record<string, unknown> | undefined
+  let updatedData: unknown
+  let findGlobalReq: unknown
+  let findReq: unknown
+  let updateGlobalReq: unknown
+
+  assert.equal(typeof syncAfterDelete, 'function')
+
+  await syncAfterDelete({
+    doc: { center: 'exam', id: 9 },
+    req: {
+      context: {
+        disableRevalidate: true,
+      },
+      ...req,
+      payload: {
+        find: async (args: Record<string, unknown>) => {
+          findArgs = args
+          findReq = args.req
+
+          return {
+            docs: [{ id: 8 }, { id: 7 }, { id: 6 }, { id: 5 }, { id: 4 }],
+          }
+        },
+        findGlobal: async ({ req: operationReq }: { req?: unknown }) => {
+          findGlobalReq = operationReq
+
+          return {
+            examBanners: [
+              { banner: null },
+              { banner: 8 },
+              { banner: 7 },
+              { banner: 6 },
+              { banner: 5 },
+            ],
+          }
+        },
+        updateGlobal: async ({ data, req: operationReq }: { data: unknown; req?: unknown }) => {
+          updatedData = data
+          updateGlobalReq = operationReq
+        },
+      },
+    },
+  })
+
+  assert.deepEqual(findArgs, {
+    collection: 'main-banners',
+    depth: 0,
+    limit: 5,
+    overrideAccess: true,
+    req: findReq,
+    sort: '-createdAt',
+    where: {
+      center: {
+        equals: 'exam',
+      },
+      id: {
+        not_equals: 9,
+      },
+    },
+  })
+  assert.deepEqual(updatedData, {
+    examBanners: [
+      { banner: 8 },
+      { banner: 7 },
+      { banner: 6 },
+      { banner: 5 },
+      { banner: 4 },
+    ],
+  })
+  assert.equal(findGlobalReq, findReq)
+  assert.equal(findGlobalReq, updateGlobalReq)
+  assert.equal(
+    (findGlobalReq as { transactionID?: unknown })?.transactionID,
     req.transactionID,
   )
 })

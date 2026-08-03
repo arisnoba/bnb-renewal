@@ -411,6 +411,81 @@ export function mainBannerOrderWithout(
   return (rows ?? []).filter((row) => bannerId(row.banner) !== targetId)
 }
 
+export function backfillMainBannerOrder(
+  rows: MainBannerOrderRow[] | null | undefined,
+  candidates: Array<Pick<MainBanner, 'id'>>,
+  excludedBannerId?: MainBanner['id'],
+) {
+  const excludedId = excludedBannerId ? String(excludedBannerId).trim() : ''
+  const seen = new Set<string>()
+  const nextRows: MainBannerOrderRow[] = []
+
+  for (const row of rows ?? []) {
+    const id = bannerId(row.banner)
+
+    if (!id || id === excludedId || seen.has(id)) {
+      continue
+    }
+
+    seen.add(id)
+    nextRows.push(row)
+  }
+
+  for (const candidate of candidates) {
+    const id = String(candidate.id).trim()
+
+    if (!id || id === excludedId || seen.has(id)) {
+      continue
+    }
+
+    seen.add(id)
+    nextRows.push({ banner: candidate.id })
+
+    if (nextRows.length === MAIN_BANNER_ORDER_LIMIT) {
+      break
+    }
+  }
+
+  return nextRows.slice(0, MAIN_BANNER_ORDER_LIMIT)
+}
+
+async function backfillMainBannerOrderForCenter({
+  center,
+  excludedBannerId,
+  rows,
+  req,
+}: {
+  center: CenterValue
+  excludedBannerId: MainBanner['id']
+  rows: MainBannerOrderRow[] | null | undefined
+  req: Parameters<CollectionAfterChangeHook<MainBanner>>[0]['req']
+}) {
+  const currentRows = backfillMainBannerOrder(rows, [], excludedBannerId)
+
+  if (currentRows.length >= MAIN_BANNER_ORDER_LIMIT) {
+    return currentRows
+  }
+
+  const candidates = await req.payload.find({
+    collection: 'main-banners',
+    depth: 0,
+    limit: MAIN_BANNER_ORDER_LIMIT,
+    overrideAccess: true,
+    req,
+    sort: '-createdAt',
+    where: {
+      center: {
+        equals: center,
+      },
+      id: {
+        not_equals: excludedBannerId,
+      },
+    },
+  })
+
+  return backfillMainBannerOrder(currentRows, candidates.docs, excludedBannerId)
+}
+
 export function mainBannerCenterPaths(
   center: CenterValue,
   previousCenter?: CenterValue,
@@ -491,7 +566,12 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
   if (shouldMoveFromPreviousCenter && previousCenter) {
     const previousOrderField = mainBannerOrderField(previousCenter)
 
-    data[previousOrderField] = mainBannerOrderWithout(main[previousOrderField], doc.id)
+    data[previousOrderField] = await backfillMainBannerOrderForCenter({
+      center: previousCenter,
+      excludedBannerId: doc.id,
+      req,
+      rows: main[previousOrderField],
+    })
   }
 
   await req.payload.updateGlobal({
@@ -507,13 +587,37 @@ const syncMainBannerOrder: CollectionAfterChangeHook<MainBanner> = async ({
   return doc
 }
 
-const revalidateMainBannerAfterDelete: CollectionAfterDeleteHook<MainBanner> = ({
+const syncMainBannerOrderAfterDelete: CollectionAfterDeleteHook<MainBanner> = async ({
   doc,
   req,
 }) => {
   const center = selectedCenter(doc) as CenterValue | undefined
 
   if (center) {
+    const main = (await req.payload.findGlobal({
+      slug: 'main',
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })) as unknown as MainBannerOrderData
+    const centerOrderField = mainBannerOrderField(center)
+    const rows = await backfillMainBannerOrderForCenter({
+      center,
+      excludedBannerId: doc.id,
+      req,
+      rows: main[centerOrderField],
+    })
+
+    await req.payload.updateGlobal({
+      slug: 'main',
+      data: {
+        [centerOrderField]: rows,
+      },
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })
+
     revalidateMainBannerCenterPaths({ center, req })
   }
 
@@ -548,7 +652,7 @@ export const MainBanners: CollectionConfig = {
         { path: 'mobileVideo', role: 'main-banners.mobile-video' },
       ]),
     ],
-    afterDelete: [revalidateMainBannerAfterDelete],
+    afterDelete: [syncMainBannerOrderAfterDelete],
     beforeValidate: [normalizeMainBannerData],
   },
   fields: [
