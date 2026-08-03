@@ -221,14 +221,22 @@ test('main banners can sync into center-specific order arrays without duplicates
   assert.deepEqual(
     backfillMainBannerOrder(
       [{ banner: 9 }, { banner: null }, { banner: 7 }],
-      [{ id: 9 }, { id: 6 }, { id: 5 }, { id: 4 }, { id: 3 }],
+      [{ id: 9 }, { id: 6 }, { id: 5 }, { id: 4 }, { id: 3 }, { id: 2 }, { id: 1 }],
       8,
     ),
-    [{ banner: 9 }, { banner: 7 }, { banner: 6 }, { banner: 5 }, { banner: 4 }],
+    [
+      { banner: 9 },
+      { banner: 7 },
+      { banner: 6 },
+      { banner: 5 },
+      { banner: 4 },
+      { banner: 3 },
+      { banner: 2 },
+    ],
   )
 })
 
-test('main banner backfill keeps fewer rows when fewer than five banners remain', () => {
+test('main banner backfill keeps fewer rows when fewer than seven banners remain', () => {
   assert.deepEqual(
     backfillMainBannerOrder(
       [{ banner: null }, { banner: 3 }],
@@ -284,7 +292,7 @@ test('main banner save prepends new banner to its center order', async () => {
   assert.equal(typeof syncOrder, 'function')
 
   await syncOrder({
-    doc: { center: 'exam', id: 7 },
+    doc: { center: 'exam', id: 8 },
     operation: 'create',
     req: {
       context: {
@@ -297,6 +305,8 @@ test('main banner save prepends new banner to its center order', async () => {
 
           return {
             examBanners: [
+              { banner: 7 },
+              { banner: 6 },
               { banner: 5 },
               { banner: 4 },
               { banner: 3 },
@@ -315,7 +325,9 @@ test('main banner save prepends new banner to its center order', async () => {
 
   assert.deepEqual(updatedData, {
     examBanners: [
+      { banner: 8 },
       { banner: 7 },
+      { banner: 6 },
       { banner: 5 },
       { banner: 4 },
       { banner: 3 },
@@ -403,7 +415,15 @@ test('main banner delete removes the deleted row and backfills recent center ban
           findReq = args.req
 
           return {
-            docs: [{ id: 8 }, { id: 7 }, { id: 6 }, { id: 5 }, { id: 4 }],
+            docs: [
+              { id: 8 },
+              { id: 7 },
+              { id: 6 },
+              { id: 5 },
+              { id: 4 },
+              { id: 3 },
+              { id: 2 },
+            ],
           }
         },
         findGlobal: async ({ req: operationReq }: { req?: unknown }) => {
@@ -416,6 +436,8 @@ test('main banner delete removes the deleted row and backfills recent center ban
               { banner: 7 },
               { banner: 6 },
               { banner: 5 },
+              { banner: 4 },
+              { banner: 3 },
             ],
           }
         },
@@ -430,7 +452,7 @@ test('main banner delete removes the deleted row and backfills recent center ban
   assert.deepEqual(findArgs, {
     collection: 'main-banners',
     depth: 0,
-    limit: 5,
+    limit: 7,
     overrideAccess: true,
     req: findReq,
     sort: '-createdAt',
@@ -450,6 +472,8 @@ test('main banner delete removes the deleted row and backfills recent center ban
       { banner: 6 },
       { banner: 5 },
       { banner: 4 },
+      { banner: 3 },
+      { banner: 2 },
     ],
   })
   assert.equal(findGlobalReq, findReq)

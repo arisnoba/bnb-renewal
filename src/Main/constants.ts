@@ -1,1 +1,1 @@
-export const MAIN_BANNER_ORDER_LIMIT = 5
+export const MAIN_BANNER_ORDER_LIMIT = 7
