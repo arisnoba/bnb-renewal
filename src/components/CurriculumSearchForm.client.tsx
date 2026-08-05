@@ -159,14 +159,16 @@ function CurriculumFilterSelect({
       </span>
       <select
         aria-label={field.label}
-        className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
+        className="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-neutral-950 text-white opacity-0 [color-scheme:dark]"
         name={field.name}
         onChange={(event) => setSelectedValue(event.target.value)}
         value={selectedValue}
       >
-        <option value="">{emptyLabel}</option>
+        <option className="bg-neutral-950 text-white" value="">
+          {emptyLabel}
+        </option>
         {field.options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option className="bg-neutral-950 text-white" key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
