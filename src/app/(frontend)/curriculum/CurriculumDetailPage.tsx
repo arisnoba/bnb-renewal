@@ -18,7 +18,7 @@ import { getPayload } from 'payload'
 import { Media } from '@/components/Media/Renderer'
 import { centerPublicHref } from '@/lib/centerDomains'
 import type { Classroom, Curriculum, Media as PayloadMedia, Teacher } from '@/payload-types'
-import { formatMultilineText } from '@/utilities/formatMultilineText'
+import { formatCommaSeparatedText, formatMultilineText } from '@/utilities/formatMultilineText'
 import { cn } from '@/utilities/ui'
 
 import { CurriculumStickyCta } from './CurriculumBottomSheet.client'
@@ -371,8 +371,10 @@ function TeacherBrief({
               {teacher.name}
             </h2>
             {(teacher.role || teacher.summary) && (
-              <p className="mt-2 type-body-m font-medium leading-[1.55] text-neutral-500">
-                {[teacher.role, teacher.summary].filter(Boolean).join(' · ')}
+              <p className="mt-2 whitespace-pre-line type-body-m font-medium leading-[1.55] text-neutral-500">
+                {teacher.role}
+                {teacher.role && teacher.summary ? ' · ' : null}
+                {formatCommaSeparatedText(teacher.summary)}
               </p>
             )}
           </div>

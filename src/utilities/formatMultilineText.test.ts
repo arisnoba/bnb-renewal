@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { formatMultilineText } from './formatMultilineText'
+import { formatCommaSeparatedText, formatMultilineText } from './formatMultilineText'
 
 test('formatMultilineText removes leading blank lines while preserving line breaks', () => {
   assert.equal(
@@ -18,4 +18,12 @@ test('formatMultilineText normalizes br tags and empty values', () => {
     '[ATTENDEZ] 손님 역\n[퇴행] 남자 역',
   )
   assert.equal(formatMultilineText(null), '')
+})
+
+test('formatCommaSeparatedText converts comma-separated items into trimmed lines', () => {
+  assert.equal(
+    formatCommaSeparatedText('  한국예술종합학교 연기과, 동국대학교 연극학부,  중앙대학교 연극학과  '),
+    '한국예술종합학교 연기과\n동국대학교 연극학부\n중앙대학교 연극학과',
+  )
+  assert.equal(formatCommaSeparatedText(null), '')
 })

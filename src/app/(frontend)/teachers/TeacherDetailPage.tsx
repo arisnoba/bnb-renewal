@@ -6,7 +6,7 @@ import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
 import { teacherOrderFieldName, teacherOrderValue } from '@/lib/teacherOrder'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
-import { formatMultilineText } from '@/utilities/formatMultilineText'
+import { formatCommaSeparatedText, formatMultilineText } from '@/utilities/formatMultilineText'
 import { publishedImageSrc } from '@/utilities/publishedImageSrc'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
@@ -88,7 +88,9 @@ export async function TeacherDetailPage({ center, slug }: { center: CenterSlug; 
                   {teacher.name}
                 </h1>
                 {teacher.summary && (
-                  <p className="mt-2 type-body-m leading-normal text-white/60">{teacher.summary}</p>
+                  <p className="mt-2 whitespace-pre-line type-body-m leading-normal text-white/60">
+                    {formatCommaSeparatedText(teacher.summary)}
+                  </p>
                 )}
               </div>
             </header>

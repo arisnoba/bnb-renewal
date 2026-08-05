@@ -261,6 +261,10 @@ export const Teachers: CollectionConfig = {
               name: "summary",
               type: "text",
               label: "전공/학교",
+              admin: {
+                description:
+                  "콤마(,)로 항목을 구분하면 홈페이지에서 각 항목이 줄바꿈되어 표시됩니다.",
+              },
             },
           ]),
           {
