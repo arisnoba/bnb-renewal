@@ -25,6 +25,8 @@ import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload, type Payload } from 'payload'
 
+import { ArtistPressSearchForm } from './ArtistPressSearchForm.client'
+
 const ITEMS_PER_PAGE = 16
 export const artistPressArchiveDepth = 2
 export const artistPressArchiveSelect = {
@@ -42,12 +44,14 @@ export const artistPressArchiveSelect = {
 type ArtistPressArchiveProps = {
   center: CenterSlug
   page?: number
+  search?: string
 }
 
-export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiveProps) {
+export async function ArtistPressArchive({ center, page = 1, search }: ArtistPressArchiveProps) {
   const currentPage = Math.max(1, page)
+  const searchQuery = normalizeArtistPressSearch(search)
   const decoIcons = getPageDecoIcons(3, `artist-press-${center}`)
-  const artistPress = await getCachedArtistPressPage(center, currentPage)
+  const artistPress = await getCachedArtistPressPage(center, currentPage, searchQuery)
 
   const totalPages = Math.max(artistPress.totalPages || 1, 1)
 
@@ -103,29 +107,35 @@ export async function ArtistPressArchive({ center, page = 1 }: ArtistPressArchiv
             titleClassName="section-artist-press-list__title"
           />
 
-          {artistPress.docs.length === 0 ? (
-            <p className="section-artist-press-list__empty type-title-s font-semibold">
-              등록된 출신 아티스트 소식이 없습니다.
-            </p>
-          ) : (
-            <div className="section-artist-press-list__grid grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {artistPress.docs.map((item) => (
-                <ArtistPressCard
-                  artistPress={item}
-                  center={center}
-                  key={item.id}
-                />
-              ))}
-            </div>
-          )}
+          <div id="artist-press-list-results" className="scroll-mt-[var(--page-top-offset)]">
+            {artistPress.docs.length === 0 ? (
+              <p className="section-artist-press-list__empty type-title-s font-semibold">
+                {searchQuery ? '검색 결과가 없습니다.' : '등록된 출신 아티스트 소식이 없습니다.'}
+              </p>
+            ) : (
+              <div className="section-artist-press-list__grid grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {artistPress.docs.map((item) => (
+                  <ArtistPressCard
+                    artistPress={item}
+                    center={center}
+                    key={item.id}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
-          {totalPages > 1 && (
-            <ArtistPressPagination
-              center={center}
-              page={Math.min(artistPress.page || currentPage, totalPages)}
-              totalPages={totalPages}
-            />
-          )}
+          <div className="section-artist-press-list__tools mt-[60px] flex flex-col items-stretch gap-4 md:flex-row md:items-center md:justify-between">
+            {totalPages > 1 && (
+              <ArtistPressPagination
+                center={center}
+                page={Math.min(artistPress.page || currentPage, totalPages)}
+                search={searchQuery}
+                totalPages={totalPages}
+              />
+            )}
+            <ArtistPressSearchForm center={center} search={searchQuery} />
+          </div>
         </div>
       </section>
     </main>
@@ -138,29 +148,62 @@ export function artistPressArchiveMetadata(): Metadata {
   }
 }
 
-function getCachedArtistPressPage(center: CenterSlug, page: number) {
-  return unstable_cache(() => queryArtistPressPage(center, page), ['frontend-artist-press', center, String(page)], {
-    revalidate: 600,
-    tags: [`frontend_artist_press_${center}`],
-  })()
+function getCachedArtistPressPage(center: CenterSlug, page: number, search: string) {
+  return unstable_cache(
+    () => queryArtistPressPage(center, page, search),
+    ['frontend-artist-press', center, search, String(page)],
+    {
+      revalidate: 600,
+      tags: [`frontend_artist_press_${center}`],
+    },
+  )()
 }
 
-async function queryArtistPressPage(center: CenterSlug, page: number) {
+async function queryArtistPressPage(center: CenterSlug, page: number, search: string) {
   const payload = await getPayload({ config: configPromise })
 
-  return findArtistPressPage({ center, page, payload })
+  return findArtistPressPage({ center, page, payload, search })
 }
 
 export async function findArtistPressPage({
   center,
   page,
   payload,
+  search,
 }: {
   center: CenterSlug
   page: number
   payload: Payload
+  search?: string
 }) {
-  const where = publishedArtistPressWhere(center)
+  const where = {
+    and: [
+      publishedArtistPressWhere(center),
+      ...(search
+        ? [
+            {
+              or: [
+                {
+                  actorName: {
+                    like: search,
+                  },
+                },
+                {
+                  generation: {
+                    like: search,
+                  },
+                },
+                {
+                  title: {
+                    like: search,
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  }
 
   return payload.find({
     collection: 'artist-press',
@@ -246,21 +289,23 @@ function ArtistPressCard({
 function ArtistPressPagination({
   center,
   page,
+  search,
   totalPages,
 }: {
   center: CenterSlug
   page: number
+  search?: string
   totalPages: number
 }) {
   const pages = paginationItems(page, totalPages)
 
   return (
-    <Pagination className="section-artist-press-pagination">
+    <Pagination className="section-artist-press-pagination !mx-0 !w-auto !justify-center overflow-x-auto md:!justify-start">
       <PaginationContent className="section-artist-press-pagination__content">
         <PaginationItem>
           <ArtistPressPaginationLink
             disabled={page <= 1}
-            href={artistPressArchiveHref({ center, page: page - 1 })}
+            href={artistPressArchiveHref({ center, page: page - 1, search })}
           >
             이전
           </ArtistPressPaginationLink>
@@ -274,7 +319,7 @@ function ArtistPressPagination({
             ) : (
               <ArtistPressPaginationLink
                 active={page === item}
-                href={artistPressArchiveHref({ center, page: item })}
+                href={artistPressArchiveHref({ center, page: item, search })}
               >
                 {item}
               </ArtistPressPaginationLink>
@@ -284,7 +329,7 @@ function ArtistPressPagination({
         <PaginationItem>
           <ArtistPressPaginationLink
             disabled={page >= totalPages}
-            href={artistPressArchiveHref({ center, page: page + 1 })}
+            href={artistPressArchiveHref({ center, page: page + 1, search })}
           >
             다음
           </ArtistPressPaginationLink>
@@ -331,11 +376,17 @@ function ArtistPressPaginationLink({
 function artistPressArchiveHref({
   center,
   page,
+  search,
 }: {
   center: CenterSlug
   page?: number
+  search?: string
 }) {
   const params = new URLSearchParams()
+
+  if (search) {
+    params.set('search', search)
+  }
 
   if (page && page > 1) {
     params.set('page', String(page))
@@ -344,6 +395,10 @@ function artistPressArchiveHref({
   const query = params.toString()
 
   return centerPublicHref(center, `/artist-press${query ? `?${query}` : ''}`)
+}
+
+function normalizeArtistPressSearch(value: string | undefined) {
+  return value?.trim().replace(/\s+/g, ' ') || ''
 }
 
 function paginationItems(currentPage: number, totalPages: number): Array<number | 'ellipsis'> {

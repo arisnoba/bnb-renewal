@@ -41,3 +41,69 @@ test('출신 아티스트 조회 실패를 빈 페이지로 바꾸지 않고 상
     databaseError,
   )
 })
+
+test('출신 아티스트 검색은 배우명, 기수, 제목을 조회한다', async () => {
+  const emptyPage = {
+    docs: [],
+    page: 1,
+    totalDocs: 0,
+    totalPages: 0,
+  }
+  let where: unknown
+  const payload = {
+    find: async (options: { where?: unknown }) => {
+      where = options.where
+
+      return emptyPage
+    },
+  } as unknown as Payload
+
+  await findArtistPressPage({ center: 'art', page: 1, payload, search: '김배우' })
+
+  assert.deepEqual(where, {
+    and: [
+      {
+        and: [
+          {
+            displayStatus: {
+              equals: 'published',
+            },
+          },
+          {
+            or: [
+              {
+                centers: {
+                  contains: 'art',
+                },
+              },
+              {
+                centers: {
+                  contains: 'all',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        or: [
+          {
+            actorName: {
+              like: '김배우',
+            },
+          },
+          {
+            generation: {
+              like: '김배우',
+            },
+          },
+          {
+            title: {
+              like: '김배우',
+            },
+          },
+        ],
+      },
+    ],
+  })
+})

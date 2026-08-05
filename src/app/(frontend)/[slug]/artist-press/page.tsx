@@ -10,6 +10,7 @@ type Args = {
   }>
   searchParams: Promise<{
     page?: string
+    search?: string
   }>
 }
 
@@ -33,10 +34,10 @@ export default async function CenterArtistPressIndex({
   searchParams: searchParamsPromise,
 }: Args) {
   const { slug } = await paramsPromise
-  const { page } = await searchParamsPromise
+  const { page, search } = await searchParamsPromise
   const center = assertCenter(slug)
 
-  return <ArtistPressArchive center={center} page={parsePage(page)} />
+  return <ArtistPressArchive center={center} page={parsePage(page)} search={search} />
 }
 
 function parsePage(value: string | undefined) {
