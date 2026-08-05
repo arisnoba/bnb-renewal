@@ -148,6 +148,7 @@ import * as migration_20260727_203000_teacher_center_display_orders from './2026
 import * as migration_20260730_131000_restore_highteen_casting_onair from './20260730_131000_restore_highteen_casting_onair'
 import * as migration_20260730_133000_remove_audition_casting_news from './20260730_133000_remove_audition_casting_news'
 import * as migration_20260730_144500_news_detail_thumbnail_toggle from './20260730_144500_news_detail_thumbnail_toggle'
+import * as migration_20260805_125500_casting_appearance_avenue_centers from './20260805_125500_casting_appearance_avenue_centers'
 
 export const migrations = [
   {
@@ -899,5 +900,10 @@ export const migrations = [
     up: migration_20260730_144500_news_detail_thumbnail_toggle.up,
     down: migration_20260730_144500_news_detail_thumbnail_toggle.down,
     name: '20260730_144500_news_detail_thumbnail_toggle',
+  },
+  {
+    up: migration_20260805_125500_casting_appearance_avenue_centers.up,
+    down: migration_20260805_125500_casting_appearance_avenue_centers.down,
+    name: '20260805_125500_casting_appearance_avenue_centers',
   },
 ]

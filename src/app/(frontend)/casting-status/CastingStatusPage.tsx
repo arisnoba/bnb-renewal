@@ -28,6 +28,7 @@ const HERO_POSTER_PRIORITY_SLOTS = new Set(
 )
 const CASTING_STATUS_DESCRIPTION_BY_CENTER: Partial<Record<CenterSlug, string>> = {
   art: 'CNA Agency, ARKO Lab과 함께합니다.',
+  avenue: 'CNA Agency, ARKO Lab과 함께합니다.',
   highteen: 'CNA Agency, ARKO Lab. IMGround와 함께합니다.',
   kids: 'CNA Agency, ARKO Lab. IMGround와 함께합니다.',
 }
