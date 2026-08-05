@@ -15,7 +15,6 @@ type Args = {
 }
 
 type GradeSystemCenter = Extract<CenterSlug, 'art' | 'avenue' | 'highteen' | 'kids'>
-type GradeSystemContentCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
 
 const gradeSystemMetadata = {
   art: {
@@ -38,10 +37,6 @@ const gradeSystemMetadata = {
 
 function isGradeSystemCenter(center: CenterSlug): center is GradeSystemCenter {
   return center === 'art' || center === 'avenue' || center === 'highteen' || center === 'kids'
-}
-
-function gradeSystemContentCenter(center: GradeSystemCenter): GradeSystemContentCenter {
-  return center === 'avenue' ? 'art' : center
 }
 
 export function generateStaticParams() {
@@ -69,8 +64,6 @@ export default async function ArtGradeSystemPage({ params }: Args) {
   if (!isGradeSystemCenter(center)) {
     notFound()
   }
-
-  const contentCenter = gradeSystemContentCenter(center)
 
   return (
     <main className="page page-dark page-grade-system" data-center={center}>
@@ -104,7 +97,7 @@ export default async function ArtGradeSystemPage({ params }: Args) {
           </h1>
         </div>
       </section>
-      <GradeSystemTabs center={contentCenter} />
+      <GradeSystemTabs center={center} />
     </main>
   )
 }

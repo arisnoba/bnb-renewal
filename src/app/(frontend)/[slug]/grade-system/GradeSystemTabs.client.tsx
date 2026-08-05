@@ -32,7 +32,8 @@ import { FloatingDock } from '../../_components/FloatingDock.client'
 import { SmoothAnchorLink } from '../../_components/SmoothAnchorLink.client'
 
 type TabKey = 'steps' | 'criteria' | 'cohorts'
-type GradeSystemCenter = Extract<CenterSlug, 'art' | 'highteen' | 'kids'>
+type GradeSystemCenter = Extract<CenterSlug, 'art' | 'avenue' | 'highteen' | 'kids'>
+type GradeSystemContentCenter = Exclude<GradeSystemCenter, 'avenue'>
 type CriteriaEntryKey = 'experience' | 'inHouse' | 'major' | 'transfer'
 
 type StepCard = {
@@ -876,7 +877,24 @@ const gradeSystemContent = {
       { className: 'DA Class', fileNames: ['iruda-d_new.svg', 'iruda-a_new.svg'] },
     ],
   },
-} satisfies Record<GradeSystemCenter, GradeSystemContent>
+} satisfies Record<GradeSystemContentCenter, GradeSystemContent>
+
+function getGradeSystemContent(center: GradeSystemCenter): GradeSystemContent {
+  if (center !== 'avenue') {
+    return gradeSystemContent[center]
+  }
+
+  return {
+    ...gradeSystemContent.art,
+    centerName: '애비뉴센터',
+    cohortStartYear: 2024,
+    stepsCenterName: '애비뉴센터',
+    stepsTitleLines: [
+      'IRUDA 연기트레이닝 시스템입니다.',
+      '애비뉴센터의 모든 교육은 ‘나’로부터 시작됩니다.',
+    ],
+  }
+}
 
 type CohortHalf = '상반기' | '하반기'
 
@@ -945,7 +963,7 @@ function buildCohorts(startYear: number, date = new Date()): CohortRow[] {
 }
 
 export function GradeSystemTabs({ center }: { center: GradeSystemCenter }) {
-  const data = gradeSystemContent[center]
+  const data = getGradeSystemContent(center)
   const [activeSection, setActiveSection] = useState<TabKey>('steps')
 
   useEffect(() => {
