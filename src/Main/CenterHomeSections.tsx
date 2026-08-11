@@ -25,6 +25,7 @@ import {
   resolveCurrentCurriculumPeriod,
   type CurriculumPeriod,
 } from '@/lib/curriculumSearch'
+import { retryTransientPostgresRead } from '@/lib/retryTransientPostgresRead'
 import { extractYouTubeVideoId, youtubeThumbnailUrl } from '@/lib/youtube'
 import type {
   ArtistPress,
@@ -1436,6 +1437,8 @@ const queryCenterHomeData = cache((center: CenterSlug): Promise<CenterHomeData> 
 async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHomeData> {
   const payload = await getPayload({ config: configPromise })
   const shouldQueryCurriculums = hasSearchableHomeCurriculum(center)
+  const read = <T,>(operation: string, query: () => Promise<T>) =>
+    retryTransientPostgresRead(query, { operation: `center-home:${center}:${operation}` })
   const [
     screenAppearances,
     artistPress,
@@ -1447,7 +1450,7 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
     footer,
     curriculums,
   ] = await Promise.all([
-    payload.find({
+    read('screen-appearances', () => payload.find({
       collection: 'screen-appearances',
       depth: 2,
       limit: screenAppearanceLimit,
@@ -1486,9 +1489,9 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
           },
         ],
       } satisfies Where,
-    }),
+    })),
     center !== 'exam' && !usesRookiesHomeSection(center)
-      ? payload.find({
+      ? read('artist-press', () => payload.find({
           collection: 'artist-press',
           depth: 1,
           limit: artistPressLimit,
@@ -1504,10 +1507,10 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
           },
           sort: '-publishedAt',
           where: publishedArtistPressWhere(center),
-        })
+        }))
       : Promise.resolve({ docs: [] }),
     usesRookiesHomeSection(center)
-      ? payload.find({
+      ? read('profiles', () => payload.find({
           collection: 'profiles',
           depth: 1,
           limit: rookieLimit,
@@ -1545,10 +1548,10 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
               },
             ],
           } satisfies Where,
-        })
+        }))
       : Promise.resolve({ docs: [] }),
     center === 'exam'
-      ? payload.find({
+      ? read('exam-passed-reviews', () => payload.find({
           collection: 'exam-passed-reviews',
           depth: 2,
           limit: examPassedReviewLimit,
@@ -1565,10 +1568,10 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
           },
           sort: '-publishedAt',
           where: centerArrayWhere('exam'),
-        })
+        }))
       : Promise.resolve({ docs: [] }),
     center === 'exam'
-      ? payload.find({
+      ? read('exam-passed-videos', () => payload.find({
           collection: 'exam-passed-videos',
           depth: 0,
           limit: examPassedVideoLimit,
@@ -1583,10 +1586,10 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
           },
           sort: '-publishedAt',
           where: centerArrayWhere('exam'),
-        })
+        }))
       : Promise.resolve({ docs: [] }),
     loadCenterHomeNews(center, async ({ limit, sort, where }) => {
-      const result = await payload.find({
+      const result = await read('news', () => payload.find({
         collection: 'news',
         depth: 0,
         limit,
@@ -1600,13 +1603,13 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
         },
         sort,
         where,
-      })
+      }))
 
       return {
         docs: result.docs as CenterHomeNews[],
       }
     }),
-    payload.find({
+    read('social-links', () => payload.find({
       collection: 'social-links',
       depth: 1,
       limit: socialLimit,
@@ -1621,13 +1624,13 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
           equals: 'published',
         },
       },
-    }),
-    payload.findGlobal({
+    })),
+    read('footer', () => payload.findGlobal({
       slug: 'footer',
       depth: 0,
-    }),
+    })),
     shouldQueryCurriculums
-      ? payload.find({
+      ? read('curriculums', () => payload.find({
           collection: 'curriculums',
           depth: 0,
           limit: 200,
@@ -1648,7 +1651,7 @@ async function queryCenterHomeDataUncached(center: CenterSlug): Promise<CenterHo
               equals: center,
             },
           } satisfies Where,
-        })
+        }))
       : Promise.resolve({ docs: [] }),
   ])
 

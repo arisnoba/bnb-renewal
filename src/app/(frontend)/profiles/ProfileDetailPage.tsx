@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import { centers, type CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
+import { retryTransientPostgresRead } from '@/lib/retryTransientPostgresRead'
 import type { Profile } from '@/payload-types'
 import { formatMultilineText } from '@/utilities/formatMultilineText'
 import configPromise from '@payload-config'
@@ -181,31 +182,35 @@ const queryProfileBySlug = cache(async ({ center, slug }: { center?: CenterSlug;
 
 async function queryProfileDocument({ draft, slug }: { draft: boolean; slug: string }) {
   const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-    collection: 'profiles',
-    depth: 1,
-    limit: 1,
-    overrideAccess: draft,
-    pagination: false,
-    where: {
-      and: [
-        {
-          slug: {
-            equals: slug,
-          },
-        },
-        ...(draft
-          ? []
-          : [
-              {
-                displayStatus: {
-                  equals: 'published',
-                },
+  const result = await retryTransientPostgresRead(
+    () =>
+      payload.find({
+        collection: 'profiles',
+        depth: 1,
+        limit: 1,
+        overrideAccess: draft,
+        pagination: false,
+        where: {
+          and: [
+            {
+              slug: {
+                equals: slug,
               },
-            ]),
-      ],
-    },
-  })
+            },
+            ...(draft
+              ? []
+              : [
+                  {
+                    displayStatus: {
+                      equals: 'published',
+                    },
+                  },
+                ]),
+          ],
+        },
+      }),
+    { operation: 'profile-detail' },
+  )
 
   return (result.docs?.[0] as Profile | undefined) || null
 }
