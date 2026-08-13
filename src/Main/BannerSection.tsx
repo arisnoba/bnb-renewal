@@ -380,7 +380,7 @@ export function mainBannerStatistics(
   statistics: MainStatistic | null | undefined,
   center: CenterSlug,
 ): MainBannerStatistics | null {
-  if (!statistics || center === 'exam') {
+  if (!statistics || center === 'exam' || center === 'avenue') {
     return null
   }
 

@@ -341,13 +341,15 @@ test('main banner rewrites exam review media paths to R2 URLs in production', ()
   })
 })
 
-test('main banner statistics are disabled for exam center', () => {
+test('main banner statistics are disabled for exam and avenue centers', () => {
   const statistics = {
     artTotalWorkCount: 10,
+    avenueTotalWorkCount: 30,
     examTotalWorkCount: 20,
   } as MainStatistic
 
   assert.equal(mainBannerStatistics(statistics, 'art')?.totalWorkCount, 10)
+  assert.equal(mainBannerStatistics(statistics, 'avenue'), null)
   assert.equal(mainBannerStatistics(statistics, 'exam'), null)
 })
 
