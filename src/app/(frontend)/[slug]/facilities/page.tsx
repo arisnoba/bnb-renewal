@@ -6,7 +6,7 @@ import { getAboutHeroImage, PageHeroImage } from '@/app/(frontend)/_components/P
 import { assertCenter, centers } from '@/lib/centers'
 
 import { FacilitiesGallery } from './FacilitiesGallery.client'
-import { facilityImages } from './facilityImages'
+import { getFacilityImages } from './facilityImages'
 
 type Args = {
   params: Promise<{
@@ -35,6 +35,7 @@ export default async function FacilitiesPage({ params }: Args) {
   const { slug } = await params
   const center = assertCenter(decodeURIComponent(slug))
   const decoIcons = getPageDecoIcons(3, `facilities-${center}`)
+  const facilityImages = getFacilityImages(center)
 
   return (
     <main className="page page-dark page-facilities bg-neutral-950 text-white" data-center={center}>

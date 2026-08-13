@@ -1,3 +1,5 @@
+import { centers, type CenterSlug } from '@/lib/centers'
+
 export type FacilityImage = {
   alt: string
   height: number
@@ -6,40 +8,48 @@ export type FacilityImage = {
   width: number
 }
 
-const galleryNumbers = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-  22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-  34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
-  45, 46, 47, 48, 49, 51, 52, 53, 54,
-  70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-]
+type FacilityFolder = 'art-avenue' | 'exam' | 'highteen' | 'kids'
 
-export const facilityImages: FacilityImage[] = [
-  ...galleryNumbers.map((number) => {
-    const id = `gallery_${String(number).padStart(2, '0')}`
-    const isGallery51 = number === 51
+const facilityFolderByCenter: Record<CenterSlug, FacilityFolder> = {
+  art: 'art-avenue',
+  avenue: 'art-avenue',
+  exam: 'exam',
+  highteen: 'highteen',
+  kids: 'kids',
+}
+
+const facilityImageNumbersByFolder: Record<FacilityFolder, readonly number[]> = {
+  'art-avenue': numberRange(1, 34),
+  exam: [...numberRange(1, 35), 38, 39, 40, 41],
+  highteen: numberRange(1, 32),
+  kids: numberRange(1, 34),
+}
+
+const nonStandardImageDimensions = new Map<string, { height: number; width: number }>([
+  ['art-avenue/img_26.png', { height: 585, width: 1019 }],
+  ['highteen/img_30.png', { height: 585, width: 1019 }],
+])
+
+function numberRange(start: number, end: number) {
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index)
+}
+
+export function getFacilityImages(center: CenterSlug): FacilityImage[] {
+  const folder = facilityFolderByCenter[center]
+
+  return facilityImageNumbersByFolder[folder].map((number, index) => {
+    const filename = `img_${String(number).padStart(2, '0')}.png`
+    const relativePath = `${folder}/${filename}`
+    const dimensions = nonStandardImageDimensions.get(relativePath) ?? {
+      height: 584,
+      width: 1018,
+    }
 
     return {
-      alt: `배우앤배움 시설 이미지 ${number}`,
-      height: isGallery51 ? 585 : 584,
-      id,
-      src: `/assets/facilities/${id}.jpg`,
-      width: isGallery51 ? 1019 : 1018,
+      alt: `배우앤배움 ${centers[center]} 시설 이미지 ${index + 1}`,
+      ...dimensions,
+      id: `${folder}-${filename}`,
+      src: `/assets/facilities/${relativePath}`,
     }
-  }),
-  {
-    alt: '배우앤배움 시설 이미지 UC 01',
-    height: 584,
-    id: 'gallery_uc01',
-    src: '/assets/facilities/gallery_uc01.jpg',
-    width: 1018,
-  },
-  {
-    alt: '배우앤배움 시설 이미지 UC 02',
-    height: 584,
-    id: 'gallery_uc02',
-    src: '/assets/facilities/gallery_uc02.jpg',
-    width: 1018,
-  },
-]
+  })
+}
