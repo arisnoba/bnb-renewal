@@ -37,7 +37,7 @@ function TeacherCard({
 
   return (
     <Link
-      className="section-teachers-card group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+      className="section-teachers-card group block focus-visible:outline focus-visible:outline-offset-4 focus-visible:outline-brand"
       href={centerPublicHref(center, `/teachers/${encodeURIComponent(teacher.slug)}`)}
       prefetch={false}
     >
@@ -51,7 +51,7 @@ function TeacherCard({
               imgClassName="size-full object-cover object-center transition duration-300 group-hover:scale-105"
               loading="lazy"
               placeholder="empty"
-              pictureClassName="block size-full opacity-55 transition duration-300 group-hover:opacity-85"
+              pictureClassName="block size-full transition duration-300 group-hover:opacity-85"
               resource={media}
               size="(max-width: 767px) 46vw, (max-width: 1279px) 30vw, 268px"
             />
@@ -60,7 +60,7 @@ function TeacherCard({
           )}
           <div className="absolute inset-0 bg-black/30 transition group-hover:bg-black/45" />
         </div>
-        <div className="section-teachers-card__label absolute bottom-5 left-1/2 max-w-[calc(100%-32px)] -translate-x-1/2 text-center opacity-100 transition duration-200 md:max-w-[calc(100%-48px)] [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:bottom-auto [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:top-1/2 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:-translate-y-[42%] [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:opacity-0 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-hover:-translate-y-1/2 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-focus-visible:-translate-y-1/2 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-focus-visible:opacity-100">
+        <div className="section-teachers-card__label absolute bottom-5 left-1/2 max-w-[calc(100%-32px)] -translate-x-1/2 text-center transition duration-200 md:max-w-[calc(100%-48px)] [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:bottom-auto [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:top-1/2 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:translate-y-[-42%] [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:opacity-0 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-hover:-translate-y-1/2 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-focus-visible:-translate-y-1/2 [@media_(min-width:1280px)_and_(hover:hover)_and_(pointer:fine)]:group-focus-visible:opacity-100">
           <p className="type-title-s font-bold leading-[1.4] text-white">
             {label}
           </p>
