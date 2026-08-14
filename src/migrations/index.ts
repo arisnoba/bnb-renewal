@@ -149,6 +149,7 @@ import * as migration_20260730_131000_restore_highteen_casting_onair from './202
 import * as migration_20260730_133000_remove_audition_casting_news from './20260730_133000_remove_audition_casting_news'
 import * as migration_20260730_144500_news_detail_thumbnail_toggle from './20260730_144500_news_detail_thumbnail_toggle'
 import * as migration_20260805_125500_casting_appearance_avenue_centers from './20260805_125500_casting_appearance_avenue_centers'
+import * as migration_20260814_114500_star_card_published_at_order from './20260814_114500_star_card_published_at_order'
 
 export const migrations = [
   {
@@ -905,5 +906,10 @@ export const migrations = [
     up: migration_20260805_125500_casting_appearance_avenue_centers.up,
     down: migration_20260805_125500_casting_appearance_avenue_centers.down,
     name: '20260805_125500_casting_appearance_avenue_centers',
+  },
+  {
+    up: migration_20260814_114500_star_card_published_at_order.up,
+    down: migration_20260814_114500_star_card_published_at_order.down,
+    name: '20260814_114500_star_card_published_at_order',
   },
 ]

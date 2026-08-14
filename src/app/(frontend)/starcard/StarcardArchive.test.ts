@@ -13,6 +13,21 @@ test('스타카드 조회는 정상적인 빈 결과를 그대로 반환한다',
   assert.deepEqual(await findStarcards({ center: 'art', payload }), [])
 })
 
+test('스타카드 조회는 발행일이 오래된 순으로 정렬한다', async () => {
+  let receivedSort: unknown
+  const payload = {
+    find: async (args: unknown) => {
+      receivedSort = (args as { sort?: unknown }).sort
+
+      return { docs: [] }
+    },
+  } as unknown as Payload
+
+  await findStarcards({ center: 'art', payload })
+
+  assert.deepEqual(receivedSort, ['publishedAt', 'id'])
+})
+
 test('스타카드 조회 실패를 빈 결과로 바꾸지 않고 상위로 전달한다', async () => {
   const databaseError = new Error('database unavailable')
   const payload = {

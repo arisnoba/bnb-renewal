@@ -84,14 +84,14 @@ export const StarCards: CollectionConfig = {
       'title',
       'category',
       'centers',
-      'displayOrder',
+      'publishedAt',
       'displayStatus',
       'updatedAt',
     ],
     group: '운영/소식',
     useAsTitle: 'title',
   },
-  defaultSort: 'displayOrder',
+  defaultSort: ['publishedAt', 'id'],
   hooks: {
     afterChange: [
       finalizeStarCardSlugAfterCreate,
@@ -204,6 +204,9 @@ export const StarCards: CollectionConfig = {
         type: 'number',
         label: '정렬',
         defaultValue: 0,
+        admin: {
+          hidden: true,
+        },
       },
       publishedAtField,
       authorNameField,

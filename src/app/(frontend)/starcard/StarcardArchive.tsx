@@ -97,7 +97,7 @@ async function queryStarcards(center: CenterSlug) {
 
       return findStarcards({ center, payload })
     },
-    ['frontend-star-cards', center],
+    ['frontend-star-cards', 'published-at-asc-v1', center],
     {
       revalidate: 600,
       tags: [`frontend_star_cards_${center}`],
@@ -149,7 +149,7 @@ export async function findStarcards({
       mapUrl: true,
       title: true,
     },
-    sort: 'displayOrder',
+    sort: ['publishedAt', 'id'],
     where,
   })
 
