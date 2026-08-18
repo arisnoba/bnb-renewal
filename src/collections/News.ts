@@ -7,6 +7,7 @@ import type {
   SelectField,
   TypeWithID,
   Validate,
+  Where,
 } from "payload";
 import {
   MetaDescriptionField,
@@ -66,6 +67,10 @@ const revalidateNewsAfterDelete = createCenterRevalidationAfterDelete({
   reason: "news",
   suffixes: ["", "news"],
 });
+
+type NewsPinData = {
+  centers?: unknown;
+};
 
 type NewsRevalidationDoc = TypeWithID & {
   centers?: unknown;
@@ -217,6 +222,89 @@ function selectedNewsCenters(value: unknown) {
     .filter(Boolean);
 }
 
+export function pinnedNewsConflictWhere({
+  centers,
+  currentId,
+}: {
+  centers: unknown;
+  currentId?: number | string;
+}): Where | null {
+  const selectedCenters = selectedFrontendCenters(centers);
+
+  if (selectedCenters.length === 0) {
+    return null;
+  }
+
+  const conditions: Where[] = [
+    {
+      isPinned: {
+        equals: true,
+      },
+    },
+    {
+      or: [
+        {
+          centers: {
+            contains: "all",
+          },
+        },
+        ...selectedCenters.map((center) => ({
+          centers: {
+            contains: center,
+          },
+        })),
+      ],
+    },
+  ];
+
+  if (typeof currentId === "number" || typeof currentId === "string") {
+    conditions.push({
+      id: {
+        not_equals: currentId,
+      },
+    });
+  }
+
+  return {
+    and: conditions,
+  };
+}
+
+export const validatePinnedNewsPerCenter: Validate<boolean, unknown, NewsPinData> = async (
+  value,
+  { id, req, siblingData },
+) => {
+  if (value !== true) {
+    return true;
+  }
+
+  const where = pinnedNewsConflictWhere({
+    centers: siblingData?.centers,
+    currentId: id,
+  });
+
+  if (!where) {
+    return true;
+  }
+
+  const conflict = await req.payload.find({
+    collection: "news",
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+    pagination: false,
+    req,
+    select: {
+      slug: true,
+    },
+    where,
+  });
+
+  return conflict.docs.length === 0
+    ? true
+    : "선택한 센터에는 이미 고정된 뉴스가 있습니다. 기존 고정을 먼저 해제해 주세요.";
+};
+
 export const setNewsSlugBeforeValidate = createIdSlugBeforeValidate();
 const finalizeNewsSlugAfterCreate = createFinalizeIdSlugAfterCreate("news");
 
@@ -331,6 +419,7 @@ export const News: CollectionConfig = {
       "centers",
       "authorName",
       "category",
+      "isPinned",
       "publishedAt",
       "updatedAt",
     ],
@@ -452,6 +541,17 @@ export const News: CollectionConfig = {
     ]),
     ...sidebarFields([
       centersField,
+      {
+        name: "isPinned",
+        type: "checkbox",
+        label: "전체 탭 상단 고정",
+        defaultValue: false,
+        validate: validatePinnedNewsPerCenter,
+        admin: {
+          description:
+            "센터별로 한 개만 고정할 수 있으며 뉴스 전체 탭 상단에 표시됩니다.",
+        },
+      },
       {
         name: "displayStatus",
         type: "select",

@@ -21,7 +21,7 @@ import type { News } from '@/payload-types'
 import { getNewsThumbnailMedia, getNewsUrl } from '@/utilities/newsFallbacks'
 import configPromise from '@payload-config'
 import { unstable_cache } from 'next/cache'
-import { getPayload, type Where } from 'payload'
+import { getPayload, type Sort, type Where } from 'payload'
 import Link from 'next/link'
 import React from 'react'
 
@@ -161,6 +161,7 @@ async function queryNewsArchivePage({
   const payload = await getPayload({ config: configPromise })
   const newsCategories = getNewsCategoriesForCenter(center)
   const categoryWhere = categoryKey ? buildCategoryWhere(categoryKey, newsCategories) : null
+  const sort = newsArchiveSort(categoryKey)
   const baseWhere: Where = {
     and: [
       {
@@ -189,6 +190,7 @@ async function queryNewsArchivePage({
     ? await findNewsPage({
         page,
         payload,
+        sort,
         where: {
           and: [baseWhere, categoryWhere],
         },
@@ -196,6 +198,7 @@ async function queryNewsArchivePage({
     : await findNewsPage({
         page,
         payload,
+        sort,
         where: baseWhere,
       })
 }
@@ -393,10 +396,12 @@ function getCategoryByKey(
 async function findNewsPage({
   page,
   payload,
+  sort,
   where,
 }: {
   page: number
   payload: Awaited<ReturnType<typeof getPayload>>
+  sort: Sort
   where: Where
 }): Promise<NewsPageResult> {
   const result = await payload.find({
@@ -406,6 +411,7 @@ async function findNewsPage({
     overrideAccess: false,
     page,
     select: newsArchiveSelect,
+    sort,
     where,
   })
 
@@ -415,6 +421,12 @@ async function findNewsPage({
     totalDocs: result.totalDocs,
     totalPages: result.totalPages,
   }
+}
+
+export function newsArchiveSort(categoryKey: string | null): Sort {
+  return categoryKey
+    ? ['-publishedAt', '-id']
+    : ['-isPinned', '-publishedAt', '-id']
 }
 
 const newsArchiveSelect = {

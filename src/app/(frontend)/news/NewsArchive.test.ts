@@ -7,7 +7,12 @@ import {
   getNewsCategoriesForCenter,
 } from '@/lib/newsCategories'
 
-import { buildCategoryWhere } from './NewsArchive'
+import { buildCategoryWhere, newsArchiveSort } from './NewsArchive'
+
+test('news archive pins only the unfiltered all tab', () => {
+  assert.deepEqual(newsArchiveSort(null), ['-isPinned', '-publishedAt', '-id'])
+  assert.deepEqual(newsArchiveSort('education-news'), ['-publishedAt', '-id'])
+})
 
 test('news archive category filters use enum-safe equals conditions', () => {
   const onAirCategory = defaultNewsCategories.find(

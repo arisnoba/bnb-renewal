@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { setNewsSlugBeforeValidate } from './News'
+import {
+  pinnedNewsConflictWhere,
+  setNewsSlugBeforeValidate,
+  validatePinnedNewsPerCenter,
+} from './News'
 
 async function runNewsSlugHook({
   data,
@@ -127,4 +131,100 @@ test('news beforeValidate hook allows final id slug during create finalization',
 
   assert.equal('generateSlug' in data, false)
   assert.equal(data.slug, '6257')
+})
+
+test('pinned news conflict query treats all-center news as occupying every center', () => {
+  assert.deepEqual(
+    pinnedNewsConflictWhere({
+      centers: ['art'],
+      currentId: 17,
+    }),
+    {
+      and: [
+        {
+          isPinned: {
+            equals: true,
+          },
+        },
+        {
+          or: [
+            {
+              centers: {
+                contains: 'all',
+              },
+            },
+            {
+              centers: {
+                contains: 'art',
+              },
+            },
+          ],
+        },
+        {
+          id: {
+            not_equals: 17,
+          },
+        },
+      ],
+    },
+  )
+
+  const allCentersWhere = pinnedNewsConflictWhere({ centers: ['all'] })
+
+  assert.ok(allCentersWhere && 'and' in allCentersWhere)
+  assert.deepEqual(allCentersWhere.and?.[1], {
+    or: [
+      { centers: { contains: 'all' } },
+      { centers: { contains: 'art' } },
+      { centers: { contains: 'exam' } },
+      { centers: { contains: 'kids' } },
+      { centers: { contains: 'highteen' } },
+      { centers: { contains: 'avenue' } },
+    ],
+  })
+})
+
+test('pinned news validation blocks a second pin for an overlapping center', async () => {
+  let receivedQuery: Record<string, unknown> | undefined
+  const result = await validatePinnedNewsPerCenter(true, {
+    id: 25,
+    req: {
+      payload: {
+        find: async (query: Record<string, unknown>) => {
+          receivedQuery = query
+          return { docs: [{ id: 12 }] }
+        },
+      },
+    },
+    siblingData: {
+      centers: ['kids'],
+    },
+  } as never)
+
+  assert.equal(
+    result,
+    '선택한 센터에는 이미 고정된 뉴스가 있습니다. 기존 고정을 먼저 해제해 주세요.',
+  )
+  assert.deepEqual(receivedQuery?.where, pinnedNewsConflictWhere({ centers: ['kids'], currentId: 25 }))
+})
+
+test('pinned news validation permits an available center and skips unchecked news', async () => {
+  let calls = 0
+  const options = {
+    req: {
+      payload: {
+        find: async () => {
+          calls += 1
+          return { docs: [] }
+        },
+      },
+    },
+    siblingData: {
+      centers: ['exam'],
+    },
+  } as never
+
+  assert.equal(await validatePinnedNewsPerCenter(true, options), true)
+  assert.equal(await validatePinnedNewsPerCenter(false, options), true)
+  assert.equal(calls, 1)
 })
