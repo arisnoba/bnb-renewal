@@ -34,18 +34,17 @@ const affiliates: CompanyAffiliate[] = [
   {
     description:
       '수많은 신인 배우 성장의 흐름을 바꿔온, 대한민국 연기 교육의 상징적인 플랫폼입니다. 이곳에서 연기는 직업이 되고, 배우는 하나의 브랜드가 됩니다.',
-    href: 'https://bnbindustry.com/business-units/baewoo-baewoom-enm/',
+    href: 'https://baewooenm.com',
     imageAlt: 'BAEWOO&BAEWOOM EnM 서비스 이미지',
     imageSrc: '/assets/company/company-01.jpg',
     name: 'BAEWOO&BAEWOOM EnM',
   },
   {
     description:
-      '개성과 감정, 에너지를 담아내는 ‘무브먼트 아티스트’들의 공간으로, 자유롭고 정교한 스토리 빌드업을 통해 무대 위에서 자신을 설계할 줄 아는 퍼포머를 만들어 갑니다.',
-    href: 'https://perfectj.co.kr/',
-    imageAlt: 'PERFECT PERFORMANCE ENT 서비스 이미지',
+      '아이돌 데뷔에 필요한 전 역량을 체계적으로 훈련하는 아이돌 특화 트레이닝 센터로, 주요 소속사 오디션 합격을 위한 맞춤형 준비부터 합격 이후 실질적인 데뷔 과정까지 지원합니다.',
+    imageAlt: 'BNB IDOL LAB 서비스 이미지',
     imageSrc: '/assets/company/company-02.jpg',
-    name: 'PERFECT PERFORMANCE ENT',
+    name: 'BNB IDOL LAB',
   },
   {
     description:
@@ -97,11 +96,11 @@ const affiliates: CompanyAffiliate[] = [
   },
   {
     description:
-    '글로벌 미디어 기업과의 프로젝트에서 검증된 제작 역량을 바탕으로, AI·버추얼·XR 등 첨단 기술을 창의적으로 결합합니다. 브랜드 메시지를 한층 입체적으로 구현하며, 시청자의 경험을 새롭게 디자인하는 차세대 프로덕션입니다.',
+      '글로벌 미디어 기업과의 프로젝트에서 검증된 제작 역량을 바탕으로, AI·버추얼·XR 등 첨단 기술을 창의적으로 결합합니다. 브랜드 메시지를 한층 입체적으로 구현하며, 시청자의 경험을 새롭게 디자인하는 차세대 프로덕션입니다.',
     href: 'https://www.vordinsight.com/',
-    imageAlt: 'VORD INSIGHT 미디어 이미지',
+    imageAlt: 'SHORTPAMINE 미디어 이미지',
     imageSrc: '/assets/company/company-09.jpg',
-    name: 'VORD INSIGHT',
+    name: 'SHORTPAMINE',
   },
   {
     description:

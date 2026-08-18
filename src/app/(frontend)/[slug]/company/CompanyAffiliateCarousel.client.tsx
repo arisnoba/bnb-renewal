@@ -146,9 +146,7 @@ export function CompanyAffiliateCarousel({ affiliates }: CompanyAffiliateCarouse
                         자세히 보기
                         <ExternalLink aria-hidden="true" className="size-3.5" strokeWidth={2.2} />
                       </Link>
-                    ) : (
-                      <span className="type-caption-m font-bold text-white/30">링크 준비중</span>
-                    )}
+                    ) : null}
                   </div>
                 </article>
               </SwiperSlide>
