@@ -1,6 +1,6 @@
 import { getHeaderMenu } from '@/Header/Nav/menu'
 
-import type { CenterSlug } from './centers'
+import { centers, type CenterSlug } from './centers'
 import { centerFromPathname, centerOrigin, publicCenterPath } from './centerDomains'
 import { centerLocationList, centerLocations } from './centerLocations'
 
@@ -56,8 +56,7 @@ const educationEntries: LlmsTxtEntry[] = [
     title: '키즈센터 커리큘럼',
   },
   {
-    description:
-      '하이틴센터의 청소년 방송연기 특강 영상과 프로그램 기록을 확인할 수 있습니다.',
+    description: '하이틴센터의 청소년 방송연기 특강 영상과 프로그램 기록을 확인할 수 있습니다.',
     path: '/highteen/special-lecture',
     title: '하이틴센터 특강',
   },
@@ -71,14 +70,12 @@ const castingAndArtistEntries: LlmsTxtEntry[] = [
     title: 'BNB 출연장면',
   },
   {
-    description:
-      '캐스팅 출연 현황을 연도별로 확인하고 작품별 참여 기록을 탐색할 수 있습니다.',
+    description: '캐스팅 출연 현황을 연도별로 확인하고 작품별 참여 기록을 탐색할 수 있습니다.',
     path: '/art/casting-status',
     title: '캐스팅 출연현황',
   },
   {
-    description:
-      '캐스팅 센터의 운영 방향, 프로필 관리, 오디션 연계, 현장 지원 흐름을 안내합니다.',
+    description: '캐스팅 센터의 운영 방향, 프로필 관리, 오디션 연계, 현장 지원 흐름을 안내합니다.',
     path: '/art/casting',
     title: '캐스팅 센터',
   },
@@ -95,20 +92,17 @@ const castingAndArtistEntries: LlmsTxtEntry[] = [
     title: 'BNB 출신 아티스트',
   },
   {
-    description:
-      'BNB 루키 프로필과 활동 이력을 소개하며 신인 배우 후보군을 탐색할 수 있습니다.',
+    description: 'BNB 루키 프로필과 활동 이력을 소개하며 신인 배우 후보군을 탐색할 수 있습니다.',
     path: '/art/rookies',
     title: 'BNB 루키',
   },
   {
-    description:
-      '입시센터 수강생의 대학교 합격 결과를 학교와 연도 중심으로 확인할 수 있습니다.',
+    description: '입시센터 수강생의 대학교 합격 결과를 학교와 연도 중심으로 확인할 수 있습니다.',
     path: '/exam/university-results',
     title: '대학교 합격현황',
   },
   {
-    description:
-      '입시센터 수강생의 예술고등학교 합격 결과와 학교별 합격 기록을 제공합니다.',
+    description: '입시센터 수강생의 예술고등학교 합격 결과와 학교별 합격 기록을 제공합니다.',
     path: '/exam/arts-high-results',
     title: '예술고등학교 합격현황',
   },
@@ -116,8 +110,7 @@ const castingAndArtistEntries: LlmsTxtEntry[] = [
 
 const supportEntries: LlmsTxtEntry[] = [
   {
-    description:
-      '센터별 공지, 교육 소식, 캐스팅 소식, 운영 안내를 확인할 수 있는 뉴스 목록입니다.',
+    description: '센터별 공지, 교육 소식, 캐스팅 소식, 운영 안내를 확인할 수 있는 뉴스 목록입니다.',
     path: '/art/news',
     title: 'NEWS&NOTICE',
   },
@@ -134,8 +127,7 @@ const supportEntries: LlmsTxtEntry[] = [
     title: '학원100%이용법',
   },
   {
-    description:
-      '입학, 수업, 수강료, 캐스팅, 시설 이용과 관련된 자주 묻는 질문과 답변입니다.',
+    description: '입학, 수업, 수강료, 캐스팅, 시설 이용과 관련된 자주 묻는 질문과 답변입니다.',
     path: '/art/faq',
     title: '자주하는 질문',
   },
@@ -149,20 +141,64 @@ const supportEntries: LlmsTxtEntry[] = [
 
 const optionalEntries: LlmsTxtEntry[] = [
   {
-    description: '개인정보 수집, 이용, 보관, 파기, 이용자 권리와 관련된 공식 개인정보처리방침입니다.',
-    path: '/privacy',
+    description:
+      '개인정보 수집, 이용, 보관, 파기, 이용자 권리와 관련된 공식 개인정보처리방침입니다.',
+    path: '/art/privacy',
     title: '개인정보처리방침',
   },
   {
-    description: '배우앤배움 웹사이트와 서비스 이용 조건, 회원 책임, 제한 사항을 안내하는 약관입니다.',
-    path: '/terms',
+    description:
+      '배우앤배움 웹사이트와 서비스 이용 조건, 회원 책임, 제한 사항을 안내하는 약관입니다.',
+    path: '/art/terms',
     title: '이용약관',
   },
 ]
 
-export function generateLlmsTxt({ baseUrl }: { baseUrl: string }) {
+export function generateLlmsTxt({
+  baseUrl,
+  center,
+}: {
+  baseUrl: string
+  center?: CenterSlug | null
+}) {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
-  const sections: LlmsTxtSection[] = [
+  const sections = center ? centerSections(center) : primarySections()
+  const title = center ? `배우앤배움 ${centers[center]}` : '배우앤배움'
+  const description = center ? centerLocations[center].summary : introduction
+  const consultationPath = center ? `/${center}/consult` : '/art/consult'
+
+  return [
+    `# ${title}`,
+    '',
+    `> ${description}`,
+    '',
+    center
+      ? `이 파일은 ${centers[center]} 호스트에서 우선 확인할 공개 페이지를 선별한 목록입니다.`
+      : '이 파일은 AI 시스템이 배우앤배움 웹사이트의 공개 정보 구조를 빠르게 이해하도록 만든 선별 목록입니다. 전체 색인 목록이 아니라 핵심 페이지와 센터별 탐색 시작점을 우선 제공합니다.',
+    '',
+    ...sections.flatMap((section) => formatSection(section, normalizedBaseUrl)),
+    '## Key Facts',
+    '',
+    '- 공식 브랜드: 배우앤배움(BNB)',
+    ...(center
+      ? [`- 현재 센터: ${centers[center]}`, `- 센터 주소: ${centerLocations[center].address}`]
+      : ['- 운영 센터: 아트센터, 입시센터, 키즈센터, 하이틴센터, 애비뉴센터']),
+    '- 주요 영역: 매체 연기 교육, 연극영화과 입시, 아역·청소년 연기 교육, 캐스팅 및 배우 케어',
+    '- 공개 URL 구조: 센터별 주요 페이지는 `{center}.baewooenm.com/...` 서브도메인을 사용합니다.',
+    '- 대표 문의 전화: 1577-9929',
+    '- 주요 위치: 서울 서초구 반포동·잠원동 일대 센터별 운영',
+    '',
+    '## Contact',
+    '',
+    `- Website: ${absoluteUrl(normalizedBaseUrl, center ? `/${center}` : '/')}`,
+    '- Phone: 1577-9929',
+    `- Consultation: ${absoluteUrl(normalizedBaseUrl, consultationPath)}`,
+    '',
+  ].join('\n')
+}
+
+function primarySections(): LlmsTxtSection[] {
+  return [
     {
       entries: [
         {
@@ -196,31 +232,61 @@ export function generateLlmsTxt({ baseUrl }: { baseUrl: string }) {
       title: 'Optional',
     },
   ]
+}
+
+function centerSections(center: CenterSlug): LlmsTxtSection[] {
+  const navigationSections = getHeaderMenu(center).map((group) => ({
+    entries: uniqueEntries([
+      ...(group.href
+        ? [
+            {
+              description: `${group.label}의 대표 공개 정보를 확인할 수 있습니다.`,
+              path: group.href,
+              title: group.label,
+            },
+          ]
+        : []),
+      ...group.items.map((item) => ({
+        description: `${centers[center]}의 ${item.label} 관련 공개 정보를 안내합니다.`,
+        path: item.href,
+        title: item.label,
+      })),
+    ]),
+    title: group.label,
+  }))
 
   return [
-    '# 배우앤배움',
-    '',
-    `> ${introduction}`,
-    '',
-    '이 파일은 AI 시스템이 배우앤배움 웹사이트의 공개 정보 구조를 빠르게 이해하도록 만든 선별 목록입니다. 전체 색인 목록이 아니라 핵심 페이지와 센터별 탐색 시작점을 우선 제공합니다.',
-    '',
-    ...sections.flatMap((section) => formatSection(section, normalizedBaseUrl)),
-    '## Key Facts',
-    '',
-    '- 공식 브랜드: 배우앤배움(BNB)',
-    '- 운영 센터: 아트센터, 입시센터, 키즈센터, 하이틴센터, 애비뉴센터',
-    '- 주요 영역: 매체 연기 교육, 연극영화과 입시, 아역·청소년 연기 교육, 캐스팅 및 배우 케어',
-    '- 공개 URL 구조: 센터별 주요 페이지는 `{center}.baewooenm.com/...` 서브도메인을 사용합니다.',
-    '- 대표 문의 전화: 1577-9929',
-    '- 주요 위치: 서울 서초구 반포동·잠원동 일대 센터별 운영',
-    '',
-    '## Contact',
-    '',
-    `- Website: ${absoluteUrl(normalizedBaseUrl, '/')}`,
-    '- Phone: 1577-9929',
-    `- Consultation: ${absoluteUrl(normalizedBaseUrl, '/art/consult')}`,
-    '',
-  ].join('\n')
+    {
+      entries: [
+        {
+          description: centerLocations[center].summary,
+          path: `/${center}`,
+          title: centerLocations[center].name,
+        },
+      ],
+      title: 'Primary Page',
+    },
+    ...navigationSections,
+    {
+      entries: [
+        {
+          description: '개인정보 수집, 이용, 보관, 파기와 이용자 권리를 안내하는 공식 방침입니다.',
+          path: `/${center}/privacy`,
+          title: '개인정보처리방침',
+        },
+        {
+          description: '배우앤배움 웹사이트와 서비스 이용 조건 및 책임 범위를 안내하는 약관입니다.',
+          path: `/${center}/terms`,
+          title: '이용약관',
+        },
+      ],
+      title: 'Optional',
+    },
+  ]
+}
+
+function uniqueEntries(entries: LlmsTxtEntry[]) {
+  return [...new Map(entries.map((entry) => [entry.path, entry])).values()]
 }
 
 function formatSection(section: LlmsTxtSection, baseUrl: string) {

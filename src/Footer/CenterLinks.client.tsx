@@ -78,9 +78,9 @@ function FooterLinkGroup({
 }) {
   return (
     <section className="flex min-w-0 flex-col items-start gap-8">
-      <h2 className="whitespace-nowrap text-xs font-bold leading-[1.2] tracking-normal text-white">
+      <p className="whitespace-nowrap text-xs font-bold leading-[1.2] tracking-normal text-white">
         {title}
-      </h2>
+      </p>
       {children}
     </section>
   )

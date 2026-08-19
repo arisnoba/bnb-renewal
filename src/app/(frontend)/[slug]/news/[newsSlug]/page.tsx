@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import RichText from '@/components/RichText'
+import { StructuredData } from '@/components/StructuredData'
 import { assertCenter, type CenterSlug } from '@/lib/centers'
 import type { News } from '@/payload-types'
 import {
@@ -12,6 +13,7 @@ import {
 } from '@/utilities/newsFallbacks'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { centerPublicHref, publicCenterPath } from '@/lib/centerDomains'
+import { buildNewsStructuredData } from '@/lib/structuredData'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -61,6 +63,7 @@ export default async function CenterNewsDetail({ params: paramsPromise }: Args) 
 
   return (
     <DetailPage center={center}>
+      <StructuredData data={buildNewsStructuredData(news, center)} />
       <DetailBackLink href={backHref} label={backLabel} />
 
       <DetailContainer>

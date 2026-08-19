@@ -83,10 +83,19 @@ test('primary gate sitemap only exposes the gate root', () => {
 })
 
 test('sitemap XML contains the expected namespace and escaped canonical URLs', () => {
-  const xml = generateSitemapXml('https://art.baewooenm.com')
+  const xml = generateSitemapXml('https://art.baewooenm.com', [
+    {
+      lastModified: '2026-08-19T01:02:03.000Z',
+      url: 'https://art.baewooenm.com/news/6399',
+    },
+  ])
 
   assert.match(xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>/)
   assert.match(xml, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/)
   assert.match(xml, /<loc>https:\/\/art\.baewooenm\.com\/news<\/loc>/)
+  assert.match(
+    xml,
+    /<loc>https:\/\/art\.baewooenm\.com\/news\/6399<\/loc><lastmod>2026-08-19T01:02:03\.000Z<\/lastmod>/,
+  )
   assert.doesNotMatch(xml, /https:\/\/(?:exam|kids)\.baewooenm\.com/)
 })

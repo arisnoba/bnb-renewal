@@ -8,6 +8,7 @@ import { PageIntro } from '@/components/PageIntro'
 import type { CenterSlug } from '@/lib/centers'
 import { getCenterLabel } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
+import { normalizeFaqAnswer } from '@/lib/faqAnswer'
 import type { Faq } from '@/payload-types'
 
 import { FaqArchiveClient, type FaqCategoryTab } from './FaqArchive.client'
@@ -161,7 +162,7 @@ function faqDisplayForCenter(faq: Faq, center: CenterSlug): FaqDisplayItem | nul
 
     return answer
       ? {
-          answer,
+          answer: normalizeFaqAnswer(answer, center),
           category: faq.category,
           id: faq.id,
           title: faq.title,
@@ -174,7 +175,7 @@ function faqDisplayForCenter(faq: Faq, center: CenterSlug): FaqDisplayItem | nul
 
   return answer
     ? {
-        answer,
+        answer: normalizeFaqAnswer(answer, center),
         category: faq.category,
         id: faq.id,
         title: variant?.questionOverride?.trim() || faq.title,

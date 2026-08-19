@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 
 import { Media } from '@/components/Media/Renderer'
+import { StructuredData } from '@/components/StructuredData'
 import { getPageDecoIcons, PageDeco } from '@/components/PageDeco'
 import type { CenterSlug } from '@/lib/centers'
 import { centerPublicHref } from '@/lib/centerDomains'
+import { buildTeacherStructuredData } from '@/lib/structuredData'
 import { teacherOrderFieldName, teacherOrderValue } from '@/lib/teacherOrder'
 import type { Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatCommaSeparatedText, formatMultilineText } from '@/utilities/formatMultilineText'
@@ -71,6 +73,7 @@ export async function TeacherDetailPage({ center, slug }: { center: CenterSlug; 
       sectionClassName="relative z-10"
       tone="dark"
     >
+      <StructuredData data={buildTeacherStructuredData(teacher, center)} />
       <TeacherDetailScrollReset />
       <PageDeco className="right-[8%] top-[34rem] hidden lg:block" icon={decoIcons[0]} />
       <PageDeco className="-left-24 top-[62rem] hidden lg:block" icon={decoIcons[1]} />

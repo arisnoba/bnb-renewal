@@ -16,7 +16,9 @@ import type { ReactNode } from 'react'
 import { getPayload } from 'payload'
 
 import { Media } from '@/components/Media/Renderer'
+import { StructuredData } from '@/components/StructuredData'
 import { centerPublicHref } from '@/lib/centerDomains'
+import { buildCourseStructuredData } from '@/lib/structuredData'
 import type { Classroom, Curriculum, Media as PayloadMedia, Teacher } from '@/payload-types'
 import { formatCommaSeparatedText, formatMultilineText } from '@/utilities/formatMultilineText'
 import { cn } from '@/utilities/ui'
@@ -95,6 +97,7 @@ export async function CurriculumDetailPage({
       className="page page-light page-curriculum-detail page-top-offset pb-30 text-neutral-900 lg:pb-0"
       data-center={center}
     >
+      <StructuredData data={buildCourseStructuredData(curriculum, center)} />
       <section className="section-curriculum-detail section-p-t-sm section-p-b-base bg-white">
         <div className="container">
           <div className="section-curriculum-detail__layout mx-auto grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-12">

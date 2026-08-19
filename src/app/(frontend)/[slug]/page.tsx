@@ -98,6 +98,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   return (
     <main className="page page-dark page-landing page-landing--center" data-center={center}>
+      <h1 className="sr-only">배우앤배움 {centers[center]}</h1>
       <MainBannerSection center={center} main={main} statistics={statistics} />
       <div aria-hidden="true" className="scroll-mt-24" id={centerContentAnchor(center)} />
       <CenterHomeSections center={center} />

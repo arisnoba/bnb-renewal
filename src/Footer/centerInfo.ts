@@ -103,7 +103,7 @@ function academyName(centerName: string) {
     return centerName
   }
 
-  return `배움앤배움 ${centerName} 학원`
+  return `배우앤배움 ${centerName} 학원`
 }
 
 function centerNameMatches(centerName: string, targetName: string) {

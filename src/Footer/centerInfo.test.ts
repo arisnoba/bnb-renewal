@@ -59,6 +59,13 @@ test('footerAddressLines renders company and selected center lines', () => {
   ])
 })
 
+test('footerAddressLines uses the official 배우앤배움 spelling for short center names', () => {
+  assert.equal(
+    footerAddressLines(centerInfos[0]!)[1],
+    '배우앤배움 아트센터 학원 | 운영등록번호 : 제10617호',
+  )
+})
+
 test('footerSocialLinksForPathname renders selected center sns links', () => {
   assert.deepEqual(footerSocialLinksForPathname(centerInfos, '/exam'), [
     {

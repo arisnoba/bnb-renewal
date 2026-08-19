@@ -4,6 +4,11 @@ import { apexHostname, centerFromHostname, centerOrigin, primaryHostname } from 
 
 type RequestLike = Pick<Request, 'headers' | 'url'>
 
+export type SitemapEntry = {
+  lastModified?: string | null
+  url: string
+}
+
 const sitemapPath = '/sitemap.xml'
 
 export function crawlerOrigin(request: RequestLike) {
@@ -51,9 +56,27 @@ export function generateRobotsTxt(origin: string) {
   ].join('\n')
 }
 
-export function generateSitemapXml(origin: string) {
-  const urls = sitemapURLs(origin)
-  const entries = urls.map((url) => `  <url><loc>${escapeXml(url)}</loc></url>`).join('\n')
+export function generateSitemapXml(origin: string, contentEntries: SitemapEntry[] = []) {
+  const normalizedOrigin = new URL(origin).origin
+  const entriesByUrl = new Map<string, SitemapEntry>(
+    sitemapURLs(normalizedOrigin).map((url) => [url, { url }]),
+  )
+
+  for (const entry of contentEntries) {
+    if (new URL(entry.url).origin === normalizedOrigin) {
+      entriesByUrl.set(entry.url, entry)
+    }
+  }
+
+  const entries = [...entriesByUrl.values()]
+    .map((entry) => {
+      const lastModified = entry.lastModified
+        ? `<lastmod>${escapeXml(entry.lastModified)}</lastmod>`
+        : ''
+
+      return `  <url><loc>${escapeXml(entry.url)}</loc>${lastModified}</url>`
+    })
+    .join('\n')
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',

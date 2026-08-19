@@ -32,3 +32,16 @@ test('generateLlmsTxt falls back to localhost when baseUrl is empty', () => {
 
   assert.match(content, /\(http:\/\/localhost:3000\/\)/)
 })
+
+test('generateLlmsTxt prioritizes the requested center and uses direct legal URLs', () => {
+  const content = generateLlmsTxt({
+    baseUrl: 'https://kids.baewooenm.com',
+    center: 'kids',
+  })
+
+  assert.match(content, /^# 배우앤배움 키즈센터/)
+  assert.match(content, /https:\/\/kids\.baewooenm\.com\/teachers/)
+  assert.match(content, /https:\/\/kids\.baewooenm\.com\/privacy/)
+  assert.match(content, /https:\/\/kids\.baewooenm\.com\/terms/)
+  assert.doesNotMatch(content, /https:\/\/art\.baewooenm\.com\/grade-system/)
+})

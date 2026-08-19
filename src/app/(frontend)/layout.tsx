@@ -8,6 +8,7 @@ import { headers } from 'next/headers'
 import { isGlobalAdminUser, userCenterValue } from '@/collections/shared'
 import { AdminBar } from '@/components/AdminBar'
 import { CookieBanner } from '@/components/legal/CookieBanner'
+import { StructuredData } from '@/components/StructuredData'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import {
@@ -27,6 +28,8 @@ import './globals.css'
 import '@/styles/style.scss'
 import { getServerSideURL } from '@/utilities/getURL'
 import { centerFromHostname, centerFromPathname } from '@/lib/centerDomains'
+import { canonicalPublicUrl } from '@/lib/publicMetadata'
+import { buildSiteStructuredData } from '@/lib/structuredData'
 
 async function getSiteSettings() {
   try {
@@ -70,6 +73,7 @@ export default async function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body>
+        <StructuredData data={buildSiteStructuredData(currentCenter)} />
         <CenterDomainProvider center={domainCenter}>
           <NavigationTopLoader />
           <AdminBar />
@@ -119,21 +123,36 @@ const defaultMetadata: Metadata = {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers()
+  const canonical = canonicalPublicUrl({
+    host: requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host'),
+    pathname: requestHeaders.get('x-pathname'),
+  })
   const siteSettings = await getSiteSettings()
+  const requestMetadata: Metadata = {
+    ...defaultMetadata,
+    alternates: {
+      canonical,
+    },
+    openGraph: mergeOpenGraph({
+      url: canonical,
+    }),
+  }
 
   if (!isMaintenanceModeEnabled(siteSettings) || (await getFrontendMaintenanceBypassUser())) {
-    return defaultMetadata
+    return requestMetadata
   }
 
   const title = maintenanceTitle(siteSettings)
   const description = maintenanceMessage(siteSettings)
 
   return {
-    ...defaultMetadata,
+    ...requestMetadata,
     description,
     openGraph: mergeOpenGraph({
       description,
       title,
+      url: canonical,
     }),
     robots: {
       follow: false,
