@@ -1,9 +1,33 @@
-import type { Access, CollectionBeforeValidateHook, CollectionConfig, Validate } from 'payload'
+import type {
+  Access,
+  CollectionBeforeChangeHook,
+  CollectionBeforeValidateHook,
+  CollectionConfig,
+  Validate,
+} from 'payload'
 
 import { isGlobalAdminUser, userCenterValue } from './shared'
 
 type InquiryType = 'art' | 'admission' | 'kids' | 'highteen' | 'avenue' | 'partnership'
 type InquiryCenter = 'art' | 'exam' | 'kids' | 'highteen' | 'avenue'
+type InquiryStatus = 'new' | 'inProgress' | 'completed' | 'spam'
+type ConsultationHistoryAction =
+  | 'reservationConfirmed'
+  | 'scheduleSet'
+  | 'rescheduled'
+  | 'scheduleCleared'
+  | 'statusChanged'
+
+type ConsultationHistoryEntry = {
+  action: ConsultationHistoryAction
+  changedAt: string
+  changedBy: string
+  changedById?: string
+  fromScheduledAt?: string
+  fromStatus?: InquiryStatus
+  toScheduledAt?: string
+  toStatus?: InquiryStatus
+}
 
 const inquiryTypeOptions = [
   { label: '아트', value: 'art' },
@@ -111,6 +135,7 @@ type InquiryData = {
   applicantName?: string
   center?: InquiryCenter
   companyName?: string
+  consultationHistory?: ConsultationHistoryEntry[]
   contactPersonName?: string
   displayName?: string
   inquiryType?: InquiryType
@@ -119,6 +144,8 @@ type InquiryData = {
   partnershipContent?: string
   phone?: string
   privacyConsent?: boolean
+  scheduledAt?: string | null
+  status?: InquiryStatus
 }
 
 const requiredWhen =
@@ -160,6 +187,155 @@ const validateBirthDate: Validate<unknown, unknown, Partial<InquiryData>> = (val
     : '생년월일은 예: 19870725 형식의 숫자 8자로 입력해야 합니다.'
 }
 
+const statusRequiresScheduledAt: Validate<unknown, unknown, Partial<InquiryData>> = (
+  value,
+  { event, previousValue, siblingData },
+) => {
+  if (
+    event !== 'submit' ||
+    siblingData?.inquiryType === 'partnership' ||
+    typeof value !== 'string'
+  ) {
+    return true
+  }
+
+  const isEnteringReservation = value === 'inProgress' && previousValue !== 'inProgress'
+  const isCompletingNewInquiry = value === 'completed' && previousValue === 'new'
+
+  if ((isEnteringReservation || isCompletingNewInquiry) && !siblingData?.scheduledAt) {
+    return '예약 완료 또는 완료로 변경하려면 확정 상담 일시를 입력해야 합니다.'
+  }
+
+  return true
+}
+
+const preventClearingManagedSchedule: Validate<unknown, unknown, Partial<InquiryData>> = (
+  value,
+  { event, previousValue, siblingData },
+) => {
+  if (
+    event === 'submit' &&
+    previousValue &&
+    !value &&
+    (siblingData?.status === 'inProgress' || siblingData?.status === 'completed')
+  ) {
+    return '예약 완료 또는 완료 상태에서는 확정 상담 일시를 비울 수 없습니다.'
+  }
+
+  return true
+}
+
+function dateTimeValue(value: unknown) {
+  if (typeof value !== 'string' || !value.trim()) {
+    return undefined
+  }
+
+  const date = new Date(value)
+
+  return Number.isNaN(date.getTime()) ? value : date.toISOString()
+}
+
+function inquiryStatusValue(value: unknown): InquiryStatus | undefined {
+  return ['new', 'inProgress', 'completed', 'spam'].includes(String(value))
+    ? (value as InquiryStatus)
+    : undefined
+}
+
+function historyAction({
+  fromScheduledAt,
+  fromStatus,
+  toScheduledAt,
+  toStatus,
+}: {
+  fromScheduledAt?: string
+  fromStatus?: InquiryStatus
+  toScheduledAt?: string
+  toStatus?: InquiryStatus
+}): ConsultationHistoryAction {
+  if (toStatus === 'inProgress' && fromStatus !== 'inProgress') {
+    return 'reservationConfirmed'
+  }
+
+  if (!fromScheduledAt && toScheduledAt) {
+    return 'scheduleSet'
+  }
+
+  if (fromScheduledAt && !toScheduledAt) {
+    return 'scheduleCleared'
+  }
+
+  if (fromScheduledAt !== toScheduledAt) {
+    return 'rescheduled'
+  }
+
+  return 'statusChanged'
+}
+
+export const appendConsultationHistory: CollectionBeforeChangeHook = ({
+  data,
+  operation,
+  originalDoc,
+  req,
+}) => {
+  if (!data) {
+    return data
+  }
+
+  if (operation !== 'update' || !originalDoc) {
+    return {
+      ...data,
+      consultationHistory: [],
+    }
+  }
+
+  const previousHistory = Array.isArray(originalDoc.consultationHistory)
+    ? originalDoc.consultationHistory
+    : []
+  const inquiryType = (data.inquiryType ?? originalDoc.inquiryType) as InquiryType | undefined
+
+  if (inquiryType === 'partnership') {
+    return {
+      ...data,
+      consultationHistory: previousHistory,
+    }
+  }
+
+  const fromScheduledAt = dateTimeValue(originalDoc.scheduledAt)
+  const fromStatus = inquiryStatusValue(originalDoc.status)
+  const toScheduledAt = dateTimeValue(
+    Object.prototype.hasOwnProperty.call(data, 'scheduledAt')
+      ? data.scheduledAt
+      : originalDoc.scheduledAt,
+  )
+  const toStatus = inquiryStatusValue(
+    Object.prototype.hasOwnProperty.call(data, 'status') ? data.status : originalDoc.status,
+  )
+
+  if (fromScheduledAt === toScheduledAt && fromStatus === toStatus) {
+    return {
+      ...data,
+      consultationHistory: previousHistory,
+    }
+  }
+
+  const user = req.user as { email?: string; id?: number | string; name?: string } | null | undefined
+  const entry: ConsultationHistoryEntry = {
+    action: historyAction({ fromScheduledAt, fromStatus, toScheduledAt, toStatus }),
+    changedAt: new Date().toISOString(),
+    changedBy: user?.name?.trim() || user?.email?.trim() || '시스템',
+    changedById: user?.id === undefined ? undefined : String(user.id),
+    fromScheduledAt,
+    fromStatus,
+    toScheduledAt,
+    toStatus,
+  }
+
+  return {
+    ...data,
+    consultationHistory: [...previousHistory, entry],
+  }
+}
+
 const inquiryAccess: Access = ({ req }) => {
   if (!req.user) {
     return false
@@ -182,20 +358,25 @@ const inquiryAccess: Access = ({ req }) => {
   }
 }
 
-const setDerivedInquiryFields: CollectionBeforeValidateHook = ({ data }) => {
+export const setDerivedInquiryFields: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
   if (!data) {
     return data
   }
 
-  const inquiryType = data.inquiryType as InquiryType | undefined
+  const inquiryType = (data.inquiryType ?? originalDoc?.inquiryType) as InquiryType | undefined
   const center = inquiryType === 'partnership' ? undefined : centerByInquiryType[inquiryType ?? 'art']
-  const companyName = typeof data.companyName === 'string' ? data.companyName.trim() : ''
+  const stringValue = (field: string) => {
+    const value = data[field] ?? originalDoc?.[field]
+
+    return typeof value === 'string' ? value.trim() : ''
+  }
+  const companyName = stringValue('companyName')
   const contactPersonName =
-    typeof data.contactPersonName === 'string' ? data.contactPersonName.trim() : ''
-  const applicantName = typeof data.applicantName === 'string' ? data.applicantName.trim() : ''
-  const phone = typeof data.phone === 'string' ? data.phone.trim() : ''
-  const guardianPhone = typeof data.guardianPhone === 'string' ? data.guardianPhone.trim() : ''
-  const partnerPhone = typeof data.partnerPhone === 'string' ? data.partnerPhone.trim() : ''
+    stringValue('contactPersonName')
+  const applicantName = stringValue('applicantName')
+  const phone = stringValue('phone')
+  const guardianPhone = stringValue('guardianPhone')
+  const partnerPhone = stringValue('partnerPhone')
   const displayName =
     inquiryType === 'partnership'
       ? [companyName, contactPersonName].filter(Boolean).join(' / ') || '제휴 문의'
@@ -234,6 +415,7 @@ export const Inquiries: CollectionConfig = {
       'inquiryType',
       'primaryPhone',
       'preferredDate',
+      'scheduledAt',
       'status',
       'createdAt',
     ],
@@ -242,6 +424,7 @@ export const Inquiries: CollectionConfig = {
   },
   defaultSort: '-createdAt',
   hooks: {
+    beforeChange: [appendConsultationHistory],
     beforeValidate: [setDerivedInquiryFields],
   },
   fields: [
@@ -288,7 +471,7 @@ export const Inquiries: CollectionConfig = {
     {
       name: 'preferredDate',
       type: 'date',
-      label: '희망일',
+      label: '고객 희망일',
       defaultValue: () => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       admin: {
         date: {
@@ -302,7 +485,7 @@ export const Inquiries: CollectionConfig = {
     {
       name: 'preferredTime',
       type: 'select',
-      label: '희망 시간',
+      label: '고객 희망 시간',
       admin: {
         hidden: true,
       },
@@ -572,6 +755,22 @@ export const Inquiries: CollectionConfig = {
       },
     },
     {
+      name: 'scheduledAt',
+      type: 'date',
+      label: '확정 상담 일시',
+      admin: {
+        condition: (_data, siblingData) => siblingData?.inquiryType !== 'partnership',
+        date: {
+          displayFormat: 'yyyy-MM-dd HH:mm',
+          pickerAppearance: 'dayAndTime',
+        },
+        description: '고객과 조율을 마친 실제 상담 일시를 입력합니다.',
+        position: 'sidebar',
+      },
+      index: true,
+      validate: preventClearingManagedSchedule,
+    },
+    {
       name: 'status',
       type: 'select',
       label: '상태',
@@ -581,6 +780,7 @@ export const Inquiries: CollectionConfig = {
       defaultValue: 'new',
       options: statusOptions,
       required: true,
+      validate: statusRequiresScheduledAt,
     },
     {
       name: 'memo',
@@ -589,6 +789,63 @@ export const Inquiries: CollectionConfig = {
       admin: {
         position: 'sidebar',
       },
+    },
+    {
+      name: 'consultationHistory',
+      type: 'array',
+      label: '상담 관리 이력',
+      access: {
+        create: () => false,
+        update: () => false,
+      },
+      admin: {
+        hidden: true,
+      },
+      fields: [
+        {
+          name: 'action',
+          type: 'text',
+          label: '작업',
+          required: true,
+        },
+        {
+          name: 'fromScheduledAt',
+          type: 'date',
+          label: '변경 전 상담 일시',
+        },
+        {
+          name: 'toScheduledAt',
+          type: 'date',
+          label: '변경 후 상담 일시',
+        },
+        {
+          name: 'fromStatus',
+          type: 'text',
+          label: '변경 전 상태',
+        },
+        {
+          name: 'toStatus',
+          type: 'text',
+          label: '변경 후 상태',
+        },
+        {
+          name: 'changedAt',
+          type: 'date',
+          label: '변경 일시',
+          required: true,
+        },
+        {
+          name: 'changedBy',
+          type: 'text',
+          label: '변경 관리자',
+          required: true,
+        },
+        {
+          name: 'changedById',
+          type: 'text',
+          label: '변경 관리자 ID',
+        },
+      ],
     },
   ],
 }

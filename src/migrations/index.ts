@@ -151,6 +151,7 @@ import * as migration_20260730_144500_news_detail_thumbnail_toggle from './20260
 import * as migration_20260805_125500_casting_appearance_avenue_centers from './20260805_125500_casting_appearance_avenue_centers'
 import * as migration_20260814_114500_star_card_published_at_order from './20260814_114500_star_card_published_at_order'
 import * as migration_20260818_114000_news_center_pinning from './20260818_114000_news_center_pinning'
+import * as migration_20260819_160500_inquiry_consultation_schedule_history from './20260819_160500_inquiry_consultation_schedule_history'
 
 export const migrations = [
   {
@@ -917,5 +918,10 @@ export const migrations = [
     up: migration_20260818_114000_news_center_pinning.up,
     down: migration_20260818_114000_news_center_pinning.down,
     name: '20260818_114000_news_center_pinning',
+  },
+  {
+    up: migration_20260819_160500_inquiry_consultation_schedule_history.up,
+    down: migration_20260819_160500_inquiry_consultation_schedule_history.down,
+    name: '20260819_160500_inquiry_consultation_schedule_history',
   },
 ]

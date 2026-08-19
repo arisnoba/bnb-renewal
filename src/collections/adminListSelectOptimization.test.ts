@@ -109,6 +109,7 @@ test('inquiry hidden detail fields are removed from list columns and filters', (
     'inquiryType',
     'primaryPhone',
     'preferredDate',
+    'scheduledAt',
     'status',
     'createdAt',
   ])
