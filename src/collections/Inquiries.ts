@@ -119,8 +119,8 @@ const inflowSourceOptions = [
 const statusOptions = [
   { label: '신규', value: 'new' },
   { label: '예약 완료', value: 'inProgress' },
-  { label: '완료', value: 'completed' },
-  { label: '스팸', value: 'spam' },
+  { label: '상담 완료', value: 'completed' },
+  { label: '상담 취소', value: 'spam' },
 ]
 
 const centerByInquiryType: Partial<Record<InquiryType, InquiryCenter>> = {
@@ -203,7 +203,7 @@ const statusRequiresScheduledAt: Validate<unknown, unknown, Partial<InquiryData>
   const isCompletingNewInquiry = value === 'completed' && previousValue === 'new'
 
   if ((isEnteringReservation || isCompletingNewInquiry) && !siblingData?.scheduledAt) {
-    return '예약 완료 또는 완료로 변경하려면 확정 상담 일시를 입력해야 합니다.'
+    return '예약 완료 또는 상담 완료로 변경하려면 확정 상담 일시를 입력해야 합니다.'
   }
 
   return true
@@ -219,7 +219,7 @@ const preventClearingManagedSchedule: Validate<unknown, unknown, Partial<Inquiry
     !value &&
     (siblingData?.status === 'inProgress' || siblingData?.status === 'completed')
   ) {
-    return '예약 완료 또는 완료 상태에서는 확정 상담 일시를 비울 수 없습니다.'
+    return '예약 완료 또는 상담 완료 상태에서는 확정 상담 일시를 비울 수 없습니다.'
   }
 
   return true

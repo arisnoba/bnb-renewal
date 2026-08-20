@@ -66,7 +66,7 @@ test('consultation summary separates customer request, current reservation, and 
         preferredDate: '2026-08-19T00:00:00.000Z',
         preferredTime: '14:00',
         scheduledAt: '2026-08-22T07:00:00.000Z',
-        status: 'inProgress',
+        status: 'completed',
       }}
       field={{ admin: {}, name: 'summary', type: 'ui' }}
       path="summary"
@@ -88,7 +88,7 @@ test('consultation summary separates customer request, current reservation, and 
   assert.match(html, /현재 예약 정보/)
   assert.match(html, /확정 상담 일시/)
   assert.match(html, /<strong[^>]*>2026-08-22 16:00<\/strong>/)
-  assert.match(html, /예약 완료/)
+  assert.match(html, /상담 완료/)
   assert.match(html, /상담 관리 이력/)
   assert.match(html, /일정 변경/)
   assert.match(html, /예약 확정/)

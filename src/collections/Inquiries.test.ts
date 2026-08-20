@@ -66,7 +66,7 @@ test('inquiry public form options stay aligned with storage select values', () =
   ])
 })
 
-test('in-progress inquiries use the reservation-complete label without changing stored values', () => {
+test('inquiry statuses use consultation labels without changing stored values', () => {
   const status = getField(Inquiries, 'status')
   const inProgressOption = status.options?.find(
     (option) =>
@@ -87,8 +87,18 @@ test('in-progress inquiries use the reservation-complete label without changing 
   )
 
   assert.deepEqual(completedOption, {
-    label: '완료',
+    label: '상담 완료',
     value: 'completed',
+  })
+
+  const spamOption = status.options?.find(
+    (option) =>
+      option && typeof option === 'object' && 'value' in option && option.value === 'spam',
+  )
+
+  assert.deepEqual(spamOption, {
+    label: '상담 취소',
+    value: 'spam',
   })
 })
 
@@ -119,7 +129,7 @@ test('reservation status requires a confirmed date on submit while preserving ex
       previousValue: 'new',
       siblingData: { inquiryType: 'art' },
     } as never),
-    '예약 완료 또는 완료로 변경하려면 확정 상담 일시를 입력해야 합니다.',
+    '예약 완료 또는 상담 완료로 변경하려면 확정 상담 일시를 입력해야 합니다.',
   )
   assert.equal(
     await status.validate?.('inProgress', {
@@ -143,7 +153,7 @@ test('reservation status requires a confirmed date on submit while preserving ex
       previousValue: '2026-08-21T06:00:00.000Z',
       siblingData: { status: 'inProgress' },
     } as never),
-    '예약 완료 또는 완료 상태에서는 확정 상담 일시를 비울 수 없습니다.',
+    '예약 완료 또는 상담 완료 상태에서는 확정 상담 일시를 비울 수 없습니다.',
   )
 })
 

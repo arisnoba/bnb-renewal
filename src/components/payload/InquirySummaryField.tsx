@@ -53,10 +53,10 @@ const consentLabels: Record<string, string> = {
 }
 
 const statusLabels: Record<string, string> = {
-  completed: '완료',
+  completed: '상담 완료',
   inProgress: '예약 완료',
   new: '신규',
-  spam: '스팸',
+  spam: '상담 취소',
 }
 
 const historyActionLabels: Record<string, string> = {
