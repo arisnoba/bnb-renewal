@@ -47,6 +47,11 @@ export default function ImageGallery({ items }: ImageGalleryProps) {
             <GateCenterCard index={index} item={item} key={item.href} />
           ))}
         </section>
+        <footer className="section-gate-business relative z-10 px-6 pb-12 text-center">
+          <p className="text-xs leading-relaxed text-white/60 md:text-sm">
+            (주)비앤비 인더스트리 | 사업자등록번호 : 105-87-39761
+          </p>
+        </footer>
       </div>
     </main>
   )
